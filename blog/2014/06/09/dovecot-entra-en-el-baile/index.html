@@ -1,0 +1,511 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>dovecot entra en el baile - El SysAdmin del 3er Mundo</title>
+  <meta name="author" content="låzaro">
+
+  
+  <meta name="description" content="Otra escupía que me cae en la frente. Desde que conozco linux, estoy oyendo
+hablar de postfix con ldap, postfix con mysql y siempre mi criterio era &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://lazaro-armando.herokuapp.com/blog/2014/06/09/dovecot-entra-en-el-baile/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
+  
+    <h2>lo que se siente al administrar servidores en cuba</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://www.google.com.cu" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="lazaro-armando.herokuapp.com">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/archives">Archivo</a></li>
+  <li><a href="/blog/categories/rails/">Ruby on Rails</a></li>
+  <li><a href="/blog/categories/destacado/">Destacado</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">dovecot entra en el baile</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-06-09T08:56:43-04:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>8:56 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Otra escupía que me cae en la frente. Desde que conozco linux, estoy oyendo
+hablar de postfix con ldap, postfix con mysql y siempre mi criterio era el peor.</p>
+
+<p>Por lo general, veía a mis paisanos copiar guías y pasar mil trabajos creando la
+base de datos sin tener una finalidad útil. Ahora me doy cuenta que en un
+esquema monstruosamente grande; MySQL resulta útil.</p>
+
+<p>Por ejemplo, aquí tengo planificado un gran despliegue de tecnología
+estrafalaria y voy a necesitar un esquema como el de google:</p>
+
+<h3>&ldquo;una cuenta para todos los servicios&rdquo;</h3>
+
+<p>Por el momento le va tocando el turno al correo, que aunque aún no tenemos
+operando el dominio; esta pronto a cumplirse.</p>
+
+<p>Primero y principioso, instalar todo:</p>
+
+<figure class='code'><figcaption><span>&#8220;instalar todo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@blackjack:~# aptitude install postfix-mysql dovecot-mysql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Seguidamente crearemos los usaurios del sistema. El esquema vmail corre como un
+usaurio aparte por una cuestión de seguridad.</p>
+
+<figure class='code'><figcaption><span>&#8220;crear los usaurios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@blackjack:~# groupadd -g <span class="m">5000</span> vmail
+</span><span class='line'>root@blackjack:~# useradd -g vmail -u <span class="m">5000</span> vmail -d /var/vmail
+</span><span class='line'>root@blackjack:~# mkdir /var/vmail
+</span><span class='line'>root@blackjack:~# chown vmail:vmail /var/vmail
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La base de datos, tienes más o menos esta estructura:</p>
+
+<figure class='code'><figcaption><span>&#8220;estructura de las base de datos&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/ejemplo<span class="nv">$ </span>rails console
+</span><span class='line'>Loading development environment <span class="o">(</span>Rails 4.1.1<span class="o">)</span>
+</span><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:001:0&gt; User.column_names
+</span><span class='line'><span class="o">=</span>&gt; <span class="o">[</span><span class="s2">&quot;id&quot;</span>, <span class="s2">&quot;username&quot;</span>, <span class="s2">&quot;realname&quot;</span>, <span class="s2">&quot;password&quot;</span>, <span class="s2">&quot;created_at&quot;</span>, <span class="s2">&quot;updated_at&quot;</span>, <span class="s2">&quot;telefono&quot;</span>, <span class="s2">&quot;correo&quot;</span>, <span class="s2">&quot;quota&quot;</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lo que más nos interesa de aquí es username y password, sobre todo teniendo en
+cuenta que que se almacena cifrado, osea, un chorro de mierda hexagesimal.</p>
+
+<p>Ahora vamos al fichero &ldquo;/etc/dovecot/conf.d/10-auth.conf&rdquo;. al fondo, le
+descomentamos el autenticador sql y le comentamos el de pam. Nos quedaría así</p>
+
+<figure class='code'><figcaption><span>&#8220;fondo de 10-auth.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="c1">#!include auth-system.conf.ext</span>
+</span><span class='line'><span class="err">!include</span> <span class="err">auth-sql.conf.ext</span>
+</span><span class='line'><span class="c1">#!include auth-ldap.conf.ext</span>
+</span><span class='line'><span class="c1">#!include auth-passwdfile.conf.ext</span>
+</span><span class='line'><span class="c1">#!include auth-checkpassword.conf.ext</span>
+</span><span class='line'><span class="c1">#!include auth-vpopmail.conf.ext</span>
+</span><span class='line'><span class="c1">#!include auth-static.conf.ext</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora le diremos al autenticador como conectarse a la base de datos. El irá
+solito a buscar la table &ldquo;users&rdquo;. Especificamos las conexión. También le diremos
+las linea sql que debe tirar para buscar el username y el password.</p>
+
+<p>También modificaremos el mecanismo de cifrado, le diremos que use SHA256 que es
+el generado por Ruby en mi esquema.</p>
+
+<figure class='code'><figcaption><span>/etc/dovecot/dovecot-sql.conf.ext</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="na">connect</span> <span class="o">=</span> <span class="s">host=10.1.1.14 dbname=labasededatos user=usuario password=notelodiré</span>
+</span><span class='line'><span class="na">default_pass_scheme</span> <span class="o">=</span> <span class="s">SHA256</span>
+</span><span class='line'><span class="na">password_query</span> <span class="o">=</span> <span class="s">\</span>
+</span><span class='line'><span class="s">  SELECT username, password \</span>
+</span><span class='line'><span class="s">  FROM users WHERE username = &#39;%n&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por último y antes de pasar a postfix. En el fichero conf.d/auth-sql.conf.ext
+declaramos como se gestionará la base datos.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/dovecot/conf.d/auth-sql.conf.ext&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">passdb</span> <span class="err">{</span>
+</span><span class='line'>  <span class="na">driver</span> <span class="o">=</span> <span class="s">sql</span>
+</span><span class='line'><span class="s">  args = /etc/dovecot/dovecot-sql.conf.ext</span>
+</span><span class='line'><span class="err">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">userdb</span> <span class="err">{</span>
+</span><span class='line'>  <span class="na">driver</span> <span class="o">=</span> <span class="s">static</span>
+</span><span class='line'><span class="s">  args = uid=vmail gid=vmail home=/var/vmail/%n</span>
+</span><span class='line'><span class="err">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Osea que el correo se almacene en /var/vmail/fulano y con usuario vmail. De
+hecho TODO el correo se almacenará con el usuario vmail; poniendo fin al
+perpetuo temor de escalada de permisos que descansa en el típico esquema
+/var/mail/fulano</p>
+
+<p>En este caso, se chequeará el password contra SQL pero el almacenamiento se
+hará en /var/vmail, con eso no vamos contra el princpio del cual siempre me
+agarro y es que las Bases de datos, NO son sistemas de archivos.</p>
+
+<p>Veremos en la próxima entrada, como se hace a postfix jugar con todo esto&hellip;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">låzaro</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-06-09T08:56:43-04:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>8:56 am</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lazaro-armando.herokuapp.com/blog/2014/06/09/dovecot-entra-en-el-baile/" data-via="lazarumoxyde" data-counturl="http://lazaro-armando.herokuapp.com/blog/2014/06/09/dovecot-entra-en-el-baile/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/05/02/wordpress-para-todos/" title="Previous Post: wordpress para todos">&laquo; wordpress para todos</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/06/09/postfix-entrando-en-el-baile/" title="Next Post: postfix entrando en el baile">postfix entrando en el baile &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/10/15/repo-de-fdroid/">repo de fdroid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/05/assets-por-controlador/">assets por controlador</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/17/dhcp-por-grupos/">dhcp por grupos</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/10/plymouth-boot-screen/">plymouth boot screen</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/07/git-clone-rapido/">git clone rápido</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/07/archlinux-dos-kernel/">archlinux con dos kernel</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/01/squid-transparente/">squid transparente</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/28/compute-remote-uptime/">compute remote uptime</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/19/will-paginate/">will_paginate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/12/date-select-en-espanol/">date_select en español</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/11/openvas-en-archlinux/">OpenVAS en Archlinux</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/">añadir verbo a un scaffold</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/05/asset-pipeline-en-production/">asset pipeline en production</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/14/revocar-certificados-de-ovpn/">revocar certificados de OVPN</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/12/systemd-automount/">systemd automount</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/07/openvpn-en-arch/">OpenVPN en Arch</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/01/pacman-bajo-el-microscopio/">pacman bajo el microscopio</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/28/cambiar-user-agent-en-squid/">cambiar user agent con squid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/26/nic-bonding/">NIC bonding</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/23/ltsp-en-debian8-y-salud/">ltsp en debian8 y salud</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/22/rails-sin-turbolink/">rails sin turbolinks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/19/delay-pools-de-squid/">delay pools de squid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/12/rails-con-mongodb/">rails con mongodb</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/06/zentyal/">Zentyal</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/01/bundle/">bundle</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/02/welcome-aboard/">welcome aboard</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/24/verdial-y-el-imagis/">la pena de verdial</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/05/palos-de-wordpress/">palos de wordpress</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/25/mas-de-ocs/">más de OCS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/15/subdesarrollo/">subdesarrollo</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/11/ocs-inventory/">ocs-inventory</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/08/select-en-bootstrap/">select en bootstrap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/05/empirico/">empíricos</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/27/crear-un-chroot-con-debian/">crear un chroot con debian</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/10/autenticador-sql-en-el-proxy/">autenticador SQL en el proxy</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/09/postfix-entrando-en-el-baile/">postfix entrando en el baile</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - låzaro -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: destacado | El SysAdmin del 3er Mundo]]></title>
+  <link href="http://lazaro-armando.herokuapp.com/blog/categories/destacado/atom.xml" rel="self"/>
+  <link href="http://lazaro-armando.herokuapp.com/"/>
+  <updated>2015-10-15T19:22:11-04:00</updated>
+  <id>http://lazaro-armando.herokuapp.com/</id>
+  <author>
+    <name><![CDATA[låzaro]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[archlinux con dos kernel]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/09/07/archlinux-dos-kernel/"/>
+    <updated>2015-09-07T20:32:57-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/09/07/archlinux-dos-kernel</id>
+    <content type="html"><![CDATA[<p>Tener los dos kernel y elegir cual butear con el grub al principio; no es algo
+sencillo en archlinux.</p>
+
+<p>Por defecto, el grub dice tener dichas entradas en un submenú que nunca se ve.
+Para lograrlo, tenemos que hacer unos paces mágicos en el fichero:</p>
+
+<h4>/etc/default/grub</h4>
+
+<p>Primero instalamos los kernels; el lts y el fresco.</p>
+
+<pre><code class="bash "los kernels"">pacman -S linux linux-lts
+</code></pre>
+
+<p>Ahora la configuración con la que logré eso, fue agregándole al final estas
+lineas:</p>
+
+<pre><code class="bash "/etc/default/grub"">GRUB_DISABLE_SUBMENU=y
+GRUB_DEFAULT=saved
+GRUB_SAVEDEFAULT=true
+</code></pre>
+
+<p>Con eso, se salva la última entrada ejecutada. Por que, lo más obvio, es que la
+próxima vez que arranques, se cargue el último kernel que usaste. Lo inusual
+sería que cambies de opinión y cargues otro. Desgraciadamente, si como yo, usas
+btrfs como sistema de archivo, grub no podrá escribir el fichero con la última
+entrada seleccionada. Incluso te dará un error, diciendo que no puede escribir
+el fichero no se que.</p>
+
+<p>Seguimos&hellip; Localiza y la linea de recovery y ponla en false:</p>
+
+<pre><code class="bash "/etc/default/grub""># Uncomment to disable generation of recovery mode menu entries
+GRUB_DISABLE_RECOVERY=false
+</code></pre>
+
+<p><strong>NO SE POR QUE</strong>, pero no se generan las dichosas entradas si eso no está en
+false. Además, tener el menú de recovery es bastante útil, en estas distros
+volátiles, uno nunca sabe cuando le va a hacer falta.</p>
+
+<p>Paso final, generar el grub.cfg</p>
+
+<pre><code class="bash "grub-mkconfig"">grub-mkconfig -o /boot/grub/grub.cfg
+</code></pre>
+
+<p>Va y si quieres, no es obligado, pero para probar, <strong>REINICIA</strong>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[compute remote uptime]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/08/28/compute-remote-uptime/"/>
+    <updated>2015-08-28T12:21:58-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/08/28/compute-remote-uptime</id>
+    <content type="html"><![CDATA[<p>Vamos de atrás pa alante, el truco primero y la muela después.</p>
+
+<pre><code class="bash "nmap"">[root@artema ~]# nmap -O -v 10.1.1.1|grep -i uptime
+Uptime guess: 18.006 days (since Fri Aug 10 12:24:47 2015)
+</code></pre>
+
+<h4>¿Que acaba de suceder?</h4>
+
+<p>Calculamos el tiempo que lleva el servidor remoto en pie. Fíjese que nos dice la
+fecha en la que el servidor arrancó.</p>
+
+<h4>¿Para que sirve esta información?</h4>
+
+<p>Para poner al responsable de la computadora remota <em>contra las cuerdas</em> en una
+situación crítica donde el momento de encendido o apagado de la máquina podría
+ser crucial.</p>
+
+<h4>Ejemplos:</h4>
+
+<p>Nuestro proveedor, el servidor proxy padre, afirma descaradamente que NO ha
+tenido problemas técnicos, pero nosotros sabemos que sí. En una discución
+crucial podría dejarle caer la pregunta. <em>¿Entonces porque su servidor se
+reinició el día tal?</em></p>
+
+<p>Un servicio determinado falla a una hora determinada de la noche. Con esto
+podríamos saber si el servidor se está reiniciando, cuando y con que frecuencia.</p>
+
+<p>El proveedor dice que ha tenido que reiniciar el servidor cuando en realidad
+nunca lo ha hecho.</p>
+
+<p>El usuario dice que la máquina se le reinicia constantemente.</p>
+
+<p>El usuario o el proveedor afirman que la máquina fue encendida a una hora
+determinada. O por el contrario, se afirma que la máquina a esa hora NO estaba
+encendida y el uptime dice lo contrario.</p>
+
+<p>   <blockquote><p>Saque usted, sus propias concluciones&hellip;</p><footer><strong>Taladrid</strong> <cite>Pasaje a Lo Desconocido</cite></footer></blockquote></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[OpenVAS en Archlinux]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/07/11/openvas-en-archlinux/"/>
+    <updated>2015-07-11T19:19:59-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/07/11/openvas-en-archlinux</id>
+    <content type="html"><![CDATA[<p><img class="left" src="/images/greenbone.png" title="&ldquo;Login del Greenbone&rdquo; &ldquo;Login del Greenbone&rdquo;" ></p>
+
+<p>Recientemente, un &ldquo;Webmaster&rdquo; usó en uno de los servidores que patrocino; un
+escaner de vulnerabilidades. El administrador de red del lugar, le dio acceso al
+servidor; claro está. El informe reveló un cartapaso de vulnerabilidades. Por
+ejemplo, la ausencia de una partición swap; podría dar lugar a un kernel-panic
+por falta de memoria RAM; en un servidor de correo con 4 Gigas de RAM. Además,
+advertía que la versión de bash (con sus parches puestos) era muy vieja y
+recomendaba usar una reciente. Como si instalar software reciente en debian
+fuese jamón.</p>
+
+<p>No vi nada con respecto a postfix o dovecot pero de inmediato me llamaron para
+que explicara como era posible que mi servidor tuviera semejantes
+vulnerabilidades. Claro, con acceso a root cualquiera busca vulnerabilidades.</p>
+
+<p>Soy de los que pasa HORAS, intentando penetrar mi propia seguridad; pero el caso
+llevaba un contra ataque más elaborado.</p>
+
+<p>El sosftware por excelencia para probar la seguridad: <a href="http://es.wikipedia.org/wiki/OpenVAS">OpenVAS</a></p>
+
+<h3>No solo identifica el problema, también te dice como arreglarlo.</h3>
+
+<p>Funciona de manera similar a un antivirus. Una base de datos se actualiza y ala
+las vulnerabilidades conocidas. Luego, una interfaz web, de lo más cómoda;
+permite llevar a cabo un análisis tanto ligero como exhaustivo del sistema
+seleccionado como objetivo. Además, se pueden programar análisis de manera
+automatizada.</p>
+
+<p>Su interfaz web, el llamado &ldquo;Greenbone Security Assistant&rdquo;, nos hará la vida muy
+fácil una vez instalado.</p>
+
+<p>En archlinux todo es un rollo, así que empezemos:</p>
+
+<pre><code class="bash "instalando openvas"">pacman -S openvas
+</code></pre>
+
+<p>La interfaz web de openvas (el greenbone) debe ser contactada por SSL (obligao).
+Como siempre, crear los certificados es todo una ceremonia.</p>
+
+<pre><code class="bash "creando certificados"">openvas-mkcert
+openvas-mkcert-client -n -i
+</code></pre>
+
+<p>Ahora lo más importante. Descargarnos la base de datos con las amenazas, o sea,
+con las vulnerabilidades.</p>
+
+<pre><code class="bash "actualizando las bases"">openvas-nvt-sync
+openvas-scapdata-sync
+openvas-certdata-sync
+</code></pre>
+
+<p>El escaner, es un servicio, que en producción, está supuestamente corriendo y
+realizando escaneos bajo demanda. Lo echamos a andar:</p>
+
+<pre><code class="bash "el servicio"">systemctl start openvas-scanner
+</code></pre>
+
+<p>Una vez que tenemos las bases de datos descargadas, las instalamos en openvas</p>
+
+<pre><code class="bash "instalando las bases"">openvasmd --rebuild --progress
+</code></pre>
+
+<p>Y hasta aquí es donde la wiki de arch está bien. Pues para crear el usuario de
+openvas y echar a andar el greenbone, se forma la moña.</p>
+
+<p>Primero debemos crear el usuario de openvas. En este caso de ejemplo, el
+usuario será <strong>admin</strong> con password <strong>admin</strong>.</p>
+
+<pre><code class="bash "creando usuarios"">openvasmd --create-user=admin --role=Admin
+openvasmd --user=admin --new-password=admin
+</code></pre>
+
+<p>Por último, echamos a andar la interfaz web:</p>
+
+<pre><code class="bash "iniciando gsad"">gsad --http-only --listen=127.0.0.1 -p 9392
+openvasmd -p 9390 -a 127.0.0.1
+</code></pre>
+
+<p>Abre un navegador y apunta para <a href="http://127.0.0.1:9392">http://127.0.0.1:9392</a></p>
+
+<p>Una vez dentro, verás la página donde se almacenan los escaneos. Ahí localiza un
+botón morado con una barita mágica. Vea la imagen de abajo</p>
+
+<p><img class="center" src="/images/openvas_wiz.png" title="&ldquo;Botón del Wizard&rdquo; &ldquo;Botón del Wizard&rdquo;" ></p>
+
+<p>En la pantalla que le sigue, especificamos el host al que queremos escanear.</p>
+
+<p><img class="center" src="/images/openvas_scan.png" title="&ldquo;Seleccionar Objetivo&rdquo; &ldquo;Seleccionar objetivo&rdquo;" ></p>
+
+<p>Apto seguido, comenzará el escaneo. Es posible que el servidor deje de prestar
+servicios; pues openvas le da con todo.</p>
+
+<p>Finalmente, cuando el escaneo esté terminado, en vez de un tanto por ciento,
+verás; como en la primera imagen, un letrero que dice &ldquo;<strong>done</strong>&rdquo; sobre la barra
+azul.</p>
+
+<p><img class="center" src="/images/openvas_result.png" title="&ldquo;resultado del escaneo&rdquo; &ldquo;resultado de escaneo&rdquo;" ></p>
+
+<p>La imagen muestra, el resultado del webmaster que le tiró piedras al tejado del
+vecino con el suyo de vidrio. Al hacer click en la vulnerabilidad, nos muestra
+la solución, como es el ejemplo de esta:</p>
+
+<p><img class="center" src="/images/openvas_sol.png" title="&ldquo;solución&rdquo; &ldquo;solución&rdquo;" ></p>
+
+<p>Hermosa pareja; el problema y la solución junticos&hellip;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[OpenVPN en Arch]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/06/07/openvpn-en-arch/"/>
+    <updated>2015-06-07T18:18:17-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/06/07/openvpn-en-arch</id>
+    <content type="html"><![CDATA[<p>En Arch, todo es tan novedoso como complicado. Montar un servidor de VPN, pasa a
+ser una verdadera complicación. Pero todo empieza por el primer paso y termina
+cuando menos te lo esperas o más embullado estás.</p>
+
+<pre><code class="bash "el viejo pacman"">pacman -S openvpn easy-rsa
+</code></pre>
+
+<h4>Aspectos legales</h4>
+
+<p>Antes de comenzar. Déjeme recordarle que transmitir cifrados en algunos países
+es algo complicado desde el punto de vista legal.</p>
+
+<p>En cuba, te aclaro, que necesitas anexar un permiso de la FAR a tu Licencia de
+Red. En casi ningún país las redes VPN son &ldquo;al flai&rdquo;, ya que las mismas, siempre
+tienen un punto en alguna entidad, lo cual compromete mucho a esa red; así que
+mi recomendación: Póngase al tanto de las leyes antes de hacer una VPN.</p>
+
+<p>Para esta prueba, usaré una red compuesta por un solo cable. En un extremo está
+mi laptop y en el otro, el RaspBerry Pi; secuaz de todos mis más beligerantes
+experimentos.</p>
+
+<h3>Empezando</h3>
+
+<p>Lo primero es crear el llamado &ldquo;Master Certificate Authority&rdquo; (por sus siglas &ldquo;CA&rdquo;)</p>
+
+<p>La herramienta easy-rsa ha evolucionado tanto, que ya ni su madre la reconoce.
+Razón por la cual toda la documentación parece estar escrita con una herramienta
+totalmente diferente.</p>
+
+<p>Los escript se encuentran en /usr/share así que los traeremos a nuestro
+zoológico.</p>
+
+<pre><code class="bash "easy-rsa"">cd /etc/openvpn/
+cp -ru /usr/share/easy-rsa/ ./
+cd easy-rsa
+</code></pre>
+
+<p>Lo último que copiamos, el ficherito <strong>vars</strong>; es la materia prima de esta obra.
+Ahí pondremos los parámetros de nuestro certificado. Abre el fichero <strong>vars</strong> y
+edítale los parámetros obvios, están al fondo y comienzan por <strong>KEY_</strong></p>
+
+<p>Cuando hallas terminado, ejecuta esto:</p>
+
+<pre><code class="bash "./vars"">source ./vars
+./clean-all
+./build-ca
+</code></pre>
+
+<p>Verás como se genera el certificado y aunque te pregunta por los parámetros, los
+tiene ya por defecto. Solo es cuestión de presionar Enter y listo.</p>
+
+<p>Ahora usando el CA, generamos el certificado del servidor.</p>
+
+<pre><code class="bash "el certificado del servidor"">./build-key-server vpn.dominio.cu
+</code></pre>
+
+<p>Te preguntará lo mismo y un password; ponle cualquier <em>mierda entrópica</em> y sigue
+pa alante.</p>
+
+<h3>OJO!! No toques enter a lo loco. Firma todos los certificados</h3>
+
+<p>A este punto el directorio <strong>keys/</strong> contiene más de lo que te imaginas. Pero el
+servidor necesita los parámetros de un tal <a href="http://www.rsasecurity.com/rsalabs/node.asp?id=2248">Diffie Hellman</a>
+para pinchar. Ponte cómodo y ejecuta:</p>
+
+<pre><code class="bash "Deffie Hellman"">./build-dh 
+Generating DH parameters, 2048 bit long safe prime, generator 2
+This is going to take a long time
+</code></pre>
+
+<p>Una vez que la pantalla se halla llenado de punticos, te quedará editar el
+fichero de configuración a tu antojo. El mío me quedó así:</p>
+
+<pre><code class="bash "/etc/openvpn/servidor.conf""># la ip en la que esucha el servidor
+local 0.0.0.0
+
+# puerto https
+port 443
+
+# protocolo
+proto tcp
+#proto udp
+
+# el tipo de interfaz de tunel
+;dev tap
+dev tun
+
+# los certificados del servidor
+ca /etc/openvpn/easy-rsa/keys/ca.crt
+cert /etc/openvpn/easy-rsa/keys/vpn.dominio.cu.crt
+
+# ATENCIÓN!!
+# mantén este fichero en secreto absoluto
+key /etc/openvpn/easy-rsa/keys/vpn.dominio.cu.key
+
+# Diffie Hellman
+dh /etc/openvpn/easy-rsa/keys/dh2048.pem
+
+# nuestra red es una subnet
+topology subnet
+
+# configuramos la red que tendrá nuestra VPN
+# dándole este rango, el servidor coge la 1,
+# usamos un rango raro, pa que no choque
+server 10.8.0.0 255.255.255.0
+
+# mantiene la misma ip para cada cliente
+# aún después de reiniciado el servidor
+ifconfig-pool-persist ipp.txt
+
+# con esta opción, los clientes se ven entre ellos
+# sin esta opción, cada cliente es individual hacia el server
+client-to-client
+
+# si esto está habilitado, varios cliente se conectarán
+# usando un mismo certificado. Muy bueno si tienes un
+# certificado para cada grupo de clientes, o el mismo
+# certificado para todos los clientes.
+duplicate-cn
+
+# Preguntale "¿estás ahí?" cada 10 segundos
+keepalive 10 120
+
+# habilita la compresión de datos
+comp-lzo
+
+# el máximo número de clientes permitidos
+max-clients 1
+
+# corre como nobody, menos privilegios
+user nobody
+group nobody
+persist-key
+persist-tun
+
+# este fichero NO se llena
+# ya que se reescribe constantemente
+# mostrando el estado de la VPN
+status openvpn-status.log
+
+# esto si se pone gordo, así que no logueamos
+;log         openvpn.log
+;log-append  openvpn.log
+
+# Que loguear?
+# 0 solo errores fatales
+# 4 cuentame que hay
+# 5 y 6 muy últil para depurar problemas de conexión
+# 9 solo los desarrolladores usarían esta escandalera
+verb 3
+
+# no muestres repetidos
+#mute 20
+</code></pre>
+
+<p><strong>OJO!</strong> Mira a ver donde metes el fichero <strong>servidor.conf</strong>, no sea que los
+crees dentro del directorio easy-rsa y luego no lo encuentres.</p>
+
+<p>Corre <strong>openvpn &ndash;config servidor.conf</strong> COMO ROOT, vamos a probarlo a ver como
+suena:</p>
+
+<pre><code class="bash">[root@artema openvpn]# openvpn --config servidor.conf
+Sun Jun 14 14:00:12 2015 OpenVPN 2.3.6 i686-pc-linux-gnu [SSL (OpenSSL)] [LZO] [EPOLL] [MH] [IPv6] built on Dec  2 2014
+Sun Jun 14 14:00:12 2015 library versions: OpenSSL 1.0.2a 19 Mar 2015, LZO 2.09
+Sun Jun 14 14:00:12 2015 WARNING: --ifconfig-pool-persist will not work with --duplicate-cn
+Sun Jun 14 14:00:12 2015 Diffie-Hellman initialized with 2048 bit key
+Sun Jun 14 14:00:12 2015 Socket Buffers: R=[87380-&gt;131072] S=[16384-&gt;131072]
+Sun Jun 14 14:00:12 2015 TUN/TAP device tun0 opened
+Sun Jun 14 14:00:12 2015 TUN/TAP TX queue length set to 100
+Sun Jun 14 14:00:12 2015 do_ifconfig, tt-&gt;ipv6=0, tt-&gt;did_ifconfig_ipv6_setup=0
+Sun Jun 14 14:00:12 2015 /usr/bin/ip link set dev tun0 up mtu 1500
+Sun Jun 14 14:00:13 2015 /usr/bin/ip addr add dev tun0 10.8.0.1/24 broadcast 10.8.0.255
+Sun Jun 14 14:00:13 2015 GID set to nobody
+Sun Jun 14 14:00:13 2015 UID set to nobody
+Sun Jun 14 14:00:13 2015 Listening for incoming TCP connection on [undef]
+Sun Jun 14 14:00:13 2015 TCPv4_SERVER link local (bound): [undef]
+Sun Jun 14 14:00:13 2015 TCPv4_SERVER link remote: [undef]
+Sun Jun 14 14:00:13 2015 MULTI: multi_init called, r=256 v=256
+Sun Jun 14 14:00:13 2015 IFCONFIG POOL: base=10.8.0.2 size=252, ipv6=0
+Sun Jun 14 14:00:13 2015 IFCONFIG POOL LIST
+Sun Jun 14 14:00:13 2015 MULTI: TCP INIT maxclients=1 maxevents=5
+Sun Jun 14 14:00:13 2015 Initialization Sequence Completed
+</code></pre>
+
+<p><strong>BELLO!</strong></p>
+
+<p>Note como en este ejemplo, se usó la opción duplicate-cn y este dice que no
+podrá mentener una ip por cliente, porque lógicamente, un mismo certificado será
+usado por dicímiles cliente (en este ejemplo). En producción, le recomiendo que
+emita un certificado para cada cliente.</p>
+
+<p>A partir de este momento, habrá una Unit con el nombre del fichero &ldquo;.conf&rdquo;
+detrás de la arroba:</p>
+
+<p><strong>openvpn@CONFIGURACION.service</strong></p>
+
+<p>Osea, como el fichero se llama <strong>servidor.conf</strong> la unit se llama
+<strong>openvpn@servidor.service</strong></p>
+
+<p>¿Se etendió?</p>
+
+<pre><code class="bash">systemctl start openvpn@servidor.service
+systemctl enable openvpn@servidor.service
+</code></pre>
+
+<h3>Ahora los clientes</h3>
+
+<p>Como ya vimos, los clientes pueden tener un certificado para cada uno o bien un
+por cada cliente. En este caso, generaremos un certificado para un cliente.</p>
+
+<p>El cliente necesitará un fichero de configuración y sus pertinentes
+certificados.</p>
+
+<pre><code class="bash "certificados para cliente1"">cd /etc/openvpn/easy-rsa
+./build-key cliente1
+</code></pre>
+
+<p><strong>OJO!</strong> No aprietes enter a lo loco! Presiona &ldquo;y&rdquo; en el momento de autofirmar
+los certificados.</p>
+
+<p>Ya tenemos sus certficados, ahora le hacemos el fichero de configuración. En mi
+caso, prefiero tener un directorio para cada cliente. Así es solo cuestión de
+empaquetar y mandarle todo. A mi me quedó así:</p>
+
+<pre><code class="bash "cliente1/"">cd /etc/openvpn/
+mkdir cliente1
+cd cliente1
+cp /etc/openvpn/easy-rsa/keys/ca.crt ./
+cp /etc/openvpn/easy-rsa/keys/cliente1.crt ./
+cp /etc/openvpn/easy-rsa/keys/cliente1.key ./
+</code></pre>
+
+<p><strong>MUCHO CUIDADO</strong> con lo que copias! Por nada del mundo copies el fichero &ldquo;.key&rdquo;
+<strong>DEL SERVIDOR</strong> Si no tu VPN se volverá un ballú y cualquier podría montar un
+servidor, engañando a tus cliente.</p>
+
+<p>El fichero <strong>servidor.key</strong> es la identificación mediante la cual openvpn
+garantiza ser legítimamente quien dice ser.</p>
+
+<p>Finalmente creamos el fichero de configuración <strong>DEL CLIENTE</strong>. En windows y en
+android, un fichero cuya extensión sea <strong>.ovpn</strong> es una configuración de VPN.
+Por tanto, es conveniente nombrarlo así. Claro, al no ser &ldquo;.conf&rdquo;, no podrá ser
+disparado desde systemcl, o al menos yo, no he hecho la prueba.</p>
+
+<p>A mi me quedó así:</p>
+
+<pre><code class="bash "/etc/openvpn/cliente1/cliente1.conf"">client
+remote 10.1.1.1 443
+dev tun
+proto tcp
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+verb 2
+ca ca.crt
+cert ./cliente1.crt
+key ./cliente1.key
+comp-lzo
+</code></pre>
+
+<p>Empaquetamos y le mandamos al cliente la configuración, por correo o por como
+sea, en este caso, lo copié por ssh para el raspberry.</p>
+
+<pre><code class="bash "cliente1.zip"">[root@artema openvpn]# zip cliente1.zip cliente1/*
+  adding: cliente1/ca.crt (deflated 35%)
+  adding: cliente1/cliente1.conf (deflated 28%)
+  adding: cliente1/cliente1.crt (deflated 47%)
+  adding: cliente1/cliente1.key (deflated 23%)
+</code></pre>
+
+<p>Del otro lado lo levanté y quedó así:</p>
+
+<pre><code>[root@rasp cliente1]# openvpn --config cliente1.conf 
+Sun Jun 14 14:34:36 2015 OpenVPN 2.3.6 i686-pc-linux-gnu [SSL (OpenSSL)] [LZO] [EPOLL] [MH] [IPv6] built on Dec  2 2014
+Sun Jun 14 14:34:36 2015 library versions: OpenSSL 1.0.2a 19 Mar 2015, LZO 2.09
+Sun Jun 14 14:34:36 2015 WARNING: No server certificate verification method has been enabled.  See http://openvpn.net/howto.html#mitm for more info.
+Sun Jun 14 14:34:36 2015 Attempting to establish TCP connection with [AF_INET]127.0.0.1:443 [nonblock]
+Sun Jun 14 14:34:36 2015 TCP connection established with [AF_INET]127.0.0.1:443
+Sun Jun 14 14:34:36 2015 TCPv4_CLIENT link local: [undef]
+Sun Jun 14 14:34:36 2015 TCPv4_CLIENT link remote: [AF_INET]127.0.0.1:443
+Sun Jun 14 14:34:36 2015 VERIFY OK: depth=1, C=CU, ST=HAV, L=Plaza, O=UNAICC, OU=UNAICC, CN=UNAICC CA, name=RSA, emailAddress=vpn@unaicc.cu
+Sun Jun 14 14:34:36 2015 VERIFY OK: depth=0, C=CU, ST=HAV, L=Plaza, O=UNAICC, OU=UNAICC, CN=vpn.unaicc.cu, name=RSA, emailAddress=vpn@unaicc.cu
+Sun Jun 14 14:34:36 2015 Data Channel Encrypt: Cipher 'BF-CBC' initialized with 128 bit key
+Sun Jun 14 14:34:36 2015 Data Channel Encrypt: Using 160 bit message hash 'SHA1' for HMAC authentication
+Sun Jun 14 14:34:36 2015 Data Channel Decrypt: Cipher 'BF-CBC' initialized with 128 bit key
+Sun Jun 14 14:34:36 2015 Data Channel Decrypt: Using 160 bit message hash 'SHA1' for HMAC authentication
+Sun Jun 14 14:34:36 2015 Control Channel: TLSv1, cipher TLSv1/SSLv3 DHE-RSA-AES256-SHA, 2048 bit RSA
+Sun Jun 14 14:34:36 2015 [vpn.unaicc.cu] Peer Connection Initiated with [AF_INET]127.0.0.1:443
+Sun Jun 14 14:34:39 2015 TUN/TAP device tun1 opened
+Sun Jun 14 14:34:39 2015 do_ifconfig, tt-&gt;ipv6=0, tt-&gt;did_ifconfig_ipv6_setup=0
+Sun Jun 14 14:34:39 2015 /usr/bin/ip link set dev tun1 up mtu 1500
+Sun Jun 14 14:34:39 2015 /usr/bin/ip addr add dev tun1 10.8.0.2/24 broadcast 10.8.0.255
+Sun Jun 14 14:34:39 2015 Initialization Sequence Completed
+</code></pre>
+
+<p>Al descomprimir el zip, copia todo en /etc/openvpn/ y usa systemctl para que
+arranque.</p>
+
+<pre><code class="bash ">cp cliente1/* /etc/openvpn/
+systemctl start openvpn@cliente1.service
+systemctl enable openvpn@cliente1.service
+</code></pre>
+
+<h3>y entonces iptables?</h3>
+
+<p>Si tus cliente se conectarán por la interfaz eth0, solo necesitarás el puerto
+443 abierto. En este caso, la VPN pincha por el 443. Si tienes un servidor web
+público el brinco es diferente. Te recomiendo que uses una máquina solamente
+para servidor OpenVPN y dejes es único puerto abierto.</p>
+
+<p>La interfaz de la VPN es tun0, así que ahí le dejas abierto los servicios que
+entiendas.</p>
+
+<p>   <blockquote><p>La seguridad informática no es secreta, pero si discreta.</p></blockquote></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[cambiar user agent con squid]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/05/28/cambiar-user-agent-en-squid/"/>
+    <updated>2015-05-28T18:46:04-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/05/28/cambiar-user-agent-en-squid</id>
+    <content type="html"><![CDATA[<p>En esta sofocante tarde de verano cubano y en un lugar que no diré, me encontré
+detrás de un proxy administrador por la
+<a href="http://es.wikipedia.org/wiki/Schutzstaffel">Schutzstaffel</a>. Lo que no se
+parezca a un navegador, NO PASA. Por tanto, Ruby, Wget y demás, NO pinchan.</p>
+
+<p>Por suerte, tengo la costumbre de usar un squid local, para no tener que estar
+configurando el navegador. En ese squid declaro como padre el squid del momento
+(ya sea salud u otro) y ahí pongo el nombre de usuario con la contraseña una
+sola vez. Si estás en cuba y tienes una laptop con linux, te aconsejo que acates
+esa costumbre.</p>
+
+<p>Solución:</p>
+
+<p>Reescribir el encabezado User-Agent de las peticiones en el squid local. Así
+todas salen de un supuesto firefox.</p>
+
+<pre><code class="bash "/etc/squid/squid.conf"">request_header_access User-Agent deny all
+request_header_replace User-Agent Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4
+</code></pre>
+
+<p>   <blockquote><p>Al carajo albañiles que se acabó la mezcla.</p></blockquote></p>
+]]></content>
+  </entry>
+  
+</feed>

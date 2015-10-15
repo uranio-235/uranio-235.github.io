@@ -1,0 +1,721 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ltsp en debian8 y salud - El SysAdmin del 3er Mundo</title>
+  <meta name="author" content="låzaro">
+
+  
+  <meta name="description" content="Problema 21 de Mayo: La situación de los clientes ligeros en el Calixto no da más. El
+servidor DHCP del ardence dejó pinchar sin previo aviso. El &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://lazaro-armando.herokuapp.com/blog/2015/05/23/ltsp-en-debian8-y-salud/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
+  
+    <h2>lo que se siente al administrar servidores en cuba</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://www.google.com.cu" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="lazaro-armando.herokuapp.com">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/archives">Archivo</a></li>
+  <li><a href="/blog/categories/rails/">Ruby on Rails</a></li>
+  <li><a href="/blog/categories/destacado/">Destacado</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">ltsp en debian8 y salud</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-23T01:46:08-04:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>1:46 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>Problema</h3>
+
+<p>21 de Mayo: La situación de los clientes ligeros en el Calixto no da más. El
+servidor DHCP del ardence dejó pinchar sin previo aviso. El encargado de los
+clientes ligeros, reinstaló todo y siguió sin pinchar. Luego determinó que era
+culpa de un virus. El incha-cojones de Windows vuelve a hacer de la suya.
+Mientras tanto, el caos se ríe de todos y se frota las manos.</p>
+
+<p>A la novena llamada preguntando &ldquo;cuando se arreglan los clientes ligeros&rdquo;
+determiné que la situación llevaba medidas drásticas, siendo hora de pasar el
+servidor al lado oscuro de la fuerza.</p>
+
+<p>Plan de migración: El miembro sobre la mesa.</p>
+
+<p>Tiempo estimado: Menos del que te imaginas.</p>
+
+<p>Por un lado, 6 clientes ligeros con un windows XP que se arrastra en los 128
+megas de RAM y un servidor dongan de manufactura vietnamita. Por el otro, más de
+6 usuarios quejándose porque su sistema funciona lento, cuando le da la gana y
+además deben reiniciar más de 10 veces al día. Eso sin contar que deben tener la
+información en memorias flash, porque no se guardan los cambios en las imágenes.</p>
+
+<h3>Solución</h3>
+
+<p>Linux Terminal Server Project, más conocido como &ldquo;LTSP&rdquo;.</p>
+
+<p>Instalar ltsp es un proceso relativamente fácil, sobre todo cuando tienes un
+tubo de internet a full.</p>
+
+<p>Pero detrás del proxy satánico de infomed; la cosa se vuelve un tanto compleja.</p>
+
+<p>Por suerte, el repo de debian en infomed está bien afinadito y ahora con el tubo
+de 2 megas, la cosa mejora considerablemente.</p>
+
+<p>Hay dos maneras de hacer esto, la fácil y novel; o la difícil y tediosa. En caso
+de la fácil, bastará con instalar el paquete &ldquo;ltsp-server-standalone&rdquo;; el cual
+instalará y configurará todo la orquesta de software requerido para pinchar lo
+que se conoce como ltsp. Entre ellos, el servidor dhcp de ics, el servidor
+tftp-hpa, la maritrónica que sirve la SWAP por nfs y todo el rebortillo de cosas
+que requiere NFS.</p>
+
+<p>Corre esto y ponte cómodo, que va pa largo&hellip;</p>
+
+<figure class='code'><figcaption><span>&#8220;ltsp-build-client&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> ltsp-build-client --http-proxy http://127.0.0.1:3128 <span class="se">\</span>
+</span><span class='line'> --mirror http://ftp.sld.cu/debian --security-mirror http://ftp.sld.cu/debian/ <span class="se">\</span>
+</span><span class='line'> --copy-sourceslist --copy-package-cache
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El comando que corriste, generó un fichero de configuración para el servidor
+dhcp de isc. Te sugiero que lo uses como DHCP.</p>
+
+<figure class='code'><figcaption><span>&#8220;ltsp-build-client&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp /etc/ltsp/dhcpd.conf /etc/dhcp/dhcpd.conf
+</span><span class='line'>systemctl restart isc-dhcp-server
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Muy importante NFS. En el fichero <strong>/etc/exports</strong> ponemos esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;contenido de</span><a href='/etc/exports"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/opt/ltsp *<span class="o">(</span>ro,no_root_squash,async,no_subtree_check<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y reiniciamos el servicio de NFS</p>
+
+<figure class='code'><figcaption><span>&#8220;reiniciando nfs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl restart nfs-kernel-server
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Cuando butees una máquina, el login no te pinchará. Deberás correr esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;crear el squash&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ltsp-update-sshkeys
+</span><span class='line'>ltsp-update-image --config-nbd
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La imagen que se instaló en /opt no es más que la matriz para crear un squashfs
+que se le sirve a los clientes. Con ese comando, reflejamos los cambios
+volviendo a crear la imagen &ldquo;squashada&rdquo;.</p>
+
+<p>Con eso te digo que si haces un cambio en la imagen, deberás correr ese comando.</p>
+
+<p>Ahora bien. Para que no queden lagunas mentales:</p>
+
+<h3>Todo lo que tendrán los usuarios, ESTÁ EN EL SERVIDOR</h3>
+
+<p>Por tanto, hay que instalar una interfaz visual EN EL SERVIDOR. Será lo que los
+clientes pinchen. Por supuesto, no necesariamente el servidor tiene que correr
+dicha interfaz. En mi caso yo instalé solo sistema base y luego corrí esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;instalar lxde completo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install task-lxde-desktop
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora el servidor está equipado con una interfaz visual, pero no la pincha, ya
+que no le instalamos ningún &ldquo;display manager&rdquo;; por tanto, las X no arrancan. El
+display manager lo tiene la imagen que levantan los clientes; nada menos que
+LDM.</p>
+
+<p>Los clientes levantan un LDM e inician sesión remota en el servidor.</p>
+
+<h2>¿se entendió?</h2>
+
+<p>Toas las instrucciones que cargará esta interfaz gráfica minimalista (el LDM de
+los clientes ligeros), se declaran en el fichero /opt/ltsp/i386/etc/lts.conf a
+mi me quedó así la primera versión de este fichero.</p>
+
+<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>default<span class="o">]</span>
+</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Dice que está configurado, que tiene sonido, que use dispositivos locales, que
+configure las X dinámicamente y que arranque lxde como sesión por defecto.</p>
+
+<p>Y ahí empezaron mis problemas. En mi caso, las canchanfletas que usé como
+clientes ligeros, tenían una tarjeta de video unichrome más extraña que un
+calsoncillo con tirantes. La pantalla se veía con una capa verde delante. Nunca
+había visto cosa igual.</p>
+
+<p>Solución. Levanta un cliente ligero, entra en la consola (con
+Ctrl+Alt+F1) y ejecuta:</p>
+
+<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>X -configure
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Eso te creará el fichero xorg.conf.new EN EL CLIENTE. A ese punto, se habrá
+generado una configuración de X decente. Pero ese fichero hay que ponerlo EN EL
+SERVIDOR:</p>
+
+<figure class='code'><figcaption><span>&#8220;monta que te queda&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>scp xorg.conf root@servidor:/opt/ltsp/i386/etc/X11/xorg.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora además, al servidor hay que especificarle que las X NO se auto-configuren
+y que en cambio, usen el fichero dado. Todo eso lo haremos en /opt/ltsp/i386/etc/lts.conf</p>
+
+<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>default<span class="o">]</span>
+</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
+</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>False
+</span><span class='line'>    <span class="nv">X_CONF</span><span class="o">=</span>/etc/X11/xorg.conf
+</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
+</span><span class='line'>    <span class="nv">MODULE_01</span> <span class="o">=</span> <span class="s2">&quot;usb-storage&quot;</span>
+</span><span class='line'>    <span class="nv">MODULE_02</span> <span class="o">=</span> <span class="s2">&quot;sd_mod&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Dice ahora que: Está configurado, tiene sonido, dispositivos locales (pa que
+pinchen las memorias flash), que levante lxde, que NO configure las X, que use
+el fichero dado, que la resolución de su pantalla 0 (la única) es de 1024x768 y
+además que meta ese par de módulos, pa que pinchen los puertos USB.</p>
+
+<p>Por supuesto, en el chroot que levanta el cliente, la ruta absoluta
+/etc/X11/xorg.conf es completamente válida.</p>
+
+<p>¡¡Ah, y no olvides volver a crear la imagen!!</p>
+
+<h3>pero de vuelta al servidor</h3>
+
+<p>Entre los palos más comunes, vemos uno que al iniciar la sesión dice que el
+usuario &ldquo;fulano&rdquo; no pertenece a netdev y que por tanto, el puñetero data-bus no
+arranca.</p>
+
+<figure class='code'><figcaption><span>&#8220;agregando a netdev&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>adduser fulano netdev
+</span><span class='line'>systemctl restart dbus
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Otro palo común es que las memorias NTFS se montan como solo lectura. Solución,
+instala ntfs-3g EN EL CHROOT que está en /opt y vuelve a crear la imagen.</p>
+
+<h3>Nota para los mentequieta:</h3>
+
+<p>Los usuarios se crean EN EL SERVIDOR no en la imagen.</p>
+
+<h3>Sugerencias</h3>
+
+<p>Cada cosa que los clientes ejecuten, lo harán en el servidor, y puedes ponerte a
+mirar con htop que proceso se está metiendo la RAM o el CPU, detener dicho
+proceso y requerir al usuario. Porque verás los procesos y el usuario que lo
+ejecuta. Déjame recordarte que Linux, es un sistema multitarea y multiusuarios
+de verdad.</p>
+
+<p>En mi caso, el servidor (los &ldquo;dongan&rdquo; vietnamitas) tiene dos discos duros. Monté
+uno para el sistema y la swap, el otro lo dejé para el /home.</p>
+
+<p>Mi servidor tiene 512 de RAM y aún con 4 clientes ligeros no ha llenado la mitad
+de la memoria. ¿Dime tu con 1 Giga de RAM?</p>
+
+<p>Por defecto, los homes de los usuarios se crean con permisos que los hace
+visibles entre si. Ejecuta: &ldquo;chmod 770 /home/fulano&rdquo; cada vez que crees un
+usuario. Si no, el home de este usuario será visible por los demás usuarios.</p>
+
+<p>¿Has pensando que ahora es más fácil hacerle salvas a las cosas? Todo está en el
+/home.</p>
+
+<p>No olvides decirle al usuario que ahora pueden hacer y guardar cambios en su
+&ldquo;perfil&rdquo; (como ellos le llaman) pues algunos están acostumbrados a que el
+cliente ligero No guarda cambios.</p>
+
+<p>Puedes decirle a tus usuarios que su perfil puede ser abierto desde cualquier
+cliente ligero de la flota. Lo cual les da cierta &ldquo;movilidad&rdquo;.</p>
+
+<p>Puedes decirle que si su cliente ligero se rompe no se preocupe, que su
+información está a salvo. Incluso, le recuerdas además que puede abrir su perfil
+desde otro cliente ligero que esté en la misma flota.</p>
+
+<p>Puedes hacer configuraciones individuales de cada máquina en el fichero
+<strong>/opt/ltsp/i386/etc/lts.conf</strong></p>
+
+<p>En donde dice <strong>[default]</strong> puedes poner la MAC del
+cliente.</p>
+
+<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># configuración genérica</span>
+</span><span class='line'><span class="o">[</span>default<span class="o">]</span>
+</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
+</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>False
+</span><span class='line'>    <span class="nv">X_CONF</span><span class="o">=</span>/etc/X11/xorg.conf
+</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
+</span><span class='line'>    <span class="nv">MODULE_01</span> <span class="o">=</span> <span class="s2">&quot;usb-storage&quot;</span>
+</span><span class='line'>    <span class="nv">MODULE_02</span> <span class="o">=</span> <span class="s2">&quot;sd_mod&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># configuración de un cliente individual el</span>
+</span><span class='line'><span class="c"># jefe no quiere que oiga música ni use</span>
+</span><span class='line'><span class="c"># memorias flash</span>
+</span><span class='line'><span class="o">[</span>00:90:4b:a2:55:05<span class="o">]</span>
+</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>False
+</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>False
+</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
+</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
+</span><span class='line'>
+</span><span class='line'><span class="c"># EOF</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Una buena idea, es usar un dhcp con las MAC e ip fijas para cada usuario, sería
+una mejor manera de cortar el bacalao. Así el servidor solo le respondería a sus
+clientes. Además, en caso de tener múltiples servidores de clientes ligeros, no
+tendrás otra opción, pues si no, cada cliente ligero buteará por donde mejor la
+parezca y seguro no querrás eso.</p>
+
+<p>En el servidor DHCP central, rechaza las MAC de los clientes si se dirigen al
+puerto 67, para que no reciban dicho servicio, así lo obligas a bootear por el
+servidor de clientes ligeros.</p>
+
+<figure class='code'><figcaption><span>&#8220;iptables&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>iptables -A INPUT -p tcp --dport <span class="m">67</span> -m mac --mac-source 00:90:4b:a2:55:05 -j DROP
+</span><span class='line'>iptables -A INPUT -p udp --dport <span class="m">67</span> -m mac --mac-source 00:90:4b:a2:55:05 -j DROP
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lo ideal sería que el DHCP central tuviera las direcciones MAC de los clientes y
+le diera los parámetros de buteo a cada cual, pero eso aún no lo he logrado.
+Hay algo que tiene que ver con el parámetro &ldquo;next server&rdquo;. He logrado que estos
+den con el tftp adecuado, pero luego tratan de contactar al propio servidor DHCP
+como servidor NFS.</p>
+
+<p>También podrías tener un firewall en el servidor de clientes ligeros. Que
+permite el DHCP solo a las MAC de los clientes. Así no le das DHCP a cualquiera.
+Además, podrías decirle también a ese servidor, que solo permite el tráfico de
+las MAC de los clientes ligeros. No me parece que un servidor como ese tenga que
+ser alcanzado por otra máquina.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">låzaro</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-05-23T01:46:08-04:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>1:46 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/destacado/'>destacado</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lazaro-armando.herokuapp.com/blog/2015/05/23/ltsp-en-debian8-y-salud/" data-via="lazarumoxyde" data-counturl="http://lazaro-armando.herokuapp.com/blog/2015/05/23/ltsp-en-debian8-y-salud/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/02/22/rails-sin-turbolink/" title="Previous Post: rails sin turbolinks">&laquo; rails sin turbolinks</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/05/26/nic-bonding/" title="Next Post: NIC bonding">NIC bonding &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/10/15/repo-de-fdroid/">repo de fdroid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/05/assets-por-controlador/">assets por controlador</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/17/dhcp-por-grupos/">dhcp por grupos</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/10/plymouth-boot-screen/">plymouth boot screen</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/07/git-clone-rapido/">git clone rápido</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/07/archlinux-dos-kernel/">archlinux con dos kernel</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/01/squid-transparente/">squid transparente</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/28/compute-remote-uptime/">compute remote uptime</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/19/will-paginate/">will_paginate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/12/date-select-en-espanol/">date_select en español</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/11/openvas-en-archlinux/">OpenVAS en Archlinux</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/">añadir verbo a un scaffold</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/05/asset-pipeline-en-production/">asset pipeline en production</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/14/revocar-certificados-de-ovpn/">revocar certificados de OVPN</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/12/systemd-automount/">systemd automount</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/07/openvpn-en-arch/">OpenVPN en Arch</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/01/pacman-bajo-el-microscopio/">pacman bajo el microscopio</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/28/cambiar-user-agent-en-squid/">cambiar user agent con squid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/26/nic-bonding/">NIC bonding</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/23/ltsp-en-debian8-y-salud/">ltsp en debian8 y salud</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/22/rails-sin-turbolink/">rails sin turbolinks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/19/delay-pools-de-squid/">delay pools de squid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/12/rails-con-mongodb/">rails con mongodb</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/06/zentyal/">Zentyal</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/01/bundle/">bundle</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/02/welcome-aboard/">welcome aboard</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/24/verdial-y-el-imagis/">la pena de verdial</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/05/palos-de-wordpress/">palos de wordpress</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/25/mas-de-ocs/">más de OCS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/15/subdesarrollo/">subdesarrollo</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/11/ocs-inventory/">ocs-inventory</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/08/select-en-bootstrap/">select en bootstrap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/05/empirico/">empíricos</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/27/crear-un-chroot-con-debian/">crear un chroot con debian</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/10/autenticador-sql-en-el-proxy/">autenticador SQL en el proxy</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/09/postfix-entrando-en-el-baile/">postfix entrando en el baile</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - låzaro -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

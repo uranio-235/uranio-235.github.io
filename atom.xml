@@ -1,0 +1,2774 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
+  <link href="http://lazaro-armando.herokuapp.com/atom.xml" rel="self"/>
+  <link href="http://lazaro-armando.herokuapp.com/"/>
+  <updated>2015-10-15T19:22:11-04:00</updated>
+  <id>http://lazaro-armando.herokuapp.com/</id>
+  <author>
+    <name><![CDATA[låzaro]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[repo de fdroid]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/10/15/repo-de-fdroid/"/>
+    <updated>2015-10-15T14:38:20-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/10/15/repo-de-fdroid</id>
+    <content type="html"><![CDATA[<p>&ldquo;La que se avecina&rdquo;, sería una buena manera para describir la revolución de
+aparatos con android que habrá en el Calixto García muy pronto. Yo siempre con
+el paso al frente y las luz larga (modestia y aparte) estuve pensando que tener
+nuestro propio repositorio de aplicaciones para android , sería una buena manera
+de mantener a todo el mundo bien actualizado a quien tenga o no internet. Muchas
+personas no saben que para google play hay opciones, y aún, teniendo internet,
+asumen que no puede estar actualizado.</p>
+
+<p>Para el que no lo conozca, <a href="https://f-droid.org/">fdroid</a> es una herramienta
+cliente de repositorios, osea como google market pero libre.</p>
+
+<p>La mecánica es sencilla: Bajo los paquetes con
+<a href="http://www.aptoide.com">aptoide</a>, verifico que sean seguros y copio la cache
+para el directorio repo/ de fdroid en el servidor con <a href="https://acrosync.com/">acrosync</a></p>
+
+<p>En el repo de debian y en AUR, el paquete se llama <strong>fdroidserver</strong> la rutina de
+instalación ya la conoces.</p>
+
+<p>Creamos el directorio donde meteremos el repo, en mi caso, aquí:</p>
+
+<figure class='code'><figcaption><span>mkdir</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -p /srv/http/fdroid/repo
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Creamos la configuración de nginx, a mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>nginx.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>server <span class="o">{</span>
+</span><span class='line'>     listen   10.1.1.14:80<span class="p">;</span>
+</span><span class='line'>     listen   10.1.1.14:443 ssl<span class="p">;</span>
+</span><span class='line'>     server_name android.hcg.sld.cu<span class="p">;</span>
+</span><span class='line'>     location / <span class="o">{</span>
+</span><span class='line'>     root /srv/http/fdroid/repo/<span class="p">;</span>
+</span><span class='line'>     <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Un virtualhost nombrado <em>android</em>. <strong>No olvide crear el puntero DNS</strong></p>
+
+<p>Ahora, ve al directorio raíz del repo, OJO <strong>A LA RAIZ</strong>, NO a donde dice repo/.</p>
+
+<figure class='code'><figcaption><span>fdroid</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /srv/http/fdroid/
+</span><span class='line'>fdroid init
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Te preguntará por la <strong>android-sdk</strong>, por lo general, está en /opt/android-sdk,
+dale la ruta.</p>
+
+<p>¿¿No tienes la SDK de android?? Ah pues estás muy jodio&hellip; En el caso de arch,
+el repo de bbqlinux contiene la sdk completa, solo para 64 bits.</p>
+
+<p>Pero volviendo con fdroid:</p>
+
+<p>Ahora debe habérse creado el directorio <strong>repo/</strong> dentro del directorio
+<strong>/srv/http/fdroid</strong> y es ahí donde copiarás las APK.</p>
+
+<p>cp /donde/esten/tus/*.apk /srv/http/fdroid/<strong>repo/</strong></p>
+
+<p>Pero claro, querrás que tu repo se identifique.  El fichero
+<strong>/srv/http/fdroid/config.py</strong> contiene lo que buscas. Por la linea trenta y
+pico; a mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>config.py</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">...</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">repo_url</span> <span class="o">=</span> <span class="s">&quot;http://android.hcg.sld.cu&quot;</span>
+</span><span class='line'><span class="n">repo_name</span> <span class="o">=</span> <span class="s">&quot;Calixto Garcia&quot;</span>
+</span><span class='line'><span class="n">repo_icon</span> <span class="o">=</span> <span class="s">&quot;calixto_xsm.png&quot;</span>
+</span><span class='line'><span class="n">repo_description</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="s">Repositorio de aplicaciones de android del calixto. Intentaremos proveerle</span>
+</span><span class='line'><span class="s">aplicaciones debidamente actualizadas. Sientase libre de colaborar, trayendonos</span>
+</span><span class='line'><span class="s">las mas recientes APK.</span>
+</span><span class='line'><span class="s">&quot;&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ah! y sin tildes, si no, python se vuelve loco con el encoding.</p>
+
+<p>Ahora vamos a crear el índice inicial, pero eso mismo comando lo correrás cuando
+agregues aplicaciones a tu repo.</p>
+
+<figure class='code'><figcaption><span>fdroid</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>fdroid update --create-metadata
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>OJO!! Asegúrate de que las APK no tengan un espacio en su nombre; muchísimo
+menos un caracter raro. Si todo salió bien debes ver algo como &ldquo;Generating
+metada&rdquo;.</p>
+
+<p>Con eso terminaste el servidor&hellip; Ve a fdroid y ponle la URL del virtualhost
+como repo, luego update y listo&hellip;</p>
+
+<p>¿Cómo se hace? Facilito. Párate en la primer pantalla, aprieta el botón de menú
+del dispositivo y toca donde dice &ldquo;Gestionar Repositorios&rdquo; o en inglés, &ldquo;Manage
+Repos&rdquo;</p>
+
+<p>Desactiva los respos inalcanzables y añade tu repo local. Luego actualiza y
+listo, verás las aplicaciones disponibles.</p>
+
+<p>Ya solo te quedaría instalar un rsync que desemboque en el repo y con
+<a href="https://acrosync.com/">acrosync</a> subes la cache de aptotide para el repo, así
+como estoy haciendo yo ahora.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[prawn, pdf con ruby]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/10/08/prawn-pdf-con-ruby/"/>
+    <updated>2015-10-08T21:45:55-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/10/08/prawn-pdf-con-ruby</id>
+    <content type="html"><![CDATA[<p>De siempre, los usuarios que fueron forzados a abandonar
+<a href="https://es.wikipedia.org/wiki/Microsoft_Access">MSAcces</a> por un motivo u otro;
+sienten un incontenible necesidad por los &ldquo;informes&rdquo;.</p>
+
+<p>A la hora de imprimir, muchos usaurios no entienden que un HTML se imprima.
+Incluso, habiéndoles hecho un javascript que muestra el diálogo de impresión,
+simplemente lo cierra y me preguntan &ldquo;¿y ahora que hago con esto?&rdquo;</p>
+
+<p>En recientes diálogos con un bibliotecario (que hereda la clase Usuario) me dijo
+que la gente entiende más de imprimir PDF.</p>
+
+<p>Hacer un PDF me pareció una tare bastante compleja; y lo es, pero
+<a href="http://prawn.majesticseacreature.com">Prawn</a> lo hace de una manera casi
+increíble. Para no aburrirte con el cuento, te mostraré como montarlo arriba del
+tren.</p>
+
+<p><strong>EjemploController</strong> que tu conoce:</p>
+
+<figure class='code'><figcaption><span>&#8220;ejemplo_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># el controlador bin ban bin ban</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">EjemploController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="k">def</span> <span class="nf">accion</span> <span class="c1"># la acción, como se llame</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># a según el sapo, la pedrá</span>
+</span><span class='line'>      <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+</span><span class='line'>
+</span><span class='line'>         <span class="c1"># tírame el pdf</span>
+</span><span class='line'>         <span class="nb">format</span><span class="o">.</span><span class="n">pdf</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># tráeme al animal</span>
+</span><span class='line'>            <span class="nb">require</span> <span class="s1">&#39;prawn&#39;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># créame un nuevo documento pdf</span>
+</span><span class='line'>            <span class="vi">@pdf</span><span class="o">=</span><span class="no">Prawn</span><span class="o">::</span><span class="no">Document</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># tírame el banner, el H1 como quien dice, tamaño de fuente 25px en negrita</span>
+</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">formatted_text</span> <span class="o">[</span> <span class="p">{</span><span class="ss">text</span><span class="p">:</span> <span class="s1">&#39;El título del documentos&#39;</span><span class="p">,</span><span class="ss">size</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span><span class="ss">styles</span><span class="p">:</span> <span class="o">[</span><span class="ss">:bold</span><span class="o">]</span><span class="p">}</span> <span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># hazle una rallita horizontal debano al header</span>
+</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">stroke_horizontal_line</span> <span class="mi">0</span><span class="p">,</span><span class="mi">235</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># mueve el cursor pa abajo</span>
+</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">20</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># la variable cuerpo contiene un texto laaaaaaargooo en HTML</span>
+</span><span class='line'>            <span class="c1"># un HTML muy rudimentario, Prawn lo interpresta, por ejemplo</span>
+</span><span class='line'>            <span class="c1"># las cláusulas &lt;strong&gt;</span>
+</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="vi">@cuerpo</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># por jemeplo, itera en el modelo User y escribe sus nombres</span>
+</span><span class='line'>            <span class="k">for</span> <span class="n">user</span> <span class="k">in</span> <span class="no">User</span><span class="o">.</span><span class="n">all</span>
+</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="s2">&quot;Nombre: </span><span class="si">#{</span><span class="n">user</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">10</span>
+</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="s2">&quot;Edad: </span><span class="si">#{</span><span class="n">user</span><span class="o">.</span><span class="n">edad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">30</span>
+</span><span class='line'>            <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># tírala!!!</span>
+</span><span class='line'>            <span class="n">send_data</span> <span class="vi">@pdf</span><span class="o">.</span><span class="n">render</span><span class="p">,</span> <span class="ss">filename</span><span class="p">:</span> <span class="s2">&quot;solicitud.pdf&quot;</span>
+</span><span class='line'>
+</span><span class='line'>         <span class="k">end</span> <span class="c1"># format</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">end</span> <span class="c1"># respond_to</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="k">end</span> <span class="c1"># def</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span> <span class="c1"># class</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Vamos a dividir en sílabas:</p>
+
+<h4>Línea 7</h4>
+
+<p>Rails, la acción responde a múltiples mime-types</p>
+
+<h4>Línea 10</h4>
+
+<p>Rails, application/pdf responde a la extensión PDF <em>format.pdf do</em></p>
+
+<h4>Línea 13</h4>
+
+<p>Carga la librería, sí, ya se que en Rails debes hacer eso en un initializer, de
+cualquier manera, aún, luego de haberlo agregado a tu Gemfile, no te olvides de
+requerirla, ya sea en un initializer o en el controlador.</p>
+
+<h4>Línea 16</h4>
+
+<p>Crea un nuevo PDF y almacénalo en la variable de instancia <strong>@pdf</strong></p>
+
+<h4>Línea 19</h4>
+
+<p>El método <strong>formatted_text</strong>, recibe como argumento un array de hashes</p>
+
+<p>Cada array en un bloque de texto y contiene un hash. La clave :text contiene el
+texto a renderizar, :size el tamaño y :style el estilo de fuente.</p>
+
+<h4>Línea 22</h4>
+
+<p>Trazar línea horizontal, el método <strong>stroke_horizontal_line</strong> recibe como
+argumento, de donde, a donde debe trazar la línea.</p>
+
+<h4>Pasemos a la línea 41</h4>
+
+<p>El método <strong>render</strong> devuelve el PDF. Si lo sacas con <strong>puts</strong> verás el PDF
+crudo. Podrías también tirarlo pa un fichero así:</p>
+
+<figure class='code'><figcaption><span>&#8220;fulanito.pdf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>   <span class="no">IO</span><span class="o">.</span><span class="n">write</span> <span class="s1">&#39;fulanito.pdf&#39;</span><span class="p">,</span><span class="vi">@pdf</span><span class="o">.</span><span class="n">render</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A los usuarios le encantan los PDF, hazlos feliz ;)</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[assets por controlador]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/10/05/assets-por-controlador/"/>
+    <updated>2015-10-05T21:45:45-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/10/05/assets-por-controlador</id>
+    <content type="html"><![CDATA[<p><strong>NUNCA</strong>, he logrado entender, porque carajo el asset pipeline de Rails carga
+<strong>TODAS</strong> las porquerías de todos los controladores en todas las vistas.</p>
+
+<p>¡¡¡Como si fuese poco tener que cargar el mismo javascript por controlador!!!</p>
+
+<p>La documentación dice que puedes cargar solamente el del controlador; pero
+cuando la sigues al pie de la letra; Rails te da tremendo palo, diciendo que una
+asset se escapó sin compilar. La &ldquo;una&rdquo; suele ser la del controlador que estés
+cargando, o sea, todas.</p>
+
+<p>La solución que plantea la documentación, es un Proc asqueroso que tampoco
+pincha.</p>
+
+<p>Te cuento como lo hice:</p>
+
+<p>Primero tienes que quitar la cláusula &ldquo;<strong>require_tree .</strong>&rdquo; del <strong>application.js</strong></p>
+
+<p>A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>application.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">// This is a manifest file that&#39;ll be compiled into application.js, which will include all the files</span>
+</span><span class='line'><span class="c1">// listed below.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// Any JavaScript/Coffee file within this directory, lib/assets/javascripts, vendor/assets/javascripts,</span>
+</span><span class='line'><span class="c1">// or any plugin&#39;s vendor/assets/javascripts directory can be referenced here using a relative path.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// It&#39;s not advisable to add code directly here, but if you do, it&#39;ll appear at the bottom of the</span>
+</span><span class='line'><span class="c1">// compiled file.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details</span>
+</span><span class='line'><span class="c1">// about supported directives.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">//= require jquery</span>
+</span><span class='line'><span class="c1">//= require jquery_ujs</span>
+</span><span class='line'><span class="c1">//= require turbolinks</span>
+</span><span class='line'><span class="c1">//  require_tree . fíjate que quitamos el =</span>
+</span><span class='line'><span class="nx">Turbolinks</span><span class="p">.</span><span class="nx">enableProgressBar</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora vamos a dar un toque mágico para que las assets se compilen de manera
+dinámica, sin tener que colocarle manualmente al arreglo los nuevos .js
+generados. El fichero <strong>config/initializers/assets.rb</strong> me quedó así; <strong>OJO</strong> que es
+una linea bien larga:</p>
+
+<figure class='code'><figcaption><span>&#8220;assets.rb - ojo con la linea larga&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Be sure to restart your server when you modify this file.</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Version of your assets, change this if you want to expire all your assets.</span>
+</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;1.0&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Add additional assets to the asset load path</span>
+</span><span class='line'><span class="c1"># Rails.application.config.assets.paths &lt;&lt; Emoji.images_path</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Precompile additional assets.</span>
+</span><span class='line'><span class="c1"># application.js, application.css, and all non-JS/CSS in app/assets folder are already added.</span>
+</span><span class='line'><span class="c1"># Rails.application.config.assets.precompile += %w( search.js )</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># compila todo lo que te encuentres por el camino</span>
+</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">precompile</span> <span class="o">+=</span> <span class="no">Dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">to_path</span><span class="p">,</span><span class="s1">&#39;app/assets/javascripts/*.j*&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">1</span><span class="o">].</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># activa el debug de la asset pipeline, solo en entorno de desarrollo</span>
+</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RAILS_ENV&#39;</span><span class="o">]</span> <span class="ow">and</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RAILS_ENV&#39;</span><span class="o">].</span><span class="n">include?</span> <span class="s1">&#39;development&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Podría hacer lo mismo con las CSS si usa un poquito la células grises. Note como
+además, agregamos que se debugue la asset pipeline si y solo si estamos en
+development.</p>
+
+<p>Pero no hemos terminado, la vista lleva unos toques&hellip; pues debemos decirle lo
+más importante, que cargue solo las .js de su controlador. A mi me quedó así:</p>
+
+<p>  &lt;%= javascript_include_tag params[:controller] %></p>
+
+<figure class='code'><figcaption><span>&#8220;app/views/layouts/application.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;title&gt;</span>El Título<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>  <span class="err">&lt;</span>%= stylesheet_link_tag    &#39;application&#39;, media: &#39;all&#39;, &#39;data-turbolinks-track&#39; =&gt; true %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>%= javascript_include_tag &#39;application&#39;, &#39;data-turbolinks-track&#39; =&gt; true %&gt;
+</span><span class='line'>  <span class="c">&lt;!-- carga solo las .js del controlador dado --&gt;</span>
+</span><span class='line'>  <span class="err">&lt;</span>%= javascript_include_tag params[:controller] %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>%= csrf_meta_tags %&gt;
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">&lt;</span>%= yield %&gt;
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahí te das cuenta que el que carga todo, es el manifest (application.js) con su
+&ldquo;requiere_tree .&rdquo; pero la cláusula en la línea 8 le dice que cargue la .js del
+controlador especificado en <strong>params[:controller]</strong></p>
+
+<p>Bueno así debe pinchar con javascript y con CoffeScript, al menos a mi me pinchó
+con ambos. Veamos que trae rails 5 con esto, porque la mejora urge&hellip;</p>
+
+<p>Si la cosa sigue así en la versión 5, me estoy mudando para Volt</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[dhcp por grupos]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/09/17/dhcp-por-grupos/"/>
+    <updated>2015-09-17T17:42:04-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/09/17/dhcp-por-grupos</id>
+    <content type="html"><![CDATA[<p>La fiebre LTSP sigue subiendo en el Calixto. La solución definitiva para toda
+máquina que butee por la red, sin importar su cantidad de RAM o micro&hellip;</p>
+
+<p>Pero cuando hay más de un servidor con DHCP en la misma red, se forma el rollo.</p>
+
+<h4>isc-dhcp no se puede bloquear con iptables</h4>
+
+<p>Si tienes alguna duda de la afirmación anterior, has la tarea y busca en google.
+De nada vale ponerle un cortafuegos a cada servidor porque <strong>isc</strong> usa &ldquo;raw
+packets&rdquo; y se caga en lo que diga iptables. Por suerte de afuera pa dentro eso
+no se aplica. No obstante, ojo si pones un isc con múltiples interfaces, no sea
+que acabes dándole DHCP al ruter.</p>
+
+<p>En un ambiente como este, no queda otra que hacer un DHCP central con múltiples
+parámetros, de forma que los clientes ligeros se agrupen por MAC address y se
+seleccione el servidor adecuado a la hora de butear.</p>
+
+<p>El fichero de configuración es <strong>/etc/dhcp/dhcpd.conf</strong> y bajo la declaración de
+la subnet puedes poner una cláusula <strong>group</strong> para dar parámetros diferentes.</p>
+
+<p>La sintaxis es sencilla:</p>
+
+<figure class='code'><figcaption><span>&#8220;ejemplo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>subnet <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>   parametros de la red
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>group <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>   parametros del grupo
+</span><span class='line'>
+</span><span class='line'>   host nombre <span class="o">{</span>
+</span><span class='line'>      parametros del host
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Tomemos el caso de dos servidores LTSP en la red, el 10.1.1.6 y el 10.1.1.3, a
+mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/dhcp/dhcpd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># vim:filetype=config</span>
+</span><span class='line'>authoritative<span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># la red</span>
+</span><span class='line'>subnet 10.1.1.0 netmask 255.255.255.0 <span class="o">{</span>
+</span><span class='line'>    range 10.1.1.100 10.1.1.254<span class="p">;</span>
+</span><span class='line'>    option domain-name <span class="s2">&quot;example.com&quot;</span><span class="p">;</span>
+</span><span class='line'>    option domain-name-servers 10.1.1.1<span class="p">;</span>
+</span><span class='line'>    option broadcast-address 10.1.1.255<span class="p">;</span>
+</span><span class='line'>    option subnet-mask 255.255.255.0<span class="p">;</span>
+</span><span class='line'><span class="o">}</span> <span class="c"># subnet</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ganker y su pandilla, la gente de archivos médicos</span>
+</span><span class='line'>group <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># clientes ligeros con linux y ltsp</span>
+</span><span class='line'>    option root-path <span class="s2">&quot;/opt/ltsp/i386&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> substring<span class="o">(</span> option vendor-class-identifier, 0, <span class="m">9</span> <span class="o">)</span> <span class="o">=</span> <span class="s2">&quot;PXEClient&quot;</span> <span class="o">{</span>
+</span><span class='line'>        filename <span class="s2">&quot;/ltsp/i386/pxelinux.0&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>        filename <span class="s2">&quot;/ltsp/i386/nbi.img&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># buteen por ganker</span>
+</span><span class='line'>   next-server 10.1.1.3<span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># los clientes</span>
+</span><span class='line'>   host clganker1 <span class="o">{</span> hardware ethernet 00:1E:90:E1:B4:0A<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>   host clganker2 <span class="o">{</span> hardware ethernet 00:1E:90:E2:6E:1A<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>   host clganker3 <span class="o">{</span> hardware ethernet 00:1E:90:E2:75:B6<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>   host clganker4 <span class="o">{</span> hardware ethernet 00:1E:90:F5:E8:A5<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>   host clganker5 <span class="o">{</span> hardware ethernet 00:1E:90:F5:E9:88<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span> <span class="c"># ganker</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c"># atenea y su flotilla, el servidor de la biblioteca</span>
+</span><span class='line'>group <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># clientes ligeros con linux y ltsp</span>
+</span><span class='line'>    option root-path <span class="s2">&quot;/opt/ltsp/i386&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> substring<span class="o">(</span> option vendor-class-identifier, 0, <span class="m">9</span> <span class="o">)</span> <span class="o">=</span> <span class="s2">&quot;PXEClient&quot;</span> <span class="o">{</span>
+</span><span class='line'>        filename <span class="s2">&quot;/ltsp/i386/pxelinux.0&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>        filename <span class="s2">&quot;/ltsp/i386/nbi.img&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># buteen por el servidor de la bibliteoca</span>
+</span><span class='line'>   next-server 10.1.1.6<span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># los clientes</span>
+</span><span class='line'>   host biblioteca1 <span class="o">{</span> hardware ethernet 00:1E:90:E1:B4:0A<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>   host biblioteca2 <span class="o">{</span> hardware ethernet 00:1E:90:E2:6E:1A<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>   host biblioteca3 <span class="o">{</span> hardware ethernet 00:1E:90:E2:75:B6<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>   host biblioteca4 <span class="o">{</span> hardware ethernet 00:1E:90:F5:E8:A5<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>   host biblioteca5 <span class="o">{</span> hardware ethernet 00:1E:90:F5:E9:88<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span> <span class="c"># ganker</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¿Qué hicimos? Sencillo, declaramos un grupo con distintos parámetros, aunque en
+este caso solo <strong>next-server</strong> es verdaderamente distinto. En ambos casos se
+engatilla el mismo <strong>file-name</strong> y <strong>root-path</strong> ya que ambos servidores hay lo
+mismo.  Pero quizás en su red usted tiene otro servidor bootp o PXE y no querrá
+que las opciones de LTSP sean la misma.</p>
+
+<p>Finalmente el parámetro <strong>next-server</strong> difiere y es que es este el que le da
+porque servidor bootear.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[plymouth boot screen]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/09/10/plymouth-boot-screen/"/>
+    <updated>2015-09-10T18:28:48-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/09/10/plymouth-boot-screen</id>
+    <content type="html"><![CDATA[<p>Sigo con mi plan de &ldquo;civilizarme&rdquo;, me he propuesto dejar de parecer un friki en
+materia de software. He cambiado i3 por MATE (en la máquina personal) e incluso
+tengo un tema en el grub. Intenté cambiar Atom por Vim, evolution por mutt y
+double-cmd por mc; pero por gusto, acabé virando pa atrá.</p>
+
+<p>Una de las cosas que antes solía molestarme en las distros duras como debian,
+era el hecho de que no tuvieran una pantalla bien bonita mientras buteaban.
+Ubuntu por ejemplo, te pone las bolitas.</p>
+
+<p>Archlinux es particularmente rápido buteando, pero aún tenía conmigo mismo la
+deuda del bootscren pendiente.</p>
+
+<p>Resulta que ya splashy no se usa, ahora la talla es un software con nombre de
+almendrón: Plymouth</p>
+
+<p>Plymouth, es una proyecto de fedora, para proveer una pantalla de buteo a nivel
+de framebuffer. Hoy en día casi todas las distros butean con el framebuffer en
+la máxima resolución posible, así que me imagino que Plymouth sea algo bastante
+simple.</p>
+
+<p>En el repo de arch no está incluido pero como todo, está disponible en AUR. La
+rutina ya la conoces. Selecciona el que dice plymouth pelao.</p>
+
+<figure class='code'><figcaption><span>&#8220;yaourt&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yaourt plymouth
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora vamos a cambiar unos parámetros en el generador de imágenes de inicio.
+Localiza el fichero <strong>/etc/mkinitcpio.conf</strong> y ahí vamos a cambiar unos
+parámetros.</p>
+
+<p>Primero necesitaremos poner el <strong>HOOK</strong> para plymouth. La documentación advierte
+que debe ser después de <strong>base</strong> y de <strong>udev</strong>, así que mejor <strong>ponlo de
+último</strong>. Por tanto, dentro de las comillas colocarás <strong>plymouth</strong> como un
+objeto más de dicha lista; como el último.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/mkinitcpio.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">HOOKS</span><span class="o">=</span><span class="s2">&quot;base udev fulanito menganito el_ultimo plymouth&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Nota para los imbéciles:</strong> <em>Si copias y pegas el código anterior, el sistema no te arrancará más.</em></p>
+
+<p>Necesitaremos el módulo apropiado para pinchar el framebufer. En mi caso,
+desgraciadamente, uso nvidia, así que me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/mkinitcpio.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">MODULES</span><span class="o">=</span><span class="s2">&quot;nouveau&quot;</span>
+</span><span class='line'><span class="c">#MODULES=&quot;i915&quot;</span>
+</span><span class='line'><span class="c">#MODULES=&quot;radeon&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Fíjate que los demás quedaron a modo de comentario. Te aclaro que <strong>i915</strong> es
+para las tarjetas de video Intel.</p>
+
+<p>Ahora tenemos que decirle al grub, que incluya el parámetro <strong>splash</strong> en la
+linea de buteo. Eso lo hacemos editando el fichero <strong>/etc/default/grub</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/default/grub&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">GRUB_CMDLINE_LINUX_DEFAULT</span><span class="o">=</span><span class="s2">&quot;quiet splash&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Yo en lo personal suelo quitarle &ldquo;quiet&rdquo; porque me gusta ver lo que hace el
+sistema mientras butea. Aunque ya no da tiempo. Como te dije, los sistemas
+modernos butean MUY rápido. Es más el tiempo en que carga init o el display
+manager, que el de buteo como tal.</p>
+
+<p>Más adelante veremos que hacer para que la pantalla se vea más tiempo, por ahora
+terminemos de configurar. Tanto el grub como initramfs, tienen que reflejar los
+cambios</p>
+
+<figure class='code'><figcaption><span>&#8220;reflejando cambios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>grub-mkconfig -o /boot/grub/grub.cfg
+</span><span class='line'>mkinitcpio -p linux
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si usas linux-lts, corre:</p>
+
+<figure class='code'><figcaption><span>&#8220;reflejando cambios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkinitcpio -p linux-lts
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Algo que suele molestar, es que el display manager te caiga en la cara de
+pronto. Arch suele manejar bien ese tema, pero por si acaso, nos aseguramos de
+habilitar la unit para cada display manager.</p>
+
+<p>En mi caso yo uso slim y corrí:</p>
+
+<figure class='code'><figcaption><span>&#8220;enable&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl <span class="nb">enable </span>slim-plymouth.service
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Puede que el tuyo sea:</p>
+
+<ul>
+<li>gdm-plymouth.service</li>
+<li>kdm-plymouth.service</li>
+<li>lxdm-plymouth.service</li>
+</ul>
+
+
+<p>Con eso ya debe estar listo para pinchar pero vamos a darle unos toquesitos
+finales.</p>
+
+<p>El fichero <strong>/etc/plymouth/plymouthd.conf</strong> contiene los parámetros de
+configuración de plymouth. El mío luce así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/plymouth/plymouthd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/plymouth/plymouthd.conf
+</span><span class='line'><span class="c"># Distribution defaults. Changes to this file will get overwritten during</span>
+</span><span class='line'><span class="c"># upgrades.</span>
+</span><span class='line'><span class="o">[</span>Daemon<span class="o">]</span>
+</span><span class='line'><span class="nv">Theme</span><span class="o">=</span>tribar
+</span><span class='line'><span class="nv">ShowDelay</span><span class="o">=</span>2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El parámetro <strong>ShowDelay</strong>, define que tiempo se mostrará la pantalla. Como ya
+te dije, arch a mi me butea en segundos. Si pones 5 ahí, la pantalla de buteo se
+mostrará cinco segundos. Dos buteando y otros tres pa que tu la mires mostrando
+su animación. Yo cuando terminé de verla correr la primera vez; desinstalé
+plymouth. No me interesa tener 2 segundos adicionales de media por el mero hecho
+de que sea más bonito.</p>
+
+<p>El otro parámetro, <strong>Theme</strong>, setea el tema que usarás. Para ver que temas
+tienes en el menú, corre:</p>
+
+<figure class='code'><figcaption><span>&#8220;plymouth-set-default-theme&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>plymouth-set-default-theme -l
+</span><span class='line'>details
+</span><span class='line'>fade-in
+</span><span class='line'>glow
+</span><span class='line'>script
+</span><span class='line'>solar
+</span><span class='line'>spinfinity
+</span><span class='line'>spinner
+</span><span class='line'>text
+</span><span class='line'>tribar
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A mi me gustó &ldquo;tribar&rdquo; y el que viene por defecto también está lindo, pero es
+una copia al carbón de MacOS.</p>
+
+<h4>OJO!</h4>
+
+<p>Cada vez que cambies un parámetro ahí, debes correr &ldquo;mkinitcpio -p&rdquo;</p>
+
+<p>Ah! Una cosita, si en algún momento quieres ver lo que está haciendo el kernel
+por detrás de plymouth, presiona &ldquo;home&rdquo; mientras butea.</p>
+
+<p>Eso es todo. ¡Reinicia!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[git clone rápido]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/09/07/git-clone-rapido/"/>
+    <updated>2015-09-07T22:36:56-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/09/07/git-clone-rapido</id>
+    <content type="html"><![CDATA[<p>En paises con internet lento (adivina a cual me refiero) el mero hecho de clonar
+un repositorio de git; puede llegar a ser un verdadero problema.</p>
+
+<figure class='code'><figcaption><span>&#8220;git&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone --depth<span class="o">=</span><span class="m">1</span> http://repositorio.tld/fulanito/aplicacion.git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¿Rápido verdad? Es que solo cogió el HEAD, no el historial de commits completo.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[archlinux con dos kernel]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/09/07/archlinux-dos-kernel/"/>
+    <updated>2015-09-07T20:32:57-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/09/07/archlinux-dos-kernel</id>
+    <content type="html"><![CDATA[<p>Tener los dos kernel y elegir cual butear con el grub al principio; no es algo
+sencillo en archlinux.</p>
+
+<p>Por defecto, el grub dice tener dichas entradas en un submenú que nunca se ve.
+Para lograrlo, tenemos que hacer unos paces mágicos en el fichero:</p>
+
+<h4>/etc/default/grub</h4>
+
+<p>Primero instalamos los kernels; el lts y el fresco.</p>
+
+<figure class='code'><figcaption><span>&#8220;los kernels&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S linux linux-lts
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora la configuración con la que logré eso, fue agregándole al final estas
+lineas:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/default/grub&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">GRUB_DISABLE_SUBMENU</span><span class="o">=</span>y
+</span><span class='line'><span class="nv">GRUB_DEFAULT</span><span class="o">=</span>saved
+</span><span class='line'><span class="nv">GRUB_SAVEDEFAULT</span><span class="o">=</span><span class="nb">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso, se salva la última entrada ejecutada. Por que, lo más obvio, es que la
+próxima vez que arranques, se cargue el último kernel que usaste. Lo inusual
+sería que cambies de opinión y cargues otro. Desgraciadamente, si como yo, usas
+btrfs como sistema de archivo, grub no podrá escribir el fichero con la última
+entrada seleccionada. Incluso te dará un error, diciendo que no puede escribir
+el fichero no se que.</p>
+
+<p>Seguimos&hellip; Localiza y la linea de recovery y ponla en false:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/default/grub&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Uncomment to disable generation of recovery mode menu entries</span>
+</span><span class='line'><span class="nv">GRUB_DISABLE_RECOVERY</span><span class="o">=</span><span class="nb">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>NO SE POR QUE</strong>, pero no se generan las dichosas entradas si eso no está en
+false. Además, tener el menú de recovery es bastante útil, en estas distros
+volátiles, uno nunca sabe cuando le va a hacer falta.</p>
+
+<p>Paso final, generar el grub.cfg</p>
+
+<figure class='code'><figcaption><span>&#8220;grub-mkconfig&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>grub-mkconfig -o /boot/grub/grub.cfg
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Va y si quieres, no es obligado, pero para probar, <strong>REINICIA</strong>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[squid transparente]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/09/01/squid-transparente/"/>
+    <updated>2015-09-01T14:23:00-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/09/01/squid-transparente</id>
+    <content type="html"><![CDATA[<p>La era de SSL, parece haber dejado a los proxies trasparentes un tanto pasados
+de moda. Los tiempos en que dos lineas de iptables resolvían el problema,
+simplemente quedaron atrás. Ahora necesitamos las dos lineas de iptables y un
+poquito más.</p>
+
+<p>Recientemente la comunidad de NetFilter (iptables) y la de squid, ha unido
+esfuerzos para crear solución. El protocolo TPROXY de iptables, entra en juego
+con la maquinaria de squid; dando lugar a un nateo especial. Aunque un está en
+pañales, el asunto promete. En esta entrada no le daremos cobertura a Tproxy,
+pero en la próxima pienso hacerlo.</p>
+
+<p>Esta la dejaremos reservada para &ldquo;ssl_bump&rdquo;</p>
+
+<p>Squid desarrolló un sistema especial para cachear y generar los certificados SSL
+que requiere. Esto al principio fue tema de discusión. Siempre que hay una
+aplicación externa, las vulnerabilidades se sirven con cuchara grande.
+Finalmente squid lo logró y desarrolló una especie de:</p>
+
+<p>&ldquo;ataque MITM corporativizado&rdquo;</p>
+
+<p>Como dirían los aldeanos: &ldquo;mamando se quita el frío&rdquo;, así que empezemos&hellip;</p>
+
+<p>Primero y principioso, es dejar nuestro squid funcionando con una ACL bien
+<em>lazy</em>.  Digamos por ejemplo, que la red 192.168.10.0/24 pasará a través del
+proxy transparente.</p>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>acl red_transparente src 192.168.10.0/24
+</span><span class='line'>http_access allow red_transparente
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Necesitaremos generar un certificado SSL en nuestro squid, certificado que; con
+suerte, el navegador se lo comerá con papa, creyendo que va pal sitio de verdad.</p>
+
+<p>Una vez que el usuario acepte este certificado. TODOS los sitios que pidan,
+vendrán con este certificado.</p>
+
+<figure class='code'><figcaption><span>&#8220;openssl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/squid/
+</span><span class='line'>mkdir ssl_cert
+</span><span class='line'><span class="nb">cd </span>ssl_cert
+</span><span class='line'>openssl req -new -newkey rsa:1024 -days <span class="m">365</span> -nodes -x509 -keyout squid.pem -out squid.pem
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora le decimos a calamardo, que escuche por el 3129 como interceptor. Además,
+le pondremos una serie de parametros que harán un funcionar al ssl_bumper. A mi
+me quedó así:</p>
+
+<h4>OJO con la segunda lina, es muy larga</h4>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>http_port 0.0.0.0:3128
+</span><span class='line'>http_port 0.0.0.0:3129 intercept ssl-bump generate-host-certificates<span class="o">=</span>on <span class="nv">dynamic_cert_mem_cache_size</span><span class="o">=</span>4MB <span class="nv">cert</span><span class="o">=</span>/etc/squid/ssl_cert/squid.pem
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora inicializamos el depósito donde colocaremos los certificados que vallamos
+cogiendo.</p>
+
+<figure class='code'><figcaption><span>&#8220;ssl_crtd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/usr/lib/squid/ssl_crtd -c -s /etc/squid/certificados
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y le configuramos la maquinaria diabólica a squid.</p>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">dynamic_cert_mem_cache_size</span><span class="o">=</span>4MB <span class="nv">cert</span><span class="o">=</span>/etc/squid/ssl_cert/squid.pem
+</span><span class='line'>ssl_bump none localhost
+</span><span class='line'>ssl_bump server-first all
+</span><span class='line'>sslcrtd_program /usr/lib/squid/ssl_crtd -s /etc/squid/certificados -M 4MB
+</span><span class='line'>sslcrtd_children 5
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Entonces NetFilter en juego. Nuevamente salen a la palestras las dos lineas
+clásicas.</p>
+
+<figure class='code'><figcaption><span>&#8220;iptables&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>iptables -t nat -A PREROUTING -i wlan0 -p tcp -m tcp --dport <span class="m">80</span> -j REDIRECT --to-ports 3129
+</span><span class='line'>iptables -t nat -A PREROUTING -i wlan0 -p tcp -m tcp --dport <span class="m">443</span> -j REDIRECT --to-ports 3129
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Claro, esto no lo es todo, vas a necesitar un DNS que apunte TODAS las
+direcciones URL a tu proxy.</p>
+
+<p>Eso lo veremos en la próxima entrada ;)</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[compute remote uptime]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/08/28/compute-remote-uptime/"/>
+    <updated>2015-08-28T12:21:58-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/08/28/compute-remote-uptime</id>
+    <content type="html"><![CDATA[<p>Vamos de atrás pa alante, el truco primero y la muela después.</p>
+
+<figure class='code'><figcaption><span>&#8220;nmap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># nmap -O -v 10.1.1.1|grep -i uptime</span>
+</span><span class='line'>Uptime guess: 18.006 days <span class="o">(</span>since Fri Aug <span class="m">10</span> 12:24:47 2015<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>¿Que acaba de suceder?</h4>
+
+<p>Calculamos el tiempo que lleva el servidor remoto en pie. Fíjese que nos dice la
+fecha en la que el servidor arrancó.</p>
+
+<h4>¿Para que sirve esta información?</h4>
+
+<p>Para poner al responsable de la computadora remota <em>contra las cuerdas</em> en una
+situación crítica donde el momento de encendido o apagado de la máquina podría
+ser crucial.</p>
+
+<h4>Ejemplos:</h4>
+
+<p>Nuestro proveedor, el servidor proxy padre, afirma descaradamente que NO ha
+tenido problemas técnicos, pero nosotros sabemos que sí. En una discución
+crucial podría dejarle caer la pregunta. <em>¿Entonces porque su servidor se
+reinició el día tal?</em></p>
+
+<p>Un servicio determinado falla a una hora determinada de la noche. Con esto
+podríamos saber si el servidor se está reiniciando, cuando y con que frecuencia.</p>
+
+<p>El proveedor dice que ha tenido que reiniciar el servidor cuando en realidad
+nunca lo ha hecho.</p>
+
+<p>El usuario dice que la máquina se le reinicia constantemente.</p>
+
+<p>El usuario o el proveedor afirman que la máquina fue encendida a una hora
+determinada. O por el contrario, se afirma que la máquina a esa hora NO estaba
+encendida y el uptime dice lo contrario.</p>
+
+<p>   <blockquote><p>Saque usted, sus propias concluciones&hellip;</p><footer><strong>Taladrid</strong> <cite>Pasaje a Lo Desconocido</cite></footer></blockquote></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[will_paginate]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/07/19/will-paginate/"/>
+    <updated>2015-07-19T14:58:30-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/07/19/will-paginate</id>
+    <content type="html"><![CDATA[<p>De siempre, en materia de web la paginación ha sido tremendo rollo. A mi en lo
+personal no me gustan los paginadores; pienso que nadie los usa. Pero siempre
+hay un cliente que pide con mucho fervor detallitos que consideran importantes.</p>
+
+<p>Una de las cosas que me gusta de MongoMapper es que viene con un paginador
+integrado, pero este no es el caso.</p>
+
+<p>No entiendo porque carajo ActiveRecords, que se jacta (con razón) de ser la ORM
+definitiva; no tiene un puñetero soporte nativo para la paginación. O porque
+esta subestimada gema, llamada
+<a href="https://github.com/mislav/will_paginate/">will_paginate</a> no viene incluida en
+el Gemfile que trae RoR por defecto. Se harían un buen favor.</p>
+
+<p>La cuestión es que will_paginate hace muy simple la tediosa tarea de paginar.</p>
+
+<figure class='code'><figcaption><span>&#8216;instalando will_paginate&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;gem &quot;will_paginate&quot;&#39;</span> &gt;&gt; Gemfile
+</span><span class='line'>bundle update
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora veamos como se pagina un modelo. Tengamos el ejemplo típico, el
+controlador &ldquo;User&rdquo; con los 1500 usuarios.</p>
+
+<figure class='code'><figcaption><span>&#8220;controlador del scaffold users&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="vi">@users</span><span class="o">=</span><span class="no">User</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">all</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">paginate</span><span class="p">(</span><span class="ss">:page</span> <span class="o">=&gt;</span> <span class="n">params</span><span class="o">[</span><span class="ss">:page</span><span class="o">]</span><span class="p">,</span> <span class="ss">:per_page</span> <span class="o">=&gt;</span> <span class="mi">15</span><span class="p">)</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="s1">&#39;updated_at asc&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>OJO! De la 3ra linea, te puedes tomar el atrevimiento de modificar el 15 y poner
+el número que te de la gana; pero NO toques al símbolo :page y su valor. En este
+caso, el 15 representa la cantidad de elementos que mostraremos por página.</p>
+
+<p>Te digo que no toques el params[:page] porque will_paginate lo hace todo solo.
+En la vista solo tienes que poner esto</p>
+
+<figure class='code'><figcaption><span>&#8220;app/views/users/index.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="x">   &lt;div class=&quot;text-center&quot;&gt;</span>
+</span><span class='line'><span class="x">      </span><span class="cp">&lt;%=</span> <span class="n">will_paginate</span> <span class="vi">@users</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">   &lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finalmente queda algo de lo más discreto pero 100% funcional:</p>
+
+<div class="text-center">
+<div class="pagination">
+<span class="previous_page disabled">&#8592; Anterior</span>
+<em class="current">1</em>
+<a rel="next" href="#">2</a> <a href="#">3</a>
+<a href="#">4</a>
+<a href="#">5</a>
+<a href="#">6</a> <a href="#">7</a>
+<a href="#">8</a> <a href="#">9</a>
+<span class="gap">&hellip;</span>
+<a href="#">28</a>
+<a href="#">29</a>
+<a class="next_page" rel="next" href="#">Próximo &#8594;</a>
+</div></div>
+
+
+<p>¡COOOOÑOóOOO! En español y todo. Por supuesto,  no es magia. Lo que pasa que el
+que hizo la gema, la hizo con tremendo cariño y parece conocer muy bien la API
+de ruby on rails; con lo cual tuvo muy en cuenta, la parte del i18n.</p>
+
+<p>Ejecute lo siguiente:</p>
+
+<figure class='code'><figcaption><span>&#8220;contenido de la gema&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>gem cont will_paginate<span class="p">|</span>grep en.yml
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Guíate por ese fichero y añádele a tu locale la traducción relacionada con
+will_paginate, en mi caso, quedo así:</p>
+
+<figure class='code'><figcaption><span>&#8220;en.yml&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">en</span><span class="p-Indicator">:</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># el locales de will_paginate</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">will_paginate</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">previous_label</span><span class="p-Indicator">:</span> <span class="s">&quot;&amp;#8592;</span><span class="nv"> </span><span class="s">Anterior&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">next_label</span><span class="p-Indicator">:</span> <span class="s">&quot;Próximo</span><span class="nv"> </span><span class="s">&amp;#8594;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">page_gap</span><span class="p-Indicator">:</span> <span class="s">&quot;&amp;hellip;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¡¡A paginar se ha dicho!!</p>
+
+<p>Thanks to <strong>Mislav Marohnić</strong> for you good job; developing will_paginate</p>
+
+<p>Si te ha gustado will_paginate, escríbele un <a href="mailto:mislav.marohnic@gmail.com">correo al autor</a>
+y muéstrale tu agradecimiento. Yo ya lo hize ;)</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[date_select en español]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/07/12/date-select-en-espanol/"/>
+    <updated>2015-07-12T15:14:12-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/07/12/date-select-en-espanol</id>
+    <content type="html"><![CDATA[<p>Algunos componentes de <a href="http://rubyonrails.org/">Ruby on Rails</a>, se pueden usar
+de manera independiente, como es el caso de
+<a href="https://github.com/rails/rails/tree/master/activerecord">active_record</a> (sin
+dudas es el más potente). Pero otro que no se queda atrás, es active_support.
+Lleno de sorpresas y de joyas poco documentadas.</p>
+
+<p>Para el que no lo conozca, en ruby on rails, hay un método muy cómodo que genera
+un <a href="https://www.w3.org/wiki/HTML/Elements/select"><strong>select</strong></a> cuyas <em>option</em> son nada menos que la fecha. Los usuarios
+mononeuronales, encuentran más cómodo introducir una fecha así, que con un
+datepicker.</p>
+
+<p>El método <a href="http://apidock.com/rails/ActionView/Helpers/DateHelper/select_date"><strong>select_date</strong></a> genera una cosa similar a esta:</p>
+
+<p><select id="caudocidad_day" name="caudocidad[day]">
+<option value="12" selected="selected">12</option>
+</select>
+<select id="caudocidad_month" name="caudocidad[month]">
+<option value="8" selected="selected">Agosto</option>
+</select>
+<select id="caudocidad_year" name="caudocidad[year]">
+<option value="2015" selected="selected">2015</option>
+</select></p>
+
+<p>Pero con todos los meses y sus días claro. Ahí soló te puse un pedazito. Para
+generar esto, se supone que solo necesites poner algo como:</p>
+
+<figure class='code'><figcaption><span>&#8220;select_date&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="cp">&lt;%=</span> <span class="n">select_date</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="p">,</span> <span class="ss">prefix</span><span class="p">:</span> <span class="ss">:caudocidad</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Luego en el controlador, generas la fecha, procesando el dato. Hay mil y una
+forma de hacerlo. Más mágica y menos mágica, yo lo hago de una manera bien
+rudimentaria:</p>
+
+<figure class='code'><figcaption><span>&#8220;Time.mktime en el controller&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@cuando</span><span class="o">=</span><span class="no">Time</span><span class="o">.</span><span class="n">mktime</span> <span class="n">params</span><span class="o">[</span><span class="ss">:caudocidad</span><span class="o">][</span><span class="ss">:year</span><span class="o">]</span><span class="p">,</span><span class="n">params</span><span class="o">[</span><span class="ss">:caudocidad</span><span class="o">][</span><span class="ss">:month</span><span class="o">]</span><span class="p">,</span><span class="n">params</span><span class="o">[</span><span class="ss">:caudocidad</span><span class="o">][</span><span class="ss">:day</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como vez, a <strong>prefix:</strong> se le mandó un símbolo, que pasó a ser el valor del HTML
+generado, <strong>name=&ldquo;caudocidad&rdquo;</strong>. En mi caso, se llama &ldquo;cadocidad&rdquo; usted le pone
+como le de la gana. Sería :prefix=>&lsquo;nombre_que_quieras&rsquo; o prefix: &lsquo;nombre&rsquo; en su
+versión corta.</p>
+
+<p>En el controlador, <strong>params[:caudocidad]</strong>, contiene un Hash, donde las claves
+<strong>:year</strong>, <strong>:month</strong> y <strong>:day</strong> tendrán los valores numéricos listos para ser
+procesados.</p>
+
+<figure class='code'><figcaption><span>params[:caudocidad]</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">{</span><span class="ss">:year</span><span class="o">=&gt;</span><span class="mi">2015</span><span class="p">,</span> <span class="ss">:month</span><span class="o">=&gt;</span><span class="mi">8</span><span class="p">,</span> <span class="ss">:day</span><span class="o">=&gt;</span><span class="mi">12</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Todo eso está muy bonito, pero lo jodido del caso, es que los meses vienen en
+inglés.</p>
+
+<p>Llevarlo a español, requiere estar un poco familiarizado con el
+<a href="http://guides.rubyonrails.org/i18n.html">i18n</a> de Ruby on rails.</p>
+
+<p>Para el que no lo conozca, el i18n, es un sistema que nos permite crear
+aplicaciones en múltiples idiomas. De forma tal que nuestra aplicación le hable
+al navegador en el idioma que este soporta. Lo malo del caso es que no lo hace
+solo. Serás tu quien deba indicarle cuando usar que idioma. Una buena manera de
+hacer eso, es parseando el encabezado &ldquo;content-&rdquo; para ver que idioma soporta el
+navegador. Métodos hay miles, pero no se porque rails no lo hace solo.</p>
+
+<p>Si nuestra aplicación fuera canadiense, le diría que cree un fichero para cada
+idioma. Pero como nuestra aplicación es Cubana, con ponerlo todo en el
+<strong>en.yml</strong> resolvemos el problema.</p>
+
+<p>Al principio me fajaba con el <strong>en.yml</strong> y trataba de ponerle cosas, pero luego
+descubrí que hay una especie de esqueleto en la gema de active_support.</p>
+
+<p>En vez de escribir un en.yml desde cero, podemos usar el que está en
+active_support. Ejecuta este comando:</p>
+
+<figure class='code'><figcaption><span>&#8220;buscando el en.yml&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> gem  cont activesupport<span class="p">|</span>grep en.yml
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Copia dicho fichero a tu <strong>config/locales/en.yml</strong> y comencemos a editarlo.</p>
+
+<p>En la linea 30 y pico. Hay una cláusula llamada <strong>month_names</strong>, ahí le pones
+los meses. A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;month_names, cerca de la linea 30&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>    <span class="c1"># Don&#39;t forget the nil at the beginning; there&#39;s no such thing as a 0th month</span>
+</span><span class='line'>    <span class="ss">month_names</span><span class="p">:</span> <span class="o">[~</span><span class="p">,</span> <span class="no">Enero</span><span class="p">,</span> <span class="no">Febrero</span><span class="p">,</span> <span class="no">Marzo</span><span class="p">,</span> <span class="no">Abril</span><span class="p">,</span> <span class="no">Mayo</span><span class="p">,</span> <span class="no">Junio</span><span class="p">,</span> <span class="no">Julio</span><span class="p">,</span> <span class="no">Agosto</span><span class="p">,</span> <span class="no">Septiembre</span><span class="p">,</span> <span class="no">Octubre</span><span class="p">,</span> <span class="no">Novimebre</span><span class="p">,</span> <span class="no">Diciembre</span><span class="o">]</span>
+</span><span class='line'>    <span class="ss">abbr_month_names</span><span class="p">:</span> <span class="o">[~</span><span class="p">,</span> <span class="no">Ene</span><span class="p">,</span> <span class="no">Feb</span><span class="p">,</span> <span class="no">Mar</span><span class="p">,</span> <span class="no">Abr</span><span class="p">,</span> <span class="no">May</span><span class="p">,</span> <span class="no">Jun</span><span class="p">,</span> <span class="no">Jul</span><span class="p">,</span> <span class="no">Aug</span><span class="p">,</span> <span class="no">Sep</span><span class="p">,</span> <span class="no">Oct</span><span class="p">,</span> <span class="no">Nov</span><span class="p">,</span> <span class="no">Dec</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Además, más abajo, por la linea 40, tienes el orden en el que se muestra la
+fecha.</p>
+
+<figure class='code'><figcaption><span>&#8220;order: bajo la linea 40&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Used in date_select and datetime_select.</span>
+</span><span class='line'><span class="ss">order</span><span class="p">:</span>
+</span><span class='line'>  <span class="o">-</span> <span class="n">day</span>
+</span><span class='line'>  <span class="o">-</span> <span class="n">month</span>
+</span><span class='line'>  <span class="o">-</span> <span class="n">year</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A mi me quedó así, porque los yumas ponen el mes delante y el día detrás.</p>
+
+<p>Si miras más abajo, verás que tiene incluso la moneda (currency) y los
+separadores, por ejemplo, usar coma en vez de punto para separar los decimales.
+También están los numerales (millones, millares, centenas, etc&hellip;)</p>
+
+<p>Hay un método muy curioso que yo uso mucho. Convierte un array en una oración
+delimitada por coma; pero pone una conjunción &ldquo;y&rdquo; en el último elemento.</p>
+
+<figure class='code'><figcaption><span>&#8216;to_sentence&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="ss">:&gt;</span> <span class="sx">%w[perros gatos]</span><span class="o">.</span><span class="n">to_sentence</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;perros y gatos&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="ss">:&gt;</span> <span class="sx">%w[papas malangas calabazas]</span><span class="o">.</span><span class="n">to_sentence</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;papas, malangas y calabazas&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El separador se configura ahí también. Por defecto dice &ldquo;<strong>and</strong>&rdquo; en vez de &ldquo;<strong>y</strong>&rdquo;</p>
+
+<p>Conclusión:</p>
+
+<p>La instrumentación de active_support (ese nombre tan suigeneris se lo pusieron
+ellos) es bastante rica. Deberían verla bien de cerca. La guia es bastante
+escueta; te recomiendo que mires un poco el código fuente de active_support o la
+documentación de la API (que es casi lo mismo).</p>
+
+<p>Si buscas en la misma ruta, pero con <em>model</em> donde dice <em>support</em> verás el YAML
+que utiliza ActiveRecord para generar los errores de validación. Ahí puedes
+ponerlos a tu manera. Osea, el contenido de ese YAML se lo adicionas al tuyo.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[OpenVAS en Archlinux]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/07/11/openvas-en-archlinux/"/>
+    <updated>2015-07-11T19:19:59-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/07/11/openvas-en-archlinux</id>
+    <content type="html"><![CDATA[<p><img class="left" src="http://lazaro-armando.herokuapp.com/images/greenbone.png" title="Login del Greenbone" alt="Login del Greenbone"></p>
+
+<p>Recientemente, un &ldquo;Webmaster&rdquo; usó en uno de los servidores que patrocino; un
+escaner de vulnerabilidades. El administrador de red del lugar, le dio acceso al
+servidor; claro está. El informe reveló un cartapaso de vulnerabilidades. Por
+ejemplo, la ausencia de una partición swap; podría dar lugar a un kernel-panic
+por falta de memoria RAM; en un servidor de correo con 4 Gigas de RAM. Además,
+advertía que la versión de bash (con sus parches puestos) era muy vieja y
+recomendaba usar una reciente. Como si instalar software reciente en debian
+fuese jamón.</p>
+
+<p>No vi nada con respecto a postfix o dovecot pero de inmediato me llamaron para
+que explicara como era posible que mi servidor tuviera semejantes
+vulnerabilidades. Claro, con acceso a root cualquiera busca vulnerabilidades.</p>
+
+<p>Soy de los que pasa HORAS, intentando penetrar mi propia seguridad; pero el caso
+llevaba un contra ataque más elaborado.</p>
+
+<p>El sosftware por excelencia para probar la seguridad: <a href="http://es.wikipedia.org/wiki/OpenVAS">OpenVAS</a></p>
+
+<h3>No solo identifica el problema, también te dice como arreglarlo.</h3>
+
+<p>Funciona de manera similar a un antivirus. Una base de datos se actualiza y ala
+las vulnerabilidades conocidas. Luego, una interfaz web, de lo más cómoda;
+permite llevar a cabo un análisis tanto ligero como exhaustivo del sistema
+seleccionado como objetivo. Además, se pueden programar análisis de manera
+automatizada.</p>
+
+<p>Su interfaz web, el llamado &ldquo;Greenbone Security Assistant&rdquo;, nos hará la vida muy
+fácil una vez instalado.</p>
+
+<p>En archlinux todo es un rollo, así que empezemos:</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando openvas&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S openvas
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La interfaz web de openvas (el greenbone) debe ser contactada por SSL (obligao).
+Como siempre, crear los certificados es todo una ceremonia.</p>
+
+<figure class='code'><figcaption><span>&#8220;creando certificados&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvas-mkcert
+</span><span class='line'>openvas-mkcert-client -n -i
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora lo más importante. Descargarnos la base de datos con las amenazas, o sea,
+con las vulnerabilidades.</p>
+
+<figure class='code'><figcaption><span>&#8220;actualizando las bases&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvas-nvt-sync
+</span><span class='line'>openvas-scapdata-sync
+</span><span class='line'>openvas-certdata-sync
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El escaner, es un servicio, que en producción, está supuestamente corriendo y
+realizando escaneos bajo demanda. Lo echamos a andar:</p>
+
+<figure class='code'><figcaption><span>&#8220;el servicio&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl start openvas-scanner
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Una vez que tenemos las bases de datos descargadas, las instalamos en openvas</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando las bases&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvasmd --rebuild --progress
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y hasta aquí es donde la wiki de arch está bien. Pues para crear el usuario de
+openvas y echar a andar el greenbone, se forma la moña.</p>
+
+<p>Primero debemos crear el usuario de openvas. En este caso de ejemplo, el
+usuario será <strong>admin</strong> con password <strong>admin</strong>.</p>
+
+<figure class='code'><figcaption><span>&#8220;creando usuarios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvasmd --create-user<span class="o">=</span>admin --role<span class="o">=</span>Admin
+</span><span class='line'>openvasmd --user<span class="o">=</span>admin --new-password<span class="o">=</span>admin
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por último, echamos a andar la interfaz web:</p>
+
+<figure class='code'><figcaption><span>&#8220;iniciando gsad&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>gsad --http-only --listen<span class="o">=</span>127.0.0.1 -p 9392
+</span><span class='line'>openvasmd -p <span class="m">9390</span> -a 127.0.0.1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Abre un navegador y apunta para <a href="http://127.0.0.1:9392">http://127.0.0.1:9392</a></p>
+
+<p>Una vez dentro, verás la página donde se almacenan los escaneos. Ahí localiza un
+botón morado con una barita mágica. Vea la imagen de abajo</p>
+
+<p><img class="center" src="http://lazaro-armando.herokuapp.com/images/openvas_wiz.png" title="Botón del Wizard" alt="Botón del Wizard"></p>
+
+<p>En la pantalla que le sigue, especificamos el host al que queremos escanear.</p>
+
+<p><img class="center" src="http://lazaro-armando.herokuapp.com/images/openvas_scan.png" title="Seleccionar Objetivo" alt="Seleccionar objetivo"></p>
+
+<p>Apto seguido, comenzará el escaneo. Es posible que el servidor deje de prestar
+servicios; pues openvas le da con todo.</p>
+
+<p>Finalmente, cuando el escaneo esté terminado, en vez de un tanto por ciento,
+verás; como en la primera imagen, un letrero que dice &ldquo;<strong>done</strong>&rdquo; sobre la barra
+azul.</p>
+
+<p><img class="center" src="http://lazaro-armando.herokuapp.com/images/openvas_result.png" title="resultado del escaneo" alt="resultado de escaneo"></p>
+
+<p>La imagen muestra, el resultado del webmaster que le tiró piedras al tejado del
+vecino con el suyo de vidrio. Al hacer click en la vulnerabilidad, nos muestra
+la solución, como es el ejemplo de esta:</p>
+
+<p><img class="center" src="http://lazaro-armando.herokuapp.com/images/openvas_sol.png" title="solución" alt="solución"></p>
+
+<p>Hermosa pareja; el problema y la solución junticos&hellip;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[añadir verbo a un scaffold]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/07/05/anadir-verbo-a-un-scaffold/"/>
+    <updated>2015-07-05T21:35:54-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/07/05/anadir-verbo-a-un-scaffold</id>
+    <content type="html"><![CDATA[<p>Cualquiera que sepa como usar debidamente los scaffolds, o sea, cualquiera que
+sepa como hacerle la paja a ruby on rails para que haga lo que queremos; seguro
+habrá intentado en algún momento, añadir un nuevo método a un scaffold. Además,
+de seguro quisiste luego poder llamarlo con los métodos &ldquo;metodo_user_path&rdquo; y que
+la ruta se cree de manera automática.</p>
+
+<p>Por ejemplo, en este caso, tengo el scaffold <strong>user</strong> y le agregué el método
+<strong>cambiar</strong> aparte de los clásicos PUT y DELETE.</p>
+
+<figure class='code'><figcaption><span>&#8220;scope de users_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="c1"># cambia el estado de habilitación del usuarios</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">cambiar</span>
+</span><span class='line'>     <span class="vi">@user</span><span class="o">.</span><span class="n">enabled</span><span class="o">=!</span><span class="vi">@user</span><span class="o">.</span><span class="n">enabled</span>
+</span><span class='line'>     <span class="vi">@user</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>     <span class="n">redirect_to</span> <span class="ss">:back</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># GET /users</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
+</span><span class='line'>    <span class="vi">@users</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">all</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero el método cambiar no aparece en rails hasta que no hagas lo siguiente en el
+fichero de las rutas.</p>
+
+<figure class='code'><figcaption><span>&#8220;config/routes.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>   <span class="c1"># el scaffold de los usuarios</span>
+</span><span class='line'>   <span class="n">resources</span> <span class="ss">:users</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># agregamos el verbo cambiar usado para</span>
+</span><span class='line'>      <span class="c1"># @user.enabled=!@user.enabled</span>
+</span><span class='line'>      <span class="c1"># para que exista: cambiar_user_path</span>
+</span><span class='line'>      <span class="n">member</span> <span class="k">do</span>
+</span><span class='line'>         <span class="n">get</span> <span class="s1">&#39;cambiar&#39;</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora existirá el método <strong>cambiar_user_path</strong> que toma como argumento el
+usuario.</p>
+
+<p>   cambiar_user_path(user)</p>
+
+<p>De esta manera, se le manda el objeto usuario y genera una URL como</p>
+
+<p>   /users/345/cambiar</p>
+
+<p>Dicha ruta macheará el método User#cambiar</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[asset pipeline en production]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/07/05/asset-pipeline-en-production/"/>
+    <updated>2015-07-05T20:57:49-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/07/05/asset-pipeline-en-production</id>
+    <content type="html"><![CDATA[<p>La más resipingante característica de Ruby on Rails, amada por unos y odiada por
+otros; me refrito a las: &ldquo;asset pipeline&rdquo;</p>
+
+<p>Resulta que no se si les ha pasado, pero al correr &ldquo;unicorn&rdquo; en el entorno
+<strong>production</strong>, las CSS y las JS desaparecen.</p>
+
+<p>Eso supuestamente está bien, sobre todo si tuvieras un nginx sirviendo el
+contenido estático. Lo que no acabo de entender, es como se supone que los
+js.erb o los coffe-script lleguen compilados al directorio de nginx con el que
+sirves las assets.</p>
+
+<p>Sumado a eso, los que como yo, usen la gema del bootstrap, sin la asset
+pipeline eres <em>ao por regla</em>.</p>
+
+<p>Pa no hacerte el cuento largo, localiza estos parámetros en el fichero de
+producción, situado en <strong>config/environments/production.rb</strong> y cambia los
+parámetros siguientes</p>
+
+<figure class='code'><figcaption><span>&#8220;config/environments/production.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="c1"># Disable serving static files from the `/public` folder by default since</span>
+</span><span class='line'>  <span class="c1"># Apache or NGINX already handles this.</span>
+</span><span class='line'>  <span class="c1">#</span>
+</span><span class='line'>  <span class="c1"># Ponemos esto en true, pa que sirva los ficheros estáticos</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">serve_static_files</span> <span class="o">=</span> <span class="kp">true</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># Do not fallback to assets pipeline if a precompiled asset is missed.</span>
+</span><span class='line'>  <span class="c1">#</span>
+</span><span class='line'>  <span class="c1"># Esto va true también, para que se use el asset pipeline</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">compile</span> <span class="o">=</span> <span class="kp">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso debes ver todo cargado y al célebre Turbolinks generando sus trifulcados
+enlaces a las assets.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[bootstrap en rails 4]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/06/30/bootstrap-en-rails-4/"/>
+    <updated>2015-06-30T12:19:42-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/06/30/bootstrap-en-rails-4</id>
+    <content type="html"><![CDATA[<p>Pensaba escribir una entrada sobre como hacer que se vean los glyphicons luego
+de instalar la gema de boostrap en rails 4; pero, recientemente he recibido
+numerosas críticas, sobre entradas de mi blog. Dicen que hablo sobre como
+solucionar problemas de cosas que ni si quiera conocen pero al parecer están muy
+buenas.</p>
+
+<p><a href="http://getbootstrap.com">Bootstrap</a> es un framework CSS patrocinado por Twitter
+y es el fin de los dolores de cabeza para todo el que como yo, le tiene terror a
+programar CSS. Por supuesto, como todo en materia de framework, tiene sus pro y
+sus contras.</p>
+
+<p>La ventaja de usar un framework, es que te ahorras un mundo de código. La
+ventaja además; de usar un framework CSS, es que estás de manera automática
+arriba de los último en materia de CSS.</p>
+
+<p>La desventaja de usar un Framework (cea CSS o no) es que en la mayoría de los
+casos, carga mil y un elemento que nunca usarás. Por ejemplo, tengo una
+aplicación que NO usa carrousel; pero como está hecha a la carrera, no he tenido
+tiempo de determinar que elementos o no cargar con bootstrap. Por definición, se
+cargan todos.</p>
+
+<p>En nuestro Gemfile, debemos declarar que use bootstrap así:</p>
+
+<figure class='code'><figcaption><span>&#8220;scope del Gemfile&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s2">&quot;twitter-bootstrap-rails&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Luego, procedemos a la instalación del tema CSS, en mi caso, como no uso less ni
+nada de eso, lo hago así:</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando el engine&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rails generate bootstrap:install static
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso, supuestamente ya está listo. Pero como todo en ruby on rails se queda
+atrás, resulta que el asset pipeline moderno no carga las fuentes y en el
+fichero <strong>application.css</strong> hay que añadirle el siguiente código:</p>
+
+<figure class='code'><figcaption><span>&#8220;app/assets/stylesheets/application.css&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="c">/* Esto va al final de la CSS */</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@font-face</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nt">font-family</span><span class="o">:</span> <span class="s1">&#39;Glyphicons Halflings&#39;</span><span class="o">;</span>
+</span><span class='line'>  <span class="nt">src</span><span class="o">:</span> <span class="nt">url</span><span class="o">(</span><span class="s1">&#39;../assets/glyphicons-halflings-regular.eot&#39;</span><span class="o">);</span>
+</span><span class='line'>  <span class="nt">src</span><span class="o">:</span> <span class="nt">url</span><span class="o">(</span><span class="s1">&#39;../assets/glyphicons-halflings-regular.eot?#iefix&#39;</span><span class="o">)</span> <span class="nt">format</span><span class="o">(</span><span class="s1">&#39;embedded-opentype&#39;</span><span class="o">),</span>
+</span><span class='line'>       <span class="nt">url</span><span class="o">(</span><span class="s1">&#39;../assets/glyphicons-halflings-regular.woff&#39;</span><span class="o">)</span> <span class="nt">format</span><span class="o">(</span><span class="s1">&#39;woff&#39;</span><span class="o">),</span>
+</span><span class='line'>       <span class="nt">url</span><span class="o">(</span><span class="s1">&#39;../assets/glyphicons-halflings-regular.ttf&#39;</span><span class="o">)</span> <span class="nt">format</span><span class="o">(</span><span class="s1">&#39;truetype&#39;</span><span class="o">),</span>
+</span><span class='line'>       <span class="nt">url</span><span class="o">(</span><span class="s1">&#39;../assets/glyphicons-halflings-regular.svg#glyphicons_halflingsregular&#39;</span><span class="o">)</span> <span class="nt">format</span><span class="o">(</span><span class="s1">&#39;svg&#39;</span><span class="o">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¿Qué como conseguí eso? Ni preguntes, me lo mandó por correo un salvaje de la
+materia.</p>
+
+<p>Otra cosa:</p>
+
+<p>Si no sabes usar boostrap, te recomiendo que le eches un vistazo. Si sabes
+escribir CSS, te recomiendo que lo veas igual, pues tiene una buena API para
+personalizarlo como te de la gana.</p>
+
+<h3>pero está la gema bootstrap-sass</h3>
+
+<p>Sí, ya se que está <a href="http://badge.fury.io/rb/bootstrap-sass">bootstrap-sass</a>,
+que es además <em>es el port oficial de bootstrap</em> y que rails usa
+<a href="http://sass-lang.com">SASS</a>; pero te imaginarás el criterio que tengo sobre
+sass.</p>
+
+<p>Por mi, coffe-script y sass pueden cogerlos, doblarlos bien y meterselos ambos
+en el&hellip;. BOLSILLO. El programador web que no quiera aprender JavaScript y CSS
+está embarcao. Por otra parte, para aprender SASS y CoffeScript hay que saber
+CSS y JavaScript :D ¿Que problema verdad?</p>
+
+<h3>Helpers de utildad</h3>
+
+<p>La diferencia entre bootstrap-sass y twitter-bootstrap-rails  es que
+boostrap-sass la hizo la gente de bootstrap y la segunda, la hicieron usuarios
+de ruby on rails&hellip;</p>
+
+<p>Te explico:</p>
+
+<figure class='code'><figcaption><span>&#8220;fulanito.erb.html&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="cp">&lt;%=</span> <span class="n">nav_bar</span> <span class="ss">brand</span><span class="p">:</span> <span class="s2">&quot;Páfata&quot;</span> <span class="k">do</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">    </span><span class="cp">&lt;%=</span> <span class="n">menu_text</span> <span class="s2">&quot;El texto de la barra&quot;</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Eso generará un navbar como este:</p>
+
+<figure class='code'><figcaption><span>&#8220;render output&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;nav</span> <span class="na">class=</span><span class="s">&quot;navbar navbar-default&quot;</span> <span class="na">role=</span><span class="s">&quot;navigation&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;a</span> <span class="na">class=</span><span class="s">&quot;navbar-brand&quot;</span> <span class="na">href=</span><span class="s">&quot;http://127.0.0.1:3000/&quot;</span><span class="nt">&gt;</span>Páfata<span class="nt">&lt;/a&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;navbar-text&quot;</span><span class="nt">&gt;</span>El texto de la barra<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'><span class="nt">&lt;/div&gt;&lt;/nav&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si eso no te pareció emocionante, mira el helper de flash. Ponte tu que halla un
+error y lo metes en el flash.</p>
+
+<figure class='code'><figcaption><span>&#8220;ejemplo_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">fulanito</span>
+</span><span class='line'>   <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]=</span><span class="s1">&#39;Bofatás! El error del milenio&#39;</span>
+</span><span class='line'>   <span class="n">render</span> <span class="ss">:fulanito</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En la vista, pones está simple linea:</p>
+
+<figure class='code'><figcaption><span>&#8220;fulanito.erb.html&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="cp">&lt;%=</span> <span class="n">bootstrap_flash</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y se renderiza:</p>
+
+<figure class='code'><figcaption><span>&#8220;render output&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;alert fade in alert-danger &quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;button</span> <span class="na">class=</span><span class="s">&quot;close&quot;</span><span class="na">data-dismiss=</span><span class="s">&quot;alert&quot;</span><span class="nt">&gt;</span><span class="ni">&amp;times;</span><span class="nt">&lt;/button&gt;</span>
+</span><span class='line'>Bofatás! El error del milenio
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Échale un vistazo al link de abajo, pa que veas como renderizan breadcumb
+declarando los componentes en los controladores.</p>
+
+<p>Mas detalles aquí: <a href="https://github.com/seyhunak/twitter-bootstrap-rails">https://github.com/seyhunak/twitter-bootstrap-rails</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[revocar certificados de OVPN]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/06/14/revocar-certificados-de-ovpn/"/>
+    <updated>2015-06-14T18:36:49-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/06/14/revocar-certificados-de-ovpn</id>
+    <content type="html"><![CDATA[<p>Acá en mi tierra, SSL es algo relativamente novedoso. Hasta el otro día, las
+conexiones cifradas eran la peste; pero ahora resulta que el SSL es
+prácticamente obligatorio.</p>
+
+<p>En el episodio anterior, hablábamos sobre OpenVPN. Mencionamos que la
+autenticación podría hacerse a nivel de certificados.</p>
+
+<p>Algunos retrógrados preferirían hacerlo con nombre de usuario y contraseña, pero
+realmente emitir un certificado para cada cliente, es un método más seguro y
+simple.</p>
+
+<p>El objetivo es deshacernos de un cliente</p>
+
+<p>En el ejemplo anterior teníamos a &ldquo;cliente1&rdquo;. Por N motivo, no queremos que
+cliente1 se conecte más. El que no sepa lo que es la CRL (Certificate Revocation
+List) me imagino que acabará poniendo disímiles direcciones ip en el cortafuegos.</p>
+
+<p>Primero, revocamos el certificado que le dimos al cliente.</p>
+
+<figure class='code'><figcaption><span>&#8220;revocando certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/openvpn/easy-rsa
+</span><span class='line'><span class="nb">source</span> ./vars
+</span><span class='line'>./revoke-full cliente1
+</span><span class='line'>Using configuration from /etc/openvpn/easy-rsa/openssl-1.0.0.cnf
+</span><span class='line'>Revoking Certificate 02.
+</span><span class='line'>Data Base Updated
+</span><span class='line'>Using configuration from /etc/openvpn/easy-rsa/openssl-1.0.0.cnf
+</span><span class='line'>cliente1.crt: <span class="nv">C</span> <span class="o">=</span> CU, <span class="nv">ST</span> <span class="o">=</span> HAV, <span class="nv">L</span> <span class="o">=</span> Plaza, <span class="nv">O</span> <span class="o">=</span> DOMINIO, <span class="nv">OU</span> <span class="o">=</span> DOMINIO, <span class="nv">CN</span> <span class="o">=</span>
+</span><span class='line'>cliente1, <span class="nv">name</span> <span class="o">=</span> RSA, <span class="nv">emailAddress</span> <span class="o">=</span> vpn@dominio.cu
+</span><span class='line'>error <span class="m">23</span> at <span class="m">0</span> depth lookup:certificate revoked
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ve en la última linea, dice que se ha cometido un error 23, porque no se
+pudo ver la firma. EL certificado ha sido revocado.</p>
+
+<p>Ahora debemos instruir al servidor de que el fichero <strong>keys/crl.pem</strong> contiene
+la lista de certificados revocados. A la configuración del servidor, le
+agregamos la cláusula <strong>crl-verify</strong> y como argumento le damos la ruta absoluta
+al crl.pem</p>
+
+<figure class='code'><figcaption><span>&#8220;crl.pem&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;crl-verify crl.pem&#39;</span> &gt;&gt; /etc/openvpn/servidor.conf
+</span><span class='line'>ln -s /etc/openvpn/easy-rsa/keys/crl.pem
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No se puede especificar una ruta completa porque no pincha, no me preguntes por
+que. El crl.pem debe estar en el mismo directorio que el fichero de
+configuración del servidor.</p>
+
+<p><strong>OJO</strong> No olvide reinciar el servidor!</p>
+
+<p>Probemos como le va a un cliente con su certificado revocado.</p>
+
+<figure class='code'><figcaption><span>&#8220;cliente1 embarcao&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@rasp openvpn<span class="o">]</span><span class="c"># openvpn --config cliente1.conf </span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> OpenVPN 2.3.6 i686-pc-linux-gnu <span class="o">[</span>SSL <span class="o">(</span>OpenSSL<span class="o">)]</span> <span class="o">[</span>LZO<span class="o">]</span> <span class="o">[</span>EPOLL<span class="o">]</span> <span class="o">[</span>MH<span class="o">]</span> <span class="o">[</span>IPv6<span class="o">]</span> built on Dec  <span class="m">2</span> 2014
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> library versions: OpenSSL 1.0.2a <span class="m">19</span> Mar 2015, LZO 2.09
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> WARNING: No server certificate verification method has been enabled.  See http://openvpn.net/howto.html#mitm <span class="k">for</span> more info.
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> Attempting to establish TCP connection with <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443 <span class="o">[</span>nonblock<span class="o">]</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCP connection established with <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCPv4_CLIENT link <span class="nb">local</span>: <span class="o">[</span>undef<span class="o">]</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCPv4_CLIENT link remote: <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> VERIFY OK: <span class="nv">depth</span><span class="o">=</span>1, <span class="nv">C</span><span class="o">=</span>CU, <span class="nv">ST</span><span class="o">=</span>HAV, <span class="nv">L</span><span class="o">=</span>Plaza, <span class="nv">O</span><span class="o">=</span>DOMINIO, <span class="nv">OU</span><span class="o">=</span>DOMINIO, <span class="nv">CN</span><span class="o">=</span>DOMINIO CA, <span class="nv">name</span><span class="o">=</span>RSA, <span class="nv">emailAddress</span><span class="o">=</span>vpn@dominio.cu
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> VERIFY OK: <span class="nv">depth</span><span class="o">=</span>0, <span class="nv">C</span><span class="o">=</span>CU, <span class="nv">ST</span><span class="o">=</span>HAV, <span class="nv">L</span><span class="o">=</span>Plaza, <span class="nv">O</span><span class="o">=</span>DOMINIO, <span class="nv">OU</span><span class="o">=</span>dominio, <span class="nv">CN</span><span class="o">=</span>vpn.dominio.cu, <span class="nv">name</span><span class="o">=</span>RSA, <span class="nv">emailAddress</span><span class="o">=</span>vpn@dominio.cu
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> write TCPv4_CLIENT: Broken pipe <span class="o">(</span><span class="nv">code</span><span class="o">=</span>32<span class="o">)</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> write TCPv4_CLIENT: Broken pipe <span class="o">(</span><span class="nv">code</span><span class="o">=</span>32<span class="o">)</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> Connection reset, restarting <span class="o">[</span>0<span class="o">]</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> SIGUSR1<span class="o">[</span>soft,connection-reset<span class="o">]</span> received, process restarting
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ve, el servidor &ldquo;le cuelga&rdquo; y le deja hablando. Porque el certificado que
+el cliente está mandándole, no le cuadra.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[systemd automount]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/06/12/systemd-automount/"/>
+    <updated>2015-06-12T12:18:10-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/06/12/systemd-automount</id>
+    <content type="html"><![CDATA[<p>Resulta que el todopoderoso <a href="https://wiki.archlinux.org/index.php/Systemd">systemd</a>
+tiene un soporte para automontar discos.</p>
+
+<p>Aún sigo pensando que nadie inventa un software para auto<strong>des</strong>montar discos.
+No le veo sentido a que algo se monte automáticamente si luego hay que
+desmontarlo de manera manual.</p>
+
+<p>Pero como te decía, el automount&hellip;</p>
+
+<p>Si en el fstab usas la opción <strong>x-systemd.automount</strong>, las unidades reflejadas
+en el fstab se montarán de manera automática cuando se haga contacto con el
+punto de montaje y el dispositivo esté presente.</p>
+
+<figure class='code'><figcaption><span>&#8220;fstab&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/dev/sdb1   /mnt/sdb1  auto  rw,users,x-systemd.automount,noauto  <span class="m">0</span>  0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al posarte en un directorio que sea punto de montaje, este se montará de manera
+automática. Si quieres que quede escopetón de verdad, usa estas opciones:</p>
+
+<figure class='code'><figcaption><span>&#8220;opciones&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>nofail,x-systemd.automount,x-systemd.device-timeout<span class="o">=</span>2s,sync,rw,user,noauto
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Así, no se monta desde el arranque (y no cuelga el arranque) y si el dispositivo
+tarde 2 segundos en cargarse se rinde; esto es muy bueno para las memorias que
+dan palo o para unidades de red que podrían estar no disponibles en el momento
+que se le solicitan.</p>
+
+<p>Lo único bueno que tiene esto sobre udisk, es que puedes especificar los
+parámetros y opciones con las que montarás el disco, no como en udisk que se
+monta con las opciones que le de la gana a el; te guste o no.</p>
+
+<p>Además, no te imagino instalando udisk es un servidor :D</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[OpenVPN en Arch]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/06/07/openvpn-en-arch/"/>
+    <updated>2015-06-07T18:18:17-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/06/07/openvpn-en-arch</id>
+    <content type="html"><![CDATA[<p>En Arch, todo es tan novedoso como complicado. Montar un servidor de VPN, pasa a
+ser una verdadera complicación. Pero todo empieza por el primer paso y termina
+cuando menos te lo esperas o más embullado estás.</p>
+
+<figure class='code'><figcaption><span>&#8220;el viejo pacman&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S openvpn easy-rsa
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Aspectos legales</h4>
+
+<p>Antes de comenzar. Déjeme recordarle que transmitir cifrados en algunos países
+es algo complicado desde el punto de vista legal.</p>
+
+<p>En cuba, te aclaro, que necesitas anexar un permiso de la FAR a tu Licencia de
+Red. En casi ningún país las redes VPN son &ldquo;al flai&rdquo;, ya que las mismas, siempre
+tienen un punto en alguna entidad, lo cual compromete mucho a esa red; así que
+mi recomendación: Póngase al tanto de las leyes antes de hacer una VPN.</p>
+
+<p>Para esta prueba, usaré una red compuesta por un solo cable. En un extremo está
+mi laptop y en el otro, el RaspBerry Pi; secuaz de todos mis más beligerantes
+experimentos.</p>
+
+<h3>Empezando</h3>
+
+<p>Lo primero es crear el llamado &ldquo;Master Certificate Authority&rdquo; (por sus siglas &ldquo;CA&rdquo;)</p>
+
+<p>La herramienta easy-rsa ha evolucionado tanto, que ya ni su madre la reconoce.
+Razón por la cual toda la documentación parece estar escrita con una herramienta
+totalmente diferente.</p>
+
+<p>Los escript se encuentran en /usr/share así que los traeremos a nuestro
+zoológico.</p>
+
+<figure class='code'><figcaption><span>&#8220;easy-rsa&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/openvpn/
+</span><span class='line'>cp -ru /usr/share/easy-rsa/ ./
+</span><span class='line'><span class="nb">cd </span>easy-rsa
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lo último que copiamos, el ficherito <strong>vars</strong>; es la materia prima de esta obra.
+Ahí pondremos los parámetros de nuestro certificado. Abre el fichero <strong>vars</strong> y
+edítale los parámetros obvios, están al fondo y comienzan por <strong>KEY_</strong></p>
+
+<p>Cuando hallas terminado, ejecuta esto:</p>
+
+<figure class='code'><figcaption><span>&#8221;./vars&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">source</span> ./vars
+</span><span class='line'>./clean-all
+</span><span class='line'>./build-ca
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Verás como se genera el certificado y aunque te pregunta por los parámetros, los
+tiene ya por defecto. Solo es cuestión de presionar Enter y listo.</p>
+
+<p>Ahora usando el CA, generamos el certificado del servidor.</p>
+
+<figure class='code'><figcaption><span>&#8220;el certificado del servidor&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./build-key-server vpn.dominio.cu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Te preguntará lo mismo y un password; ponle cualquier <em>mierda entrópica</em> y sigue
+pa alante.</p>
+
+<h3>OJO!! No toques enter a lo loco. Firma todos los certificados</h3>
+
+<p>A este punto el directorio <strong>keys/</strong> contiene más de lo que te imaginas. Pero el
+servidor necesita los parámetros de un tal <a href="http://www.rsasecurity.com/rsalabs/node.asp?id=2248">Diffie Hellman</a>
+para pinchar. Ponte cómodo y ejecuta:</p>
+
+<figure class='code'><figcaption><span>&#8220;Deffie Hellman&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./build-dh
+</span><span class='line'>Generating DH parameters, <span class="m">2048</span> bit long safe prime, generator 2
+</span><span class='line'>This is going to take a long <span class="nb">time</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Una vez que la pantalla se halla llenado de punticos, te quedará editar el
+fichero de configuración a tu antojo. El mío me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/openvpn/servidor.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># la ip en la que esucha el servidor</span>
+</span><span class='line'><span class="nb">local </span>0.0.0.0
+</span><span class='line'>
+</span><span class='line'><span class="c"># puerto https</span>
+</span><span class='line'>port 443
+</span><span class='line'>
+</span><span class='line'><span class="c"># protocolo</span>
+</span><span class='line'>proto tcp
+</span><span class='line'><span class="c">#proto udp</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># el tipo de interfaz de tunel</span>
+</span><span class='line'><span class="p">;</span>dev tap
+</span><span class='line'>dev tun
+</span><span class='line'>
+</span><span class='line'><span class="c"># los certificados del servidor</span>
+</span><span class='line'>ca /etc/openvpn/easy-rsa/keys/ca.crt
+</span><span class='line'>cert /etc/openvpn/easy-rsa/keys/vpn.dominio.cu.crt
+</span><span class='line'>
+</span><span class='line'><span class="c"># ATENCIÓN!!</span>
+</span><span class='line'><span class="c"># mantén este fichero en secreto absoluto</span>
+</span><span class='line'>key /etc/openvpn/easy-rsa/keys/vpn.dominio.cu.key
+</span><span class='line'>
+</span><span class='line'><span class="c"># Diffie Hellman</span>
+</span><span class='line'>dh /etc/openvpn/easy-rsa/keys/dh2048.pem
+</span><span class='line'>
+</span><span class='line'><span class="c"># nuestra red es una subnet</span>
+</span><span class='line'>topology subnet
+</span><span class='line'>
+</span><span class='line'><span class="c"># configuramos la red que tendrá nuestra VPN</span>
+</span><span class='line'><span class="c"># dándole este rango, el servidor coge la 1,</span>
+</span><span class='line'><span class="c"># usamos un rango raro, pa que no choque</span>
+</span><span class='line'>server 10.8.0.0 255.255.255.0
+</span><span class='line'>
+</span><span class='line'><span class="c"># mantiene la misma ip para cada cliente</span>
+</span><span class='line'><span class="c"># aún después de reiniciado el servidor</span>
+</span><span class='line'>ifconfig-pool-persist ipp.txt
+</span><span class='line'>
+</span><span class='line'><span class="c"># con esta opción, los clientes se ven entre ellos</span>
+</span><span class='line'><span class="c"># sin esta opción, cada cliente es individual hacia el server</span>
+</span><span class='line'>client-to-client
+</span><span class='line'>
+</span><span class='line'><span class="c"># si esto está habilitado, varios cliente se conectarán</span>
+</span><span class='line'><span class="c"># usando un mismo certificado. Muy bueno si tienes un</span>
+</span><span class='line'><span class="c"># certificado para cada grupo de clientes, o el mismo</span>
+</span><span class='line'><span class="c"># certificado para todos los clientes.</span>
+</span><span class='line'>duplicate-cn
+</span><span class='line'>
+</span><span class='line'><span class="c"># Preguntale &quot;¿estás ahí?&quot; cada 10 segundos</span>
+</span><span class='line'>keepalive <span class="m">10</span> 120
+</span><span class='line'>
+</span><span class='line'><span class="c"># habilita la compresión de datos</span>
+</span><span class='line'>comp-lzo
+</span><span class='line'>
+</span><span class='line'><span class="c"># el máximo número de clientes permitidos</span>
+</span><span class='line'>max-clients 1
+</span><span class='line'>
+</span><span class='line'><span class="c"># corre como nobody, menos privilegios</span>
+</span><span class='line'>user nobody
+</span><span class='line'>group nobody
+</span><span class='line'>persist-key
+</span><span class='line'>persist-tun
+</span><span class='line'>
+</span><span class='line'><span class="c"># este fichero NO se llena</span>
+</span><span class='line'><span class="c"># ya que se reescribe constantemente</span>
+</span><span class='line'><span class="c"># mostrando el estado de la VPN</span>
+</span><span class='line'>status openvpn-status.log
+</span><span class='line'>
+</span><span class='line'><span class="c"># esto si se pone gordo, así que no logueamos</span>
+</span><span class='line'><span class="p">;</span>log         openvpn.log
+</span><span class='line'><span class="p">;</span>log-append  openvpn.log
+</span><span class='line'>
+</span><span class='line'><span class="c"># Que loguear?</span>
+</span><span class='line'><span class="c"># 0 solo errores fatales</span>
+</span><span class='line'><span class="c"># 4 cuentame que hay</span>
+</span><span class='line'><span class="c"># 5 y 6 muy últil para depurar problemas de conexión</span>
+</span><span class='line'><span class="c"># 9 solo los desarrolladores usarían esta escandalera</span>
+</span><span class='line'>verb 3
+</span><span class='line'>
+</span><span class='line'><span class="c"># no muestres repetidos</span>
+</span><span class='line'><span class="c">#mute 20</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>OJO!</strong> Mira a ver donde metes el fichero <strong>servidor.conf</strong>, no sea que los
+crees dentro del directorio easy-rsa y luego no lo encuentres.</p>
+
+<p>Corre <strong>openvpn &ndash;config servidor.conf</strong> COMO ROOT, vamos a probarlo a ver como
+suena:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema openvpn<span class="o">]</span><span class="c"># openvpn --config servidor.conf</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> OpenVPN 2.3.6 i686-pc-linux-gnu <span class="o">[</span>SSL <span class="o">(</span>OpenSSL<span class="o">)]</span> <span class="o">[</span>LZO<span class="o">]</span> <span class="o">[</span>EPOLL<span class="o">]</span> <span class="o">[</span>MH<span class="o">]</span> <span class="o">[</span>IPv6<span class="o">]</span> built on Dec  <span class="m">2</span> 2014
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> library versions: OpenSSL 1.0.2a <span class="m">19</span> Mar 2015, LZO 2.09
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> WARNING: --ifconfig-pool-persist will not work with --duplicate-cn
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> Diffie-Hellman initialized with <span class="m">2048</span> bit key
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> Socket Buffers: <span class="nv">R</span><span class="o">=[</span>87380-&gt;131072<span class="o">]</span> <span class="nv">S</span><span class="o">=[</span>16384-&gt;131072<span class="o">]</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> TUN/TAP device tun0 opened
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> TUN/TAP TX queue length <span class="nb">set </span>to 100
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> do_ifconfig, tt-&gt;ipv6<span class="o">=</span>0, tt-&gt;did_ifconfig_ipv6_setup<span class="o">=</span>0
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> /usr/bin/ip link <span class="nb">set </span>dev tun0 up mtu 1500
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> /usr/bin/ip addr add dev tun0 10.8.0.1/24 broadcast 10.8.0.255
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> GID <span class="nb">set </span>to nobody
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> UID <span class="nb">set </span>to nobody
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> Listening <span class="k">for</span> incoming TCP connection on <span class="o">[</span>undef<span class="o">]</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> TCPv4_SERVER link <span class="nb">local</span> <span class="o">(</span>bound<span class="o">)</span>: <span class="o">[</span>undef<span class="o">]</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> TCPv4_SERVER link remote: <span class="o">[</span>undef<span class="o">]</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> MULTI: multi_init called, <span class="nv">r</span><span class="o">=</span><span class="m">256</span> <span class="nv">v</span><span class="o">=</span>256
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> IFCONFIG POOL: <span class="nv">base</span><span class="o">=</span>10.8.0.2 <span class="nv">size</span><span class="o">=</span>252, <span class="nv">ipv6</span><span class="o">=</span>0
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> IFCONFIG POOL LIST
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> MULTI: TCP INIT <span class="nv">maxclients</span><span class="o">=</span><span class="m">1</span> <span class="nv">maxevents</span><span class="o">=</span>5
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> Initialization Sequence Completed
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>BELLO!</strong></p>
+
+<p>Note como en este ejemplo, se usó la opción duplicate-cn y este dice que no
+podrá mentener una ip por cliente, porque lógicamente, un mismo certificado será
+usado por dicímiles cliente (en este ejemplo). En producción, le recomiendo que
+emita un certificado para cada cliente.</p>
+
+<p>A partir de este momento, habrá una Unit con el nombre del fichero &ldquo;.conf&rdquo;
+detrás de la arroba:</p>
+
+<p><strong>openvpn@CONFIGURACION.service</strong></p>
+
+<p>Osea, como el fichero se llama <strong>servidor.conf</strong> la unit se llama
+<strong>openvpn@servidor.service</strong></p>
+
+<p>¿Se etendió?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl start openvpn@servidor.service
+</span><span class='line'>systemctl <span class="nb">enable </span>openvpn@servidor.service
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Ahora los clientes</h3>
+
+<p>Como ya vimos, los clientes pueden tener un certificado para cada uno o bien un
+por cada cliente. En este caso, generaremos un certificado para un cliente.</p>
+
+<p>El cliente necesitará un fichero de configuración y sus pertinentes
+certificados.</p>
+
+<figure class='code'><figcaption><span>&#8220;certificados para cliente1&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/openvpn/easy-rsa
+</span><span class='line'>./build-key cliente1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>OJO!</strong> No aprietes enter a lo loco! Presiona &ldquo;y&rdquo; en el momento de autofirmar
+los certificados.</p>
+
+<p>Ya tenemos sus certficados, ahora le hacemos el fichero de configuración. En mi
+caso, prefiero tener un directorio para cada cliente. Así es solo cuestión de
+empaquetar y mandarle todo. A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;cliente1/&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/openvpn/
+</span><span class='line'>mkdir cliente1
+</span><span class='line'><span class="nb">cd </span>cliente1
+</span><span class='line'>cp /etc/openvpn/easy-rsa/keys/ca.crt ./
+</span><span class='line'>cp /etc/openvpn/easy-rsa/keys/cliente1.crt ./
+</span><span class='line'>cp /etc/openvpn/easy-rsa/keys/cliente1.key ./
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>MUCHO CUIDADO</strong> con lo que copias! Por nada del mundo copies el fichero &ldquo;.key&rdquo;
+<strong>DEL SERVIDOR</strong> Si no tu VPN se volverá un ballú y cualquier podría montar un
+servidor, engañando a tus cliente.</p>
+
+<p>El fichero <strong>servidor.key</strong> es la identificación mediante la cual openvpn
+garantiza ser legítimamente quien dice ser.</p>
+
+<p>Finalmente creamos el fichero de configuración <strong>DEL CLIENTE</strong>. En windows y en
+android, un fichero cuya extensión sea <strong>.ovpn</strong> es una configuración de VPN.
+Por tanto, es conveniente nombrarlo así. Claro, al no ser &ldquo;.conf&rdquo;, no podrá ser
+disparado desde systemcl, o al menos yo, no he hecho la prueba.</p>
+
+<p>A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/openvpn/cliente1/cliente1.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>client
+</span><span class='line'>remote 10.1.1.1 443
+</span><span class='line'>dev tun
+</span><span class='line'>proto tcp
+</span><span class='line'>resolv-retry infinite
+</span><span class='line'>nobind
+</span><span class='line'>persist-key
+</span><span class='line'>persist-tun
+</span><span class='line'>verb 2
+</span><span class='line'>ca ca.crt
+</span><span class='line'>cert ./cliente1.crt
+</span><span class='line'>key ./cliente1.key
+</span><span class='line'>comp-lzo
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Empaquetamos y le mandamos al cliente la configuración, por correo o por como
+sea, en este caso, lo copié por ssh para el raspberry.</p>
+
+<figure class='code'><figcaption><span>&#8220;cliente1.zip&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema openvpn<span class="o">]</span><span class="c"># zip cliente1.zip cliente1/*</span>
+</span><span class='line'>  adding: cliente1/ca.crt <span class="o">(</span>deflated 35%<span class="o">)</span>
+</span><span class='line'>  adding: cliente1/cliente1.conf <span class="o">(</span>deflated 28%<span class="o">)</span>
+</span><span class='line'>  adding: cliente1/cliente1.crt <span class="o">(</span>deflated 47%<span class="o">)</span>
+</span><span class='line'>  adding: cliente1/cliente1.key <span class="o">(</span>deflated 23%<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Del otro lado lo levanté y quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;cliente1.zip&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@rasp cliente1<span class="o">]</span><span class="c"># openvpn --config cliente1.conf </span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> OpenVPN 2.3.6 i686-pc-linux-gnu <span class="o">[</span>SSL <span class="o">(</span>OpenSSL<span class="o">)]</span> <span class="o">[</span>LZO<span class="o">]</span> <span class="o">[</span>EPOLL<span class="o">]</span> <span class="o">[</span>MH<span class="o">]</span> <span class="o">[</span>IPv6<span class="o">]</span> built on Dec  <span class="m">2</span> 2014
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> library versions: OpenSSL 1.0.2a <span class="m">19</span> Mar 2015, LZO 2.09
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> WARNING: No server certificate verification method has been enabled.  See http://openvpn.net/howto.html#mitm <span class="k">for</span> more info.
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> Attempting to establish TCP connection with <span class="o">[</span>AF_INET<span class="o">]</span>127.0.0.1:443 <span class="o">[</span>nonblock<span class="o">]</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> TCP connection established with <span class="o">[</span>AF_INET<span class="o">]</span>127.0.0.1:443
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> TCPv4_CLIENT link <span class="nb">local</span>: <span class="o">[</span>undef<span class="o">]</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> TCPv4_CLIENT link remote: <span class="o">[</span>AF_INET<span class="o">]</span>127.0.0.1:443
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> VERIFY OK: <span class="nv">depth</span><span class="o">=</span>1, <span class="nv">C</span><span class="o">=</span>CU, <span class="nv">ST</span><span class="o">=</span>HAV, <span class="nv">L</span><span class="o">=</span>Plaza, <span class="nv">O</span><span class="o">=</span>UNAICC, <span class="nv">OU</span><span class="o">=</span>UNAICC, <span class="nv">CN</span><span class="o">=</span>UNAICC CA, <span class="nv">name</span><span class="o">=</span>RSA, <span class="nv">emailAddress</span><span class="o">=</span>vpn@unaicc.cu
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> VERIFY OK: <span class="nv">depth</span><span class="o">=</span>0, <span class="nv">C</span><span class="o">=</span>CU, <span class="nv">ST</span><span class="o">=</span>HAV, <span class="nv">L</span><span class="o">=</span>Plaza, <span class="nv">O</span><span class="o">=</span>UNAICC, <span class="nv">OU</span><span class="o">=</span>UNAICC, <span class="nv">CN</span><span class="o">=</span>vpn.unaicc.cu, <span class="nv">name</span><span class="o">=</span>RSA, <span class="nv">emailAddress</span><span class="o">=</span>vpn@unaicc.cu
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> Data Channel Encrypt: Cipher <span class="s1">&#39;BF-CBC&#39;</span> initialized with <span class="m">128</span> bit key
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> Data Channel Encrypt: Using <span class="m">160</span> bit message <span class="nb">hash</span> <span class="s1">&#39;SHA1&#39;</span> <span class="k">for</span> HMAC authentication
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> Data Channel Decrypt: Cipher <span class="s1">&#39;BF-CBC&#39;</span> initialized with <span class="m">128</span> bit key
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> Data Channel Decrypt: Using <span class="m">160</span> bit message <span class="nb">hash</span> <span class="s1">&#39;SHA1&#39;</span> <span class="k">for</span> HMAC authentication
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> Control Channel: TLSv1, cipher TLSv1/SSLv3 DHE-RSA-AES256-SHA, <span class="m">2048</span> bit RSA
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> <span class="o">[</span>vpn.unaicc.cu<span class="o">]</span> Peer Connection Initiated with <span class="o">[</span>AF_INET<span class="o">]</span>127.0.0.1:443
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:39 <span class="m">2015</span> TUN/TAP device tun1 opened
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:39 <span class="m">2015</span> do_ifconfig, tt-&gt;ipv6<span class="o">=</span>0, tt-&gt;did_ifconfig_ipv6_setup<span class="o">=</span>0
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:39 <span class="m">2015</span> /usr/bin/ip link <span class="nb">set </span>dev tun1 up mtu 1500
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:39 <span class="m">2015</span> /usr/bin/ip addr add dev tun1 10.8.0.2/24 broadcast 10.8.0.255
+</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:39 <span class="m">2015</span> Initialization Sequence Completed
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al descomprimir el zip, copia todo en /etc/openvpn/ y usa systemctl para que
+arranque.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp cliente1/* /etc/openvpn/
+</span><span class='line'>systemctl start openvpn@cliente1.service
+</span><span class='line'>systemctl <span class="nb">enable </span>openvpn@cliente1.service
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>y entonces iptables?</h3>
+
+<p>Si tus cliente se conectarán por la interfaz eth0, solo necesitarás el puerto
+443 abierto. En este caso, la VPN pincha por el 443. Si tienes un servidor web
+público el brinco es diferente. Te recomiendo que uses una máquina solamente
+para servidor OpenVPN y dejes es único puerto abierto.</p>
+
+<p>La interfaz de la VPN es tun0, así que ahí le dejas abierto los servicios que
+entiendas.</p>
+
+<p>   <blockquote><p>La seguridad informática no es secreta, pero si discreta.</p></blockquote></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[transando a ext4]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/06/03/transando-a-ext4/"/>
+    <updated>2015-06-03T23:08:27-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/06/03/transando-a-ext4</id>
+    <content type="html"><![CDATA[<p>Una de mis grandes testarudeces (profesionales) siempre ha sido la negativa a
+usar ext4. Acostumbrado a los discos IDE, siempre me pareció que el journal
+escribía demasiado en el disco. Además, solía verse ext4dev y eso me sonaba a
+que se usaría mi sistema como ratón de laboratorio.</p>
+
+<p>Tanta fue mi fobia, que hoy en día aún uso discos montados en ext2. Por ejemplo,
+mi laptop estaba montada en ext2 hasta ahora mismo; también la partición /home
+del servidor LTSP.</p>
+
+<p>Un fallo eléctrico reciente, me demostró que el journal es un mal necesario. En
+discos de tanta escritura, como es el caso del /home de los clientes ligeros, la
+integridad de los datos es definitivamente una clave para el sistema. Además,
+todo el que usó ext4dev no se quejó nunca.</p>
+
+<figure class='code'><figcaption><span>&#8220;tune2fs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>tune2fs -O extents,uninit_bg,dir_index /dev/sda2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso, le pones a tu ext2 todas las gangarreas del 4. A este punto, reza
+porque no se valla luz! Hay que dar otro paso y es pasar un fsck.</p>
+
+<figure class='code'><figcaption><span>&#8220;tune2fs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>tune2fs -c <span class="m">0</span> /dev/sda <span class="o">&amp;&amp;</span> reboot
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Marca el disco para chequear y reinicia. Cuando levante, verás que da unos palos
+raros ahí pero tú tranquilo.</p>
+
+<p>Las memorias si las dejo con ext2. Pues no necesitan un journal escribiendo
+tanto y acortando su vida útil.</p>
+
+<p>Lo próximo que instale, lo haré con BtrFS que está <em>más mejoL en todavía</em>. Dice
+tener un soporte especial para discos SSD con lo cual me imagino que para las
+memorias flash sea más óptimo.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[pacman bajo el microscopio]]></title>
+    <link href="http://lazaro-armando.herokuapp.com/blog/2015/06/01/pacman-bajo-el-microscopio/"/>
+    <updated>2015-06-01T21:13:05-04:00</updated>
+    <id>http://lazaro-armando.herokuapp.com/blog/2015/06/01/pacman-bajo-el-microscopio</id>
+    <content type="html"><![CDATA[<p>En este post, me propongo mostrarle algunas de las bondades de pacman. Cualquier
+que conozca Arch Linux, sabe de lo que estoy hablando.</p>
+
+<p>Veremos bien de cerca el engranaje de está compleja maquinaria.</p>
+
+<p>Pacman, es una herramienta lo suficientemente versátil como para llevar el
+nombre de &ldquo;administrador de paquetes&rdquo;. Su nombre es un juego de palabras que
+proviene de juntar las palabras &ldquo;PACkage MANager&rdquo;.</p>
+
+<p>A diferencia de ciertas y determinadas distribuciones (entiéndase debian); que
+requieren más de 3 softwares para esa pincha. Pacman solo es autosuficiente para
+gestionar la paquetería. La herramienta repo-add, está incluída dentro del
+paquete de pacman y se usa para crear repositorios personalizados.</p>
+
+<figure class='code'><figcaption><span>&#8220;huevo de pascua de pacman&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>repo-elephant
+</span><span class='line'>     __
+</span><span class='line'>    <span class="s1">&#39;. \</span>
+</span><span class='line'><span class="s1">     &#39;</span>- <span class="se">\</span>
+</span><span class='line'>      / /_         .---.
+</span><span class='line'>     / <span class="p">|</span> <span class="se">\\</span>,.<span class="se">\/</span>--.//    <span class="o">)</span>
+</span><span class='line'>     <span class="p">|</span>  <span class="se">\/</span>/        <span class="o">)</span>/  /
+</span><span class='line'>      <span class="se">\ </span> <span class="s1">&#39; ^ ^    /    )____.----..  6</span>
+</span><span class='line'><span class="s1">       &#39;</span>.____.    .___/            <span class="se">\.</span>_<span class="o">)</span>
+</span><span class='line'>          .<span class="se">\/</span>.                      <span class="o">)</span>
+</span><span class='line'>           <span class="s1">&#39;\                       /</span>
+</span><span class='line'><span class="s1">           _/ \/    ).        )    (</span>
+</span><span class='line'><span class="s1">          /#  .!    |        /\    /</span>
+</span><span class='line'><span class="s1">          \  C// #  /&#39;</span>-----<span class="s1">&#39;&#39;</span>/ <span class="c">#  /</span>
+</span><span class='line'>       .   <span class="s1">&#39;C/ |    |    |   |    |mrf  ,</span>
+</span><span class='line'><span class="s1">       \), .. .&#39;</span>OOO-<span class="s1">&#39;. ..&#39;</span>OOO<span class="s1">&#39;OOO-&#39;</span>. ..<span class="se">\(</span>,
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ya sabrán (o se darán por enterado) Arch Linux no es por release, si no que
+un canal en constante desarrollo, hace como upstream, donde se depositan los
+paquetes consideraros estables. Esto es lo que en distribuciones estáticas se
+llamara &ldquo;repo&rdquo;. Pacman lleva la ardua tarea de mantener el sistema debidamente
+actualizado. Nuestro sistema no tendrá &ldquo;actualizaciones&rdquo; si no que evolucionará
+constantemente desde el &ldquo;core&rdquo;, escalando horizontalmente el sistema completo.</p>
+
+<p>De esta manera se logra el mítico equilibrio entre estabilidad y novedad.</p>
+
+<p>Para ello, pacman debe tener constancia local de la lista de paquetes que hay en
+el upstream. Estas listas son ficheros de textos, comprimidos con gzip, que
+contienen información acerca de lo que hay arriba. Por ejemplo, contiene la URL
+de como descargarlos.</p>
+
+<p>Para pacman, instalar un paquete o alar está lista, es casi la misma operación.
+Se llama &ldquo;sync&rdquo; (sincronizar)</p>
+
+<figure class='code'><figcaption><span>&#8220;-Sy&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -Sy
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero puedes de un solo viaje, sincronizar y actualizar todo el sistema.</p>
+
+<figure class='code'><figcaption><span>&#8220;lo úlitmo que trajo el barco </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -Syu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Buscar un paquete también es una operación de sincronización.</p>
+
+<figure class='code'><figcaption><span>&#8220;buscar fulanito&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -Ss fulanito
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>También puedes, bajar la lista, actualizar el sistema e instalar algo de un solo
+golpe.</p>
+
+<figure class='code'><figcaption><span>&#8220;todo junto&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -Syu fulanito
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pacman irá a los sitios que tiene declarado en el fichero: <strong>/etc/pacman.d/mirrorlist</strong>
+y bajará esos ficheros. Seguidamente los depositará en el directorio /var/lib/pacman/sync/</p>
+
+<figure class='code'><figcaption><span>&#8220;bases de datos&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>file /var/lib/pacman/sync/*.db
+</span><span class='line'>/var/lib/pacman/sync/archlinuxfr.db: gzip compressed data, last modified: Thu May <span class="m">21</span> 04:31:59 2015, from Unix
+</span><span class='line'>/var/lib/pacman/sync/community.db:   gzip compressed data, last modified: Fri May <span class="m">29</span> 08:47:01 2015, from Unix
+</span><span class='line'>/var/lib/pacman/sync/core.db:        gzip compressed data, last modified: Wed May <span class="m">27</span> 19:02:40 2015, from Unix
+</span><span class='line'>/var/lib/pacman/sync/extra.db:       gzip compressed data, last modified: Fri May <span class="m">29</span> 04:27:15 2015, from Unix
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora nuestro sistema sabe lo que hay &ldquo;arriba&rdquo; (en el repo) y está listo para
+compararlo con lo que está &ldquo;abajo&rdquo; (instalado). La información sobre todo los
+paquetes que el sistema tiene instalado, se almacena en el directorio
+<strong>/var/lib/pacman/local/</strong></p>
+
+<p>La lista es muy grande para mostrarla. Pero dentro hay directorios con la
+versión de cada programa instalado. Dentro de ese subdirectorio, hay 4 ficheros
+que contiene la información del paquete instalado.</p>
+
+<p>Por ejemplo, el paquete <strong>ruby</strong>, en su versión <strong>2.2.2-1</strong> responde al
+directorio <strong>/var/lib/pacman/local/ruby-2.2.2-1</strong></p>
+
+<p>Cada directorio, contiene 4 ficheros:</p>
+
+<figure class='code'><figcaption><span>&#8220;metainfo de un paquete instalado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>ls /var/lib/pacman/local/ruby-2.2.2-1/
+</span><span class='line'>desc  files  install  mtree
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El fichero <strong>desc</strong> contiene la información que describe al paquete, versión,
+nombre, etc..</p>
+
+<p>El fichero <strong>files</strong> contiene la lista de ficheros que instala dicho paquete.</p>
+
+<p>El fichero <strong>install</strong> contiene una serie de comando disparadores, como
+post_install. Dentro de install, se declaró una función llamada post_install()
+que será llamada cuando el paquete termine de ser instalado.</p>
+
+<p>Por último, <strong>mtree</strong> (que está comprimido con gz) contiene lo mismo que files,
+pero con la suma MD5 de cada fichero. Esto es usado por pacman para verificar la
+integridad de los archivos instalados.</p>
+
+<p>Por ejemplo, si quisiéramos ver que ficheros contiene el paquete ruby, podríamos
+ver el contenido del fichero <strong>files</strong> pero sería más fácil usar el comando
+<strong>Query</strong> con el argumento <strong>list</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;pacman -Ql fulano&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>pacman -Ql ruby<span class="p">|</span>grep <span class="s1">&#39;/usr/bin/&#39;</span>
+</span><span class='line'>ruby /usr/bin/
+</span><span class='line'>ruby /usr/bin/erb
+</span><span class='line'>ruby /usr/bin/gem
+</span><span class='line'>ruby /usr/bin/irb
+</span><span class='line'>ruby /usr/bin/rake
+</span><span class='line'>ruby /usr/bin/rdoc
+</span><span class='line'>ruby /usr/bin/ri
+</span><span class='line'>ruby /usr/bin/ruby
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El principal fichero de pacman, es <strong>/etc/pacman.conf</strong> y a diferencia de otros
+package managers, este es bien sencillo. Además, es MUY personalizable.</p>
+
+<p>Por ejemplo, la cláusala XferCommand, permite especificar que comando usar para
+bajar los paquetes. Las variables, %u y %o serán enviadas como URL del paquetes
+y fichero en disco.</p>
+
+<figure class='code'><figcaption><span>&#8216;scope de</span><a href='http://lazaro-armando.herokuapp.com/etc/pacman.conf''>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/pacman.conf<span class="p">|</span>grep Xfer
+</span><span class='line'><span class="c">#XferCommand = /usr/bin/curl --retry-delay 5 --progress-bar -C - -f %u &gt; %o</span>
+</span><span class='line'><span class="nv">XferCommand</span> <span class="o">=</span> /usr/bin/wget --no-cache -t <span class="m">0</span> -T <span class="m">10</span> --max-redirect<span class="o">=</span><span class="m">0</span> -w <span class="m">5</span> --passive-ftp -c -O %o %u
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ese es un buen ejemplo de una configuración para wget en conexiones &ldquo;hostiles&rdquo;.
+Para que tengas una idea de cuan personalizable puede llegar a ser:</p>
+
+<figure class='code'><figcaption><span>&#8220;NoExtract&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/pacman.conf<span class="p">|</span>grep NoEx
+</span><span class='line'><span class="nv">NoExtract</span> <span class="o">=</span> *.mo
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En este caso, los ficheros <strong>.mo</strong> no serán extraídos de los paquetes durante el
+proceso de instalación. Como yo uso el sistema en inglés, no me interesa tener
+las traducciones de sepetecientos idiomas.</p>
+
+<p>Los paquetes que instales, irán al directorio <strong>/var/cache/pacman/pkg/</strong> y
+podrías usar dicho directorio como repo para compartirlo con aquellos que no
+tiene acceso a internet; o bien, llevártelo para tu casa, lugar donde te
+integras al grupo antes mencionado.</p>
+
+<p>Quizás te interese crear tu propio repo. La idea de crear un repo a partir de la
+cache, le ha tirado un cabo a una pila de gente. En un viaje reciente que hice
+por el oriente de la isla, cargué mi laptop con todo el software necesario he
+instalé 3 servidores con arch <strong>sin conectarme a internet</strong> (vergonzosa hazaña).</p>
+
+<p>Con esta opción:</p>
+
+<figure class='code'><figcaption><span>&#8220;mantener paquetes&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/pacman.conf<span class="p">|</span>grep Clea
+</span><span class='line'><span class="nv">CleanMethod</span> <span class="o">=</span> KeepCurrent
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Aquellos paquetes que una vez fuero instalados se mantienen. Por tanto, supón
+que quieres tener en la otra máquina (la de tu casa) &ldquo;geary&rdquo; el cliente de
+correo. Simplemente lo instalas y lo desinstalas en la máquina privilegiada.</p>
+
+<figure class='code'><figcaption><span>&#8220;cacheando paquetes&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S geary <span class="o">&amp;&amp;</span> pacman -R geary
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora el paquete está en la cache, y aunque ya no está en el sistema, se
+conservará en la cache hasta que no lo borres. Claro, esto tiene como desventaja
+que no se bajarán actualizaciones para ese paquete.</p>
+
+<p>En mi caso, yo tengo este escripcito al que llamo <strong>mkrepo.sh</strong></p>
+
+<figure class='code'><figcaption><span>mkrepo.sh</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># elimina esa base de datos</span>
+</span><span class='line'>rm /var/cache/pacman/pkg/custom.db.tar.gz
+</span><span class='line'>
+</span><span class='line'><span class="c"># crea una nueva</span>
+</span><span class='line'>repo-add /var/cache/pacman/pkg/custom.db.tar.gz /var/cache/pacman/pkg/*.pkg.tar.xz
+</span><span class='line'>
+</span><span class='line'><span class="c"># dime que tengo que poner</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s1">&#39;&#39;&#39;</span>
+</span><span class='line'><span class="s1">[mirepo]</span>
+</span><span class='line'><span class="s1">SigLevel = Optional TrustAll</span>
+</span><span class='line'><span class="s1">Server = http://localhost:8080</span>
+</span><span class='line'><span class="s1">&#39;&#39;&#39;</span>
+</span><span class='line'><span class="c"># sírvelo con darkhttpd</span>
+</span><span class='line'>darkhttpd /var/cache/pacman/pkg/ --chroot --port 8080
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al correrlo, la cache se indexa; lista para ser usada como repo. El script hace
+un <strong>echo</strong>, para recordarte como sería la configuración que debes poner en
+/etc/pacman.conf para usar ese repo.</p>
+
+<p>Finalmente, darkhttpd (un servidor web que viene con el Live de arch) sirve ese
+repo.</p>
+
+<p>Quizás tengas una memoria flash donde creas el repo. En ese caso, bastaría con
+especificar una linea Server con la dirección file:///</p>
+
+<p>Server = file:///media/MEMORIA/repo/</p>
+
+<p>Simple verdad?</p>
+
+<p>Pensé hacer esta entrada más larga, pero sería aburrir al lector. En cambio,
+ahora ya sabes una parte, te dejo que investigues el resto.</p>
+
+<h4>Happy Hacking!</h4>
+]]></content>
+  </entry>
+  
+</feed>

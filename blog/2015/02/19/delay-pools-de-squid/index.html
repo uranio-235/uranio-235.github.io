@@ -1,0 +1,530 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>delay pools de squid - El SysAdmin del 3er Mundo</title>
+  <meta name="author" content="låzaro">
+
+  
+  <meta name="description" content="Los delay pool de squid, son una herramienta que permite determinar cuanto ancho
+de vianda le corresponde a ciertas conexiones. A mi en lo personal &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://lazaro-armando.herokuapp.com/blog/2015/02/19/delay-pools-de-squid/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
+  
+    <h2>lo que se siente al administrar servidores en cuba</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://www.google.com.cu" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="lazaro-armando.herokuapp.com">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/archives">Archivo</a></li>
+  <li><a href="/blog/categories/rails/">Ruby on Rails</a></li>
+  <li><a href="/blog/categories/destacado/">Destacado</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">delay pools de squid</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-19T12:03:48-05:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:03 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Los delay pool de squid, son una herramienta que permite determinar cuanto ancho
+de vianda le corresponde a ciertas conexiones. A mi en lo personal su uso me
+disgusta bastante; por el mero hecho de que pone a squid leeeeento. Cuando los
+delay pools están pinchando, las peticiones se demoran más al ser respondidas y
+el proto cache manager empieza a hacer cosas raras.</p>
+
+<p>En fin, cierra el chat, apriétate el cinto y abre las entendederas que esto es
+complicado&hellip;</p>
+
+<p>Supón que tienes 128Kbit y queremos repartir el ancho de vianda de manera
+&ldquo;equitativa&rdquo;</p>
+
+<p>El ancho de vianda se vende en KBit pero squid entiende de K Bytes.</p>
+
+<figure class='code'><figcaption><span>&#8216;conversion de Kbit/s a KBytes/s&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:611:0&gt; 128/8
+</span><span class='line'><span class="o">=</span>&gt; 16
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>O sea, que tú canal llega a los 16 Kylo Bytes por segundos&hellip;</p>
+
+<p>Nuestro discriminante sistema de castas, tendrá 2 clases</p>
+
+<p>&ldquo;lo dioses&rdquo; y &ldquo;los mortales&rdquo;</p>
+
+<p>Los dioses cuentan con el 60% del ancho de vianda disponible, mientras que los
+mortales solo cuentan con el 20%.</p>
+
+<p>OJO: No des a nadie el 100%, ya que podría acaparar todo el canal y dejar a todo
+el mundo sin navegación.</p>
+
+<p>Los delay pool de clase 2, son los que reparten &ldquo;ancho de banda por cabeza&rdquo;
+Osease, &ldquo;esto es lo que le toca a esa persona&rdquo;. Los parámetros de los delay pool
+de la clase dos son sucesivamente: ancho de banda y ráfaga</p>
+
+<p>El ancho de banda, no puede ser una cosa rígida, porque los datos no
+se transmiten de manera rígida. Aveces se requiere mucho ancho de banda
+durante 2 milisegundos para establecer una conexión SSL.</p>
+
+<p>Ahí es donde viene a jugar la ráfaga. Osea: &ldquo;cuanto ancho de banda
+máximo tendrá durante los picos&rdquo;</p>
+
+<p>Digamos que el delay pool será un 20% del canal</p>
+
+<figure class='code'><figcaption><span>&#8220;el 20%&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">612</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">16</span><span class="o">*</span><span class="mi">20</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="mi">1024</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">3072</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A la ráfaga le das un Kylo más</p>
+
+<figure class='code'><figcaption><span>&#8220;un kylo más&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">613</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">3072</span><span class="o">+</span><span class="mi">1024</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">4096</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El delay_pool te viene quedando así:</p>
+
+<figure class='code'><figcaption><span>&#8220;delay_pool #1&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>delay_parameters <span class="m">1</span> 3072/3072 4096/4096
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora creamos un delay_pool que tiene el 80% del ancho de banda</p>
+
+<figure class='code'><figcaption><span>&#8220;el 80%&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">614</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">16</span><span class="o">*</span><span class="mi">80</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="mi">1024</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">12288</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Sea entonces el delay_pool 2 así:</p>
+
+<figure class='code'><figcaption><span>&#8220;delay_pool #2&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>delay_parameters <span class="m">2</span> 12288/12288 13312/13312
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al final el squid.con</p>
+
+<figure class='code'><figcaption><span>&#8216;squid.conf&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># tendremos 2 delai puls</span>
+</span><span class='line'>delay_pools 2
+</span><span class='line'>
+</span><span class='line'><span class="c"># ambos de la clase 2</span>
+</span><span class='line'>delay_class <span class="m">1</span> 2
+</span><span class='line'>delay_class <span class="m">2</span> 2
+</span><span class='line'>
+</span><span class='line'><span class="c"># los mortales van al 20%</span>
+</span><span class='line'>delay_parameters <span class="m">1</span> 3072/3072 4096/4096
+</span><span class='line'>
+</span><span class='line'><span class="c"># y los dioses van al 80%</span>
+</span><span class='line'>delay_parameters <span class="m">2</span> 12288/12288 13312/13312
+</span><span class='line'>
+</span><span class='line'><span class="c"># los dioses, aquellos cuyo nombre de usuario machee esta lista</span>
+</span><span class='line'>acl dioses proxy_auth tuusuario eljefe eldirector lajevita lasecretaria
+</span><span class='line'>
+</span><span class='line'><span class="c"># en el 1 metemos a los dioses</span>
+</span><span class='line'>delay_access <span class="m">1</span> allow dioses
+</span><span class='line'>delay_access <span class="m">1</span> deny all
+</span><span class='line'>
+</span><span class='line'><span class="c"># el resto, pal 2</span>
+</span><span class='line'>delay_access <span class="m">2</span> allow all
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ah otra cosa! MUY IMPORTANTE</p>
+
+<h4>NADIE debe quedar fuera de delay pool una vez que creas el primero.</h4>
+
+<p>Si quieres TÚ (el informático que es tremendo decarao) quires navegar más rápido
+que nadie, create un delay pool con el 100% del ancho de banda, pero no te
+quedes fuera de ningún delaypool.</p>
+
+<p>Desde ese momento empezarás a acaparar todo el canal al punto de que NO se podrá
+navegar. A ese punto te buscarás un lío, no reserves para ti solo más del 80%
+del canal y navega con cordura.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">låzaro</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-02-19T12:03:48-05:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:03 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lazaro-armando.herokuapp.com/blog/2015/02/19/delay-pools-de-squid/" data-via="lazarumoxyde" data-counturl="http://lazaro-armando.herokuapp.com/blog/2015/02/19/delay-pools-de-squid/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/02/12/rails-con-mongodb/" title="Previous Post: rails con mongodb">&laquo; rails con mongodb</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/02/21/sasl-homeclub-only/" title="Next Post: SASL homeclub only">SASL homeclub only &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/10/15/repo-de-fdroid/">repo de fdroid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/05/assets-por-controlador/">assets por controlador</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/17/dhcp-por-grupos/">dhcp por grupos</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/10/plymouth-boot-screen/">plymouth boot screen</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/07/git-clone-rapido/">git clone rápido</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/07/archlinux-dos-kernel/">archlinux con dos kernel</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/01/squid-transparente/">squid transparente</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/28/compute-remote-uptime/">compute remote uptime</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/19/will-paginate/">will_paginate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/12/date-select-en-espanol/">date_select en español</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/11/openvas-en-archlinux/">OpenVAS en Archlinux</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/">añadir verbo a un scaffold</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/05/asset-pipeline-en-production/">asset pipeline en production</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/14/revocar-certificados-de-ovpn/">revocar certificados de OVPN</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/12/systemd-automount/">systemd automount</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/07/openvpn-en-arch/">OpenVPN en Arch</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/01/pacman-bajo-el-microscopio/">pacman bajo el microscopio</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/28/cambiar-user-agent-en-squid/">cambiar user agent con squid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/26/nic-bonding/">NIC bonding</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/23/ltsp-en-debian8-y-salud/">ltsp en debian8 y salud</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/22/rails-sin-turbolink/">rails sin turbolinks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/19/delay-pools-de-squid/">delay pools de squid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/12/rails-con-mongodb/">rails con mongodb</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/06/zentyal/">Zentyal</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/01/bundle/">bundle</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/02/welcome-aboard/">welcome aboard</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/24/verdial-y-el-imagis/">la pena de verdial</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/05/palos-de-wordpress/">palos de wordpress</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/25/mas-de-ocs/">más de OCS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/15/subdesarrollo/">subdesarrollo</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/11/ocs-inventory/">ocs-inventory</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/08/select-en-bootstrap/">select en bootstrap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/05/empirico/">empíricos</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/27/crear-un-chroot-con-debian/">crear un chroot con debian</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/10/autenticador-sql-en-el-proxy/">autenticador SQL en el proxy</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/09/postfix-entrando-en-el-baile/">postfix entrando en el baile</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - låzaro -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
