@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: rails | El SysAdmin del 3er Mundo]]></title>
-  <link href="http://lazaro-armando.herokuapp.com/blog/categories/rails/atom.xml" rel="self"/>
-  <link href="http://lazaro-armando.herokuapp.com/"/>
-  <updated>2015-10-15T19:22:11-04:00</updated>
-  <id>http://lazaro-armando.herokuapp.com/</id>
+  <link href="http://uranio-235.github.io/blog/categories/rails/atom.xml" rel="self"/>
+  <link href="http://uranio-235.github.io/"/>
+  <updated>2015-10-15T20:55:32-04:00</updated>
+  <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
     
@@ -15,10 +15,10 @@
   
   <entry>
     <title type="html"><![CDATA[assets por controlador]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/10/05/assets-por-controlador/"/>
+    <link href="http://uranio-235.github.io/blog/2015/10/05/assets-por-controlador/"/>
     <updated>2015-10-05T21:45:45-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/10/05/assets-por-controlador</id>
-    <content type="html"><![CDATA[<p><strong>NUNCA</strong>, he logrado entender, porque carajo el asset pipeline de Rails carga
+    <id>http://uranio-235.github.io/blog/2015/10/05/assets-por-controlador</id>
+    <content type="html"><![CDATA[<p><strong>NUNCA</strong>, he logrado entender, porque el asset pipeline de Rails carga
 <strong>TODAS</strong> las porquerías de todos los controladores en todas las vistas.</p>
 
 <p>¡¡¡Como si fuese poco tener que cargar el mismo javascript por controlador!!!</p>
@@ -120,9 +120,9 @@ con ambos. Veamos que trae rails 5 con esto, porque la mejora urge&hellip;</p>
   
   <entry>
     <title type="html"><![CDATA[will_paginate]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/07/19/will-paginate/"/>
+    <link href="http://uranio-235.github.io/blog/2015/07/19/will-paginate/"/>
     <updated>2015-07-19T14:58:30-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/07/19/will-paginate</id>
+    <id>http://uranio-235.github.io/blog/2015/07/19/will-paginate</id>
     <content type="html"><![CDATA[<p>De siempre, en materia de web la paginación ha sido tremendo rollo. A mi en lo
 personal no me gustan los paginadores; pienso que nadie los usa. Pero siempre
 hay un cliente que pide con mucho fervor detallitos que consideran importantes.</p>
@@ -214,9 +214,9 @@ y muéstrale tu agradecimiento. Yo ya lo hize ;)</p>
   
   <entry>
     <title type="html"><![CDATA[date_select en español]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/07/12/date-select-en-espanol/"/>
+    <link href="http://uranio-235.github.io/blog/2015/07/12/date-select-en-espanol/"/>
     <updated>2015-07-12T15:14:12-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/07/12/date-select-en-espanol</id>
+    <id>http://uranio-235.github.io/blog/2015/07/12/date-select-en-espanol</id>
     <content type="html"><![CDATA[<p>Algunos componentes de <a href="http://rubyonrails.org/">Ruby on Rails</a>, se pueden usar
 de manera independiente, como es el caso de
 <a href="https://github.com/rails/rails/tree/master/activerecord">active_record</a> (sin
@@ -345,9 +345,9 @@ ponerlos a tu manera. Osea, el contenido de ese YAML se lo adicionas al tuyo.</p
   
   <entry>
     <title type="html"><![CDATA[añadir verbo a un scaffold]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/07/05/anadir-verbo-a-un-scaffold/"/>
+    <link href="http://uranio-235.github.io/blog/2015/07/05/anadir-verbo-a-un-scaffold/"/>
     <updated>2015-07-05T21:35:54-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/07/05/anadir-verbo-a-un-scaffold</id>
+    <id>http://uranio-235.github.io/blog/2015/07/05/anadir-verbo-a-un-scaffold</id>
     <content type="html"><![CDATA[<p>Cualquiera que sepa como usar debidamente los scaffolds, o sea, cualquiera que
 sepa como hacerle la paja a ruby on rails para que haga lo que queremos; seguro
 habrá intentado en algún momento, añadir un nuevo método a un scaffold. Además,
@@ -403,9 +403,9 @@ usuario.</p>
   
   <entry>
     <title type="html"><![CDATA[asset pipeline en production]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/07/05/asset-pipeline-en-production/"/>
+    <link href="http://uranio-235.github.io/blog/2015/07/05/asset-pipeline-en-production/"/>
     <updated>2015-07-05T20:57:49-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/07/05/asset-pipeline-en-production</id>
+    <id>http://uranio-235.github.io/blog/2015/07/05/asset-pipeline-en-production</id>
     <content type="html"><![CDATA[<p>La más resipingante característica de Ruby on Rails, amada por unos y odiada por
 otros; me refrito a las: &ldquo;asset pipeline&rdquo;</p>
 

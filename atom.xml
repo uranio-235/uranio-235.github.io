@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
-  <link href="http://lazaro-armando.herokuapp.com/atom.xml" rel="self"/>
-  <link href="http://lazaro-armando.herokuapp.com/"/>
-  <updated>2015-10-15T19:22:11-04:00</updated>
-  <id>http://lazaro-armando.herokuapp.com/</id>
+  <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
+  <link href="http://uranio-235.github.io/"/>
+  <updated>2015-10-15T20:55:32-04:00</updated>
+  <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
     
@@ -15,19 +15,18 @@
   
   <entry>
     <title type="html"><![CDATA[repo de fdroid]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/10/15/repo-de-fdroid/"/>
+    <link href="http://uranio-235.github.io/blog/2015/10/15/repo-de-fdroid/"/>
     <updated>2015-10-15T14:38:20-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/10/15/repo-de-fdroid</id>
+    <id>http://uranio-235.github.io/blog/2015/10/15/repo-de-fdroid</id>
     <content type="html"><![CDATA[<p>&ldquo;La que se avecina&rdquo;, sería una buena manera para describir la revolución de
 aparatos con android que habrá en el Calixto García muy pronto. Yo siempre con
 el paso al frente y las luz larga (modestia y aparte) estuve pensando que tener
-nuestro propio repositorio de aplicaciones para android , sería una buena manera
-de mantener a todo el mundo bien actualizado a quien tenga o no internet. Muchas
-personas no saben que para google play hay opciones, y aún, teniendo internet,
-asumen que no puede estar actualizado.</p>
+nuestro propio repositorio de aplicaciones para android; sería una buena manera
+de mantener a todo el mundo bien actualizado, sobre todo a aquellos que no
+tienen acceso a internet.</p>
 
 <p>Para el que no lo conozca, <a href="https://f-droid.org/">fdroid</a> es una herramienta
-cliente de repositorios, osea como google market pero libre.</p>
+cliente para repositorios de android, osea como google market pero libre.</p>
 
 <p>La mecánica es sencilla: Bajo los paquetes con
 <a href="http://www.aptoide.com">aptoide</a>, verifico que sean seguros y copio la cache
@@ -151,9 +150,9 @@ como estoy haciendo yo ahora.</p>
   
   <entry>
     <title type="html"><![CDATA[prawn, pdf con ruby]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/10/08/prawn-pdf-con-ruby/"/>
+    <link href="http://uranio-235.github.io/blog/2015/10/08/prawn-pdf-con-ruby/"/>
     <updated>2015-10-08T21:45:55-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/10/08/prawn-pdf-con-ruby</id>
+    <id>http://uranio-235.github.io/blog/2015/10/08/prawn-pdf-con-ruby</id>
     <content type="html"><![CDATA[<p>De siempre, los usuarios que fueron forzados a abandonar
 <a href="https://es.wikipedia.org/wiki/Microsoft_Access">MSAcces</a> por un motivo u otro;
 sienten un incontenible necesidad por los &ldquo;informes&rdquo;.</p>
@@ -321,10 +320,10 @@ crudo. Podrías también tirarlo pa un fichero así:</p>
   
   <entry>
     <title type="html"><![CDATA[assets por controlador]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/10/05/assets-por-controlador/"/>
+    <link href="http://uranio-235.github.io/blog/2015/10/05/assets-por-controlador/"/>
     <updated>2015-10-05T21:45:45-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/10/05/assets-por-controlador</id>
-    <content type="html"><![CDATA[<p><strong>NUNCA</strong>, he logrado entender, porque carajo el asset pipeline de Rails carga
+    <id>http://uranio-235.github.io/blog/2015/10/05/assets-por-controlador</id>
+    <content type="html"><![CDATA[<p><strong>NUNCA</strong>, he logrado entender, porque el asset pipeline de Rails carga
 <strong>TODAS</strong> las porquerías de todos los controladores en todas las vistas.</p>
 
 <p>¡¡¡Como si fuese poco tener que cargar el mismo javascript por controlador!!!</p>
@@ -479,9 +478,9 @@ con ambos. Veamos que trae rails 5 con esto, porque la mejora urge&hellip;</p>
   
   <entry>
     <title type="html"><![CDATA[dhcp por grupos]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/09/17/dhcp-por-grupos/"/>
+    <link href="http://uranio-235.github.io/blog/2015/09/17/dhcp-por-grupos/"/>
     <updated>2015-09-17T17:42:04-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/09/17/dhcp-por-grupos</id>
+    <id>http://uranio-235.github.io/blog/2015/09/17/dhcp-por-grupos</id>
     <content type="html"><![CDATA[<p>La fiebre LTSP sigue subiendo en el Calixto. La solución definitiva para toda
 máquina que butee por la red, sin importar su cantidad de RAM o micro&hellip;</p>
 
@@ -672,9 +671,9 @@ porque servidor bootear.</p>
   
   <entry>
     <title type="html"><![CDATA[plymouth boot screen]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/09/10/plymouth-boot-screen/"/>
+    <link href="http://uranio-235.github.io/blog/2015/09/10/plymouth-boot-screen/"/>
     <updated>2015-09-10T18:28:48-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/09/10/plymouth-boot-screen</id>
+    <id>http://uranio-235.github.io/blog/2015/09/10/plymouth-boot-screen</id>
     <content type="html"><![CDATA[<p>Sigo con mi plan de &ldquo;civilizarme&rdquo;, me he propuesto dejar de parecer un friki en
 materia de software. He cambiado i3 por MATE (en la máquina personal) e incluso
 tengo un tema en el grub. Intenté cambiar Atom por Vim, evolution por mutt y
@@ -855,9 +854,9 @@ por detrás de plymouth, presiona &ldquo;home&rdquo; mientras butea.</p>
   
   <entry>
     <title type="html"><![CDATA[git clone rápido]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/09/07/git-clone-rapido/"/>
+    <link href="http://uranio-235.github.io/blog/2015/09/07/git-clone-rapido/"/>
     <updated>2015-09-07T22:36:56-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/09/07/git-clone-rapido</id>
+    <id>http://uranio-235.github.io/blog/2015/09/07/git-clone-rapido</id>
     <content type="html"><![CDATA[<p>En paises con internet lento (adivina a cual me refiero) el mero hecho de clonar
 un repositorio de git; puede llegar a ser un verdadero problema.</p>
 
@@ -872,9 +871,9 @@ un repositorio de git; puede llegar a ser un verdadero problema.</p>
   
   <entry>
     <title type="html"><![CDATA[archlinux con dos kernel]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/09/07/archlinux-dos-kernel/"/>
+    <link href="http://uranio-235.github.io/blog/2015/09/07/archlinux-dos-kernel/"/>
     <updated>2015-09-07T20:32:57-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/09/07/archlinux-dos-kernel</id>
+    <id>http://uranio-235.github.io/blog/2015/09/07/archlinux-dos-kernel</id>
     <content type="html"><![CDATA[<p>Tener los dos kernel y elegir cual butear con el grub al principio; no es algo
 sencillo en archlinux.</p>
 
@@ -935,9 +934,9 @@ volátiles, uno nunca sabe cuando le va a hacer falta.</p>
   
   <entry>
     <title type="html"><![CDATA[squid transparente]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/09/01/squid-transparente/"/>
+    <link href="http://uranio-235.github.io/blog/2015/09/01/squid-transparente/"/>
     <updated>2015-09-01T14:23:00-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/09/01/squid-transparente</id>
+    <id>http://uranio-235.github.io/blog/2015/09/01/squid-transparente</id>
     <content type="html"><![CDATA[<p>La era de SSL, parece haber dejado a los proxies trasparentes un tanto pasados
 de moda. Los tiempos en que dos lineas de iptables resolvían el problema,
 simplemente quedaron atrás. Ahora necesitamos las dos lineas de iptables y un
@@ -1043,9 +1042,9 @@ direcciones URL a tu proxy.</p>
   
   <entry>
     <title type="html"><![CDATA[compute remote uptime]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/08/28/compute-remote-uptime/"/>
+    <link href="http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime/"/>
     <updated>2015-08-28T12:21:58-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/08/28/compute-remote-uptime</id>
+    <id>http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime</id>
     <content type="html"><![CDATA[<p>Vamos de atrás pa alante, el truco primero y la muela después.</p>
 
 <figure class='code'><figcaption><span>&#8220;nmap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -1091,9 +1090,9 @@ encendida y el uptime dice lo contrario.</p>
   
   <entry>
     <title type="html"><![CDATA[will_paginate]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/07/19/will-paginate/"/>
+    <link href="http://uranio-235.github.io/blog/2015/07/19/will-paginate/"/>
     <updated>2015-07-19T14:58:30-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/07/19/will-paginate</id>
+    <id>http://uranio-235.github.io/blog/2015/07/19/will-paginate</id>
     <content type="html"><![CDATA[<p>De siempre, en materia de web la paginación ha sido tremendo rollo. A mi en lo
 personal no me gustan los paginadores; pienso que nadie los usa. Pero siempre
 hay un cliente que pide con mucho fervor detallitos que consideran importantes.</p>
@@ -1206,9 +1205,9 @@ y muéstrale tu agradecimiento. Yo ya lo hize ;)</p>
   
   <entry>
     <title type="html"><![CDATA[date_select en español]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/07/12/date-select-en-espanol/"/>
+    <link href="http://uranio-235.github.io/blog/2015/07/12/date-select-en-espanol/"/>
     <updated>2015-07-12T15:14:12-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/07/12/date-select-en-espanol</id>
+    <id>http://uranio-235.github.io/blog/2015/07/12/date-select-en-espanol</id>
     <content type="html"><![CDATA[<p>Algunos componentes de <a href="http://rubyonrails.org/">Ruby on Rails</a>, se pueden usar
 de manera independiente, como es el caso de
 <a href="https://github.com/rails/rails/tree/master/activerecord">active_record</a> (sin
@@ -1360,10 +1359,10 @@ ponerlos a tu manera. Osea, el contenido de ese YAML se lo adicionas al tuyo.</p
   
   <entry>
     <title type="html"><![CDATA[OpenVAS en Archlinux]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/07/11/openvas-en-archlinux/"/>
+    <link href="http://uranio-235.github.io/blog/2015/07/11/openvas-en-archlinux/"/>
     <updated>2015-07-11T19:19:59-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/07/11/openvas-en-archlinux</id>
-    <content type="html"><![CDATA[<p><img class="left" src="http://lazaro-armando.herokuapp.com/images/greenbone.png" title="Login del Greenbone" alt="Login del Greenbone"></p>
+    <id>http://uranio-235.github.io/blog/2015/07/11/openvas-en-archlinux</id>
+    <content type="html"><![CDATA[<p><img class="left" src="http://uranio-235.github.io/images/greenbone.png" title="Login del Greenbone" alt="Login del Greenbone"></p>
 
 <p>Recientemente, un &ldquo;Webmaster&rdquo; usó en uno de los servidores que patrocino; un
 escaner de vulnerabilidades. El administrador de red del lugar, le dio acceso al
@@ -1465,11 +1464,11 @@ usuario será <strong>admin</strong> con password <strong>admin</strong>.</p>
 <p>Una vez dentro, verás la página donde se almacenan los escaneos. Ahí localiza un
 botón morado con una barita mágica. Vea la imagen de abajo</p>
 
-<p><img class="center" src="http://lazaro-armando.herokuapp.com/images/openvas_wiz.png" title="Botón del Wizard" alt="Botón del Wizard"></p>
+<p><img class="center" src="http://uranio-235.github.io/images/openvas_wiz.png" title="Botón del Wizard" alt="Botón del Wizard"></p>
 
 <p>En la pantalla que le sigue, especificamos el host al que queremos escanear.</p>
 
-<p><img class="center" src="http://lazaro-armando.herokuapp.com/images/openvas_scan.png" title="Seleccionar Objetivo" alt="Seleccionar objetivo"></p>
+<p><img class="center" src="http://uranio-235.github.io/images/openvas_scan.png" title="Seleccionar Objetivo" alt="Seleccionar objetivo"></p>
 
 <p>Apto seguido, comenzará el escaneo. Es posible que el servidor deje de prestar
 servicios; pues openvas le da con todo.</p>
@@ -1478,13 +1477,13 @@ servicios; pues openvas le da con todo.</p>
 verás; como en la primera imagen, un letrero que dice &ldquo;<strong>done</strong>&rdquo; sobre la barra
 azul.</p>
 
-<p><img class="center" src="http://lazaro-armando.herokuapp.com/images/openvas_result.png" title="resultado del escaneo" alt="resultado de escaneo"></p>
+<p><img class="center" src="http://uranio-235.github.io/images/openvas_result.png" title="resultado del escaneo" alt="resultado de escaneo"></p>
 
 <p>La imagen muestra, el resultado del webmaster que le tiró piedras al tejado del
 vecino con el suyo de vidrio. Al hacer click en la vulnerabilidad, nos muestra
 la solución, como es el ejemplo de esta:</p>
 
-<p><img class="center" src="http://lazaro-armando.herokuapp.com/images/openvas_sol.png" title="solución" alt="solución"></p>
+<p><img class="center" src="http://uranio-235.github.io/images/openvas_sol.png" title="solución" alt="solución"></p>
 
 <p>Hermosa pareja; el problema y la solución junticos&hellip;</p>
 ]]></content>
@@ -1492,9 +1491,9 @@ la solución, como es el ejemplo de esta:</p>
   
   <entry>
     <title type="html"><![CDATA[añadir verbo a un scaffold]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/07/05/anadir-verbo-a-un-scaffold/"/>
+    <link href="http://uranio-235.github.io/blog/2015/07/05/anadir-verbo-a-un-scaffold/"/>
     <updated>2015-07-05T21:35:54-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/07/05/anadir-verbo-a-un-scaffold</id>
+    <id>http://uranio-235.github.io/blog/2015/07/05/anadir-verbo-a-un-scaffold</id>
     <content type="html"><![CDATA[<p>Cualquiera que sepa como usar debidamente los scaffolds, o sea, cualquiera que
 sepa como hacerle la paja a ruby on rails para que haga lo que queremos; seguro
 habrá intentado en algún momento, añadir un nuevo método a un scaffold. Además,
@@ -1572,9 +1571,9 @@ usuario.</p>
   
   <entry>
     <title type="html"><![CDATA[asset pipeline en production]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/07/05/asset-pipeline-en-production/"/>
+    <link href="http://uranio-235.github.io/blog/2015/07/05/asset-pipeline-en-production/"/>
     <updated>2015-07-05T20:57:49-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/07/05/asset-pipeline-en-production</id>
+    <id>http://uranio-235.github.io/blog/2015/07/05/asset-pipeline-en-production</id>
     <content type="html"><![CDATA[<p>La más resipingante característica de Ruby on Rails, amada por unos y odiada por
 otros; me refrito a las: &ldquo;asset pipeline&rdquo;</p>
 
@@ -1623,9 +1622,9 @@ enlaces a las assets.</p>
   
   <entry>
     <title type="html"><![CDATA[bootstrap en rails 4]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/06/30/bootstrap-en-rails-4/"/>
+    <link href="http://uranio-235.github.io/blog/2015/06/30/bootstrap-en-rails-4/"/>
     <updated>2015-06-30T12:19:42-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/06/30/bootstrap-en-rails-4</id>
+    <id>http://uranio-235.github.io/blog/2015/06/30/bootstrap-en-rails-4</id>
     <content type="html"><![CDATA[<p>Pensaba escribir una entrada sobre como hacer que se vean los glyphicons luego
 de instalar la gema de boostrap en rails 4; pero, recientemente he recibido
 numerosas críticas, sobre entradas de mi blog. Dicen que hablo sobre como
@@ -1785,9 +1784,9 @@ declarando los componentes en los controladores.</p>
   
   <entry>
     <title type="html"><![CDATA[revocar certificados de OVPN]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/06/14/revocar-certificados-de-ovpn/"/>
+    <link href="http://uranio-235.github.io/blog/2015/06/14/revocar-certificados-de-ovpn/"/>
     <updated>2015-06-14T18:36:49-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/06/14/revocar-certificados-de-ovpn</id>
+    <id>http://uranio-235.github.io/blog/2015/06/14/revocar-certificados-de-ovpn</id>
     <content type="html"><![CDATA[<p>Acá en mi tierra, SSL es algo relativamente novedoso. Hasta el otro día, las
 conexiones cifradas eran la peste; pero ahora resulta que el SSL es
 prácticamente obligatorio.</p>
@@ -1891,9 +1890,9 @@ el cliente está mandándole, no le cuadra.</p>
   
   <entry>
     <title type="html"><![CDATA[systemd automount]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/06/12/systemd-automount/"/>
+    <link href="http://uranio-235.github.io/blog/2015/06/12/systemd-automount/"/>
     <updated>2015-06-12T12:18:10-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/06/12/systemd-automount</id>
+    <id>http://uranio-235.github.io/blog/2015/06/12/systemd-automount</id>
     <content type="html"><![CDATA[<p>Resulta que el todopoderoso <a href="https://wiki.archlinux.org/index.php/Systemd">systemd</a>
 tiene un soporte para automontar discos.</p>
 
@@ -1935,9 +1934,9 @@ monta con las opciones que le de la gana a el; te guste o no.</p>
   
   <entry>
     <title type="html"><![CDATA[OpenVPN en Arch]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/06/07/openvpn-en-arch/"/>
+    <link href="http://uranio-235.github.io/blog/2015/06/07/openvpn-en-arch/"/>
     <updated>2015-06-07T18:18:17-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/06/07/openvpn-en-arch</id>
+    <id>http://uranio-235.github.io/blog/2015/06/07/openvpn-en-arch</id>
     <content type="html"><![CDATA[<p>En Arch, todo es tan novedoso como complicado. Montar un servidor de VPN, pasa a
 ser una verdadera complicación. Pero todo empieza por el primer paso y termina
 cuando menos te lo esperas o más embullado estás.</p>
@@ -2436,9 +2435,9 @@ entiendas.</p>
   
   <entry>
     <title type="html"><![CDATA[transando a ext4]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/06/03/transando-a-ext4/"/>
+    <link href="http://uranio-235.github.io/blog/2015/06/03/transando-a-ext4/"/>
     <updated>2015-06-03T23:08:27-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/06/03/transando-a-ext4</id>
+    <id>http://uranio-235.github.io/blog/2015/06/03/transando-a-ext4</id>
     <content type="html"><![CDATA[<p>Una de mis grandes testarudeces (profesionales) siempre ha sido la negativa a
 usar ext4. Acostumbrado a los discos IDE, siempre me pareció que el journal
 escribía demasiado en el disco. Además, solía verse ext4dev y eso me sonaba a
@@ -2480,9 +2479,9 @@ memorias flash sea más óptimo.</p>
   
   <entry>
     <title type="html"><![CDATA[pacman bajo el microscopio]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/06/01/pacman-bajo-el-microscopio/"/>
+    <link href="http://uranio-235.github.io/blog/2015/06/01/pacman-bajo-el-microscopio/"/>
     <updated>2015-06-01T21:13:05-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/06/01/pacman-bajo-el-microscopio</id>
+    <id>http://uranio-235.github.io/blog/2015/06/01/pacman-bajo-el-microscopio</id>
     <content type="html"><![CDATA[<p>En este post, me propongo mostrarle algunas de las bondades de pacman. Cualquier
 que conozca Arch Linux, sabe de lo que estoy hablando.</p>
 
@@ -2658,7 +2657,7 @@ package managers, este es bien sencillo. Además, es MUY personalizable.</p>
 bajar los paquetes. Las variables, %u y %o serán enviadas como URL del paquetes
 y fichero en disco.</p>
 
-<figure class='code'><figcaption><span>&#8216;scope de</span><a href='http://lazaro-armando.herokuapp.com/etc/pacman.conf''>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>&#8216;scope de</span><a href='http://uranio-235.github.io/etc/pacman.conf''>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/pacman.conf<span class="p">|</span>grep Xfer

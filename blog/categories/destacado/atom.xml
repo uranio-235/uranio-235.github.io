@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: destacado | El SysAdmin del 3er Mundo]]></title>
-  <link href="http://lazaro-armando.herokuapp.com/blog/categories/destacado/atom.xml" rel="self"/>
-  <link href="http://lazaro-armando.herokuapp.com/"/>
-  <updated>2015-10-15T19:22:11-04:00</updated>
-  <id>http://lazaro-armando.herokuapp.com/</id>
+  <link href="http://uranio-235.github.io/blog/categories/destacado/atom.xml" rel="self"/>
+  <link href="http://uranio-235.github.io/"/>
+  <updated>2015-10-15T20:55:32-04:00</updated>
+  <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[archlinux con dos kernel]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/09/07/archlinux-dos-kernel/"/>
+    <link href="http://uranio-235.github.io/blog/2015/09/07/archlinux-dos-kernel/"/>
     <updated>2015-09-07T20:32:57-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/09/07/archlinux-dos-kernel</id>
+    <id>http://uranio-235.github.io/blog/2015/09/07/archlinux-dos-kernel</id>
     <content type="html"><![CDATA[<p>Tener los dos kernel y elegir cual butear con el grub al principio; no es algo
 sencillo en archlinux.</p>
 
@@ -67,9 +67,9 @@ volátiles, uno nunca sabe cuando le va a hacer falta.</p>
   
   <entry>
     <title type="html"><![CDATA[compute remote uptime]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/08/28/compute-remote-uptime/"/>
+    <link href="http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime/"/>
     <updated>2015-08-28T12:21:58-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/08/28/compute-remote-uptime</id>
+    <id>http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime</id>
     <content type="html"><![CDATA[<p>Vamos de atrás pa alante, el truco primero y la muela después.</p>
 
 <pre><code class="bash "nmap"">[root@artema ~]# nmap -O -v 10.1.1.1|grep -i uptime
@@ -112,9 +112,9 @@ encendida y el uptime dice lo contrario.</p>
   
   <entry>
     <title type="html"><![CDATA[OpenVAS en Archlinux]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/07/11/openvas-en-archlinux/"/>
+    <link href="http://uranio-235.github.io/blog/2015/07/11/openvas-en-archlinux/"/>
     <updated>2015-07-11T19:19:59-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/07/11/openvas-en-archlinux</id>
+    <id>http://uranio-235.github.io/blog/2015/07/11/openvas-en-archlinux</id>
     <content type="html"><![CDATA[<p><img class="left" src="/images/greenbone.png" title="&ldquo;Login del Greenbone&rdquo; &ldquo;Login del Greenbone&rdquo;" ></p>
 
 <p>Recientemente, un &ldquo;Webmaster&rdquo; usó en uno de los servidores que patrocino; un
@@ -225,9 +225,9 @@ la solución, como es el ejemplo de esta:</p>
   
   <entry>
     <title type="html"><![CDATA[OpenVPN en Arch]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/06/07/openvpn-en-arch/"/>
+    <link href="http://uranio-235.github.io/blog/2015/06/07/openvpn-en-arch/"/>
     <updated>2015-06-07T18:18:17-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/06/07/openvpn-en-arch</id>
+    <id>http://uranio-235.github.io/blog/2015/06/07/openvpn-en-arch</id>
     <content type="html"><![CDATA[<p>En Arch, todo es tan novedoso como complicado. Montar un servidor de VPN, pasa a
 ser una verdadera complicación. Pero todo empieza por el primer paso y termina
 cuando menos te lo esperas o más embullado estás.</p>
@@ -548,9 +548,9 @@ entiendas.</p>
   
   <entry>
     <title type="html"><![CDATA[cambiar user agent con squid]]></title>
-    <link href="http://lazaro-armando.herokuapp.com/blog/2015/05/28/cambiar-user-agent-en-squid/"/>
+    <link href="http://uranio-235.github.io/blog/2015/05/28/cambiar-user-agent-en-squid/"/>
     <updated>2015-05-28T18:46:04-04:00</updated>
-    <id>http://lazaro-armando.herokuapp.com/blog/2015/05/28/cambiar-user-agent-en-squid</id>
+    <id>http://uranio-235.github.io/blog/2015/05/28/cambiar-user-agent-en-squid</id>
     <content type="html"><![CDATA[<p>En esta sofocante tarde de verano cubano y en un lugar que no diré, me encontré
 detrás de un proxy administrador por la
 <a href="http://es.wikipedia.org/wiki/Schutzstaffel">Schutzstaffel</a>. Lo que no se
