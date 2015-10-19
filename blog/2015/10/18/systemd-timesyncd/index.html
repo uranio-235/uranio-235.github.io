@@ -5,14 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>compute remote uptime - El SysAdmin del 3er Mundo</title>
+  <title>systemd-timesyncd - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Vamos de atrás pa alante, el truco primero y la muela después. "nmap"1
-2
-[root@artema ~]# nmap -O -v 10.1.1.1|grep -i uptime
-Uptime guess: 18.006 &hellip;">
+  <meta name="description" content="Mantener un reloj sincronizado y en hora, siempre ha sido un dilema. Algunas
+personas no reconocen la necesidad de esto; y además son tan imbéciles, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -21,7 +19,7 @@ Uptime guess: 18.006 &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/10/18/systemd-timesyncd/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -72,7 +70,7 @@ Uptime guess: 18.006 &hellip;">
   
   <header>
     
-      <h1 class="entry-title">compute remote uptime</h1>
+      <h1 class="entry-title">systemd-timesyncd</h1>
     
     
       <p class="meta">
@@ -81,53 +79,92 @@ Uptime guess: 18.006 &hellip;">
 
 
 
-<time class='entry-date' datetime='2015-08-28T12:21:58-04:00'><span class='date'>28/08/2015</span> <span class='time'>12:21 pm</span></time>
+<time class='entry-date' datetime='2015-10-18T13:19:01-04:00'><span class='date'>18/10/2015</span> <span class='time'>1:19 pm</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Vamos de atrás pa alante, el truco primero y la muela después.</p>
+<div class="entry-content"><p>Mantener un reloj sincronizado y en hora, siempre ha sido un dilema. Algunas
+personas no reconocen la necesidad de esto; y además son tan imbéciles, que
+luego se quejan cuando la desfasada fecha de su computadora les impide
+conectarse a un sitio SSL.</p>
 
-<figure class='code'><figcaption><span>&#8220;nmap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>En los servidores y en las estaciones de trabajo que se respeten; siempre ha
+sido una opción usar un cliente NTP. Pero los ntp, cuando la fecha no está en el
+día adecuado, no se toman la molestia de sincronizar. En los raspberry-pi eso
+puede llegar a ser un tremendo problema, ya que NO tienen reloj de hardware y ni
+siquiera conservan la fecha.</p>
+
+<p>El tan criticado <a href="https://es.wikipedia.org/wiki/Systemd">Systemd</a>, tiene una
+solución para este problema. Sucia y burda, pero muy eficiente. Normalmente, los
+&ldquo;clientes&rdquo; <a href="https://es.wikipedia.org/wiki/Network_Time_Protocol">NTP</a>, son
+cliente y servidor. En el caso de systemd-timsyncd, no se tomaron la molestia de
+implementar un servidor; solamente un cliente minimalista. Además, guarda las
+sincronizaciones en un fichero, para determinar si tu reloj de hardware se
+adelante o atraza y contrarrestar dicho efecto.</p>
+
+<p>Lo bueno que tiene es que agarra la fecha y hora de cualquier parte; luego, la
+setea sin chistar. La configuración es sencillísima. Localiza el fichero:</p>
+
+<p><strong>/etc/systemd/timesyncd.conf</strong></p>
+
+<p>Declárale un servidor principal y si te da la gana, uno o varios adicionales. A
+mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>/etc/systemd/timesyncd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># nmap -O -v 10.1.1.1|grep -i uptime</span>
-</span><span class='line'>Uptime guess: 18.006 days <span class="o">(</span>since Fri Aug <span class="m">10</span> 12:24:47 2015<span class="o">)</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#  This file is part of systemd.</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#  systemd is free software; you can redistribute it and/or modify it</span>
+</span><span class='line'><span class="c">#  under the terms of the GNU Lesser General Public License as published by</span>
+</span><span class='line'><span class="c">#  the Free Software Foundation; either version 2.1 of the License, or</span>
+</span><span class='line'><span class="c">#  (at your option) any later version.</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># You can override the directives in this file by creating files in</span>
+</span><span class='line'><span class="c"># /etc/systemd/timesyncd.conf.d/*.conf.</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># See timesyncd.conf(5) for details</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Time<span class="o">]</span>
+</span><span class='line'><span class="nv">NTP</span><span class="o">=</span>time.hcg.sld.cu
+</span><span class='line'><span class="nv">FallbackNTP</span><span class="o">=</span>time.sld.cu time.microsoft.com
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h4>¿Que acaba de suceder?</h4>
+<p>Generalmente, mi laptop está en el calixto, por eso puse mi servidor local como
+primario; pero si no lo estuviera, de seguro <strong>time.sld.cu</strong> sería alcanzable. En
+el dificilísimo caso de que estuviera de cara a internet, quizás responda el de
+microsoft, que no está malo. Por cierto, los comentarios del fichero son
+bastante útiles, vale la pena leerlos.</p>
 
-<p>Calculamos el tiempo que lleva el servidor remoto en pie. Fíjese que nos dice la
-fecha en la que el servidor arrancó.</p>
+<p>Por último, lo más importante, habilitar y arrancar el servicio:</p>
 
-<h4>¿Para que sirve esta información?</h4>
+<p>systemctl <strong>start</strong> systemd-timesyncd.service</p>
 
-<p>Para poner al responsable de la computadora remota <em>contra las cuerdas</em> en una
-situación crítica donde el momento de encendido o apagado de la máquina podría
-ser crucial.</p>
+<p>systemctl <strong>enable</strong> systemd-timesyncd.service</p>
 
-<h4>Ejemplos:</h4>
+<p>Para saber el estado del servicio, corre:</p>
 
-<p>Nuestro proveedor, el servidor proxy padre, afirma descaradamente que NO ha
-tenido problemas técnicos, pero nosotros sabemos que sí. En una discución
-crucial podría dejarle caer la pregunta. <em>¿Entonces porque su servidor se
-reinició el día tal?</em></p>
+<p><strong>timedatectl</strong></p>
 
-<p>Un servicio determinado falla a una hora determinada de la noche. Con esto
-podríamos saber si el servidor se está reiniciando, cuando y con que frecuencia.</p>
-
-<p>El proveedor dice que ha tenido que reiniciar el servidor cuando en realidad
-nunca lo ha hecho.</p>
-
-<p>El usuario dice que la máquina se le reinicia constantemente.</p>
-
-<p>El usuario o el proveedor afirman que la máquina fue encendida a una hora
-determinada. O por el contrario, se afirma que la máquina a esa hora NO estaba
-encendida y el uptime dice lo contrario.</p>
-
-<p>   <blockquote><p>Saque usted, sus propias concluciones&hellip;</p><footer><strong>Taladrid</strong> <cite>Pasaje a Lo Desconocido</cite></footer></blockquote></p>
+<p>Te dirá la hora local y la UTC; te dirá además si está sincronizando por NTP.
+Con ese comando puede hacer un montón de operaciones, por ejemplo, setear
+la hora civilizadamente, ya que este la pone en el RTC también.</p>
 </div>
 
 
@@ -143,21 +180,15 @@ encendida y el uptime dice lo contrario.</p>
 
 
 
-<time class='entry-date' datetime='2015-08-28T12:21:58-04:00'><span class='date'>28/08/2015</span> <span class='time'>12:21 pm</span></time>
+<time class='entry-date' datetime='2015-10-18T13:19:01-04:00'><span class='date'>18/10/2015</span> <span class='time'>1:19 pm</span></time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/destacado/'>destacado</a>
-  
-</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/10/18/systemd-timesyncd/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/10/18/systemd-timesyncd/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -170,10 +201,8 @@ encendida y el uptime dice lo contrario.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/07/19/will-paginate/" title="Previous Post: will_paginate">&laquo; will_paginate</a>
+        <a class="basic-alignment left" href="/blog/2015/10/16/palo-con-la-wifi/" title="Previous Post: palo con la wifi">&laquo; palo con la wifi</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2015/09/01/squid-transparente/" title="Next Post: squid transparente">squid transparente &raquo;</a>
       
     </p>
   </footer>

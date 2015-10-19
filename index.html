@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="&ldquo;La que se avecina&rdquo;, sería una buena manera para describir la revolución de
-aparatos con android que habrá en el Calixto García muy &hellip;">
+  <meta name="description" content="Mantener un reloj sincronizado y en hora, siempre ha sido un dilema. Algunas
+personas no reconocen la necesidad de esto; y además son tan imbéciles, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -39,7 +39,7 @@ aparatos con android que habrá en el Calixto García muy &hellip;">
   <header role="banner"><hgroup>
   <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
   
-    <h2>servidores con linux & ruby on rails en Cuba</h2>
+    <h2>luchando contra el subdesarrollo en todos los frentes</h2>
   
 </hgroup>
 
@@ -73,6 +73,190 @@ aparatos con android que habrá en el Calixto García muy &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2015/10/18/systemd-timesyncd/">systemd-timesyncd</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-10-18T13:19:01-04:00'><span class='date'>18/10/2015</span> <span class='time'>1:19 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Mantener un reloj sincronizado y en hora, siempre ha sido un dilema. Algunas
+personas no reconocen la necesidad de esto; y además son tan imbéciles, que
+luego se quejan cuando la desfasada fecha de su computadora les impide
+conectarse a un sitio SSL.</p>
+
+<p>En los servidores y en las estaciones de trabajo que se respeten; siempre ha
+sido una opción usar un cliente NTP. Pero los ntp, cuando la fecha no está en el
+día adecuado, no se toman la molestia de sincronizar. En los raspberry-pi eso
+puede llegar a ser un tremendo problema, ya que NO tienen reloj de hardware y ni
+siquiera conservan la fecha.</p>
+
+<p>El tan criticado <a href="https://es.wikipedia.org/wiki/Systemd">Systemd</a>, tiene una
+solución para este problema. Sucia y burda, pero muy eficiente. Normalmente, los
+&ldquo;clientes&rdquo; <a href="https://es.wikipedia.org/wiki/Network_Time_Protocol">NTP</a>, son
+cliente y servidor. En el caso de systemd-timsyncd, no se tomaron la molestia de
+implementar un servidor; solamente un cliente minimalista. Además, guarda las
+sincronizaciones en un fichero, para determinar si tu reloj de hardware se
+adelante o atraza y contrarrestar dicho efecto.</p>
+
+<p>Lo bueno que tiene es que agarra la fecha y hora de cualquier parte; luego, la
+setea sin chistar. La configuración es sencillísima. Localiza el fichero:</p>
+
+<p><strong>/etc/systemd/timesyncd.conf</strong></p>
+
+<p>Declárale un servidor principal y si te da la gana, uno o varios adicionales. A
+mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>/etc/systemd/timesyncd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#  This file is part of systemd.</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#  systemd is free software; you can redistribute it and/or modify it</span>
+</span><span class='line'><span class="c">#  under the terms of the GNU Lesser General Public License as published by</span>
+</span><span class='line'><span class="c">#  the Free Software Foundation; either version 2.1 of the License, or</span>
+</span><span class='line'><span class="c">#  (at your option) any later version.</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># You can override the directives in this file by creating files in</span>
+</span><span class='line'><span class="c"># /etc/systemd/timesyncd.conf.d/*.conf.</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># See timesyncd.conf(5) for details</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Time<span class="o">]</span>
+</span><span class='line'><span class="nv">NTP</span><span class="o">=</span>time.hcg.sld.cu
+</span><span class='line'><span class="nv">FallbackNTP</span><span class="o">=</span>time.sld.cu time.microsoft.com
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Generalmente, mi laptop está en el calixto, por eso puse mi servidor local como
+primario; pero si no lo estuviera, de seguro <strong>time.sld.cu</strong> sería alcanzable. En
+el dificilísimo caso de que estuviera de cara a internet, quizás responda el de
+microsoft, que no está malo. Por cierto, los comentarios del fichero son
+bastante útiles, vale la pena leerlos.</p>
+
+<p>Por último, lo más importante, habilitar y arrancar el servicio:</p>
+
+<p>systemctl <strong>start</strong> systemd-timesyncd.service</p>
+
+<p>systemctl <strong>enable</strong> systemd-timesyncd.service</p>
+
+<p>Para saber el estado del servicio, corre:</p>
+
+<p><strong>timedatectl</strong></p>
+
+<p>Te dirá la hora local y la UTC; te dirá además si está sincronizando por NTP.
+Con ese comando puede hacer un montón de operaciones, por ejemplo, setear
+la hora civilizadamente, ya que este la pone en el RTC también.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/16/palo-con-la-wifi/">palo con la wifi</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-10-16T12:40:04-04:00'><span class='date'>16/10/2015</span> <span class='time'>12:40 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Vale la pena hacer una entrada de esto, porque podría ser el problema de alguien
+que como yo; se cansó de alarse los pelos y buscar en google.</p>
+
+<p>Recién no se cuando me bajé una versión de algo que involucra al networkmanager
+y BUN! La wifi, cada vez que levantaba al susodicho, se bloqueaba.</p>
+
+<p>El problema parecía estar en el fichero:</p>
+
+<p><strong>/var/lib/NetworkManager/NetworkManager.state</strong></p>
+
+<p>No se porque, decía tener la wifi deshabilitada. El fichero contiene algo como
+esto:</p>
+
+<figure class='code'><figcaption><span>NetworkManager.state</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>main<span class="o">]</span>
+</span><span class='line'><span class="nv">NetworkingEnabled</span><span class="o">=</span><span class="nb">true</span>
+</span><span class='line'><span class="nv">WirelessEnabled</span><span class="o">=</span><span class="nb">true</span>
+</span><span class='line'><span class="nv">WWANEnabled</span><span class="o">=</span><span class="nb">true</span>
+</span><span class='line'><span class="nv">WimaxEnabled</span><span class="o">=</span><span class="nb">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No se por qué, la clave <strong>NetworkingEnabled</strong> estaba con valor <strong>false</strong> y al
+arrancar NetworkManager, bloqueaba la wifi, al punto que al levantarla
+manualmente, me decía que tenía que desbloquearla con rfkill. Para el que no lo
+sepa, con rfkill se pueden bloquear los radios.</p>
+
+<p>Si por casualidad tienes alguno bloqueado, ejecuta:</p>
+
+<p>rfkill unblock all</p>
+
+<p>Cosa que tenía que ejecutar cada vez que arrancaba el dichóso NetworkManager</p>
+
+<p>Probé apagar la wifi y arrancar el networkmanager con la wifi apagada, para ver
+si eso cambiaba algo en el fichero antes mencionado; pero no. Lo cual me llevó a
+la conclusión de que no fue una metedura de pata mía si no, un bug.</p>
+
+<p>Ponerle atributo inmutable a ese fichero podría ser una solución, pero todo lo
+que está en /var suele ser un dato volátil que señala el estado de algo, así que
+ponerle inmutable podría causar fallos en la aplicación.</p>
+
+<p>Si ese fichero está en /var es porque el network manager dumpea ahí su estado,
+fíjese que está junto a los lease del DHCP. No tengo certeza de que modificando
+esa configuración manualmente esta persista; pero ya llevo una semana con el
+problema resuelto.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2015/10/15/repo-de-fdroid/">repo de fdroid</a></h1>
     
     
@@ -82,7 +266,7 @@ aparatos con android que habrá en el Calixto García muy &hellip;">
 
 
 
-<time class='entry-date' datetime='2015-10-15T14:38:20-04:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>2:38 pm</span></time>
+<time class='entry-date' datetime='2015-10-15T14:38:20-04:00'><span class='date'>15/10/2015</span> <span class='time'>2:38 pm</span></time>
         
       </p>
     
@@ -237,7 +421,7 @@ como estoy haciendo yo ahora.</p>
 
 
 
-<time class='entry-date' datetime='2015-10-08T21:45:55-04:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:45 pm</span></time>
+<time class='entry-date' datetime='2015-10-08T21:45:55-04:00'><span class='date'>08/10/2015</span> <span class='time'>9:45 pm</span></time>
         
       </p>
     
@@ -427,7 +611,7 @@ crudo. Podrías también tirarlo pa un fichero así:</p>
 
 
 
-<time class='entry-date' datetime='2015-10-05T21:45:45-04:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:45 pm</span></time>
+<time class='entry-date' datetime='2015-10-05T21:45:45-04:00'><span class='date'>05/10/2015</span> <span class='time'>9:45 pm</span></time>
         
       </p>
     
@@ -605,7 +789,7 @@ con ambos. Veamos que trae rails 5 con esto, porque la mejora urge&hellip;</p>
 
 
 
-<time class='entry-date' datetime='2015-09-17T17:42:04-04:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:42 pm</span></time>
+<time class='entry-date' datetime='2015-09-17T17:42:04-04:00'><span class='date'>17/09/2015</span> <span class='time'>5:42 pm</span></time>
         
       </p>
     
@@ -804,246 +988,6 @@ porque servidor bootear.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/10/plymouth-boot-screen/">plymouth boot screen</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-09-10T18:28:48-04:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>6:28 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Sigo con mi plan de &ldquo;civilizarme&rdquo;, me he propuesto dejar de parecer un friki en
-materia de software. He cambiado i3 por MATE (en la máquina personal) e incluso
-tengo un tema en el grub. Intenté cambiar Atom por Vim, evolution por mutt y
-double-cmd por mc; pero por gusto, acabé virando pa atrá.</p>
-
-<p>Una de las cosas que antes solía molestarme en las distros duras como debian,
-era el hecho de que no tuvieran una pantalla bien bonita mientras buteaban.
-Ubuntu por ejemplo, te pone las bolitas.</p>
-
-<p>Archlinux es particularmente rápido buteando, pero aún tenía conmigo mismo la
-deuda del bootscren pendiente.</p>
-
-<p>Resulta que ya splashy no se usa, ahora la talla es un software con nombre de
-almendrón: Plymouth</p>
-
-<p>Plymouth, es una proyecto de fedora, para proveer una pantalla de buteo a nivel
-de framebuffer. Hoy en día casi todas las distros butean con el framebuffer en
-la máxima resolución posible, así que me imagino que Plymouth sea algo bastante
-simple.</p>
-
-<p>En el repo de arch no está incluido pero como todo, está disponible en AUR. La
-rutina ya la conoces. Selecciona el que dice plymouth pelao.</p>
-
-<figure class='code'><figcaption><span>&#8220;yaourt&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>yaourt plymouth
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora vamos a cambiar unos parámetros en el generador de imágenes de inicio.
-Localiza el fichero <strong>/etc/mkinitcpio.conf</strong> y ahí vamos a cambiar unos
-parámetros.</p>
-
-<p>Primero necesitaremos poner el <strong>HOOK</strong> para plymouth. La documentación advierte
-que debe ser después de <strong>base</strong> y de <strong>udev</strong>, así que mejor <strong>ponlo de
-último</strong>. Por tanto, dentro de las comillas colocarás <strong>plymouth</strong> como un
-objeto más de dicha lista; como el último.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/mkinitcpio.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">HOOKS</span><span class="o">=</span><span class="s2">&quot;base udev fulanito menganito el_ultimo plymouth&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>Nota para los imbéciles:</strong> <em>Si copias y pegas el código anterior, el sistema no te arrancará más.</em></p>
-
-<p>Necesitaremos el módulo apropiado para pinchar el framebufer. En mi caso,
-desgraciadamente, uso nvidia, así que me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/mkinitcpio.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">MODULES</span><span class="o">=</span><span class="s2">&quot;nouveau&quot;</span>
-</span><span class='line'><span class="c">#MODULES=&quot;i915&quot;</span>
-</span><span class='line'><span class="c">#MODULES=&quot;radeon&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Fíjate que los demás quedaron a modo de comentario. Te aclaro que <strong>i915</strong> es
-para las tarjetas de video Intel.</p>
-
-<p>Ahora tenemos que decirle al grub, que incluya el parámetro <strong>splash</strong> en la
-linea de buteo. Eso lo hacemos editando el fichero <strong>/etc/default/grub</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/default/grub&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">GRUB_CMDLINE_LINUX_DEFAULT</span><span class="o">=</span><span class="s2">&quot;quiet splash&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Yo en lo personal suelo quitarle &ldquo;quiet&rdquo; porque me gusta ver lo que hace el
-sistema mientras butea. Aunque ya no da tiempo. Como te dije, los sistemas
-modernos butean MUY rápido. Es más el tiempo en que carga init o el display
-manager, que el de buteo como tal.</p>
-
-<p>Más adelante veremos que hacer para que la pantalla se vea más tiempo, por ahora
-terminemos de configurar. Tanto el grub como initramfs, tienen que reflejar los
-cambios</p>
-
-<figure class='code'><figcaption><span>&#8220;reflejando cambios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>grub-mkconfig -o /boot/grub/grub.cfg
-</span><span class='line'>mkinitcpio -p linux
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Si usas linux-lts, corre:</p>
-
-<figure class='code'><figcaption><span>&#8220;reflejando cambios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkinitcpio -p linux-lts
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Algo que suele molestar, es que el display manager te caiga en la cara de
-pronto. Arch suele manejar bien ese tema, pero por si acaso, nos aseguramos de
-habilitar la unit para cada display manager.</p>
-
-<p>En mi caso yo uso slim y corrí:</p>
-
-<figure class='code'><figcaption><span>&#8220;enable&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl <span class="nb">enable </span>slim-plymouth.service
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Puede que el tuyo sea:</p>
-
-<ul>
-<li>gdm-plymouth.service</li>
-<li>kdm-plymouth.service</li>
-<li>lxdm-plymouth.service</li>
-</ul>
-
-
-<p>Con eso ya debe estar listo para pinchar pero vamos a darle unos toquesitos
-finales.</p>
-
-<p>El fichero <strong>/etc/plymouth/plymouthd.conf</strong> contiene los parámetros de
-configuración de plymouth. El mío luce así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/plymouth/plymouthd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/plymouth/plymouthd.conf
-</span><span class='line'><span class="c"># Distribution defaults. Changes to this file will get overwritten during</span>
-</span><span class='line'><span class="c"># upgrades.</span>
-</span><span class='line'><span class="o">[</span>Daemon<span class="o">]</span>
-</span><span class='line'><span class="nv">Theme</span><span class="o">=</span>tribar
-</span><span class='line'><span class="nv">ShowDelay</span><span class="o">=</span>2
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El parámetro <strong>ShowDelay</strong>, define que tiempo se mostrará la pantalla. Como ya
-te dije, arch a mi me butea en segundos. Si pones 5 ahí, la pantalla de buteo se
-mostrará cinco segundos. Dos buteando y otros tres pa que tu la mires mostrando
-su animación. Yo cuando terminé de verla correr la primera vez; desinstalé
-plymouth. No me interesa tener 2 segundos adicionales de media por el mero hecho
-de que sea más bonito.</p>
-
-<p>El otro parámetro, <strong>Theme</strong>, setea el tema que usarás. Para ver que temas
-tienes en el menú, corre:</p>
-
-<figure class='code'><figcaption><span>&#8220;plymouth-set-default-theme&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>plymouth-set-default-theme -l
-</span><span class='line'>details
-</span><span class='line'>fade-in
-</span><span class='line'>glow
-</span><span class='line'>script
-</span><span class='line'>solar
-</span><span class='line'>spinfinity
-</span><span class='line'>spinner
-</span><span class='line'>text
-</span><span class='line'>tribar
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A mi me gustó &ldquo;tribar&rdquo; y el que viene por defecto también está lindo, pero es
-una copia al carbón de MacOS.</p>
-
-<h4>OJO!</h4>
-
-<p>Cada vez que cambies un parámetro ahí, debes correr &ldquo;mkinitcpio -p&rdquo;</p>
-
-<p>Ah! Una cosita, si en algún momento quieres ver lo que está haciendo el kernel
-por detrás de plymouth, presiona &ldquo;home&rdquo; mientras butea.</p>
-
-<p>Eso es todo. ¡Reinicia!</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/07/git-clone-rapido/">git clone rápido</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-09-07T22:36:56-04:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:36 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>En paises con internet lento (adivina a cual me refiero) el mero hecho de clonar
-un repositorio de git; puede llegar a ser un verdadero problema.</p>
-
-<figure class='code'><figcaption><span>&#8220;git&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone --depth<span class="o">=</span><span class="m">1</span> http://repositorio.tld/fulanito/aplicacion.git
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>¿Rápido verdad? Es que solo cogió el HEAD, no el historial de commits completo.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1057,6 +1001,14 @@ un repositorio de git; puede llegar a ser un verdadero problema.</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/10/18/systemd-timesyncd/">systemd-timesyncd</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/16/palo-con-la-wifi/">palo con la wifi</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/10/15/repo-de-fdroid/">repo de fdroid</a>

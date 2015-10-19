@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="De siempre, me ha molestado que los hacker de hipatia.net, hagan ataquitos para
-autenticarse por fuerza bruta. Mis paisanos suelen resolver ese &hellip;">
+  <meta name="description" content="Problema 21 de Mayo: La situación de los clientes ligeros en el Calixto no da más. El
+servidor DHCP del ardence dejó pinchar sin previo aviso. El &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -39,7 +39,7 @@ autenticarse por fuerza bruta. Mis paisanos suelen resolver ese &hellip;">
   <header role="banner"><hgroup>
   <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
   
-    <h2>servidores con linux & ruby on rails en Cuba</h2>
+    <h2>luchando contra el subdesarrollo en todos los frentes</h2>
   
 </hgroup>
 
@@ -73,6 +73,748 @@ autenticarse por fuerza bruta. Mis paisanos suelen resolver ese &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2015/05/23/ltsp-en-debian8-y-salud/">ltsp en debian8 y salud</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-23T01:46:08-04:00'><span class='date'>23/05/2015</span> <span class='time'>1:46 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Problema</h3>
+
+<p>21 de Mayo: La situación de los clientes ligeros en el Calixto no da más. El
+servidor DHCP del ardence dejó pinchar sin previo aviso. El encargado de los
+clientes ligeros, reinstaló todo y siguió sin pinchar. Luego determinó que era
+culpa de un virus. El incha-cojones de Windows vuelve a hacer de la suya.
+Mientras tanto, el caos se ríe de todos y se frota las manos.</p>
+
+<p>A la novena llamada preguntando &ldquo;cuando se arreglan los clientes ligeros&rdquo;
+determiné que la situación llevaba medidas drásticas, siendo hora de pasar el
+servidor al lado oscuro de la fuerza.</p>
+
+<p>Plan de migración: El miembro sobre la mesa.</p>
+
+<p>Tiempo estimado: Menos del que te imaginas.</p>
+
+<p>Por un lado, 6 clientes ligeros con un windows XP que se arrastra en los 128
+megas de RAM y un servidor dongan de manufactura vietnamita. Por el otro, más de
+6 usuarios quejándose porque su sistema funciona lento, cuando le da la gana y
+además deben reiniciar más de 10 veces al día. Eso sin contar que deben tener la
+información en memorias flash, porque no se guardan los cambios en las imágenes.</p>
+
+<h3>Solución</h3>
+
+<p>Linux Terminal Server Project, más conocido como &ldquo;LTSP&rdquo;.</p>
+
+<p>Instalar ltsp es un proceso relativamente fácil, sobre todo cuando tienes un
+tubo de internet a full.</p>
+
+<p>Pero detrás del proxy satánico de infomed; la cosa se vuelve un tanto compleja.</p>
+
+<p>Por suerte, el repo de debian en infomed está bien afinadito y ahora con el tubo
+de 2 megas, la cosa mejora considerablemente.</p>
+
+<p>Hay dos maneras de hacer esto, la fácil y novel; o la difícil y tediosa. En caso
+de la fácil, bastará con instalar el paquete &ldquo;ltsp-server-standalone&rdquo;; el cual
+instalará y configurará todo la orquesta de software requerido para pinchar lo
+que se conoce como ltsp. Entre ellos, el servidor dhcp de ics, el servidor
+tftp-hpa, la maritrónica que sirve la SWAP por nfs y todo el rebortillo de cosas
+que requiere NFS.</p>
+
+<p>Corre esto y ponte cómodo, que va pa largo&hellip;</p>
+
+<figure class='code'><figcaption><span>&#8220;ltsp-build-client&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> ltsp-build-client --http-proxy http://127.0.0.1:3128 <span class="se">\</span>
+</span><span class='line'> --mirror http://ftp.sld.cu/debian --security-mirror http://ftp.sld.cu/debian/ <span class="se">\</span>
+</span><span class='line'> --copy-sourceslist --copy-package-cache
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El comando que corriste, generó un fichero de configuración para el servidor
+dhcp de isc. Te sugiero que lo uses como DHCP.</p>
+
+<figure class='code'><figcaption><span>&#8220;ltsp-build-client&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp /etc/ltsp/dhcpd.conf /etc/dhcp/dhcpd.conf
+</span><span class='line'>systemctl restart isc-dhcp-server
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Muy importante NFS. En el fichero <strong>/etc/exports</strong> ponemos esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;contenido de</span><a href='/etc/exports"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/opt/ltsp *<span class="o">(</span>ro,no_root_squash,async,no_subtree_check<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y reiniciamos el servicio de NFS</p>
+
+<figure class='code'><figcaption><span>&#8220;reiniciando nfs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl restart nfs-kernel-server
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Cuando butees una máquina, el login no te pinchará. Deberás correr esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;crear el squash&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ltsp-update-sshkeys
+</span><span class='line'>ltsp-update-image --config-nbd
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La imagen que se instaló en /opt no es más que la matriz para crear un squashfs
+que se le sirve a los clientes. Con ese comando, reflejamos los cambios
+volviendo a crear la imagen &ldquo;squashada&rdquo;.</p>
+
+<p>Con eso te digo que si haces un cambio en la imagen, deberás correr ese comando.</p>
+
+<p>Ahora bien. Para que no queden lagunas mentales:</p>
+
+<h3>Todo lo que tendrán los usuarios, ESTÁ EN EL SERVIDOR</h3>
+
+<p>Por tanto, hay que instalar una interfaz visual EN EL SERVIDOR. Será lo que los
+clientes pinchen. Por supuesto, no necesariamente el servidor tiene que correr
+dicha interfaz. En mi caso yo instalé solo sistema base y luego corrí esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;instalar lxde completo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install task-lxde-desktop
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora el servidor está equipado con una interfaz visual, pero no la pincha, ya
+que no le instalamos ningún &ldquo;display manager&rdquo;; por tanto, las X no arrancan. El
+display manager lo tiene la imagen que levantan los clientes; nada menos que
+LDM.</p>
+
+<p>Los clientes levantan un LDM e inician sesión remota en el servidor.</p>
+
+<h2>¿se entendió?</h2>
+
+<p>Toas las instrucciones que cargará esta interfaz gráfica minimalista (el LDM de
+los clientes ligeros), se declaran en el fichero /opt/ltsp/i386/etc/lts.conf a
+mi me quedó así la primera versión de este fichero.</p>
+
+<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>default<span class="o">]</span>
+</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Dice que está configurado, que tiene sonido, que use dispositivos locales, que
+configure las X dinámicamente y que arranque lxde como sesión por defecto.</p>
+
+<p>Y ahí empezaron mis problemas. En mi caso, las canchanfletas que usé como
+clientes ligeros, tenían una tarjeta de video unichrome más extraña que un
+calsoncillo con tirantes. La pantalla se veía con una capa verde delante. Nunca
+había visto cosa igual.</p>
+
+<p>Solución. Levanta un cliente ligero, entra en la consola (con
+Ctrl+Alt+F1) y ejecuta:</p>
+
+<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>X -configure
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Eso te creará el fichero xorg.conf.new EN EL CLIENTE. A ese punto, se habrá
+generado una configuración de X decente. Pero ese fichero hay que ponerlo EN EL
+SERVIDOR:</p>
+
+<figure class='code'><figcaption><span>&#8220;monta que te queda&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>scp xorg.conf root@servidor:/opt/ltsp/i386/etc/X11/xorg.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora además, al servidor hay que especificarle que las X NO se auto-configuren
+y que en cambio, usen el fichero dado. Todo eso lo haremos en /opt/ltsp/i386/etc/lts.conf</p>
+
+<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>default<span class="o">]</span>
+</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
+</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>False
+</span><span class='line'>    <span class="nv">X_CONF</span><span class="o">=</span>/etc/X11/xorg.conf
+</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
+</span><span class='line'>    <span class="nv">MODULE_01</span> <span class="o">=</span> <span class="s2">&quot;usb-storage&quot;</span>
+</span><span class='line'>    <span class="nv">MODULE_02</span> <span class="o">=</span> <span class="s2">&quot;sd_mod&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Dice ahora que: Está configurado, tiene sonido, dispositivos locales (pa que
+pinchen las memorias flash), que levante lxde, que NO configure las X, que use
+el fichero dado, que la resolución de su pantalla 0 (la única) es de 1024x768 y
+además que meta ese par de módulos, pa que pinchen los puertos USB.</p>
+
+<p>Por supuesto, en el chroot que levanta el cliente, la ruta absoluta
+/etc/X11/xorg.conf es completamente válida.</p>
+
+<p>¡¡Ah, y no olvides volver a crear la imagen!!</p>
+
+<h3>pero de vuelta al servidor</h3>
+
+<p>Entre los palos más comunes, vemos uno que al iniciar la sesión dice que el
+usuario &ldquo;fulano&rdquo; no pertenece a netdev y que por tanto, el puñetero data-bus no
+arranca.</p>
+
+<figure class='code'><figcaption><span>&#8220;agregando a netdev&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>adduser fulano netdev
+</span><span class='line'>systemctl restart dbus
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Otro palo común es que las memorias NTFS se montan como solo lectura. Solución,
+instala ntfs-3g EN EL CHROOT que está en /opt y vuelve a crear la imagen.</p>
+
+<h3>Nota para los mentequieta:</h3>
+
+<p>Los usuarios se crean EN EL SERVIDOR no en la imagen.</p>
+
+<h3>Sugerencias</h3>
+
+<p>Cada cosa que los clientes ejecuten, lo harán en el servidor, y puedes ponerte a
+mirar con htop que proceso se está metiendo la RAM o el CPU, detener dicho
+proceso y requerir al usuario. Porque verás los procesos y el usuario que lo
+ejecuta. Déjame recordarte que Linux, es un sistema multitarea y multiusuarios
+de verdad.</p>
+
+<p>En mi caso, el servidor (los &ldquo;dongan&rdquo; vietnamitas) tiene dos discos duros. Monté
+uno para el sistema y la swap, el otro lo dejé para el /home.</p>
+
+<p>Mi servidor tiene 512 de RAM y aún con 4 clientes ligeros no ha llenado la mitad
+de la memoria. ¿Dime tu con 1 Giga de RAM?</p>
+
+<p>Por defecto, los homes de los usuarios se crean con permisos que los hace
+visibles entre si. Ejecuta: &ldquo;chmod 770 /home/fulano&rdquo; cada vez que crees un
+usuario. Si no, el home de este usuario será visible por los demás usuarios.</p>
+
+<p>¿Has pensando que ahora es más fácil hacerle salvas a las cosas? Todo está en el
+/home.</p>
+
+<p>No olvides decirle al usuario que ahora pueden hacer y guardar cambios en su
+&ldquo;perfil&rdquo; (como ellos le llaman) pues algunos están acostumbrados a que el
+cliente ligero No guarda cambios.</p>
+
+<p>Puedes decirle a tus usuarios que su perfil puede ser abierto desde cualquier
+cliente ligero de la flota. Lo cual les da cierta &ldquo;movilidad&rdquo;.</p>
+
+<p>Puedes decirle que si su cliente ligero se rompe no se preocupe, que su
+información está a salvo. Incluso, le recuerdas además que puede abrir su perfil
+desde otro cliente ligero que esté en la misma flota.</p>
+
+<p>Puedes hacer configuraciones individuales de cada máquina en el fichero
+<strong>/opt/ltsp/i386/etc/lts.conf</strong></p>
+
+<p>En donde dice <strong>[default]</strong> puedes poner la MAC del
+cliente.</p>
+
+<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># configuración genérica</span>
+</span><span class='line'><span class="o">[</span>default<span class="o">]</span>
+</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
+</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>False
+</span><span class='line'>    <span class="nv">X_CONF</span><span class="o">=</span>/etc/X11/xorg.conf
+</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
+</span><span class='line'>    <span class="nv">MODULE_01</span> <span class="o">=</span> <span class="s2">&quot;usb-storage&quot;</span>
+</span><span class='line'>    <span class="nv">MODULE_02</span> <span class="o">=</span> <span class="s2">&quot;sd_mod&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># configuración de un cliente individual el</span>
+</span><span class='line'><span class="c"># jefe no quiere que oiga música ni use</span>
+</span><span class='line'><span class="c"># memorias flash</span>
+</span><span class='line'><span class="o">[</span>00:90:4b:a2:55:05<span class="o">]</span>
+</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>False
+</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>False
+</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
+</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
+</span><span class='line'>
+</span><span class='line'><span class="c"># EOF</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Una buena idea, es usar un dhcp con las MAC e ip fijas para cada usuario, sería
+una mejor manera de cortar el bacalao. Así el servidor solo le respondería a sus
+clientes. Además, en caso de tener múltiples servidores de clientes ligeros, no
+tendrás otra opción, pues si no, cada cliente ligero buteará por donde mejor la
+parezca y seguro no querrás eso.</p>
+
+<p>En el servidor DHCP central, rechaza las MAC de los clientes si se dirigen al
+puerto 67, para que no reciban dicho servicio, así lo obligas a bootear por el
+servidor de clientes ligeros.</p>
+
+<figure class='code'><figcaption><span>&#8220;iptables&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>iptables -A INPUT -p tcp --dport <span class="m">67</span> -m mac --mac-source 00:90:4b:a2:55:05 -j DROP
+</span><span class='line'>iptables -A INPUT -p udp --dport <span class="m">67</span> -m mac --mac-source 00:90:4b:a2:55:05 -j DROP
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lo ideal sería que el DHCP central tuviera las direcciones MAC de los clientes y
+le diera los parámetros de buteo a cada cual, pero eso aún no lo he logrado.
+Hay algo que tiene que ver con el parámetro &ldquo;next server&rdquo;. He logrado que estos
+den con el tftp adecuado, pero luego tratan de contactar al propio servidor DHCP
+como servidor NFS.</p>
+
+<p>También podrías tener un firewall en el servidor de clientes ligeros. Que
+permite el DHCP solo a las MAC de los clientes. Así no le das DHCP a cualquiera.
+Además, podrías decirle también a ese servidor, que solo permite el tráfico de
+las MAC de los clientes ligeros. No me parece que un servidor como ese tenga que
+ser alcanzado por otra máquina.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/22/rails-sin-turbolink/">rails sin turbolinks</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-22T02:48:23-05:00'><span class='date'>22/02/2015</span> <span class='time'>2:48 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Una de las cosas que más me gusta de Rails 4.2 es que al fin se pueden crear
+aplicaciones SIN Turbolink. En versiones anterior estábamos obligados a
+deshabilitarlo luego de inicializada una App nueva y las cosas no siempre salían
+como esperábamos.</p>
+
+<p>Una de las características de las que se jacta la <a href="http://guides.rubyonrails.org/asset_pipeline.html">asset pipeline</a> de rails
+es que los Sprockets cargan de manera individual para cada controlador&hellip;</p>
+
+<p>Al menos eso dicen&hellip;</p>
+
+<p>Pero con la introducción de Turbolinks y con el cuento de la comprimidera, se
+cargan todos los Srockets de todos los controladores; formando tremenda
+morsilla.</p>
+
+<p>A todas esas, necesitas execjs instalado y por supuesto, nodejs o el dichoso
+therubyracer (ambos me caen como una patada en un cordal).</p>
+
+<p>Los que usan CoffeScript (le tienen miedo a JavaScript puro) necesitan toda esa
+porquería y por otra parte, al que no le guste andar enseñando su código
+JavaScript (porque son unos egoístas) Turbolinks y Uglifier les comprime y les
+hace tremenda morsilla ilegible a simple vista. Fíjese que bien le queda el
+nombre a la gema que comprime el JavaScript &ldquo;uglifier&rdquo;, algo así como &ldquo;afeador&rdquo;.</p>
+
+<p>Este cubano que está aquí, prefiere los &ldquo;.js.erb&rdquo; constantes y sonantes. Así que
+se pueden meter Turbolinks donde mejor le quepa. Mis &ldquo;.js&rdquo; están bajo la GPL y
+bien comentados, para todo el que quiera leerlos.</p>
+
+<p>Entonces vamos crear una App de rails, libre de Turbolinks, CoffeScript y demás
+gangárreas.</p>
+
+<h3>rails new ejemplo -T &ndash;skip-turbolinks</h3>
+
+<p>Al Gemfile le quitamos la porquería, a mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;Gemfile&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#source &#39;https://rubygems.org&#39;</span>
+</span><span class='line'><span class="n">source</span> <span class="s2">&quot;file:///media/sdb1/ruby/repo/&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Bundle edge Rails instead: gem &#39;rails&#39;, github: &#39;rails/rails&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;rails&#39;</span><span class="p">,</span> <span class="s1">&#39;4.2.0&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Use sqlite3 as the database for Active Record</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;sqlite3&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Use jquery as the JavaScript library</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;jquery-rails&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Bueno corre bundle install y terminamos la primera fase.</p>
+
+<p>Los próximo será localizar el layout principal y decirle que en que incluye solo
+los Sprockets que macheen a este controlador.</p>
+
+<p>Lo que teníamos así:</p>
+
+<figure class='code'><figcaption><span>&#8220;application.html.erb ORIGINAl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;title&gt;</span>Ejemplo<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>  <span class="err">&lt;</span>%= stylesheet_link_tag    &#39;application&#39;, media: &#39;all&#39; %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>%= javascript_include_tag &#39;application&#39; %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>%= csrf_meta_tags %&gt;
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">&lt;</span>%= yield %&gt;
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nos debe quedar así:</p>
+
+<figure class='code'><figcaption><span>&#8220;application.html.erb MODIFICADO&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;title&gt;</span>Ejemplo<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>  <span class="err">&lt;</span>%= stylesheet_link_tag    &#39;application&#39; %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>%= javascript_include_tag &#39;application&#39; %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>%= stylesheet_link_tag params[:controller] %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>%= javascript_include_tag params[:controller] %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>%= csrf_meta_tags %&gt;
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">&lt;</span>%= yield %&gt;
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>NO QUITAMOS el &lsquo;application&rsquo;, si no cargará SOLAMENTE los del controlador y nos
+interesa que a través de application se carguen otros; por ejemplo, nuestra css
+principal que debe estar presente en todas las rutas.</p>
+
+<p>OJO! Ahora debemos quitar el require_tree en &lsquo;application&rsquo; de los sprockets,
+tanto CSS como JS. Ya que si no, sería lo mismo, al cargar application, se
+cargarían TODOS los Sprockets.</p>
+
+<p>Además, seguro tiene tu CSS que quieres usar en TODO tu proyecto. Las declaramos
+ahí.</p>
+
+<figure class='code'><figcaption><span>&#8220;application.js ANTES&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">// This is a manifest file that&#39;ll be compiled into application.js, which will include all the files</span>
+</span><span class='line'><span class="c1">// listed below.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// Any JavaScript/Coffee file within this directory, lib/assets/javascripts, vendor/assets/javascripts,</span>
+</span><span class='line'><span class="c1">// or any plugin&#39;s vendor/assets/javascripts directory can be referenced here using a relative path.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// It&#39;s not advisable to add code directly here, but if you do, it&#39;ll appear at the bottom of the</span>
+</span><span class='line'><span class="c1">// compiled file.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details</span>
+</span><span class='line'><span class="c1">// about supported directives.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">//= require jquery</span>
+</span><span class='line'><span class="c1">//= require jquery_ujs</span>
+</span><span class='line'><span class="c1">//= require_tree . // esto lo quitamos</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Quitando la porquería:</p>
+
+<figure class='code'><figcaption><span>&#8220;application.js DESPUÉS&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">//= require jquery</span>
+</span><span class='line'><span class="c1">//= require jquery_ujs</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora hacemos lo mismo con las CSS</p>
+
+<figure class='code'><figcaption><span>&#8220;application.css ANTES&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="c">/*</span>
+</span><span class='line'><span class="c"> * This is a manifest file that&#39;ll be compiled into application.css, which will include all the files</span>
+</span><span class='line'><span class="c"> * listed below.</span>
+</span><span class='line'><span class="c"> *</span>
+</span><span class='line'><span class="c"> * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,</span>
+</span><span class='line'><span class="c"> * or any plugin&#39;s vendor/assets/stylesheets directory can be referenced here using a relative path.</span>
+</span><span class='line'><span class="c"> *</span>
+</span><span class='line'><span class="c"> * You&#39;re free to add application-wide styles to this file and they&#39;ll appear at the bottom of the</span>
+</span><span class='line'><span class="c"> * compiled file so the styles you add here take precedence over styles defined in any styles</span>
+</span><span class='line'><span class="c"> * defined in the other CSS/SCSS files in this directory. It is generally better to create a new</span>
+</span><span class='line'><span class="c"> * file per style scope.</span>
+</span><span class='line'><span class="c"> *</span>
+</span><span class='line'><span class="c"> *= require_tree .</span>
+</span><span class='line'><span class="c"> *= require_self</span>
+</span><span class='line'><span class="c"> */</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Luego de la dieta</p>
+
+<figure class='code'><figcaption><span>&#8220;application.css DESPUÉS</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="c">/*</span>
+</span><span class='line'><span class="c"> *= require_self</span>
+</span><span class='line'><span class="c"> *= require tu_css_general</span>
+</span><span class='line'><span class="c"> */</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Hasta aquí todo está lindo, pero resulta que al pasar por el pipeline, te dice
+una asset del controlador se filtró pa afuera y no será servida. Pero además da
+palo!</p>
+
+<p>Hay 2 maneras de solucionar esto.</p>
+
+<ul>
+<li> La fácil de copiar y manter; pero difícil de entender</li>
+<li> La que viene por defecto, fácil de entender y difícil de recordar o mantener</li>
+</ul>
+
+
+<p>Una manera, compleja y absoluta:</p>
+
+<p>Una vez más, los initializer salvan el día. Al initializers de las assets le agregamos esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;config/initializers/assets.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Be sure to restart your server when you modify this file.</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Version of your assets, change this if you want to expire all your assets.</span>
+</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;1.0&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Add additional assets to the asset load path</span>
+</span><span class='line'><span class="c1"># Rails.application.config.assets.paths &lt;&lt; Emoji.images_path</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Precompile additional assets.</span>
+</span><span class='line'><span class="c1"># application.js, application.css, and all non-JS/CSS in app/assets folder are already added.</span>
+</span><span class='line'><span class="c1"># Rails.application.config.assets.precompile += %w( search.js )</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># AQUÍ</span>
+</span><span class='line'><span class="c1"># le agregamos esto, tal como sale en la documentación oficial</span>
+</span><span class='line'><span class="c1"># http://guides.rubyonrails.org/asset_pipeline.html#precompiling-assets</span>
+</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">precompile</span> <span class="o">&lt;&lt;</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span> <span class="o">|</span><span class="n">path</span><span class="o">|</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">path</span> <span class="o">=~</span> <span class="sr">/\.(css|js)\z/</span>
+</span><span class='line'>    <span class="n">full_path</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">to_path</span>
+</span><span class='line'>    <span class="n">app_assets_path</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;app&#39;</span><span class="p">,</span> <span class="s1">&#39;assets&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_path</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">full_path</span><span class="o">.</span><span class="n">starts_with?</span> <span class="n">app_assets_path</span>
+</span><span class='line'>      <span class="kp">true</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="kp">false</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="kp">false</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En la documentación oficial sale ese burumba como remiendo para compilar todas
+las Assets pero tiene un logger true y false; lo cual da palo en rails 4.2 (y
+creo que en todos). Además: Para que loguear que se compiló toda es mierda? Si
+fallar la compilación; será logueado por el controlador ;)</p>
+
+<p>La simple y difícil de mantener:</p>
+
+<p>Sin la brujería anterior, habría que usar lo que dice el comentario y poner
+junto a search.js el resto de las assets. Quizás tú uses su CSS en solo fichero,
+siendo el caso, con añadir ese solo fichero, resolvió el problema.</p>
+
+<p>El rollo vendrá en que si agrega una CSS más tarde, no se recordará que debe
+compilarla; agregando el nombre al array donde está search.js.</p>
+
+<p>Nota para lo imbéciles: El fichero &ldquo;search.js&rdquo; es un ejemplo. Quítalo y pon el
+nombre de tu Asset</p>
+
+<p>A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;config/initializers/assets.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;1.0&#39;</span>
+</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">precompile</span> <span class="o">+=</span> <span class="sx">%w( tu_css_general.css tu_framework.js )</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¿Por qué esto es tan complejo? Porque Rails exhorta a sus usaurios a usar
+Turbolinks (realmente es la mejor opción) y la configuración por defecto, deja
+que Turbolinks se ocupe de esas cosas.</p>
+
+<h3>Turbolink es una muy buena opción!</h3>
+
+<p>Sobre todo para aplicaciones de cara a internet o bien de cara a una red lenta
+(infomed u otro PPP de Cuba). A mi en los personal Turbolinks me resulta un
+estorbo a la hora de desplegar una aplicación de rails en una máquina que
+carece de nodejs. Por ejemplo, algunos de mis clientes usan Ubuntu del año 4.</p>
+
+<h3>En mi opinión:</h3>
+
+<ul>
+<li><p> Turbolinks es un asco, tiene que mejorar mucho todavía</p></li>
+<li><p> CoffeScript sobra, al final debes saber JavaScript para programar con Coffe</p></li>
+</ul>
+
+
+<p>   <blockquote><p>Donde V8 o nodejs sean un problema, turbolinks lo será.</p><footer><strong>Murphy</strong> <cite>Ley De Turbolinks</cite></footer></blockquote></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a></h1>
     
     
@@ -82,7 +824,7 @@ autenticarse por fuerza bruta. Mis paisanos suelen resolver ese &hellip;">
 
 
 
-<time class='entry-date' datetime='2015-02-21T14:16:49-05:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>2:16 pm</span></time>
+<time class='entry-date' datetime='2015-02-21T14:16:49-05:00'><span class='date'>21/02/2015</span> <span class='time'>2:16 pm</span></time>
         
       </p>
     
@@ -133,7 +875,7 @@ otras muchas cosas que no imaginamos.</p>
 
 
 
-<time class='entry-date' datetime='2015-02-19T12:03:48-05:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:03 pm</span></time>
+<time class='entry-date' datetime='2015-02-19T12:03:48-05:00'><span class='date'>19/02/2015</span> <span class='time'>12:03 pm</span></time>
         
       </p>
     
@@ -306,7 +1048,7 @@ del canal y navega con cordura.</p>
 
 
 
-<time class='entry-date' datetime='2015-02-12T09:07:51-05:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:07 am</span></time>
+<time class='entry-date' datetime='2015-02-12T09:07:51-05:00'><span class='date'>12/02/2015</span> <span class='time'>9:07 am</span></time>
         
       </p>
     
@@ -618,7 +1360,7 @@ MongoMapper pinchando. Luego creas lo modelo y listo.</p>
 
 
 
-<time class='entry-date' datetime='2015-02-06T17:13:50-05:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:13 pm</span></time>
+<time class='entry-date' datetime='2015-02-06T17:13:50-05:00'><span class='date'>06/02/2015</span> <span class='time'>5:13 pm</span></time>
         
       </p>
     
@@ -683,301 +1425,6 @@ desarollar&hellip;</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/01/bundle/">bundle</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-02-01T11:40:20-05:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>11:40 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Parece que a mi paisanos, la portabilidad les resulta un problemón.</p>
-
-<p>Sienten una imperiosa necesidad de desarollar aplicaciones que corran en
-cualquier máquina. (yo prefiero una aplicación web que corra en la mia).
-Recién varios me han comentado que con ruby, la dependencias de gemas es un
-problema, a la hora de mover una aplicación.</p>
-
-<h3><a href="http://bundler.io/">PARECE QUE NO CONOCEN BUNDLER!!!</a></h3>
-
-<p>Bundler se describe a si mismo como:</p>
-
-<p><img class="center" src="/images/gembundler.png"></p>
-
-<p>Que además, es usado por muchísimas aplicaciones de Ruby.</p>
-
-<p>Bueno, veamos un ejemplo sencillo. Supongamos que tenemos la aplicacion y
-queremos que esta se distribuya en una o varias maquinas que solo cuentan con
-Ruby instalado.</p>
-
-<p>Bundler usa los llamados <a href="http://bundler.io/gemfile.html">Gemfiles</a> para manejar
-las dependencias de tu gema. Entonces. Empacaremos una aplicación con sinatra
-(un framework web sencillo).</p>
-
-<p>Creamos el directorio con la aplicacion:</p>
-
-<figure class='code'><figcaption><span>&#8220;nueva app&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~<span class="nv">$ </span>mkdir proyecto
-</span><span class='line'>lazaro@leviatan:~<span class="nv">$ </span><span class="nb">cd </span>proyecto/
-</span><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span>touch Gemfile
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Si no, haces el procedimiento normal en TU máquina</p>
-
-<figure class='code'><figcaption><span>&#8220;instalar bundler&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~<span class="nv">$ </span>gem in bundler
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En el gemfile, declaramos dos cosas básicas. El source (donde están las gemas) y
-las gemas. Supongamos que tiene acceso a internet (como es lógico pero poco usual).
-Su suorce sería así:</p>
-
-<figure class='code'><figcaption><span>&#8216;source&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;https://rubygems.org&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Pero si no tiene, supongamos que tiene el repo de gemas en una memoria, montada
-en /media/memoria/</p>
-
-<figure class='code'><figcaption><span>&#8216;source&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;file:///media/memoria/ruby/repo/&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Bueno, el gemfile de este ejemplo, usara las gemas de mi repo en la memoria. A
-mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>Gemfile </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;file:///media/sdb1/ruby/repo/&#39;</span>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;sinatra&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Si nada de eso te juega, puede usar &ndash;local y usara tu cache de gemas :D</h3>
-
-<p>Obviamente, también empaquetaremos bunlder, porque allá puede que no esté.</p>
-
-<figure class='code'><figcaption><span>&#8220;bundler install&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span>bundler ins --standalone
-</span><span class='line'>Fetching <span class="nb">source </span>index from file:/media/sdb1/ruby/repo/
-</span><span class='line'>Resolving dependencies...
-</span><span class='line'>Using bundler 1.7.2
-</span><span class='line'>Installing rack 1.5.2
-</span><span class='line'>Installing rack-protection 1.5.3
-</span><span class='line'>Installing tilt 1.4.1
-</span><span class='line'>Installing sinatra 1.4.5
-</span><span class='line'>Your bundle is <span class="nb">complete</span>!
-</span><span class='line'>It was installed into ./bundle
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>AY que lindo!!! Todo se empaquetó! Por si no lo notaste, el logo de bundler es
-un rollo de makingtype, lo que usa pa sellar las cajas, solo le falta la
-etiqueta que diga: &ldquo;listo para exportar&rdquo;</p>
-
-<p>Bueno, creamos una aplicación estupidamente simple con sinatra.</p>
-
-<figure class='code'><figcaption><span>aplicacion.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># he aquí el toque mágico</span>
-</span><span class='line'><span class="n">require_relative</span> <span class="s1">&#39;../bundle/bundler/setup&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;sinatra&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">get</span> <span class="s1">&#39;/&#39;</span> <span class="k">do</span>
-</span><span class='line'>   <span class="s1">&#39;Tírame la musiquita Frank!&#39;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Debes tener algo como esto en el directorio</p>
-
-<figure class='code'><figcaption><span>&#8221;~/proyecto&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span>ls
-</span><span class='line'>aplicacion.rb Gemfile  Gemfile.lock bundle
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Y listo, distruibuimos nuestra aplicaion en la computadora tercermundista sin
-acceso a internet.</p>
-
-<p>DIN DON DEN DIN! pasajeros con destino a donde el diablo dio las 7 voces y
-nadie lo escuchó; por favor, abordar el tren por el andén número 4. NO olviden
-llevar la memoria flash con la aplicacion.</p>
-
-<figure class='code'><figcaption><span>&#8220;empacando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span><span class="nb">cd</span> ..
-</span><span class='line'>lazaro@leviatan:~<span class="nv">$ </span>cp -ruv proyecto/ /media/sdb1/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Al fin, voy a estrenar mi juguete nuevo, un Raspberry Pi :D</p>
-
-<p>Llegamos al destino, montamos la memoria y ejecutamos la aplicacion DESDE
-BUNLDER.</p>
-
-<figure class='code'><figcaption><span>&#8220;empacando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>pi@raspberry:~/proyecto<span class="nv">$ </span>ruby aplicacion.rb
-</span><span class='line'><span class="o">[</span>2015-02-01 12:43:34<span class="o">]</span> INFO  WEBrick 1.3.1
-</span><span class='line'><span class="o">[</span>2015-02-01 12:43:34<span class="o">]</span> INFO  ruby 2.2.0 <span class="o">(</span>2014-12-25<span class="o">)</span> <span class="o">[</span>i686-linux<span class="o">]</span>
-</span><span class='line'><span class="o">==</span> Sinatra/1.4.5 has taken the stage on <span class="m">4567</span> <span class="k">for</span> development with backup from
-</span><span class='line'>WEBrick
-</span><span class='line'><span class="o">[</span>2015-02-01 12:43:34<span class="o">]</span> INFO  WEBrick::HTTPServer#start: <span class="nv">pid</span><span class="o">=</span><span class="m">4741</span> <span class="nv">port</span><span class="o">=</span>4567
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A ver&hellip;</p>
-
-<figure class='code'><figcaption><span>&#8220;1, 2, 3, Probando&#8230;&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>pi@raspberry:~<span class="nv">$ </span>w3m -dump http://localhost:4567
-</span><span class='line'>Tírame la musiquita Frank!
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Opensource y Cross Plataform</h3>
-
-<p>Señores, el código compilado APESTA!!!!</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/12/02/welcome-aboard/">welcome aboard</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-12-02T09:12:44-05:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2014</span></span> <span class='time'>9:12 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>De siempre, me ha gustado la paginita que pone ruby on rails en &ldquo;/&rdquo;. Pero
-sucede que en producción esto no sale. Sería genial tener eso como página de
-root, sobre todo cuando no tenemos/queremos mostrar una página CMS que diga
-click aquí o click allá para tal cosa.</p>
-
-<p>Resulta que esa vista está en railties y si adivinamos bien la ruta, la puedes
-renderizar en una vista que responde a &ldquo;/&rdquo;. Para eso, creamos el método
-&ldquo;welcome&rdquo; en el controlador genérico que está en controllers/application_controller.rb</p>
-
-<p>A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;controllers/application_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ApplicationController</span> <span class="o">&lt;</span> <span class="no">ActionController</span><span class="o">::</span><span class="no">Base</span>
-</span><span class='line'>  <span class="c1"># Prevent CSRF attacks by raising an exception.</span>
-</span><span class='line'>  <span class="c1"># For APIs, you may want to use :null_session instead.</span>
-</span><span class='line'>  <span class="n">protect_from_forgery</span> <span class="ss">with</span><span class="p">:</span> <span class="ss">:exception</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># agregamos el método &quot;welcome&quot;</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">welcome</span>
-</span><span class='line'>     <span class="n">render</span> <span class="ss">file</span><span class="p">:</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="no">Gem</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">first</span><span class="p">,</span><span class="s2">&quot;gems/railties-</span><span class="si">#{</span><span class="no">Rails</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">/lib/rails/templates/rails/welcome/index.html.erb&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Je! No creerías que me iba bajar con una rutica escrita que debería cambiar con
-cada release de rails verdad? Vamo, que no somos programadores por gusto y si
-estoy con rails desde la versión 2; no fue comiendome los mocos.</p>
-
-<p>Dividido en sílaba: File.join conjuga la ruta de, Gem.path.first, osea el repo
-con las gemas. Ahí ha de estar gem/railties- seguido por la versión de rails;
-que porsupuesto, no hay que leer el árbol de directorios para deducirla.</p>
-
-<p>Ahora el método welcome irá a buscar el welcome a board en railties. Solo falta
-declarar la ruta, pa que pinche en cualquier entorno.</p>
-
-<figure class='code'><figcaption><span>&#8220;config/routes.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>   <span class="c1"># el root clásico</span>
-</span><span class='line'>   <span class="n">get</span> <span class="s1">&#39;/&#39;</span> <span class="o">=&gt;</span> <span class="s2">&quot;application#welcome&quot;</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c1"># las demás rutas aquí abajo</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Bienvenido a bordo, estas sobre rieles!!!</h3>
-
-<p><img class="center" src="/images/welcomeaboard.png"></p>
-
-<p>El ejemplo esta hecho con &ldquo;get &lsquo;/&rsquo;&rdquo; por razones lógicas. Lo más apropiado es que
-seteeas &ldquo;application#welcome&rdquo; como root, en vez de hacer esa chapusería.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/6">&larr; Older</a>
@@ -993,6 +1440,14 @@ seteeas &ldquo;application#welcome&rdquo; como root, en vez de hacer esa chapuse
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/10/18/systemd-timesyncd/">systemd-timesyncd</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/16/palo-con-la-wifi/">palo con la wifi</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/10/15/repo-de-fdroid/">repo de fdroid</a>

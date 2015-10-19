@@ -5,14 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>compute remote uptime - El SysAdmin del 3er Mundo</title>
+  <title>palo con la wifi - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Vamos de atrás pa alante, el truco primero y la muela después. "nmap"1
-2
-[root@artema ~]# nmap -O -v 10.1.1.1|grep -i uptime
-Uptime guess: 18.006 &hellip;">
+  <meta name="description" content="Vale la pena hacer una entrada de esto, porque podría ser el problema de alguien
+que como yo; se cansó de alarse los pelos y buscar en google. Recién &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -21,7 +19,7 @@ Uptime guess: 18.006 &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/10/16/palo-con-la-wifi/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -72,7 +70,7 @@ Uptime guess: 18.006 &hellip;">
   
   <header>
     
-      <h1 class="entry-title">compute remote uptime</h1>
+      <h1 class="entry-title">palo con la wifi</h1>
     
     
       <p class="meta">
@@ -81,53 +79,62 @@ Uptime guess: 18.006 &hellip;">
 
 
 
-<time class='entry-date' datetime='2015-08-28T12:21:58-04:00'><span class='date'>28/08/2015</span> <span class='time'>12:21 pm</span></time>
+<time class='entry-date' datetime='2015-10-16T12:40:04-04:00'><span class='date'>16/10/2015</span> <span class='time'>12:40 pm</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Vamos de atrás pa alante, el truco primero y la muela después.</p>
+<div class="entry-content"><p>Vale la pena hacer una entrada de esto, porque podría ser el problema de alguien
+que como yo; se cansó de alarse los pelos y buscar en google.</p>
 
-<figure class='code'><figcaption><span>&#8220;nmap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>Recién no se cuando me bajé una versión de algo que involucra al networkmanager
+y BUN! La wifi, cada vez que levantaba al susodicho, se bloqueaba.</p>
+
+<p>El problema parecía estar en el fichero:</p>
+
+<p><strong>/var/lib/NetworkManager/NetworkManager.state</strong></p>
+
+<p>No se porque, decía tener la wifi deshabilitada. El fichero contiene algo como
+esto:</p>
+
+<figure class='code'><figcaption><span>NetworkManager.state</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># nmap -O -v 10.1.1.1|grep -i uptime</span>
-</span><span class='line'>Uptime guess: 18.006 days <span class="o">(</span>since Fri Aug <span class="m">10</span> 12:24:47 2015<span class="o">)</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>main<span class="o">]</span>
+</span><span class='line'><span class="nv">NetworkingEnabled</span><span class="o">=</span><span class="nb">true</span>
+</span><span class='line'><span class="nv">WirelessEnabled</span><span class="o">=</span><span class="nb">true</span>
+</span><span class='line'><span class="nv">WWANEnabled</span><span class="o">=</span><span class="nb">true</span>
+</span><span class='line'><span class="nv">WimaxEnabled</span><span class="o">=</span><span class="nb">true</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h4>¿Que acaba de suceder?</h4>
+<p>No se por qué, la clave <strong>NetworkingEnabled</strong> estaba con valor <strong>false</strong> y al
+arrancar NetworkManager, bloqueaba la wifi, al punto que al levantarla
+manualmente, me decía que tenía que desbloquearla con rfkill. Para el que no lo
+sepa, con rfkill se pueden bloquear los radios.</p>
 
-<p>Calculamos el tiempo que lleva el servidor remoto en pie. Fíjese que nos dice la
-fecha en la que el servidor arrancó.</p>
+<p>Si por casualidad tienes alguno bloqueado, ejecuta:</p>
 
-<h4>¿Para que sirve esta información?</h4>
+<p>rfkill unblock all</p>
 
-<p>Para poner al responsable de la computadora remota <em>contra las cuerdas</em> en una
-situación crítica donde el momento de encendido o apagado de la máquina podría
-ser crucial.</p>
+<p>Cosa que tenía que ejecutar cada vez que arrancaba el dichóso NetworkManager</p>
 
-<h4>Ejemplos:</h4>
+<p>Probé apagar la wifi y arrancar el networkmanager con la wifi apagada, para ver
+si eso cambiaba algo en el fichero antes mencionado; pero no. Lo cual me llevó a
+la conclusión de que no fue una metedura de pata mía si no, un bug.</p>
 
-<p>Nuestro proveedor, el servidor proxy padre, afirma descaradamente que NO ha
-tenido problemas técnicos, pero nosotros sabemos que sí. En una discución
-crucial podría dejarle caer la pregunta. <em>¿Entonces porque su servidor se
-reinició el día tal?</em></p>
+<p>Ponerle atributo inmutable a ese fichero podría ser una solución, pero todo lo
+que está en /var suele ser un dato volátil que señala el estado de algo, así que
+ponerle inmutable podría causar fallos en la aplicación.</p>
 
-<p>Un servicio determinado falla a una hora determinada de la noche. Con esto
-podríamos saber si el servidor se está reiniciando, cuando y con que frecuencia.</p>
-
-<p>El proveedor dice que ha tenido que reiniciar el servidor cuando en realidad
-nunca lo ha hecho.</p>
-
-<p>El usuario dice que la máquina se le reinicia constantemente.</p>
-
-<p>El usuario o el proveedor afirman que la máquina fue encendida a una hora
-determinada. O por el contrario, se afirma que la máquina a esa hora NO estaba
-encendida y el uptime dice lo contrario.</p>
-
-<p>   <blockquote><p>Saque usted, sus propias concluciones&hellip;</p><footer><strong>Taladrid</strong> <cite>Pasaje a Lo Desconocido</cite></footer></blockquote></p>
+<p>Si ese fichero está en /var es porque el network manager dumpea ahí su estado,
+fíjese que está junto a los lease del DHCP. No tengo certeza de que modificando
+esa configuración manualmente esta persista; pero ya llevo una semana con el
+problema resuelto.</p>
 </div>
 
 
@@ -143,21 +150,15 @@ encendida y el uptime dice lo contrario.</p>
 
 
 
-<time class='entry-date' datetime='2015-08-28T12:21:58-04:00'><span class='date'>28/08/2015</span> <span class='time'>12:21 pm</span></time>
+<time class='entry-date' datetime='2015-10-16T12:40:04-04:00'><span class='date'>16/10/2015</span> <span class='time'>12:40 pm</span></time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/destacado/'>destacado</a>
-  
-</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/10/16/palo-con-la-wifi/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/10/16/palo-con-la-wifi/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -170,10 +171,10 @@ encendida y el uptime dice lo contrario.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/07/19/will-paginate/" title="Previous Post: will_paginate">&laquo; will_paginate</a>
+        <a class="basic-alignment left" href="/blog/2015/10/15/repo-de-fdroid/" title="Previous Post: repo de fdroid">&laquo; repo de fdroid</a>
       
       
-        <a class="basic-alignment right" href="/blog/2015/09/01/squid-transparente/" title="Next Post: squid transparente">squid transparente &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2015/10/18/systemd-timesyncd/" title="Next Post: systemd-timesyncd">systemd-timesyncd &raquo;</a>
       
     </p>
   </footer>
