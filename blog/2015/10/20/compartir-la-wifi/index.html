@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>palos de wordpress - El SysAdmin del 3er Mundo</title>
+  <title>compartir la wifi - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Hay dos palos típicos de wordpress: El primero: Al hacer click en un post, devuelve 404 Solución: Un htaccess file para reescribir la URL "/usr/share &hellip;">
+  <meta name="description" content="Cada vez que paso por 23, me cuentro mil y una red cuyo ESSID tiene el sufijo
+Conectify delante. Insultado por semejante derroche de windows, le &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2014/09/05/palos-de-wordpress/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/10/20/compartir-la-wifi/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -81,7 +82,7 @@
   
   <header>
     
-      <h1 class="entry-title">palos de wordpress</h1>
+      <h1 class="entry-title">compartir la wifi</h1>
     
     
       <p class="meta">
@@ -90,7 +91,7 @@
 
 
 
-<time class='entry-date' datetime='2014-09-05T12:03:41-04:00'><span class='date'>05/09/2014</span> <span class='time'>12:03 pm</span></time>
+<time class='entry-date' datetime='2015-10-20T23:36:19-04:00'><span class='date'>20/10/2015</span> <span class='time'>11:36 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -100,13 +101,68 @@
   </header>
 
 
-<div class="entry-content"><p>Hay dos palos típicos de wordpress:</p>
+<div class="entry-content"><p>Cada vez que paso por 23, me cuentro mil y una red cuyo ESSID tiene el sufijo
+<strong>Conectify</strong> delante. Insultado por semejante derroche de windows, le comentaba
+a un colega, que daba tristeza no ver un linuxero ahí conectado.</p>
 
-<p>El primero: Al hacer click en un post, devuelve 404</p>
+<p>El socio me dijo: -en linux no se puede compartir la wifi</p>
 
-<p>Solución: Un htaccess file para reescribir la URL</p>
+<p>PA DARLE POR LA CARA!</p>
 
-<figure class='code'><figcaption><span>&#8220;/usr/share/wordpress/.htaccess&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>Tres paquetes nada más que hacen falta: <strong>iw</strong>, <strong>hostapd</strong> y <strong>bridge-utils</strong></p>
+
+<p>La idea es:</p>
+
+<ul>
+<li>crear una interfaz wifi como estacion</li>
+<li>crear una interfaz wifi como AP</li>
+<li>crear un interfaz bridge (puente)</li>
+<li>declarar que la interfaz de salida del puente, es la estacion</li>
+<li>echar a andar el AP por software</li>
+</ul>
+
+
+<h3>¿SE ENTENDIÓ?</h3>
+
+<p>La interfaz que usualmente vez como <strong>wlan0</strong> es en realidad <strong>phy0</strong>. ¿Quieres
+verlo? Corre esto:</p>
+
+<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw dev wlan0 del
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¿Te fijaste que wlan0 desapareció? No te preocupes, puedes volver a crearla.
+Así:</p>
+
+<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw phy phy0 interface add wlan0 <span class="nb">type </span>station
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como mismo hicimos una estación, podemos hacer un AP.</p>
+
+<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw phy phy0 interface add hotspot0 <span class="nb">type </span>__ap
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora creamos la interfaz de puente y le asignamos a <strong>wlan0</strong> como extremo de
+salida.</p>
+
+<figure class='code'><figcaption><span>br0</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brctl addbr br0
+</span><span class='line'>brctl addif br0 wlan0
+</span><span class='line'>ip link <span class="nb">set </span>up dev br0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora viene lo más importante, el AP. El fichero <strong>/etc/hostapd/hostapd.conf</strong>
+contendrá la configuración de nuestros AP. A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>/etc/hostapd/hostapd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -121,40 +177,33 @@
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>&lt;IfModule mod_rewrite.c&gt;
-</span><span class='line'>RewriteEngine On
-</span><span class='line'>RewriteBase /
-</span><span class='line'>RewriteCond %<span class="o">{</span>REQUEST_FILENAME<span class="o">}</span> !-f
-</span><span class='line'>RewriteCond %<span class="o">{</span>REQUEST_FILENAME<span class="o">}</span> !-d
-</span><span class='line'>RewriteRule . /index.php <span class="o">[</span>L<span class="o">]</span>
-</span><span class='line'>&lt;/IfModule&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;IfModule mod_rewrite.c&gt;
-</span><span class='line'>RewriteEngine On
-</span><span class='line'>RewriteBase /
-</span><span class='line'>RewriteRule ^index<span class="se">\.</span>php<span class="nv">$ </span>- <span class="o">[</span>L<span class="o">]</span>
-</span><span class='line'>RewriteRule ^files/<span class="o">(</span>.+<span class="o">)</span> wp-includes/ms-files.php?file<span class="o">=</span><span class="nv">$1</span> <span class="o">[</span>L<span class="o">]</span>
-</span><span class='line'>RewriteCond %<span class="o">{</span>REQUEST_FILENAME<span class="o">}</span> -f <span class="o">[</span>OR<span class="o">]</span>
-</span><span class='line'>RewriteCond %<span class="o">{</span>REQUEST_FILENAME<span class="o">}</span> -d
-</span><span class='line'>RewriteRule ^ - <span class="o">[</span>L<span class="o">]</span>
-</span><span class='line'>RewriteRule . index.php <span class="o">[</span>L<span class="o">]</span>
-</span><span class='line'>&lt;/IfModule&gt;
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">ssid</span><span class="o">=</span>Linux
+</span><span class='line'><span class="nv">wpa_passphrase</span><span class="o">=</span>secretisisimo
+</span><span class='line'><span class="nv">interface</span><span class="o">=</span>hostspot0
+</span><span class='line'><span class="nv">bridge</span><span class="o">=</span>br0
+</span><span class='line'><span class="nv">auth_algs</span><span class="o">=</span>3
+</span><span class='line'><span class="nv">channel</span><span class="o">=</span>7
+</span><span class='line'><span class="nv">driver</span><span class="o">=</span>nl80211
+</span><span class='line'><span class="nv">hw_mode</span><span class="o">=</span>g
+</span><span class='line'><span class="nv">logger_stdout</span><span class="o">=</span>-1
+</span><span class='line'><span class="nv">logger_stdout_level</span><span class="o">=</span>2
+</span><span class='line'><span class="nv">max_num_sta</span><span class="o">=</span>5
+</span><span class='line'><span class="nv">rsn_pairwise</span><span class="o">=</span>CCMP
+</span><span class='line'><span class="nv">wpa</span><span class="o">=</span>2
+</span><span class='line'><span class="nv">wpa_key_mgmt</span><span class="o">=</span>WPA-PSK
+</span><span class='line'><span class="nv">wpa_pairwise</span><span class="o">=</span>TKIP CCMP
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>El segundo, no se pueden modificar los estilos desde la interfaz web:</p>
+<p>y arráncalo:</p>
 
-<p>Solución: Cambiar los permisos</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@leviatan:~# chown -R www-data:www-data /usr/share/wordpress/
+<figure class='code'><figcaption><span>systemctl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl start hostapd
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Al carajo albañiles que se acabó la mezcla. Wordpress para rato&hellip;</p>
+<p>Entonces todo el que se conecte a tu Wifi, saldrá directo a la wifi que tienes
+conectada en tu máquina.</p>
 </div>
 
 
@@ -170,7 +219,7 @@
 
 
 
-<time class='entry-date' datetime='2014-09-05T12:03:41-04:00'><span class='date'>05/09/2014</span> <span class='time'>12:03 pm</span></time>
+<time class='entry-date' datetime='2015-10-20T23:36:19-04:00'><span class='date'>20/10/2015</span> <span class='time'>11:36 pm</span></time>
       
 
 
@@ -178,7 +227,7 @@
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2014/09/05/palos-de-wordpress/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2014/09/05/palos-de-wordpress/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/10/20/compartir-la-wifi/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/10/20/compartir-la-wifi/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -191,10 +240,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/08/25/el-server-de-correo/" title="Previous Post: el servidor de correo">&laquo; el servidor de correo</a>
+        <a class="basic-alignment left" href="/blog/2015/10/18/systemd-timesyncd/" title="Previous Post: systemd-timesyncd">&laquo; systemd-timesyncd</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/09/24/verdial-y-el-imagis/" title="Next Post: la pena de verdial">la pena de verdial &raquo;</a>
       
     </p>
   </footer>
@@ -436,8 +483,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2014/09/05/palos-de-wordpress/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2014/09/05/palos-de-wordpress/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2015/10/20/compartir-la-wifi/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2015/10/20/compartir-la-wifi/';
         var disqus_script = 'embed.js';
       
     (function () {

@@ -9,10 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Algunos componentes de Ruby on Rails, se pueden usar
-de manera independiente, como es el caso de
-active_record (sin
-dudas es el más potente). Pero &hellip;">
+  <meta name="description" content="De siempre, en materia de web la paginación ha sido tremendo rollo. A mi en lo
+personal no me gustan los paginadores; pienso que nadie los usa. Pero &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +79,144 @@ dudas es el más potente). Pero &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/19/will-paginate/">will_paginate</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-07-19T14:58:30-04:00'><span class='date'>19/07/2015</span> <span class='time'>2:58 pm</span></time>
+        
+           | <a href="/blog/2015/07/19/will-paginate/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/07/19/will-paginate/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>De siempre, en materia de web la paginación ha sido tremendo rollo. A mi en lo
+personal no me gustan los paginadores; pienso que nadie los usa. Pero siempre
+hay un cliente que pide con mucho fervor detallitos que consideran importantes.</p>
+
+<p>Una de las cosas que me gusta de MongoMapper es que viene con un paginador
+integrado, pero este no es el caso.</p>
+
+<p>No entiendo porque carajo ActiveRecords, que se jacta (con razón) de ser la ORM
+definitiva; no tiene un puñetero soporte nativo para la paginación. O porque
+esta subestimada gema, llamada
+<a href="https://github.com/mislav/will_paginate/">will_paginate</a> no viene incluida en
+el Gemfile que trae RoR por defecto. Se harían un buen favor.</p>
+
+<p>La cuestión es que will_paginate hace muy simple la tediosa tarea de paginar.</p>
+
+<figure class='code'><figcaption><span>&#8216;instalando will_paginate&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;gem &quot;will_paginate&quot;&#39;</span> &gt;&gt; Gemfile
+</span><span class='line'>bundle update
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora veamos como se pagina un modelo. Tengamos el ejemplo típico, el
+controlador &ldquo;User&rdquo; con los 1500 usuarios.</p>
+
+<figure class='code'><figcaption><span>&#8220;controlador del scaffold users&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="vi">@users</span><span class="o">=</span><span class="no">User</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">all</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">paginate</span><span class="p">(</span><span class="ss">:page</span> <span class="o">=&gt;</span> <span class="n">params</span><span class="o">[</span><span class="ss">:page</span><span class="o">]</span><span class="p">,</span> <span class="ss">:per_page</span> <span class="o">=&gt;</span> <span class="mi">15</span><span class="p">)</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="s1">&#39;updated_at asc&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>OJO! De la 3ra linea, te puedes tomar el atrevimiento de modificar el 15 y poner
+el número que te de la gana; pero NO toques al símbolo :page y su valor. En este
+caso, el 15 representa la cantidad de elementos que mostraremos por página.</p>
+
+<p>Te digo que no toques el params[:page] porque will_paginate lo hace todo solo.
+En la vista solo tienes que poner esto</p>
+
+<figure class='code'><figcaption><span>&#8220;app/views/users/index.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="x">   &lt;div class=&quot;text-center&quot;&gt;</span>
+</span><span class='line'><span class="x">      </span><span class="cp">&lt;%=</span> <span class="n">will_paginate</span> <span class="vi">@users</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">   &lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finalmente queda algo de lo más discreto pero 100% funcional:</p>
+
+<div class="text-center">
+<div class="pagination">
+<span class="previous_page disabled">&#8592; Anterior</span>
+<em class="current">1</em>
+<a rel="next" href="#">2</a> <a href="#">3</a>
+<a href="#">4</a>
+<a href="#">5</a>
+<a href="#">6</a> <a href="#">7</a>
+<a href="#">8</a> <a href="#">9</a>
+<span class="gap">&hellip;</span>
+<a href="#">28</a>
+<a href="#">29</a>
+<a class="next_page" rel="next" href="#">Próximo &#8594;</a>
+</div></div>
+
+
+<p>¡COOOOÑOóOOO! En español y todo. Por supuesto,  no es magia. Lo que pasa que el
+que hizo la gema, la hizo con tremendo cariño y parece conocer muy bien la API
+de ruby on rails; con lo cual tuvo muy en cuenta, la parte del i18n.</p>
+
+<p>Ejecute lo siguiente:</p>
+
+<figure class='code'><figcaption><span>&#8220;contenido de la gema&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>gem cont will_paginate<span class="p">|</span>grep en.yml
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Guíate por ese fichero y añádele a tu locale la traducción relacionada con
+will_paginate, en mi caso, quedo así:</p>
+
+<figure class='code'><figcaption><span>&#8220;en.yml&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">en</span><span class="p-Indicator">:</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># el locales de will_paginate</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">will_paginate</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">previous_label</span><span class="p-Indicator">:</span> <span class="s">&quot;&amp;#8592;</span><span class="nv"> </span><span class="s">Anterior&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">next_label</span><span class="p-Indicator">:</span> <span class="s">&quot;Próximo</span><span class="nv"> </span><span class="s">&amp;#8594;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">page_gap</span><span class="p-Indicator">:</span> <span class="s">&quot;&amp;hellip;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¡¡A paginar se ha dicho!!</p>
+
+<p>Thanks to <strong>Mislav Marohnić</strong> for you good job; developing will_paginate</p>
+
+<p>Si te ha gustado will_paginate, escríbele un <a href="mailto:mislav.marohnic@gmail.com">correo al autor</a>
+y muéstrale tu agradecimiento. Yo ya lo hize ;)</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -776,135 +912,6 @@ declarando los componentes en los controladores.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/14/revocar-certificados-de-ovpn/">revocar certificados de OVPN</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-14T18:36:49-04:00'><span class='date'>14/06/2015</span> <span class='time'>6:36 pm</span></time>
-        
-           | <a href="/blog/2015/06/14/revocar-certificados-de-ovpn/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/14/revocar-certificados-de-ovpn/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Acá en mi tierra, SSL es algo relativamente novedoso. Hasta el otro día, las
-conexiones cifradas eran la peste; pero ahora resulta que el SSL es
-prácticamente obligatorio.</p>
-
-<p>En el episodio anterior, hablábamos sobre OpenVPN. Mencionamos que la
-autenticación podría hacerse a nivel de certificados.</p>
-
-<p>Algunos retrógrados preferirían hacerlo con nombre de usuario y contraseña, pero
-realmente emitir un certificado para cada cliente, es un método más seguro y
-simple.</p>
-
-<p>El objetivo es deshacernos de un cliente</p>
-
-<p>En el ejemplo anterior teníamos a &ldquo;cliente1&rdquo;. Por N motivo, no queremos que
-cliente1 se conecte más. El que no sepa lo que es la CRL (Certificate Revocation
-List) me imagino que acabará poniendo disímiles direcciones ip en el cortafuegos.</p>
-
-<p>Primero, revocamos el certificado que le dimos al cliente.</p>
-
-<figure class='code'><figcaption><span>&#8220;revocando certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/openvpn/easy-rsa
-</span><span class='line'><span class="nb">source</span> ./vars
-</span><span class='line'>./revoke-full cliente1
-</span><span class='line'>Using configuration from /etc/openvpn/easy-rsa/openssl-1.0.0.cnf
-</span><span class='line'>Revoking Certificate 02.
-</span><span class='line'>Data Base Updated
-</span><span class='line'>Using configuration from /etc/openvpn/easy-rsa/openssl-1.0.0.cnf
-</span><span class='line'>cliente1.crt: <span class="nv">C</span> <span class="o">=</span> CU, <span class="nv">ST</span> <span class="o">=</span> HAV, <span class="nv">L</span> <span class="o">=</span> Plaza, <span class="nv">O</span> <span class="o">=</span> DOMINIO, <span class="nv">OU</span> <span class="o">=</span> DOMINIO, <span class="nv">CN</span> <span class="o">=</span>
-</span><span class='line'>cliente1, <span class="nv">name</span> <span class="o">=</span> RSA, <span class="nv">emailAddress</span> <span class="o">=</span> vpn@dominio.cu
-</span><span class='line'>error <span class="m">23</span> at <span class="m">0</span> depth lookup:certificate revoked
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ve en la última linea, dice que se ha cometido un error 23, porque no se
-pudo ver la firma. EL certificado ha sido revocado.</p>
-
-<p>Ahora debemos instruir al servidor de que el fichero <strong>keys/crl.pem</strong> contiene
-la lista de certificados revocados. A la configuración del servidor, le
-agregamos la cláusula <strong>crl-verify</strong> y como argumento le damos la ruta absoluta
-al crl.pem</p>
-
-<figure class='code'><figcaption><span>&#8220;crl.pem&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;crl-verify crl.pem&#39;</span> &gt;&gt; /etc/openvpn/servidor.conf
-</span><span class='line'>ln -s /etc/openvpn/easy-rsa/keys/crl.pem
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>No se puede especificar una ruta completa porque no pincha, no me preguntes por
-que. El crl.pem debe estar en el mismo directorio que el fichero de
-configuración del servidor.</p>
-
-<p><strong>OJO</strong> No olvide reinciar el servidor!</p>
-
-<p>Probemos como le va a un cliente con su certificado revocado.</p>
-
-<figure class='code'><figcaption><span>&#8220;cliente1 embarcao&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@rasp openvpn<span class="o">]</span><span class="c"># openvpn --config cliente1.conf </span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> OpenVPN 2.3.6 i686-pc-linux-gnu <span class="o">[</span>SSL <span class="o">(</span>OpenSSL<span class="o">)]</span> <span class="o">[</span>LZO<span class="o">]</span> <span class="o">[</span>EPOLL<span class="o">]</span> <span class="o">[</span>MH<span class="o">]</span> <span class="o">[</span>IPv6<span class="o">]</span> built on Dec  <span class="m">2</span> 2014
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> library versions: OpenSSL 1.0.2a <span class="m">19</span> Mar 2015, LZO 2.09
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> WARNING: No server certificate verification method has been enabled.  See http://openvpn.net/howto.html#mitm <span class="k">for</span> more info.
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> Attempting to establish TCP connection with <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443 <span class="o">[</span>nonblock<span class="o">]</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCP connection established with <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCPv4_CLIENT link <span class="nb">local</span>: <span class="o">[</span>undef<span class="o">]</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCPv4_CLIENT link remote: <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> VERIFY OK: <span class="nv">depth</span><span class="o">=</span>1, <span class="nv">C</span><span class="o">=</span>CU, <span class="nv">ST</span><span class="o">=</span>HAV, <span class="nv">L</span><span class="o">=</span>Plaza, <span class="nv">O</span><span class="o">=</span>DOMINIO, <span class="nv">OU</span><span class="o">=</span>DOMINIO, <span class="nv">CN</span><span class="o">=</span>DOMINIO CA, <span class="nv">name</span><span class="o">=</span>RSA, <span class="nv">emailAddress</span><span class="o">=</span>vpn@dominio.cu
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> VERIFY OK: <span class="nv">depth</span><span class="o">=</span>0, <span class="nv">C</span><span class="o">=</span>CU, <span class="nv">ST</span><span class="o">=</span>HAV, <span class="nv">L</span><span class="o">=</span>Plaza, <span class="nv">O</span><span class="o">=</span>DOMINIO, <span class="nv">OU</span><span class="o">=</span>dominio, <span class="nv">CN</span><span class="o">=</span>vpn.dominio.cu, <span class="nv">name</span><span class="o">=</span>RSA, <span class="nv">emailAddress</span><span class="o">=</span>vpn@dominio.cu
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> write TCPv4_CLIENT: Broken pipe <span class="o">(</span><span class="nv">code</span><span class="o">=</span>32<span class="o">)</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> write TCPv4_CLIENT: Broken pipe <span class="o">(</span><span class="nv">code</span><span class="o">=</span>32<span class="o">)</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> Connection reset, restarting <span class="o">[</span>0<span class="o">]</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> SIGUSR1<span class="o">[</span>soft,connection-reset<span class="o">]</span> received, process restarting
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ve, el servidor &ldquo;le cuelga&rdquo; y le deja hablando. Porque el certificado que
-el cliente está mandándole, no le cuadra.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -920,6 +927,10 @@ el cliente está mandándole, no le cuadra.</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/10/20/compartir-la-wifi/">compartir la wifi</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/10/18/systemd-timesyncd/">systemd-timesyncd</a>
@@ -1134,7 +1145,7 @@ el cliente está mandándole, no le cuadra.</p>
   
 
 <script type="text/javascript">
-      var disqus_shortname = 'lazaroarmando';
+      var disqus_shortname = 'uranio-235';
       
         
         var disqus_script = 'count.js';
