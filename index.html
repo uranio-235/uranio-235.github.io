@@ -131,6 +131,8 @@ linuxero ahí conectado.</p>
 
 <h3>¿SE ENTENDIÓ?</h3>
 
+<p>Si tienes NetworkManager corriendo, este es un buen momento de pararlo.</p>
+
 <p>La interfaz que usualmente vez como <strong>wlan0</strong> es en realidad <strong>phy0</strong>. ¿Quieres
 verlo? Corre esto:</p>
 
@@ -139,7 +141,7 @@ verlo? Corre esto:</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>¿Te fijaste que wlan0 desapareció? No te preocupes, puedes volver a crearla.
+<p>¿Te fijaste que<strong> wlan0</strong> desapareció? No te preocupes, puedes volver a crearla.
 Así:</p>
 
 <figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -254,8 +256,8 @@ la otra como extremo del puente.</p>
 <h4>OJO</h4>
 
 <p>Otra cosa, si tienes corriendo el <strong>NetworkManager</strong> no podrás echar a andar
-<strong>hostapd</strong>. Para el NetworkManager, arranca hostapd y vuelve a hechar a andar
-el NetworkManager.</p>
+<strong>hostapd</strong>. Páralo, arranca hostapd y vuelve a hechar a andar el
+NetworkManager.</p>
 </div>
   
   
