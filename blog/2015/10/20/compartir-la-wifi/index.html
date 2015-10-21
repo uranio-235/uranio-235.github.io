@@ -9,8 +9,10 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Cada vez que paso por 23, me cuentro mil y una red cuyo ESSID tiene el sufijo
-Conectify delante. Insultado por semejante derroche de windows, le &hellip;">
+  <meta name="description" content="Cada vez que paso por
+23, me cuentro mil y una
+red cuyo ESSID tiene el sufijo Conectify delante. Insultado por semejante
+derroche de windows, le &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -101,9 +103,11 @@ Conectify delante. Insultado por semejante derroche de windows, le &hellip;">
   </header>
 
 
-<div class="entry-content"><p>Cada vez que paso por 23, me cuentro mil y una red cuyo ESSID tiene el sufijo
-<strong>Conectify</strong> delante. Insultado por semejante derroche de windows, le comentaba
-a un colega, que daba tristeza no ver un linuxero ahí conectado.</p>
+<div class="entry-content"><p>Cada vez que paso por
+<a href="http://www.ecured.cu/index.php/Calle_23_%28Vedado%29">23</a>, me cuentro mil y una
+red cuyo ESSID tiene el sufijo <strong>Conectify</strong> delante. Insultado por semejante
+derroche de windows, le comentaba a un colega, que daba tristeza no ver un
+linuxero ahí conectado.</p>
 
 <p>El socio me dijo: -en linux no se puede compartir la wifi</p>
 
@@ -136,7 +140,7 @@ verlo? Corre esto:</p>
 Así:</p>
 
 <figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw phy phy0 interface add wlan0 <span class="nb">type </span>station
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw phy phy0 interface add estacion0 <span class="nb">type </span>station
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -154,7 +158,7 @@ salida.</p>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>brctl addbr br0
-</span><span class='line'>brctl addif br0 wlan0
+</span><span class='line'>brctl addif br0 estacion0
 </span><span class='line'>ip link <span class="nb">set </span>up dev br0
 </span></code></pre></td></tr></table></div></figure>
 
@@ -177,12 +181,40 @@ contendrá la configuración de nuestros AP. A mi me quedó así:</p>
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">ssid</span><span class="o">=</span>Linux
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># el nombre de tu wifi</span>
+</span><span class='line'><span class="nv">ssid</span><span class="o">=</span>Linux
+</span><span class='line'>
+</span><span class='line'><span class="c"># la contraseña de tu wifi</span>
 </span><span class='line'><span class="nv">wpa_passphrase</span><span class="o">=</span>secretisisimo
+</span><span class='line'>
+</span><span class='line'><span class="c"># la interfaz de red que hará de AP</span>
 </span><span class='line'><span class="nv">interface</span><span class="o">=</span>hostspot0
+</span><span class='line'>
+</span><span class='line'><span class="c"># el puente</span>
 </span><span class='line'><span class="nv">bridge</span><span class="o">=</span>br0
+</span><span class='line'>
+</span><span class='line'><span class="c"># el canal, lo puede seleccionar manual</span>
+</span><span class='line'><span class="c"># pero un valor de 0, hará el survey</span>
+</span><span class='line'><span class="c"># mejor que el ap lo seleccione, así</span>
+</span><span class='line'><span class="c"># no chocas con ningún canal de etecsa en 23</span>
+</span><span class='line'><span class="nv">channel</span><span class="o">=</span>0
+</span><span class='line'>
+</span><span class='line'><span class="c"># no toques más nada de aquí pa abajo</span>
 </span><span class='line'><span class="nv">auth_algs</span><span class="o">=</span>3
-</span><span class='line'><span class="nv">channel</span><span class="o">=</span>7
 </span><span class='line'><span class="nv">driver</span><span class="o">=</span>nl80211
 </span><span class='line'><span class="nv">hw_mode</span><span class="o">=</span>g
 </span><span class='line'><span class="nv">logger_stdout</span><span class="o">=</span>-1
@@ -202,8 +234,12 @@ contendrá la configuración de nuestros AP. A mi me quedó así:</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Entonces todo el que se conecte a tu Wifi, saldrá directo a la wifi que tienes
-conectada en tu máquina.</p>
+<p>Desde entonces, lo que se conecte a tu wifi con ESSID &ldquo;Linux&rdquo; en este caso, irá
+a dar a la red que tengas conectada en tu Wifi. En este caso la red de br0, cuyo
+otro extremo sería la wifi de etecsa.</p>
+
+<p>Lo mismo puede hacer cambiando el extremo del tunel. Por ejemplo, con eth0
+saldría hacia una red cableada. Una manera de meter una WiFi en una red.</p>
 </div>
 
 
