@@ -157,7 +157,9 @@ salida.</p>
 <figure class='code'><figcaption><span>br0</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
+<span class='line-number'>4</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>brctl addbr br0
+</span><span class='line'>iw dev estacion0 <span class="nb">set </span>4addr on
 </span><span class='line'>brctl addif br0 estacion0
 </span><span class='line'>ip link <span class="nb">set </span>up dev br0
 </span></code></pre></td></tr></table></div></figure>
@@ -240,6 +242,17 @@ otro extremo sería la wifi de etecsa.</p>
 
 <p>Lo mismo puede hacer cambiando el extremo del tunel. Por ejemplo, con eth0
 saldría hacia una red cableada. Una manera de meter una WiFi en una red.</p>
+
+<h4>Además</h4>
+
+<p>De esta misma forma, si tuvieras dos tarjetas wifi, pones una como AP y le pones
+la otra como extremo del puente.</p>
+
+<h4>OJO</h4>
+
+<p>Otra cosa, si tienes corriendo el <strong>NetworkManager</strong> no podrás echar a andar
+<strong>hostapd</strong>. Para el NetworkManager, arranca hostapd y vuelve a hechar a andar
+el NetworkManager.</p>
 </div>
 
 
