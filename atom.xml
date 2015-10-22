@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2015-10-21T13:20:01-04:00</updated>
+  <updated>2015-10-21T21:55:46-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -18,7 +18,9 @@
     <link href="http://uranio-235.github.io/blog/2015/10/20/compartir-la-wifi/"/>
     <updated>2015-10-20T23:36:19-04:00</updated>
     <id>http://uranio-235.github.io/blog/2015/10/20/compartir-la-wifi</id>
-    <content type="html"><![CDATA[<p>Cada vez que paso por
+    <content type="html"><![CDATA[<p><img class="right" src="images/23_gente.jpg" width="300" height="500" title="" ></p>
+
+<p>Cada vez que paso por
 <a href="http://www.ecured.cu/index.php/Calle_23_%28Vedado%29">23</a>, me cuentro mil y una
 red cuyo ESSID tiene el sufijo <strong>Conectify</strong> delante. Insultado por semejante
 derroche de windows, le comentaba a un colega, que daba tristeza no ver un
