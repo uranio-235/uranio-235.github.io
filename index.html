@@ -126,7 +126,7 @@ linuxero ahí conectado.</p>
 <li>crear una interfaz wifi como estacion</li>
 <li>crear una interfaz wifi como AP</li>
 <li>crear un interfaz bridge (puente)</li>
-<li>declarar que la interfaz de salida del puente, es la estacion</li>
+<li>declarar que la interfaz de salida del puente, es la estación</li>
 <li>echar a andar el AP por software</li>
 </ul>
 
@@ -204,6 +204,8 @@ contendrá la configuración de nuestros AP. A mi me quedó así:</p>
 <span class='line-number'>27</span>
 <span class='line-number'>28</span>
 <span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># el nombre de tu wifi</span>
 </span><span class='line'><span class="nv">ssid</span><span class="o">=</span>Linux
 </span><span class='line'>
@@ -213,13 +215,15 @@ contendrá la configuración de nuestros AP. A mi me quedó así:</p>
 </span><span class='line'><span class="c"># la interfaz de red que hará de AP</span>
 </span><span class='line'><span class="nv">interface</span><span class="o">=</span>hostspot0
 </span><span class='line'>
-</span><span class='line'><span class="c"># el puente</span>
+</span><span class='line'><span class="c"># el puente al que se acoplará</span>
 </span><span class='line'><span class="nv">bridge</span><span class="o">=</span>br0
 </span><span class='line'>
 </span><span class='line'><span class="c"># el canal, lo puede seleccionar manual</span>
-</span><span class='line'><span class="c"># pero un valor de 0, hará el survey</span>
-</span><span class='line'><span class="c"># mejor que el ap lo seleccione, así</span>
+</span><span class='line'><span class="c"># pero un valor de 0, hará el survey.</span>
+</span><span class='line'><span class="c"># Mejor que el ap lo seleccione, así</span>
 </span><span class='line'><span class="c"># no chocas con ningún canal de etecsa en 23</span>
+</span><span class='line'><span class="c"># y aprovechemos ahora que podemos hacer lo</span>
+</span><span class='line'><span class="c"># que nos de la gana con el espectro radioeléctrico</span>
 </span><span class='line'><span class="nv">channel</span><span class="o">=</span>0
 </span><span class='line'>
 </span><span class='line'><span class="c"># no toques más nada de aquí pa abajo</span>
