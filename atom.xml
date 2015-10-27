@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2015-10-23T14:44:45-04:00</updated>
+  <updated>2015-10-26T22:29:46-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -18,7 +18,7 @@
     <link href="http://uranio-235.github.io/blog/2015/10/20/compartir-la-wifi/"/>
     <updated>2015-10-20T23:36:19-04:00</updated>
     <id>http://uranio-235.github.io/blog/2015/10/20/compartir-la-wifi</id>
-    <content type="html"><![CDATA[<p><img class="right" src="images/23_gente.jpg" width="300" height="500" title="" ></p>
+    <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/23_gente.jpg" width="300" height="500" title="" ></p>
 
 <p>Cada vez que paso por
 <a href="http://www.ecured.cu/index.php/Calle_23_%28Vedado%29">23</a>, me cuentro mil y una
@@ -30,7 +30,7 @@ linuxero ahí conectado.</p>
 
 <p>PA DARLE POR LA CARA!</p>
 
-<p>Tres paquetes nada más que hacen falta: <strong>iw</strong>, <strong>hostapd</strong> y <strong>bridge-utils</strong></p>
+<p>Dos paquetes nada más que hacen falta: <strong>iw</strong>, <strong>hostapd</strong></p>
 
 <p>La idea es:</p>
 
@@ -77,11 +77,27 @@ salida.</p>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>brctl addbr br0
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip link add name br0 <span class="nb">type </span>bridge
 </span><span class='line'>iw dev estacion0 <span class="nb">set </span>4addr on
-</span><span class='line'>brctl addif br0 estacion0
+</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 promisc on
+</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 up
+</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 master br0
 </span><span class='line'>ip link <span class="nb">set </span>up dev br0
 </span></code></pre></td></tr></table></div></figure>
+
+
+<p>En letra de molde:</p>
+
+<ul>
+<li>crea un bridge llamado br0</li>
+<li>dile que lleva ipv4 (requerido, no se por qué)</li>
+<li>pon la interfaz en modo promiscuo</li>
+<li>levanta el enlace de estaion0</li>
+<li>coloca a estacion0 como interfaz de salida del túnel</li>
+<li>levanta el bridge</li>
+</ul>
 
 
 <p>Ahora viene lo más importante, el AP. El fichero <strong>/etc/hostapd/hostapd.conf</strong>
