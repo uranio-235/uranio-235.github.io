@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="En la punta de loma más temida y respetada por cualquiera que estudie medicina;
-y en lo más alto de la educación Cubana, se encuentra: El Hospital &hellip;">
+  <meta name="description" content="Recién se ha puesto de moda, en el mundo entero, &ldquo;wordpress&rdquo;. No hace mucho leí
+un twit de no se que perico de los palotes; diciendo que &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,7 @@ y en lo más alto de la educación Cubana, se encuentra: El Hospital &hellip;">
   <li><a href="/blog/archives">Archivo</a></li>
   <li><a href="/blog/categories/rails/">Ruby on Rails</a></li>
   <li><a href="/blog/categories/destacado/">Destacado</a></li>
+  <li><a href="/blog/categories/razonemos/">Razonemos</a></li>
 </ul>
 
 </nav>
@@ -79,6 +80,380 @@ y en lo más alto de la educación Cubana, se encuentra: El Hospital &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-05-02T13:51:13-04:00'><span class='date'>02/05/2014</span> <span class='time'>1:51 pm</span></time>
+        
+           | <a href="/blog/2014/05/02/wordpress-para-todos/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/05/02/wordpress-para-todos/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Recién se ha puesto de moda, en el mundo entero, &ldquo;wordpress&rdquo;. No hace mucho leí
+un twit de no se que perico de los palotes; diciendo que el 22% de los sitios en
+internet son wordpress.</p>
+
+<p>En infomed wordpress es un bunch. Incluso se escriben plugins y temas para
+wordpress.</p>
+
+<p>Al llegar aquí me encontré con un drupal tirado en una IP detrás de un
+&ldquo;/intranet&rdquo; y con un estado de abandono tremendo. Ni siquiera había un DNS
+así que ni hablar de virtualhost.</p>
+
+<p>Lo primero fue crear un virtualhost para una intranet que albergaría un
+wordpress.</p>
+
+<figure class='code'><figcaption><span>/etc/apache2/sites-enabled/wordpress</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='apacheconf'><span class='line'><span class="err">lazaro@leviatan:~/octopress$</span> <span class="nb">cat</span> <span class="sx">/etc/apache2/sites-enabled/wordpress</span>
+</span><span class='line'><span class="nt">&lt;VirtualHost</span> <span class="s">*:80</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nb">ServerAdmin</span> lazaro@localhost
+</span><span class='line'>        <span class="nb">ServerName</span> intranet.hcg.sld.cu
+</span><span class='line'>
+</span><span class='line'>        <span class="nb">DocumentRoot</span> <span class="sx">/usr/share/wordpress/</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;Directory</span> <span class="s">/usr/share/wordpress/</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nb">Options</span> FollowSymLinks MultiViews
+</span><span class='line'>                <span class="nb">AllowOverride</span> <span class="k">All</span>
+</span><span class='line'>                <span class="nb">Order</span> allow,deny
+</span><span class='line'>                <span class="nb">allow</span> from <span class="k">all</span>
+</span><span class='line'>        <span class="nt">&lt;/Directory&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nb">ErrorLog</span> ${APACHE_LOG_DIR}/error.log
+</span><span class='line'>
+</span><span class='line'>        <span class="c"># Possible values include: debug, info, notice, warn, error, crit,</span>
+</span><span class='line'>        <span class="c"># alert, emerg.</span>
+</span><span class='line'>        <span class="nb">LogLevel</span> <span class="k">warn</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nb">CustomLog</span> ${APACHE_LOG_DIR}/access.log combined
+</span><span class='line'><span class="nt">&lt;/VirtualHost&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Declaramos el virtualhost en el DNS. En este caso, es hacer un puntero a la
+maquina donde está el wordpress. Como uso dnsmasq, basta con agregarlo al
+virtuahost.</p>
+
+<figure class='code'><figcaption><span>dnsmasq</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@blackjack:~# cat /etc/hosts<span class="p">|</span>grep intranet
+</span><span class='line'>10.1.1.14   intranet.hcg.sld.cu
+</span><span class='line'>
+</span><span class='line'>root@blackjack:~# /etc/init.d/dnsmasq restart
+</span><span class='line'>Restarting DNS forwarder and DHCP server: dnsmasq.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>E instalar wordpress:</p>
+
+<figure class='code'><figcaption><span>aptitude</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@leviatan:~# aptitude install wordpress
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como si fuese poca la carga de mi servidor SQL, resulta que cada sitio de
+wordpress, es simplemente una configuración y una base de datos.</p>
+
+<p>Basta copiar la configuración de ejemplo y bautizarla en /etc/wordpress con el
+prefijo <strong>config-</strong> seguido del nombre del virtualhost.</p>
+
+<figure class='code'><figcaption><span>cp</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/octopress<span class="nv">$ </span> cp /usr/share/wordpress/wp-config-sample.php /etc/wordpress/config-intranet.hcg.sld.cu.php
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Dentro del fichero, la configuración, es un bien comentado script de PHP, que
+figura los datos para una conexión a la base de datos. Obviemos los comentarios
+para ahorrar espacio. El fichero me quedó así.</p>
+
+<figure class='code'><figcaption><span>/etc/wordpress/config-intranet.hcg.sld.cu.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;wordpress&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_USER&#39;</span><span class="p">,</span> <span class="s1">&#39;wordpress&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_PASSWORD&#39;</span><span class="p">,</span> <span class="s1">&#39;secretisimo&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_HOST&#39;</span><span class="p">,</span> <span class="s1">&#39;localhost&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_CHARSET&#39;</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_COLLATE&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;AUTH_KEY&#39;</span><span class="p">,</span>         <span class="s1">&#39;put your unique phrase here&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;SECURE_AUTH_KEY&#39;</span><span class="p">,</span>  <span class="s1">&#39;put your unique phrase here&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;LOGGED_IN_KEY&#39;</span><span class="p">,</span>    <span class="s1">&#39;put your unique phrase here&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;NONCE_KEY&#39;</span><span class="p">,</span>        <span class="s1">&#39;put your unique phrase here&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;AUTH_SALT&#39;</span><span class="p">,</span>        <span class="s1">&#39;put your unique phrase here&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;SECURE_AUTH_SALT&#39;</span><span class="p">,</span> <span class="s1">&#39;put your unique phrase here&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;LOGGED_IN_SALT&#39;</span><span class="p">,</span>   <span class="s1">&#39;put your unique phrase here&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;NONCE_SALT&#39;</span><span class="p">,</span>       <span class="s1">&#39;put your unique phrase here&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$table_prefix</span>  <span class="o">=</span> <span class="s1">&#39;wp_&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;WPLANG&#39;</span><span class="p">,</span> <span class="s1">&#39;es_ES&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;WP_DEBUG&#39;</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nb">defined</span><span class="p">(</span><span class="s1">&#39;ABSPATH&#39;</span><span class="p">)</span> <span class="p">)</span>
+</span><span class='line'>        <span class="nb">define</span><span class="p">(</span><span class="s1">&#39;ABSPATH&#39;</span><span class="p">,</span> <span class="nb">dirname</span><span class="p">(</span><span class="k">__FILE__</span><span class="p">)</span> <span class="o">.</span> <span class="s1">&#39;/&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">require_once</span><span class="p">(</span><span class="nx">ABSPATH</span> <span class="o">.</span> <span class="s1">&#39;wp-settings.php&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;WP_ALLOW_REPAIR&#39;</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ven, hay un &ldquo;algo&rdquo;; no se si variable. Bajo el nombre DB_NAME, declaramos
+el nombre de la base de datos y así sucesivamente lo obvio hasta DB_HOST.</p>
+
+<p>De ahí pa alante, no tocamos más nada.</p>
+
+<p>Ya estamos listo para crear la base da datos. La rutina clásica: Haremos un
+usuario con el mismo nombre de la base y le daremos todos los permisos.</p>
+
+<figure class='code'><figcaption><span>$mysql</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/octopress<span class="nv">$ </span>mysql -u root -p
+</span><span class='line'>Enter password:
+</span><span class='line'>Welcome to the MySQL monitor.  Commands end with <span class="p">;</span> or <span class="se">\g</span>.
+</span><span class='line'>Your MySQL connection id is 42
+</span><span class='line'>Server version: 5.5.30-1.1 <span class="o">(</span>Debian<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>Copyright <span class="o">(</span>c<span class="o">)</span> 2000, 2013, Oracle and/or its affiliates. All rights reserved.
+</span><span class='line'>
+</span><span class='line'>Oracle is a registered trademark of Oracle Corporation and/or its
+</span><span class='line'>affiliates. Other names may be trademarks of their respective
+</span><span class='line'>owners.
+</span><span class='line'>
+</span><span class='line'>Type <span class="s1">&#39;help;&#39;</span> or <span class="s1">&#39;\h&#39;</span> <span class="k">for</span> help. Type <span class="s1">&#39;\c&#39;</span> to clear the current input statement.
+</span><span class='line'>
+</span><span class='line'>mysql&gt;
+</span><span class='line'>
+</span><span class='line'>Y ahora creamos la base de datos y el usuario con estas sentencias
+</span><span class='line'>NOTA: en nuestro ejemplo tanto la base de datos como el usuario son wordpress, reemplazar PASSWORD_DB por el password que deseen asignarle a la base de datos.
+</span><span class='line'>
+</span><span class='line'>mysql&gt; CREATE DATABASE wordpress<span class="p">;</span>
+</span><span class='line'>Query OK, <span class="m">1</span> row affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>mysql&gt; GRANT ALL ON wordpress.* TO wordpress@localhost IDENTIFIED BY <span class="s1">&#39;secretisimo&#39;</span><span class="p">;</span>
+</span><span class='line'>Query OK, <span class="m">0</span> rows affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>mysql&gt; FLUSH PRIVILEGES<span class="p">;</span>
+</span><span class='line'>Query OK, <span class="m">0</span> rows affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>mysql&gt; <span class="se">\q</span>
+</span><span class='line'>Bye
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>COMPLETO! Reinicia apache, reinicia dnsmasq y apunta un navegador al nombre del
+servidor para ver que pasa.</p>
+
+<p><a href="http://intranet.hcg.sld.cu">http://intranet.hcg.sld.cu</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-04-06T13:06:35-04:00'><span class='date'>06/04/2014</span> <span class='time'>1:06 pm</span></time>
+        
+           | <a href="/blog/2014/04/06/squid-en-infomed/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/04/06/squid-en-infomed/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Bienvenido al 5to infierno de infomed.</p>
+
+<p>Un sitio donde toda la comunicacion mas alla del mar, sale atravez del llamado
+<em>&ldquo;proxy padre&rdquo;</em>. Siempre habia oido hablar de casos como estos, pero nunca lo
+habia vivido.</p>
+
+<p>Aun no me he tomado ni tan siquiera la molestia de configurar un teclado <em>intl</em>
+porque no he tenido tiempo, por tanto, pido disculpas por escribir en ASCII
+plano&hellip; en fin.</p>
+
+<p>El problema:</p>
+
+<p>Resulta que este lugar se habia vuelto famoso, porque cuando se navegaba en
+infomed, no se podia navegar en internet y viceversa.</p>
+
+<p>Toda la navegacion aqui que va mas alla del nodo de infomed, se realiza atreves
+de un SIN&hellip; simpatico proxy padre, que escucha por el puerto 3128.</p>
+
+<p>Drama descomunal! Si en tu proxy local, declaras un proxy padre (en squid:
+&ldquo;cache peer&rdquo;) desembocara directamente en un nuevo problema; y es que entonces
+las paginas de infomed, NO se ven. Los del nodo no dejan acceder a infomed desde
+afuera porque eso seria jamarse el ancho de vianda por gusto. Simplemente te
+sale un html sato, diciendo que debes configurar debidamente tu proxy; haciendo
+una excepcion para las direcciones &ldquo;*.sld.cu&rdquo;</p>
+
+<p>Pero por suerte, squid tiene un mecanismo para usar multiples proxies. En este
+caso, con uno solo basta. Veamos de cerca la configuración.</p>
+
+<figure class='code'><figcaption><span>/etc/squid/squid.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='squidconf'><span class='line'><span class="c"># el proxy padre de infomed</span><span class="w"></span>
+</span><span class='line'><span class="k">cache_peer</span><span class="w"> </span><span class="mf">201.220.211.7</span><span class="w"> </span><span class="no">parent</span><span class="w"> </span><span class="m">3128</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="no">default</span><span class="w"></span>
+</span><span class='line'>cache_peer_domain<span class="w"> </span><span class="mf">201.220.211.7</span><span class="w"> </span>!.sld.cu<span class="w"></span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># infomed no sale a travez del proxy</span><span class="w"></span>
+</span><span class='line'><span class="k">acl</span><span class="w"> </span>sitios_salud<span class="w"> </span><span class="k">dstdomain</span><span class="w"> </span>.sld.cu<span class="w"></span>
+</span><span class='line'><span class="k">always_direct</span><span class="w"> </span><span class="no">allow</span><span class="w"> </span>sitios_salud<span class="w"></span>
+</span><span class='line'><span class="k">never_direct</span><span class="w"> </span><span class="no">allow</span><span class="w"> </span><span class="no">all</span><span class="w"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Dividido en silabas pa los mentequita, linea por linea.</p>
+
+<p>2 - declaramos el proxy</p>
+
+<p>3 - decimos que atraves de ese proxy, se usara todo lo que NO sea .sld.cu</p>
+
+<p>6 - los sitios de salud, son aquellos que digan &ldquo;.sld.cu&rdquo;</p>
+
+<p>7 - los sitios de salud, van directo (sin proxy)</p>
+
+<p>8 - el resto, no se permite directo (van via proxy)</p>
+
+<p>Problema <em>&ldquo;resolvido&rdquo;</em></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -124,11 +499,14 @@ que trabajaría, quizás porque tantas personas me lo recomendaban.</p>
 me reservaba el destino. Nunca me imaginé que me sentiría TAN BIEN en algún
 lugar, me gusta como pasa el tiempo aquí.</p>
 
-<p>Creo que el Calixto será un antes y un después en mi vida profesional. Detrás
-del proxy de infomed, la vida es dura. Enferntaré las miserias tecnológicas de
-infomed usando mi más afilado sable; ArchLinux&hellip;</p>
+<p>Creo que el Calixto será un antes y un después en mi vida profesional.</p>
+
+<p>Detrás del proxy de infomed, la vida es dura. Enferntaré las miserias
+tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
 
 <p>Esta primera entrada, marca el último día de mi antiguo blog: <a href="http://otherlinuxblog.blogspot.com">puheroska</a></p>
+
+<p>   <blockquote><p>Los ricos que viven de su patrimonio<br/>   no pueden hablar de &ldquo;su trabajo&rdquo;.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
 </div>
   
   
@@ -153,6 +531,14 @@ infomed usando mi más afilado sable; ArchLinux&hellip;</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2015/11/03/las-mujeres-gordas/">las mujeres gordas</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/11/03/tls-y-ssl-en-postfix/">tls y ssl en postfix</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2015/10/20/compartir-la-wifi/">compartir la wifi</a>

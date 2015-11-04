@@ -9,8 +9,9 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="La fiebre LTSP sigue subiendo en el Calixto. La solución definitiva para toda
-máquina que butee por la red, sin importar su cantidad de RAM o micro& &hellip;">
+  <meta name="description" content="De siempre, los usuarios que fueron forzados a abandonar
+MSAcces por un motivo u otro;
+sienten un incontenible necesidad por los &ldquo;informes& &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +73,7 @@ máquina que butee por la red, sin importar su cantidad de RAM o micro& &hellip;
   <li><a href="/blog/archives">Archivo</a></li>
   <li><a href="/blog/categories/rails/">Ruby on Rails</a></li>
   <li><a href="/blog/categories/destacado/">Destacado</a></li>
+  <li><a href="/blog/categories/razonemos/">Razonemos</a></li>
 </ul>
 
 </nav>
@@ -79,6 +81,382 @@ máquina que butee por la red, sin importar su cantidad de RAM o micro& &hellip;
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-10-08T21:45:55-04:00'><span class='date'>08/10/2015</span> <span class='time'>9:45 pm</span></time>
+        
+           | <a href="/blog/2015/10/08/prawn-pdf-con-ruby/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/08/prawn-pdf-con-ruby/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>De siempre, los usuarios que fueron forzados a abandonar
+<a href="https://es.wikipedia.org/wiki/Microsoft_Access">MSAcces</a> por un motivo u otro;
+sienten un incontenible necesidad por los &ldquo;informes&rdquo;.</p>
+
+<p>A la hora de imprimir, muchos usaurios no entienden que un HTML se imprima.
+Incluso, habiéndoles hecho un javascript que muestra el diálogo de impresión,
+simplemente lo cierra y me preguntan &ldquo;¿y ahora que hago con esto?&rdquo;</p>
+
+<p>En recientes diálogos con un bibliotecario (que hereda la clase Usuario) me dijo
+que la gente entiende más de imprimir PDF.</p>
+
+<p>Hacer un PDF me pareció una tare bastante compleja; y lo es, pero
+<a href="http://prawn.majesticseacreature.com">Prawn</a> lo hace de una manera casi
+increíble. Para no aburrirte con el cuento, te mostraré como montarlo arriba del
+tren.</p>
+
+<p><strong>EjemploController</strong> que tu conoce:</p>
+
+<figure class='code'><figcaption><span>&#8220;ejemplo_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># el controlador bin ban bin ban</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">EjemploController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="k">def</span> <span class="nf">accion</span> <span class="c1"># la acción, como se llame</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># a según el sapo, la pedrá</span>
+</span><span class='line'>      <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+</span><span class='line'>
+</span><span class='line'>         <span class="c1"># tírame el pdf</span>
+</span><span class='line'>         <span class="nb">format</span><span class="o">.</span><span class="n">pdf</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># tráeme al animal</span>
+</span><span class='line'>            <span class="nb">require</span> <span class="s1">&#39;prawn&#39;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># créame un nuevo documento pdf</span>
+</span><span class='line'>            <span class="vi">@pdf</span><span class="o">=</span><span class="no">Prawn</span><span class="o">::</span><span class="no">Document</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># tírame el banner, el H1 como quien dice, tamaño de fuente 25px en negrita</span>
+</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">formatted_text</span> <span class="o">[</span> <span class="p">{</span><span class="ss">text</span><span class="p">:</span> <span class="s1">&#39;El título del documentos&#39;</span><span class="p">,</span><span class="ss">size</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span><span class="ss">styles</span><span class="p">:</span> <span class="o">[</span><span class="ss">:bold</span><span class="o">]</span><span class="p">}</span> <span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># hazle una rallita horizontal debano al header</span>
+</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">stroke_horizontal_line</span> <span class="mi">0</span><span class="p">,</span><span class="mi">235</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># mueve el cursor pa abajo</span>
+</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">20</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># la variable cuerpo contiene un texto laaaaaaargooo en HTML</span>
+</span><span class='line'>            <span class="c1"># un HTML muy rudimentario, Prawn lo interpresta, por ejemplo</span>
+</span><span class='line'>            <span class="c1"># las cláusulas &lt;strong&gt;</span>
+</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="vi">@cuerpo</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># por jemeplo, itera en el modelo User y escribe sus nombres</span>
+</span><span class='line'>            <span class="k">for</span> <span class="n">user</span> <span class="k">in</span> <span class="no">User</span><span class="o">.</span><span class="n">all</span>
+</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="s2">&quot;Nombre: </span><span class="si">#{</span><span class="n">user</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">10</span>
+</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="s2">&quot;Edad: </span><span class="si">#{</span><span class="n">user</span><span class="o">.</span><span class="n">edad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">30</span>
+</span><span class='line'>            <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># tírala!!!</span>
+</span><span class='line'>            <span class="n">send_data</span> <span class="vi">@pdf</span><span class="o">.</span><span class="n">render</span><span class="p">,</span> <span class="ss">filename</span><span class="p">:</span> <span class="s2">&quot;solicitud.pdf&quot;</span>
+</span><span class='line'>
+</span><span class='line'>         <span class="k">end</span> <span class="c1"># format</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">end</span> <span class="c1"># respond_to</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="k">end</span> <span class="c1"># def</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span> <span class="c1"># class</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Vamos a dividir en sílabas:</p>
+
+<h4>Línea 7</h4>
+
+<p>Rails, la acción responde a múltiples mime-types</p>
+
+<h4>Línea 10</h4>
+
+<p>Rails, application/pdf responde a la extensión PDF <em>format.pdf do</em></p>
+
+<h4>Línea 13</h4>
+
+<p>Carga la librería, sí, ya se que en Rails debes hacer eso en un initializer, de
+cualquier manera, aún, luego de haberlo agregado a tu Gemfile, no te olvides de
+requerirla, ya sea en un initializer o en el controlador.</p>
+
+<h4>Línea 16</h4>
+
+<p>Crea un nuevo PDF y almacénalo en la variable de instancia <strong>@pdf</strong></p>
+
+<h4>Línea 19</h4>
+
+<p>El método <strong>formatted_text</strong>, recibe como argumento un array de hashes</p>
+
+<p>Cada array en un bloque de texto y contiene un hash. La clave :text contiene el
+texto a renderizar, :size el tamaño y :style el estilo de fuente.</p>
+
+<h4>Línea 22</h4>
+
+<p>Trazar línea horizontal, el método <strong>stroke_horizontal_line</strong> recibe como
+argumento, de donde, a donde debe trazar la línea.</p>
+
+<h4>Pasemos a la línea 41</h4>
+
+<p>El método <strong>render</strong> devuelve el PDF. Si lo sacas con <strong>puts</strong> verás el PDF
+crudo. Podrías también tirarlo pa un fichero así:</p>
+
+<figure class='code'><figcaption><span>&#8220;fulanito.pdf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>   <span class="no">IO</span><span class="o">.</span><span class="n">write</span> <span class="s1">&#39;fulanito.pdf&#39;</span><span class="p">,</span><span class="vi">@pdf</span><span class="o">.</span><span class="n">render</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A los usuarios le encantan los PDF, hazlos feliz ;)</p>
+
+<p>   <blockquote><p>Existen dos tipos de personas,<br/>   las que hacen lo que le dicen; y,<br/>   las que dicen lo que hay que hacer.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/05/assets-por-controlador/">assets por controlador</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-10-05T21:45:45-04:00'><span class='date'>05/10/2015</span> <span class='time'>9:45 pm</span></time>
+        
+           | <a href="/blog/2015/10/05/assets-por-controlador/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/05/assets-por-controlador/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><strong>NUNCA</strong>, he logrado entender, porque el asset pipeline de Rails carga
+<strong>TODAS</strong> las porquerías de todos los controladores en todas las vistas.</p>
+
+<p>¡¡¡Como si fuese poco tener que cargar el mismo javascript por controlador!!!</p>
+
+<p>La documentación dice que puedes cargar solamente el del controlador; pero
+cuando la sigues al pie de la letra; Rails te da tremendo palo, diciendo que una
+asset se escapó sin compilar. La &ldquo;una&rdquo; suele ser la del controlador que estés
+cargando, o sea, todas.</p>
+
+<p>La solución que plantea la documentación, es un Proc asqueroso que tampoco
+pincha.</p>
+
+<p>Te cuento como lo hice:</p>
+
+<p>Primero tienes que quitar la cláusula &ldquo;<strong>require_tree .</strong>&rdquo; del <strong>application.js</strong></p>
+
+<p>A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>application.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">// This is a manifest file that&#39;ll be compiled into application.js, which will include all the files</span>
+</span><span class='line'><span class="c1">// listed below.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// Any JavaScript/Coffee file within this directory, lib/assets/javascripts, vendor/assets/javascripts,</span>
+</span><span class='line'><span class="c1">// or any plugin&#39;s vendor/assets/javascripts directory can be referenced here using a relative path.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// It&#39;s not advisable to add code directly here, but if you do, it&#39;ll appear at the bottom of the</span>
+</span><span class='line'><span class="c1">// compiled file.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details</span>
+</span><span class='line'><span class="c1">// about supported directives.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">//= require jquery</span>
+</span><span class='line'><span class="c1">//= require jquery_ujs</span>
+</span><span class='line'><span class="c1">//= require turbolinks</span>
+</span><span class='line'><span class="c1">//  require_tree . fíjate que quitamos el =</span>
+</span><span class='line'><span class="nx">Turbolinks</span><span class="p">.</span><span class="nx">enableProgressBar</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora vamos a dar un toque mágico para que las assets se compilen de manera
+dinámica, sin tener que colocarle manualmente al arreglo los nuevos .js
+generados. El fichero <strong>config/initializers/assets.rb</strong> me quedó así; <strong>OJO</strong> que es
+una linea bien larga:</p>
+
+<figure class='code'><figcaption><span>&#8220;assets.rb - ojo con la linea larga&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Be sure to restart your server when you modify this file.</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Version of your assets, change this if you want to expire all your assets.</span>
+</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;1.0&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Add additional assets to the asset load path</span>
+</span><span class='line'><span class="c1"># Rails.application.config.assets.paths &lt;&lt; Emoji.images_path</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Precompile additional assets.</span>
+</span><span class='line'><span class="c1"># application.js, application.css, and all non-JS/CSS in app/assets folder are already added.</span>
+</span><span class='line'><span class="c1"># Rails.application.config.assets.precompile += %w( search.js )</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># compila todo lo que te encuentres por el camino</span>
+</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">precompile</span> <span class="o">+=</span> <span class="no">Dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">to_path</span><span class="p">,</span><span class="s1">&#39;app/assets/javascripts/*.j*&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">1</span><span class="o">].</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># activa el debug de la asset pipeline, solo en entorno de desarrollo</span>
+</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RAILS_ENV&#39;</span><span class="o">]</span> <span class="ow">and</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RAILS_ENV&#39;</span><span class="o">].</span><span class="n">include?</span> <span class="s1">&#39;development&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Podría hacer lo mismo con las CSS si usa un poquito la células grises. Note como
+además, agregamos que se debugue la asset pipeline si y solo si estamos en
+development.</p>
+
+<p>Pero no hemos terminado, la vista lleva unos toques&hellip; pues debemos decirle lo
+más importante, que cargue solo las .js de su controlador. A mi me quedó así:</p>
+
+<p>  &lt;%= javascript_include_tag params[:controller] %></p>
+
+<figure class='code'><figcaption><span>&#8220;app/views/layouts/application.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;title&gt;</span>El Título<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>  <span class="err">&lt;</span>%= stylesheet_link_tag    &#39;application&#39;, media: &#39;all&#39;, &#39;data-turbolinks-track&#39; =&gt; true %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>%= javascript_include_tag &#39;application&#39;, &#39;data-turbolinks-track&#39; =&gt; true %&gt;
+</span><span class='line'>  <span class="c">&lt;!-- carga solo las .js del controlador dado --&gt;</span>
+</span><span class='line'>  <span class="err">&lt;</span>%= javascript_include_tag params[:controller] %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>%= csrf_meta_tags %&gt;
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">&lt;</span>%= yield %&gt;
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahí te das cuenta que el que carga todo, es el manifest (application.js) con su
+&ldquo;requiere_tree .&rdquo; pero la cláusula en la línea 8 le dice que cargue la .js del
+controlador especificado en <strong>params[:controller]</strong></p>
+
+<p>Bueno así debe pinchar con javascript y con CoffeScript, al menos a mi me pinchó
+con ambos. Veamos que trae rails 5 con esto, porque la mejora urge&hellip;</p>
+
+<p>Si la cosa sigue así en la versión 5, me estoy mudando para Volt</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -333,7 +711,7 @@ Ubuntu por ejemplo, te pone las bolitas.</p>
 deuda del bootscren pendiente.</p>
 
 <p>Resulta que ya splashy no se usa, ahora la talla es un software con nombre de
-almendrón: Plymouth</p>
+almendrón: <strong>Plymouth</strong></p>
 
 <p>Plymouth, es una proyecto de fedora, para proveer una pantalla de buteo a nivel
 de framebuffer. Hoy en día casi todas las distros butean con el framebuffer en
@@ -349,8 +727,8 @@ rutina ya la conoces. Selecciona el que dice plymouth pelao.</p>
 
 
 <p>Ahora vamos a cambiar unos parámetros en el generador de imágenes de inicio.
-Localiza el fichero <strong>/etc/mkinitcpio.conf</strong> y ahí vamos a cambiar unos
-parámetros.</p>
+Localiza el fichero <strong>/etc/mkinitcpio.conf</strong> y ahí vamos a cambiar unas
+cosillas.</p>
 
 <p>Primero necesitaremos poner el <strong>HOOK</strong> para plymouth. La documentación advierte
 que debe ser después de <strong>base</strong> y de <strong>udev</strong>, así que mejor <strong>ponlo de
@@ -378,6 +756,8 @@ desgraciadamente, uso nvidia, así que me quedó así:</p>
 
 <p>Fíjate que los demás quedaron a modo de comentario. Te aclaro que <strong>i915</strong> es
 para las tarjetas de video Intel.</p>
+
+<p>Si usas el blob oficial de nvidia, te jodiste. Ni sigas leyendo.</p>
 
 <p>Ahora tenemos que decirle al grub, que incluya el parámetro <strong>splash</strong> en la
 linea de buteo. Eso lo hacemos editando el fichero <strong>/etc/default/grub</strong></p>
@@ -434,7 +814,7 @@ habilitar la unit para cada display manager.</p>
 finales.</p>
 
 <p>El fichero <strong>/etc/plymouth/plymouthd.conf</strong> contiene los parámetros de
-configuración de plymouth. El mío luce así:</p>
+configuración del mismo. El mío luce así:</p>
 
 <figure class='code'><figcaption><span>&#8220;/etc/plymouth/plymouthd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -454,9 +834,11 @@ configuración de plymouth. El mío luce así:</p>
 <p>El parámetro <strong>ShowDelay</strong>, define que tiempo se mostrará la pantalla. Como ya
 te dije, arch a mi me butea en segundos. Si pones 5 ahí, la pantalla de buteo se
 mostrará cinco segundos. Dos buteando y otros tres pa que tu la mires mostrando
-su animación. Yo cuando terminé de verla correr la primera vez; desinstalé
-plymouth. No me interesa tener 2 segundos adicionales de media por el mero hecho
-de que sea más bonito.</p>
+su animación.</p>
+
+<p>Yo cuando terminé de verla correr la primera vez; desinstalé plymouth. No me
+interesa tener 2 segundos adicionales de media por el mero hecho de que sea más
+bonito.</p>
 
 <p>El otro parámetro, <strong>Theme</strong>, setea el tema que usarás. Para ver que temas
 tienes en el menú, corre:</p>
@@ -495,6 +877,8 @@ una copia al carbón de MacOS.</p>
 por detrás de plymouth, presiona &ldquo;home&rdquo; mientras butea.</p>
 
 <p>Eso es todo. ¡Reinicia!</p>
+
+<p>   <blockquote><p>Si no te queda bueno, al menos que te quede lindo.</p><footer><strong>Bill Gates</strong></footer></blockquote></p>
 </div>
   
   
@@ -621,208 +1005,8 @@ volátiles, uno nunca sabe cuando le va a hacer falta.</p>
 
 
 <p>Va y si quieres, no es obligado, pero para probar, <strong>REINICIA</strong>.</p>
-</div>
-  
-  
 
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/01/squid-transparente/">squid transparente</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-09-01T14:23:00-04:00'><span class='date'>01/09/2015</span> <span class='time'>2:23 pm</span></time>
-        
-           | <a href="/blog/2015/09/01/squid-transparente/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/09/01/squid-transparente/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>La era de SSL, parece haber dejado a los proxies trasparentes un tanto pasados
-de moda. Los tiempos en que dos lineas de iptables resolvían el problema,
-simplemente quedaron atrás. Ahora necesitamos las dos lineas de iptables y un
-poquito más.</p>
-
-<p>Recientemente la comunidad de NetFilter (iptables) y la de squid, ha unido
-esfuerzos para crear solución. El protocolo TPROXY de iptables, entra en juego
-con la maquinaria de squid; dando lugar a un nateo especial. Aunque un está en
-pañales, el asunto promete. En esta entrada no le daremos cobertura a Tproxy,
-pero en la próxima pienso hacerlo.</p>
-
-<p>Esta la dejaremos reservada para &ldquo;ssl_bump&rdquo;</p>
-
-<p>Squid desarrolló un sistema especial para cachear y generar los certificados SSL
-que requiere. Esto al principio fue tema de discusión. Siempre que hay una
-aplicación externa, las vulnerabilidades se sirven con cuchara grande.
-Finalmente squid lo logró y desarrolló una especie de:</p>
-
-<p>&ldquo;ataque MITM corporativizado&rdquo;</p>
-
-<p>Como dirían los aldeanos: &ldquo;mamando se quita el frío&rdquo;, así que empezemos&hellip;</p>
-
-<p>Primero y principioso, es dejar nuestro squid funcionando con una ACL bien
-<em>lazy</em>.  Digamos por ejemplo, que la red 192.168.10.0/24 pasará a través del
-proxy transparente.</p>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>acl red_transparente src 192.168.10.0/24
-</span><span class='line'>http_access allow red_transparente
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Necesitaremos generar un certificado SSL en nuestro squid, certificado que; con
-suerte, el navegador se lo comerá con papa, creyendo que va pal sitio de verdad.</p>
-
-<p>Una vez que el usuario acepte este certificado. TODOS los sitios que pidan,
-vendrán con este certificado.</p>
-
-<figure class='code'><figcaption><span>&#8220;openssl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/squid/
-</span><span class='line'>mkdir ssl_cert
-</span><span class='line'><span class="nb">cd </span>ssl_cert
-</span><span class='line'>openssl req -new -newkey rsa:1024 -days <span class="m">365</span> -nodes -x509 -keyout squid.pem -out squid.pem
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora le decimos a calamardo, que escuche por el 3129 como interceptor. Además,
-le pondremos una serie de parametros que harán un funcionar al ssl_bumper. A mi
-me quedó así:</p>
-
-<h4>OJO con la segunda lina, es muy larga</h4>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>http_port 0.0.0.0:3128
-</span><span class='line'>http_port 0.0.0.0:3129 intercept ssl-bump generate-host-certificates<span class="o">=</span>on <span class="nv">dynamic_cert_mem_cache_size</span><span class="o">=</span>4MB <span class="nv">cert</span><span class="o">=</span>/etc/squid/ssl_cert/squid.pem
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora inicializamos el depósito donde colocaremos los certificados que vallamos
-cogiendo.</p>
-
-<figure class='code'><figcaption><span>&#8220;ssl_crtd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/usr/lib/squid/ssl_crtd -c -s /etc/squid/certificados
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Y le configuramos la maquinaria diabólica a squid.</p>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">dynamic_cert_mem_cache_size</span><span class="o">=</span>4MB <span class="nv">cert</span><span class="o">=</span>/etc/squid/ssl_cert/squid.pem
-</span><span class='line'>ssl_bump none localhost
-</span><span class='line'>ssl_bump server-first all
-</span><span class='line'>sslcrtd_program /usr/lib/squid/ssl_crtd -s /etc/squid/certificados -M 4MB
-</span><span class='line'>sslcrtd_children 5
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Entonces NetFilter en juego. Nuevamente salen a la palestras las dos lineas
-clásicas.</p>
-
-<figure class='code'><figcaption><span>&#8220;iptables&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iptables -t nat -A PREROUTING -i wlan0 -p tcp -m tcp --dport <span class="m">80</span> -j REDIRECT --to-ports 3129
-</span><span class='line'>iptables -t nat -A PREROUTING -i wlan0 -p tcp -m tcp --dport <span class="m">443</span> -j REDIRECT --to-ports 3129
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Claro, esto no lo es todo, vas a necesitar un DNS que apunte TODAS las
-direcciones URL a tu proxy.</p>
-
-<p>Eso lo veremos en la próxima entrada ;)</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/08/28/compute-remote-uptime/">compute remote uptime</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-08-28T12:21:58-04:00'><span class='date'>28/08/2015</span> <span class='time'>12:21 pm</span></time>
-        
-           | <a href="/blog/2015/08/28/compute-remote-uptime/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Vamos de atrás pa alante, el truco primero y la muela después.</p>
-
-<figure class='code'><figcaption><span>&#8220;nmap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># nmap -O -v 10.1.1.1|grep -i uptime</span>
-</span><span class='line'>Uptime guess: 18.006 days <span class="o">(</span>since Fri Aug <span class="m">10</span> 12:24:47 2015<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>¿Que acaba de suceder?</h4>
-
-<p>Calculamos el tiempo que lleva el servidor remoto en pie. Fíjese que nos dice la
-fecha en la que el servidor arrancó.</p>
-
-<h4>¿Para que sirve esta información?</h4>
-
-<p>Para poner al responsable de la computadora remota <em>contra las cuerdas</em> en una
-situación crítica donde el momento de encendido o apagado de la máquina podría
-ser crucial.</p>
-
-<h4>Ejemplos:</h4>
-
-<p>Nuestro proveedor, el servidor proxy padre, afirma descaradamente que NO ha
-tenido problemas técnicos, pero nosotros sabemos que sí. En una discución
-crucial podría dejarle caer la pregunta. <em>¿Entonces porque su servidor se
-reinició el día tal?</em></p>
-
-<p>Un servicio determinado falla a una hora determinada de la noche. Con esto
-podríamos saber si el servidor se está reiniciando, cuando y con que frecuencia.</p>
-
-<p>El proveedor dice que ha tenido que reiniciar el servidor cuando en realidad
-nunca lo ha hecho.</p>
-
-<p>El usuario dice que la máquina se le reinicia constantemente.</p>
-
-<p>El usuario o el proveedor afirman que la máquina fue encendida a una hora
-determinada. O por el contrario, se afirma que la máquina a esa hora NO estaba
-encendida y el uptime dice lo contrario.</p>
-
-<p>   <blockquote><p>Saque usted, sus propias concluciones&hellip;</p><footer><strong>Taladrid</strong> <cite>Pasaje a Lo Desconocido</cite></footer></blockquote></p>
+<p>   <blockquote><p>Prefiero lidiar con las pifias de una comunidad<br/>   que con las mazmorras de una compañía.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
 </div>
   
   
@@ -849,6 +1033,14 @@ encendida y el uptime dice lo contrario.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2015/11/03/las-mujeres-gordas/">las mujeres gordas</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/11/03/tls-y-ssl-en-postfix/">tls y ssl en postfix</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2015/10/20/compartir-la-wifi/">compartir la wifi</a>
