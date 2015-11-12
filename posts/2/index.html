@@ -9,9 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="De siempre, los usuarios que fueron forzados a abandonar
-MSAcces por un motivo u otro;
-sienten un incontenible necesidad por los &ldquo;informes& &hellip;">
+  <meta name="description" content="&ldquo;La que se avecina&rdquo;, sería una buena manera para describir la revolución de
+aparatos con android que habrá en el Calixto García muy &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +80,164 @@ sienten un incontenible necesidad por los &ldquo;informes& &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/15/repo-de-fdroid/">repo de fdroid</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-10-15T14:38:20-04:00'><span class='date'>15/10/2015</span> <span class='time'>2:38 pm</span></time>
+        
+           | <a href="/blog/2015/10/15/repo-de-fdroid/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/15/repo-de-fdroid/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&ldquo;La que se avecina&rdquo;, sería una buena manera para describir la revolución de
+aparatos con android que habrá en el Calixto García muy pronto. Yo siempre con
+el paso al frente y las luz larga (modestia y aparte) estuve pensando que tener
+nuestro propio repositorio de aplicaciones para android; sería una buena manera
+de mantener a todo el mundo bien actualizado, sobre todo a aquellos que no
+tienen acceso a internet.</p>
+
+<p>Para el que no lo conozca, <a href="https://f-droid.org/">fdroid</a> es una herramienta
+cliente para repositorios de android, osea como google market pero libre.</p>
+
+<p>La mecánica es sencilla: Bajo los paquetes con
+<a href="http://www.aptoide.com">aptoide</a>, verifico que sean seguros y copio la cache
+para el directorio repo/ de fdroid en el servidor con <a href="https://acrosync.com/">acrosync</a></p>
+
+<p>En el repo de debian y en AUR, el paquete se llama <strong>fdroidserver</strong> la rutina de
+instalación ya la conoces.</p>
+
+<p>Creamos el directorio donde meteremos el repo, en mi caso, aquí:</p>
+
+<figure class='code'><figcaption><span>mkdir</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -p /srv/http/fdroid/repo
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Creamos la configuración de nginx, a mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>nginx.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>server <span class="o">{</span>
+</span><span class='line'>     listen   10.1.1.14:80<span class="p">;</span>
+</span><span class='line'>     listen   10.1.1.14:443 ssl<span class="p">;</span>
+</span><span class='line'>     server_name android.hcg.sld.cu<span class="p">;</span>
+</span><span class='line'>     location / <span class="o">{</span>
+</span><span class='line'>     root /srv/http/fdroid/repo/<span class="p">;</span>
+</span><span class='line'>     <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Un virtualhost nombrado <em>android</em>. <strong>No olvide crear el puntero DNS</strong></p>
+
+<p>Ahora, ve al directorio raíz del repo, OJO <strong>A LA RAIZ</strong>, NO a donde dice repo/.</p>
+
+<figure class='code'><figcaption><span>fdroid</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /srv/http/fdroid/
+</span><span class='line'>fdroid init
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Te preguntará por la <strong>android-sdk</strong>, por lo general, está en /opt/android-sdk,
+dale la ruta.</p>
+
+<p>¿¿No tienes la SDK de android?? Ah pues estás muy jodio&hellip; En el caso de arch,
+el repo de bbqlinux contiene la sdk completa, solo para 64 bits.</p>
+
+<p>Pero volviendo con fdroid:</p>
+
+<p>Ahora debe habérse creado el directorio <strong>repo/</strong> dentro del directorio
+<strong>/srv/http/fdroid</strong> y es ahí donde copiarás las APK.</p>
+
+<p>cp /donde/esten/tus/*.apk /srv/http/fdroid/<strong>repo/</strong></p>
+
+<p>Pero claro, querrás que tu repo se identifique.  El fichero
+<strong>/srv/http/fdroid/config.py</strong> contiene lo que buscas. Por la linea trenta y
+pico; a mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>config.py</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">...</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">repo_url</span> <span class="o">=</span> <span class="s">&quot;http://android.hcg.sld.cu&quot;</span>
+</span><span class='line'><span class="n">repo_name</span> <span class="o">=</span> <span class="s">&quot;Calixto Garcia&quot;</span>
+</span><span class='line'><span class="n">repo_icon</span> <span class="o">=</span> <span class="s">&quot;calixto_xsm.png&quot;</span>
+</span><span class='line'><span class="n">repo_description</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="s">Repositorio de aplicaciones de android del calixto. Intentaremos proveerle</span>
+</span><span class='line'><span class="s">aplicaciones debidamente actualizadas. Sientase libre de colaborar, trayendonos</span>
+</span><span class='line'><span class="s">las mas recientes APK.</span>
+</span><span class='line'><span class="s">&quot;&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ah! y sin tildes, si no, python se vuelve loco con el encoding.</p>
+
+<p>Ahora vamos a crear el índice inicial, pero eso mismo comando lo correrás cuando
+agregues aplicaciones a tu repo.</p>
+
+<figure class='code'><figcaption><span>fdroid</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>fdroid update --create-metadata
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>OJO!! Asegúrate de que las APK no tengan un espacio en su nombre; muchísimo
+menos un caracter raro. Si todo salió bien debes ver algo como &ldquo;Generating
+metada&rdquo;.</p>
+
+<p>Con eso terminaste el servidor&hellip; Ve a fdroid y ponle la URL del virtualhost
+como repo, luego update y listo&hellip;</p>
+
+<p>¿Cómo se hace? Facilito. Párate en la primer pantalla, aprieta el botón de menú
+del dispositivo y toca donde dice &ldquo;Gestionar Repositorios&rdquo; o en inglés, &ldquo;Manage
+Repos&rdquo;</p>
+
+<p>Desactiva los respos inalcanzables y añade tu repo local. Luego actualiza y
+listo, verás las aplicaciones disponibles.</p>
+
+<p>Ya solo te quedaría instalar un rsync que desemboque en el repo y con
+<a href="https://acrosync.com/">acrosync</a> subes la cache de aptotide para el repo, así
+como estoy haciendo yo ahora.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -926,94 +1083,6 @@ un repositorio de git; puede llegar a ser un verdadero problema.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/07/archlinux-dos-kernel/">archlinux con dos kernel</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-09-07T20:32:57-04:00'><span class='date'>07/09/2015</span> <span class='time'>8:32 pm</span></time>
-        
-           | <a href="/blog/2015/09/07/archlinux-dos-kernel/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/09/07/archlinux-dos-kernel/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Tener los dos kernel y elegir cual butear con el grub al principio; no es algo
-sencillo en archlinux.</p>
-
-<p>Por defecto, el grub dice tener dichas entradas en un submenú que nunca se ve.
-Para lograrlo, tenemos que hacer unos paces mágicos en el fichero:</p>
-
-<h4>/etc/default/grub</h4>
-
-<p>Primero instalamos los kernels; el lts y el fresco.</p>
-
-<figure class='code'><figcaption><span>&#8220;los kernels&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S linux linux-lts
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora la configuración con la que logré eso, fue agregándole al final estas
-lineas:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/default/grub&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">GRUB_DISABLE_SUBMENU</span><span class="o">=</span>y
-</span><span class='line'><span class="nv">GRUB_DEFAULT</span><span class="o">=</span>saved
-</span><span class='line'><span class="nv">GRUB_SAVEDEFAULT</span><span class="o">=</span><span class="nb">true</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con eso, se salva la última entrada ejecutada. Por que, lo más obvio, es que la
-próxima vez que arranques, se cargue el último kernel que usaste. Lo inusual
-sería que cambies de opinión y cargues otro. Desgraciadamente, si como yo, usas
-btrfs como sistema de archivo, grub no podrá escribir el fichero con la última
-entrada seleccionada. Incluso te dará un error, diciendo que no puede escribir
-el fichero no se que.</p>
-
-<p>Seguimos&hellip; Localiza y la linea de recovery y ponla en false:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/default/grub&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Uncomment to disable generation of recovery mode menu entries</span>
-</span><span class='line'><span class="nv">GRUB_DISABLE_RECOVERY</span><span class="o">=</span><span class="nb">false</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>NO SE POR QUE</strong>, pero no se generan las dichosas entradas si eso no está en
-false. Además, tener el menú de recovery es bastante útil, en estas distros
-volátiles, uno nunca sabe cuando le va a hacer falta.</p>
-
-<p>Paso final, generar el grub.cfg</p>
-
-<figure class='code'><figcaption><span>&#8220;grub-mkconfig&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>grub-mkconfig -o /boot/grub/grub.cfg
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Va y si quieres, no es obligado, pero para probar, <strong>REINICIA</strong>.</p>
-
-<p>   <blockquote><p>Prefiero lidiar con las pifias de una comunidad<br/>   que con las mazmorras de una compañía.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -1033,6 +1102,10 @@ volátiles, uno nunca sabe cuando le va a hacer falta.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2015/11/03/las-mujeres-gordas/">las mujeres gordas</a>

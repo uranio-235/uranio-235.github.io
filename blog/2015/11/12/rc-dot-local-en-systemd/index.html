@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>crear un chroot con debian - El SysAdmin del 3er Mundo</title>
+  <title>rc.local en systemd - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="A menudo, necesitamos hacer una que otra barbaridad y no nos gustaría que esto
-sucediera en nuestro sistema base. La virtualización es una buena &hellip;">
+  <meta name="description" content="Déjame decirte, que es un gran mojón de parte de systemd; el hecho de que no
+halla una puñetera compatibilidad con el rc.local. Si buscas en google, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ sucediera en nuestro sistema base. La virtualización es una buena &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2014/06/27/crear-un-chroot-con-debian/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/11/12/rc-dot-local-en-systemd/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -83,7 +83,7 @@ sucediera en nuestro sistema base. La virtualización es una buena &hellip;">
   
   <header>
     
-      <h1 class="entry-title">crear un chroot con debian</h1>
+      <h1 class="entry-title">rc.local en systemd</h1>
     
     
       <p class="meta">
@@ -92,7 +92,7 @@ sucediera en nuestro sistema base. La virtualización es una buena &hellip;">
 
 
 
-<time class='entry-date' datetime='2014-06-27T14:48:13-04:00'><span class='date'>27/06/2014</span> <span class='time'>2:48 pm</span></time>
+<time class='entry-date' datetime='2015-11-12T09:49:30-05:00'><span class='date'>12/11/2015</span> <span class='time'>9:49 am</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -102,35 +102,52 @@ sucediera en nuestro sistema base. La virtualización es una buena &hellip;">
   </header>
 
 
-<div class="entry-content"><p>A menudo, necesitamos hacer una que otra barbaridad y no nos gustaría que esto
-sucediera en nuestro sistema base. La virtualización es una buena opción para
-aquellos que son enfermos a meter las patas; pero correr virtualbox solo para
-eso, es matar moscas a cañonazos y:</p>
+<div class="entry-content"><p>Déjame decirte, que es un gran mojón de parte de systemd; el hecho de que no
+halla una puñetera compatibilidad con el <strong>rc.local</strong>. Si buscas en google, como
+correr un comando al butear, verás que complicado se vuelve.</p>
 
-<p>   <blockquote><p>Prefiero lamer el piso del IPK que usar Proxmox.</p></blockquote></p>
+<p>Para palear este desmesurado inconveniente. Me he creado una unit del tipo
+oneshot, que cargue el /etc/rc.local</p>
 
-<p>En debian, tenemos la herramienta
-<a href="https://wiki.debian.org/es/debootstrap">debootstrap</a> que nos permite generar
-chroot con fines educativos. La mala noticias es que necesita bajar los paquetes
-de un mirror. Por suerte con un CD se resuelve el problema&hellip;</p>
+<p>Crea el fichero <strong>/etc/systemd/system/rclocal.service</strong> y métele esto:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>/etc/systemd/system/rclocal.service</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mount debian-7.0.0-i386-CD-1.iso /media/cdrom
-</span><span class='line'>debootstrap --no-check-gpg wheezy /opt/chroot/ file:/media/cdrom
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>Unit<span class="o">]</span>
+</span><span class='line'><span class="nv">Description</span><span class="o">=</span>El viejo /etc/rc.local
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Service<span class="o">]</span>
+</span><span class='line'><span class="nv">Type</span><span class="o">=</span>oneshot
+</span><span class='line'><span class="nv">ExecStart</span><span class="o">=</span>/bin/bash /etc/rc.local
+</span><span class='line'><span class="nv">TimeoutSec</span><span class="o">=</span>0
+</span><span class='line'><span class="nv">StandardOutput</span><span class="o">=</span>tty
+</span><span class='line'><span class="nv">RemainAfterExit</span><span class="o">=</span>yes
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Install<span class="o">]</span>
+</span><span class='line'><span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Luego para echarlo a andar montamos /sys y /proc como bind del host en el chroot:</p>
+<p>Lo habilitamos:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>&#8220;systemctl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mount -o <span class="nb">bind</span> /sys /opt/chroot/sys
-</span><span class='line'>mount -o <span class="nb">bind</span> /proc /opt/chroot/proc
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl daemon-reload
+</span><span class='line'>systemctl <span class="nb">enable </span>rclocal
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Y luego hazle el chroot</p>
+<p>A singar por tuberías, esto es todo&hellip;</p>
 </div>
 
 
@@ -146,7 +163,7 @@ de un mirror. Por suerte con un CD se resuelve el problema&hellip;</p>
 
 
 
-<time class='entry-date' datetime='2014-06-27T14:48:13-04:00'><span class='date'>27/06/2014</span> <span class='time'>2:48 pm</span></time>
+<time class='entry-date' datetime='2015-11-12T09:49:30-05:00'><span class='date'>12/11/2015</span> <span class='time'>9:49 am</span></time>
       
 
 
@@ -154,7 +171,7 @@ de un mirror. Por suerte con un CD se resuelve el problema&hellip;</p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2014/06/27/crear-un-chroot-con-debian/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2014/06/27/crear-un-chroot-con-debian/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/11/12/rc-dot-local-en-systemd/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/11/12/rc-dot-local-en-systemd/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -167,10 +184,8 @@ de un mirror. Por suerte con un CD se resuelve el problema&hellip;</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/06/10/autenticador-sql-en-el-proxy/" title="Previous Post: autenticador SQL en el proxy">&laquo; autenticador SQL en el proxy</a>
+        <a class="basic-alignment left" href="/blog/2015/11/03/las-mujeres-gordas/" title="Previous Post: las mujeres gordas">&laquo; las mujeres gordas</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/07/05/empirico/" title="Next Post: empíricos">empíricos &raquo;</a>
       
     </p>
   </footer>
@@ -458,8 +473,8 @@ if (location.pathname!='/') {
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2014/06/27/crear-un-chroot-con-debian/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2014/06/27/crear-un-chroot-con-debian/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2015/11/12/rc-dot-local-en-systemd/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2015/11/12/rc-dot-local-en-systemd/';
         var disqus_script = 'embed.js';
       
     (function () {

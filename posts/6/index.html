@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Los delay pool de squid, son una herramienta que permite determinar cuanto ancho
-de vianda le corresponde a ciertas conexiones. A mi en lo personal &hellip;">
+  <meta name="description" content="De siempre, me ha molestado que los hacker de hipatia.net, hagan ataquitos para
+autenticarse por fuerza bruta. Mis paisanos suelen resolver ese &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,62 @@ de vianda le corresponde a ciertas conexiones. A mi en lo personal &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-21T14:16:49-05:00'><span class='date'>21/02/2015</span> <span class='time'>2:16 pm</span></time>
+        
+           | <a href="/blog/2015/02/21/sasl-homeclub-only/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/21/sasl-homeclub-only/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>De siempre, me ha molestado que los hacker de hipatia.net, hagan ataquitos para
+autenticarse por fuerza bruta.</p>
+
+<p>Mis paisanos suelen resolver ese problema poniendo una pasarela de correo
+&ldquo;relay-only&rdquo; delante de su servidor principal o simplemente con fail2ban.</p>
+
+<p>fail2ban tiene sus ventajas, pues bloqueas a un atacante que podría hacer eso y
+otras muchas cosas que no imaginamos.</p>
+
+<p>Pero por suerte, <a href="http://www.postfix.org/postconf.5.html#smtpd_sasl_exceptions_networks">postfix tiene su método para deshacerse del problema&hellip;</a></p>
+
+<p>Como no tengo nada en mynetworks, a mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;scope del main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># sasl solo para nuestra red local</span>
+</span><span class='line'><span class="nv">smtpd_sasl_exceptions_networks</span> <span class="o">=</span> !10.1.1.0/24
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Osea: &ldquo;a lo que NO este en esa red, no se le ofrece autenticación&rdquo;</p>
+
+<h4>Se acabó la autenticación pa afuera</h4>
+
+<p>   <blockquote><p>Te das cuenta que NO todo se resuelve con violencia,<br/>   cuando se te pusa un mosquito en los testículos.</p></blockquote></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -955,123 +1011,6 @@ seteeas &ldquo;application#welcome&rdquo; como root, en vez de hacer esa chapuse
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-10-28T22:37:20-04:00'><span class='date'>28/10/2014</span> <span class='time'>10:37 pm</span></time>
-        
-           | <a href="/blog/2014/10/28/proxy-automatico/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/10/28/proxy-automatico/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Todo el que halla configurado un navegador con proxy; o sea, todo cubano que
-halla configurado un navegador, quizás halla visto que una de las tantas
-opciones dice &ldquo;configuración automática&rdquo;. Seguro se preguntarán que carajo es
-eso.</p>
-
-<p>Pues es un javascript que le dice al navegador como debe ser la configuración
-del proxy; obviamente.</p>
-
-<p>Resulta que hay dos maneras de hacerlo, vía DHCP o vía DNS. Algunos navegadores
-lo cogen por DHCP mientras que otros lo hacen por DNS.</p>
-
-<h3>Para evitar problemas, configuramos las dos&hellip;</h3>
-
-<p>Primero y principioso. Creamos el fichero wpad.dat, el nombre debe respetarse.
-Dicho fichero los servimos, así que por definición los podremos en /var/www.
-Este fichero contendrá las instrucciones que un navegador necesita para pinchar.</p>
-
-<figure class='code'><figcaption><span>&#8220;/var/www/wpad.dat&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">FindProxyForURL</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">host</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// los host locales NO pasan a través del proxy</span>
-</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">shExpMatch</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span><span class="s2">&quot;*.hcg.sld.cu:*&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;DIRECT&quot;</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">shExpMatch</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span><span class="s2">&quot;*.hcg.sld.cu:*/*&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;DIRECT&quot;</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// la red local, tampoco</span>
-</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">isInNet</span><span class="p">(</span><span class="nx">host</span><span class="p">,</span> <span class="s2">&quot;10.1.1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;255.255.255.0&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;DIRECT&quot;</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// lo demás sale por el proxy</span>
-</span><span class='line'>        <span class="k">return</span> <span class="s2">&quot;PROXY 10.1.1.1:3128&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ve, es javascript puro, osea que las opciones se podrían hacer más
-creativas. Por ejemplo, si la ip de la máquina es tal, configuralo así o asao.</p>
-
-<p>Los criticones de código diran que se pudo usar un swith en vez de 4 &ldquo;if&rdquo;. Pero
-eso correrá en un momento y entorno casi imposible de debugar. Lo intenté con
-swith y no me pinchó.</p>
-
-<p>Ahora el problema es que hay que declarar un nuevo contenido mime para este
-dato. En mi caso uso nginx y en el fichero de configuración de mime, le
-aclaramos el nuevo; a mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>mime.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>types <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    application/x-ns-proxy-autoconfig     dat<span class="p">;</span>
-</span><span class='line'>    text/html                             html htm shtml<span class="p">;</span>
-</span><span class='line'>    text/css                              css<span class="p">;</span>
-</span><span class='line'>    <span class="o">(</span>muchas lineas más aqui<span class="o">)</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Bueno ahora, vamos pal DHCP. Por supuesto, nada menos que el mismísimo dnsmasq:</p>
-
-<p>Primero el método DHCP, declaramos una option cuyo código sea 252</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/dnsmasq.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">option</span><span class="o">=</span>252,http://10.1.1.1/wpad.dat
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>También declaramos un puntero DNS, que apunte a wpad.hcg.sld.cu y que sea el
-servidor donde está el wpad. Le recuerdo que &ldquo;hcg.sld.cu&rdquo; es el nombre del
-dominio.</p>
-
-<p>Al reiniciar nginx y dnsmasq, todo debe estar listo&hellip;</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/7">&larr; Older</a>
@@ -1091,6 +1030,10 @@ dominio.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2015/11/03/las-mujeres-gordas/">las mujeres gordas</a>
