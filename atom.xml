@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2015-11-19T13:24:46-05:00</updated>
+  <updated>2015-11-23T16:02:12-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,161 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[certificado autofirmado]]></title>
+    <link href="http://uranio-235.github.io/blog/2015/11/22/certificado-autofirmado/"/>
+    <updated>2015-11-22T19:33:54-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2015/11/22/certificado-autofirmado</id>
+    <content type="html"><![CDATA[<p>Ya hemos visto en varios post, que para hacer un servicio con SSL, requerimos un
+certificado autofirmado. De ahora en lo adelante, no pienso repetir ese proceso,
+por el contrario, pondré un link a este post.</p>
+
+<p>Una vez creado tu propio certificado, no tendrás que volver a crear uno para
+cada servicio, simplemente uno para cada host. Por tanto, vamos a crear y
+almacenar nuestro certificado en <strong>/etc/ssl/private/</strong> para usarlo con todos los
+servicios.</p>
+
+<p>De facto, asumo que tienes el paquete <strong>openssl</strong> instalado.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/ssl/private&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/ssl/private/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Primeros debemo generar una <a href="https://es.wikipedia.org/wiki/RSA">Clave RSA
+Privada</a>. La clave RSA es la que genera los
+certificados autofrimados como tal.</p>
+
+<figure class='code'><figcaption><span>&#8220;generando la RSA&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl genrsa -des3 -out privado.key 1024
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Te pide un password. Debes ver algo como esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;salida&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>.++++++
+</span><span class='line'>..............................++++++
+</span><span class='line'>e is <span class="m">65537</span> <span class="o">(</span>0x10001<span class="o">)</span>
+</span><span class='line'>Enter pass phrase <span class="k">for</span> privado.key:
+</span><span class='line'>Verifying - Enter pass phrase <span class="k">for</span> privado.key:
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ah! El password no se ve mientras los escribes&hellip;</p>
+
+<p>Bueno, ahora generamos el CSR (Certificate Signing Request). Esto se usa para
+dos cosas&hellip; El CSR, es lo que se le envía a una autoridad certificadora (CA)
+para identificarnos con ella o como es el caso para simplemente, generar
+certificados autofirmados.</p>
+
+<p>En este proceso, que ya lo hemos visto repetidamente, te preguntarán por
+aquellos datos que identifican a tu servicio de manera fideligna.</p>
+
+<p><strong>OJO</strong> El servidor que especifiques en el FQDN debe machear al hostname que se
+pida en las peticiones DNS.</p>
+
+<figure class='code'><figcaption><span>&#8220;generando el CSR&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl req -new -key privado.key -out privado.csr
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Debes ver algo como esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;salida&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Enter pass phrase <span class="k">for</span> privado.key:
+</span><span class='line'>You are about to be asked to enter information that will be incorporated
+</span><span class='line'>into your certificate request.
+</span><span class='line'>What you are about to enter is what is called a Distinguished Name or a DN.
+</span><span class='line'>There are quite a few fields but you can leave some blank
+</span><span class='line'>For some fields there will be a default value,
+</span><span class='line'>If you enter <span class="s1">&#39;.&#39;</span>, the field will be left blank.
+</span><span class='line'>-----
+</span><span class='line'>Country Name <span class="o">(</span><span class="m">2</span> letter code<span class="o">)</span> <span class="o">[</span>AU<span class="o">]</span>:CU
+</span><span class='line'>State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>Some-State<span class="o">]</span>:Havana
+</span><span class='line'>Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[]</span>:Plaza
+</span><span class='line'>Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>Internet Widgits Pty Ltd<span class="o">]</span>:
+</span><span class='line'>Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[]</span>:
+</span><span class='line'>Common Name <span class="o">(</span>e.g. server FQDN or YOUR name<span class="o">)</span> <span class="o">[]</span>:tuservidor.cu
+</span><span class='line'>Email Address <span class="o">[]</span>:
+</span><span class='line'>
+</span><span class='line'>Please enter the following <span class="s1">&#39;extra&#39;</span> attributes
+</span><span class='line'>to be sent with your certificate request
+</span><span class='line'>A challenge password <span class="o">[]</span>:
+</span><span class='line'>An optional company name <span class="o">[]</span>:Calixto Garcia
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>REPITO</strong> Donde dice: &ldquo;Common Name (eg, your name or your server&rsquo;s hostname)&rdquo;</p>
+
+<p>Debes poner el hostname por el que será llamado tu server. Por esta razón, los
+pop3 y los SMTP, suelen generar certificados aparte.</p>
+
+<p>Otra jodedera de los certificados autofirmados, es que siempre piden un password
+cuando van a ser usados. Para evitar este fenómeno, debemos hacer una burumba y
+quitarle el password.</p>
+
+<figure class='code'><figcaption><span>&#8220;quitando el password&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp privado.key privado.key.org
+</span><span class='line'>openssl rsa -in privado.key.org -out privado.key
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Podrías borrar el fichero &ldquo;privado.key.org&rdquo; tranquilamente. Ahora por fin vamos
+a generar el dichoso certificado autofirmado. Para generarlo, necesitaremos usar
+una CA, en este caso, nosotros mismos.</p>
+
+<figure class='code'><figcaption><span>&#8220;generando el certificados&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl x509 -req -days <span class="m">365</span> -in privado.csr -signkey privado.key -out privado.crt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Debes ver algo como esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;salida&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Signature ok
+</span><span class='line'><span class="nv">subject</span><span class="o">=</span>/C<span class="o">=</span>CU/ST<span class="o">=</span>Havana/L<span class="o">=</span>Plaza/O<span class="o">=</span>Internet Widgits Pty Ltd/CN<span class="o">=</span>tuservidor.cu
+</span><span class='line'>Getting Private key
+</span><span class='line'>Enter pass phrase <span class="k">for</span> privado.key:
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El parámetros <strong>-days</strong> puede saltarse si no quiere que el certificado caduque.
+Pero en ambientes muy hostiles, donde de verdad se quiere cifrado, es necesario
+que el ceritificado caduque. Uno nunca sabe que mariconá están planificando los
+hackers por ahí.</p>
+
+<p>Ahí tienes tu certificado autofirmado ;)</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[rc.local en systemd]]></title>
@@ -2334,57 +2489,6 @@ usuario.</p>
 <p>   /users/345/cambiar</p>
 
 <p>Dicha ruta macheará el método User#cambiar</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[asset pipeline en production]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/07/05/asset-pipeline-en-production/"/>
-    <updated>2015-07-05T20:57:49-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/07/05/asset-pipeline-en-production</id>
-    <content type="html"><![CDATA[<p>La más resipingante característica de Ruby on Rails, amada por unos y odiada por
-otros; me refrito a las: &ldquo;asset pipeline&rdquo;</p>
-
-<p>Resulta que no se si les ha pasado, pero al correr &ldquo;unicorn&rdquo; en el entorno
-<strong>production</strong>, las CSS y las JS desaparecen.</p>
-
-<p>Eso supuestamente está bien, sobre todo si tuvieras un nginx sirviendo el
-contenido estático. Lo que no acabo de entender, es como se supone que los
-js.erb o los coffe-script lleguen compilados al directorio de nginx con el que
-sirves las assets.</p>
-
-<p>Sumado a eso, los que como yo, usen la gema del bootstrap, sin la asset
-pipeline eres <em>ao por regla</em>.</p>
-
-<p>Pa no hacerte el cuento largo, localiza estos parámetros en el fichero de
-producción, situado en <strong>config/environments/production.rb</strong> y cambia los
-parámetros siguientes</p>
-
-<figure class='code'><figcaption><span>&#8220;config/environments/production.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="c1"># Disable serving static files from the `/public` folder by default since</span>
-</span><span class='line'>  <span class="c1"># Apache or NGINX already handles this.</span>
-</span><span class='line'>  <span class="c1">#</span>
-</span><span class='line'>  <span class="c1"># Ponemos esto en true, pa que sirva los ficheros estáticos</span>
-</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">serve_static_files</span> <span class="o">=</span> <span class="kp">true</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># Do not fallback to assets pipeline if a precompiled asset is missed.</span>
-</span><span class='line'>  <span class="c1">#</span>
-</span><span class='line'>  <span class="c1"># Esto va true también, para que se use el asset pipeline</span>
-</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">compile</span> <span class="o">=</span> <span class="kp">true</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con eso debes ver todo cargado y al célebre Turbolinks generando sus trifulcados
-enlaces a las assets.</p>
 ]]></content>
   </entry>
   
