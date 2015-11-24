@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://uranio-235.github.io/blog/2015/11/23/desmume-ultralento/</loc>
+    <lastmod>2015-11-23T21:37:40-05:00</lastmod>
+  </url>
+  <url>
     <loc>http://uranio-235.github.io/blog/2015/11/22/certificado-autofirmado/</loc>
     <lastmod>2015-11-22T19:33:54-05:00</lastmod>
   </url>
@@ -214,10 +218,10 @@
   </url>
   <url>
     <loc>http://uranio-235.github.io/blog/archives/</loc>
-    <lastmod>2015-11-23T16:02:12-05:00</lastmod>
+    <lastmod>2015-11-24T11:36:34-05:00</lastmod>
   </url>
   <url>
     <loc>http://uranio-235.github.io/</loc>
-    <lastmod>2015-11-23T16:02:12-05:00</lastmod>
+    <lastmod>2015-11-24T11:36:34-05:00</lastmod>
   </url>
 </urlset>

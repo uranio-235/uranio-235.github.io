@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2015-11-23T16:02:12-05:00</updated>
+  <updated>2015-11-24T11:36:34-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,43 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[desmume ultralento]]></title>
+    <link href="http://uranio-235.github.io/blog/2015/11/23/desmume-ultralento/"/>
+    <updated>2015-11-23T21:37:40-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2015/11/23/desmume-ultralento</id>
+    <content type="html"><![CDATA[<p>Es tremendo mojón departe del desmume, no venir con el compilador JIT activado
+por defecto. Los juegos de DS corren suúuuuper lentos. Pero si corres desmume
+con los siguientes argumentos:</p>
+
+<figure class='code'><figcaption><span>&#8220;desmume&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>desmume  --fwlang<span class="o">=</span><span class="m">5</span> --jit-size<span class="o">=</span><span class="m">100</span> --cpu-mode<span class="o">=</span><span class="m">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Se activará el <a href="https://es.wikipedia.org/wiki/Compilaci%C3%B3n_en_tiempo_de_ejecuci%C3%B3n">Compilador en Tiempo de
+Ejecución</a>
+que tiene desmume y créeme, la mejora es increíble. Tanto que luego se dispara
+de una manera descomunal, así que será necesario limitar el FrameSkip a 60 FPS.</p>
+
+<p><img class="right" src="http://uranio-235.github.io/images/desmume.png"></p>
+
+<p>Como ven en la imagen, está corriendo Le pokemón negro, y con un micro de 2 mil
+herzios se me monta en los 80fps renderizando 3d. Con la Soul Silver, se me
+monta en +100 fps, ya que las peleas son en 2D.</p>
+
+<p>Te preguntarás por que usar Frameskip entonces. Pues al menos en mi caso, cuando
+el juego renderiza 3D, sin Frameskip, no ni a las 40FPS. Por suerte, con la
+opción marcada debajo, ni se siente el frame-skip, cosa que en otros emuladores
+es un dolor.</p>
+
+<p>Por suerte el DS solo puede emular 3D en una sola pantalla a la vez y
+generalmente lo hace en la de arriba.</p>
+
+<p>Ah! OpenGL es por gusto, desmume pincha arriba del micro.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[certificado autofirmado]]></title>
@@ -2409,86 +2446,6 @@ la solución, como es el ejemplo de esta:</p>
 <p><img class="center" src="http://uranio-235.github.io/images/openvas_sol.png" title="solución" alt="solución"></p>
 
 <p>Hermosa pareja; el problema y la solución junticos&hellip;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[añadir verbo a un scaffold]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/07/05/anadir-verbo-a-un-scaffold/"/>
-    <updated>2015-07-05T21:35:54-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/07/05/anadir-verbo-a-un-scaffold</id>
-    <content type="html"><![CDATA[<p>Cualquiera que sepa como usar debidamente los scaffolds, o sea, cualquiera que
-sepa como hacerle la paja a ruby on rails para que haga lo que queremos; seguro
-habrá intentado en algún momento, añadir un nuevo método a un scaffold. Además,
-de seguro quisiste luego poder llamarlo con los métodos &ldquo;metodo_user_path&rdquo; y que
-la ruta se cree de manera automática.</p>
-
-<p>Por ejemplo, en este caso, tengo el scaffold <strong>user</strong> y le agregué el método
-<strong>cambiar</strong> aparte de los clásicos PUT y DELETE.</p>
-
-<figure class='code'><figcaption><span>&#8220;scope de users_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="c1"># cambia el estado de habilitación del usuarios</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">cambiar</span>
-</span><span class='line'>     <span class="vi">@user</span><span class="o">.</span><span class="n">enabled</span><span class="o">=!</span><span class="vi">@user</span><span class="o">.</span><span class="n">enabled</span>
-</span><span class='line'>     <span class="vi">@user</span><span class="o">.</span><span class="n">save</span>
-</span><span class='line'>     <span class="n">redirect_to</span> <span class="ss">:back</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># GET /users</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
-</span><span class='line'>    <span class="vi">@users</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">all</span>
-</span><span class='line'>  <span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Pero el método cambiar no aparece en rails hasta que no hagas lo siguiente en el
-fichero de las rutas.</p>
-
-<figure class='code'><figcaption><span>&#8220;config/routes.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>   <span class="c1"># el scaffold de los usuarios</span>
-</span><span class='line'>   <span class="n">resources</span> <span class="ss">:users</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="c1"># agregamos el verbo cambiar usado para</span>
-</span><span class='line'>      <span class="c1"># @user.enabled=!@user.enabled</span>
-</span><span class='line'>      <span class="c1"># para que exista: cambiar_user_path</span>
-</span><span class='line'>      <span class="n">member</span> <span class="k">do</span>
-</span><span class='line'>         <span class="n">get</span> <span class="s1">&#39;cambiar&#39;</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora existirá el método <strong>cambiar_user_path</strong> que toma como argumento el
-usuario.</p>
-
-<p>   cambiar_user_path(user)</p>
-
-<p>De esta manera, se le manda el objeto usuario y genera una URL como</p>
-
-<p>   /users/345/cambiar</p>
-
-<p>Dicha ruta macheará el método User#cambiar</p>
 ]]></content>
   </entry>
   
