@@ -114,8 +114,7 @@ con los siguientes argumentos:</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Se activará el <a href="https://es.wikipedia.org/wiki/Compilaci%C3%B3n_en_tiempo_de_ejecuci%C3%B3n">Compilador en Tiempo de
-Ejecución</a>
+<p>Se activará el <a href="https://es.wikipedia.org/wiki/Compilaci%C3%B3n_en_tiempo_de_ejecuci%C3%B3n">Compilador en Tiempo de Ejecución</a>
 que tiene desmume y créeme, la mejora es increíble. Tanto que luego se dispara
 de una manera descomunal, así que será necesario limitar el FrameSkip a 60 FPS.</p>
 
@@ -130,10 +129,8 @@ el juego renderiza 3D, sin Frameskip, no ni a las 40FPS. Por suerte, con la
 opción marcada debajo, ni se siente el frame-skip, cosa que en otros emuladores
 es un dolor.</p>
 
-<p>Por suerte el DS solo puede emular 3D en una sola pantalla a la vez y
-generalmente lo hace en la de arriba.</p>
-
-<p>Ah! OpenGL es por gusto, desmume pincha arriba del micro.</p>
+<p>Por suerte el DS solo puede renderizar 3D en una sola pantalla a la vez. Ah!
+OpenGL es por gusto, desmume pincha arriba del micro.</p>
 </div>
   
   
@@ -181,8 +178,7 @@ servicios.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Primeros debemo generar una <a href="https://es.wikipedia.org/wiki/RSA">Clave RSA
-Privada</a>. La clave RSA es la que genera los
+<p>Primeros debemo generar una <a href="https://es.wikipedia.org/wiki/RSA">Clave RSA Privada</a>. La clave RSA es la que genera los
 certificados autofrimados como tal.</p>
 
 <figure class='code'><figcaption><span>&#8220;generando la RSA&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -208,9 +204,9 @@ certificados autofrimados como tal.</p>
 <p>Ah! El password no se ve mientras los escribes&hellip;</p>
 
 <p>Bueno, ahora generamos el CSR (Certificate Signing Request). Esto se usa para
-dos cosas&hellip; El CSR, es lo que se le envía a una autoridad certificadora (CA)
-para identificarnos con ella o como es el caso para simplemente, generar
-certificados autofirmados.</p>
+dos cosas: El CSR, es lo que se le envía a una autoridad certificadora (CA) para
+identificarnos con ella o como es el caso para simplemente, generar certificados
+autofirmados.</p>
 
 <p>En este proceso, que ya lo hemos visto repetidamente, te preguntarán por
 aquellos datos que identifican a tu servicio de manera fideligna.</p>
@@ -268,9 +264,8 @@ pida en las peticiones DNS.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>REPITO</strong> Donde dice: &ldquo;Common Name (eg, your name or your server&rsquo;s hostname)&rdquo;</p>
-
-<p>Debes poner el hostname por el que será llamado tu server. Por esta razón, los
+<p><strong>REPITO</strong> Donde dice: &ldquo;Common Name (eg, your name or your server&rsquo;s hostname)&rdquo;
+Debes poner el hostname por el que será llamado tu server. Por esta razón, los
 pop3 y los SMTP, suelen generar certificados aparte.</p>
 
 <p>Otra jodedera de los certificados autofirmados, es que siempre piden un password
@@ -284,9 +279,11 @@ quitarle el password.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Podrías borrar el fichero &ldquo;privado.key.org&rdquo; tranquilamente. Ahora por fin vamos
-a generar el dichoso certificado autofirmado. Para generarlo, necesitaremos usar
-una CA, en este caso, nosotros mismos.</p>
+<p>Ya puedes borrar el fichero &ldquo;privado.key.org&rdquo; tranquilamente, pero bueno, si lo
+guardas, nadie se pondrá bravo.</p>
+
+<p>Ahora por fin vamos a generar el dichoso certificado autofirmado. Para
+generarlo, necesitaremos usar una CA, en este caso, nosotros mismos.</p>
 
 <figure class='code'><figcaption><span>&#8220;generando el certificados&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl x509 -req -days <span class="m">365</span> -in privado.csr -signkey privado.key -out privado.crt
