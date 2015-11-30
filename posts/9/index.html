@@ -9,9 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="De siempre, me ha parecido que los autenticadores de squid son unas
-canchanfletas. Realmente antes me parecían otra cosa, porque la palabra
-&ldquo; &hellip;">
+  <meta name="description" content="A menudo, necesitamos hacer una que otra barbaridad y no nos gustaría que esto
+sucediera en nuestro sistema base. La virtualización es una buena &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +80,66 @@ canchanfletas. Realmente antes me parecían otra cosa, porque la palabra
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/27/crear-un-chroot-con-debian/">crear un chroot con debian</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-06-27T14:48:13-04:00'><span class='date'>27/06/2014</span> <span class='time'>2:48 pm</span></time>
+        
+           | <a href="/blog/2014/06/27/crear-un-chroot-con-debian/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/06/27/crear-un-chroot-con-debian/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>A menudo, necesitamos hacer una que otra barbaridad y no nos gustaría que esto
+sucediera en nuestro sistema base. La virtualización es una buena opción para
+aquellos que son enfermos a meter las patas; pero correr virtualbox solo para
+eso, es matar moscas a cañonazos y:</p>
+
+<p>   <blockquote><p>Prefiero lamer el piso del IPK que usar Proxmox.</p></blockquote></p>
+
+<p>En debian, tenemos la herramienta
+<a href="https://wiki.debian.org/es/debootstrap">debootstrap</a> que nos permite generar
+chroot con fines educativos. La mala noticias es que necesita bajar los paquetes
+de un mirror. Por suerte con un CD se resuelve el problema&hellip;</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mount debian-7.0.0-i386-CD-1.iso /media/cdrom
+</span><span class='line'>debootstrap --no-check-gpg wheezy /opt/chroot/ file:/media/cdrom
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Luego para echarlo a andar montamos /sys y /proc como bind del host en el chroot:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mount -o <span class="nb">bind</span> /sys /opt/chroot/sys
+</span><span class='line'>mount -o <span class="nb">bind</span> /proc /opt/chroot/proc
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y luego hazle el chroot</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -850,66 +909,9 @@ caso, con uno solo basta. Veamos de cerca la configuración.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-04-04T21:42:40-04:00'><span class='date'>04/04/2014</span> <span class='time'>9:42 pm</span></time>
-        
-           | <a href="/blog/2014/04/04/en-la-cumbre-del-vedado/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/04/04/en-la-cumbre-del-vedado/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>En la punta de loma más temida y respetada por cualquiera que estudie medicina;
-y en lo más alto de la educación Cubana, se encuentra:</p>
-
-<h3>El Hospital Universitario Calixto García</h3>
-
-<p>Se yergue sobre el resto de las instituciones de salud, por su altura sobre el
-nivel del mar; en comparación con el resto de otros hospital.</p>
-
-<p>Hace poco respondí con mucho estupor a la pregunta &ldquo;¿donde estás trabajando?&rdquo; y
-no fue hasta que escuche mi propia voz diciendo &ldquo;en el calisto&rdquo;; cuando hice
-consciencia del asunto. Al otro día me paré al fondo de la oficina y pensé:
-&ldquo;¿que hago yo aquí?&rdquo;. Salud para mi siempre había sido una asíntota. Estaba
-seguro que por cosas del destino, debía mantenerme al margen del MINSAP &ldquo;donde
-se come no se caga&rdquo;. Además, siempre dije que salud era el último lugar en el
-que trabajaría, quizás porque tantas personas me lo recomendaban.</p>
-
-<p>Tanto tiempo proveyéndole ayuda a los usuarios de infomed, sin imaginarme lo que
-me reservaba el destino. Nunca me imaginé que me sentiría TAN BIEN en algún
-lugar, me gusta como pasa el tiempo aquí.</p>
-
-<p>Creo que el Calixto será un antes y un después en mi vida profesional.</p>
-
-<p>Detrás del proxy de infomed, la vida es dura. Enferntaré las miserias
-tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
-
-<p>Esta primera entrada, marca el último día de mi antiguo blog: <a href="http://otherlinuxblog.blogspot.com">puheroska</a></p>
-
-<p>   <blockquote><p>Los ricos que viven de su patrimonio<br/>   no pueden hablar de &ldquo;su trabajo&rdquo;.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
+    
+      <a class="prev" href="/posts/10">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
@@ -926,6 +928,10 @@ tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2015/11/29/mc-demora-en-abrir/">mc demora en abrir</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2015/11/23/desmume-ultralento/">desmume ultralento</a>

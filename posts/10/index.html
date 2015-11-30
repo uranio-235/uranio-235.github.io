@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>dovecot entra en el baile - El SysAdmin del 3er Mundo</title>
+  <title>El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Otra escupía que me cae en la frente. Desde que conozco linux, estoy oyendo
-hablar de postfix con ldap, postfix con mysql y siempre mi criterio era &hellip;">
+  <meta name="description" content="En la punta de loma más temida y respetada por cualquiera que estudie medicina;
+y en lo más alto de la educación Cubana, se encuentra: El Hospital &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ hablar de postfix con ldap, postfix con mysql y siempre mi criterio era &hellip;
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2014/06/09/dovecot-entra-en-el-baile/">
+  <link rel="canonical" href="http://uranio-235.github.io/posts/10/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -78,12 +78,15 @@ hablar de postfix con ldap, postfix con mysql y siempre mi criterio era &hellip;
 </nav>
   <div id="main">
     <div id="content">
-      <div>
-<article class="hentry" role="article">
+      <div class="blog-index">
   
+  
+  
+    <article>
+      
   <header>
     
-      <h1 class="entry-title">dovecot entra en el baile</h1>
+      <h1 class="entry-title"><a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a></h1>
     
     
       <p class="meta">
@@ -92,195 +95,59 @@ hablar de postfix con ldap, postfix con mysql y siempre mi criterio era &hellip;
 
 
 
-<time class='entry-date' datetime='2014-06-09T08:56:43-04:00'><span class='date'>09/06/2014</span> <span class='time'>8:56 am</span></time>
+<time class='entry-date' datetime='2014-04-04T21:42:40-04:00'><span class='date'>04/04/2014</span> <span class='time'>9:42 pm</span></time>
         
-           | <a href="#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io">Comments</a>
+           | <a href="/blog/2014/04/04/en-la-cumbre-del-vedado/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/04/04/en-la-cumbre-del-vedado/">Comments</a>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Otra escupía que me cae en la frente. Desde que conozco linux, estoy oyendo
-hablar de postfix con ldap, postfix con mysql y siempre mi criterio era el peor.</p>
+  <div class="entry-content"><p>En la punta de loma más temida y respetada por cualquiera que estudie medicina;
+y en lo más alto de la educación Cubana, se encuentra:</p>
 
-<p>Por lo general, veía a mis paisanos copiar guías y pasar mil trabajos creando la
-base de datos sin tener una finalidad útil. Ahora me doy cuenta que en un
-esquema monstruosamente grande; MySQL resulta útil.</p>
+<h3>El Hospital Universitario Calixto García</h3>
 
-<p>Por ejemplo, aquí tengo planificado un gran despliegue de tecnología
-estrafalaria y voy a necesitar un esquema como el de google:</p>
+<p>Se yergue sobre el resto de las instituciones de salud, por su altura sobre el
+nivel del mar; en comparación con el resto de otros hospital.</p>
 
-<h3>&ldquo;una cuenta para todos los servicios&rdquo;</h3>
+<p>Hace poco respondí con mucho estupor a la pregunta &ldquo;¿donde estás trabajando?&rdquo; y
+no fue hasta que escuche mi propia voz diciendo &ldquo;en el calisto&rdquo;; cuando hice
+consciencia del asunto. Al otro día me paré al fondo de la oficina y pensé:
+&ldquo;¿que hago yo aquí?&rdquo;. Salud para mi siempre había sido una asíntota. Estaba
+seguro que por cosas del destino, debía mantenerme al margen del MINSAP &ldquo;donde
+se come no se caga&rdquo;. Además, siempre dije que salud era el último lugar en el
+que trabajaría, quizás porque tantas personas me lo recomendaban.</p>
 
-<p>Por el momento le va tocando el turno al correo, que aunque aún no tenemos
-operando el dominio; esta pronto a cumplirse.</p>
+<p>Tanto tiempo proveyéndole ayuda a los usuarios de infomed, sin imaginarme lo que
+me reservaba el destino. Nunca me imaginé que me sentiría TAN BIEN en algún
+lugar, me gusta como pasa el tiempo aquí.</p>
 
-<p>Primero y principioso, instalar todo:</p>
+<p>Creo que el Calixto será un antes y un después en mi vida profesional.</p>
 
-<figure class='code'><figcaption><span>&#8220;instalar todo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@blackjack:~# aptitude install postfix-mysql dovecot-mysql
-</span></code></pre></td></tr></table></div></figure>
+<p>Detrás del proxy de infomed, la vida es dura. Enferntaré las miserias
+tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
 
+<p>Esta primera entrada, marca el último día de mi antiguo blog: <a href="http://otherlinuxblog.blogspot.com">puheroska</a></p>
 
-<p>Seguidamente crearemos los usaurios del sistema. El esquema vmail corre como un
-usaurio aparte por una cuestión de seguridad.</p>
-
-<figure class='code'><figcaption><span>&#8220;crear los usaurios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@blackjack:~# groupadd -g <span class="m">5000</span> vmail
-</span><span class='line'>root@blackjack:~# useradd -g vmail -u <span class="m">5000</span> vmail -d /var/vmail
-</span><span class='line'>root@blackjack:~# mkdir /var/vmail
-</span><span class='line'>root@blackjack:~# chown vmail:vmail /var/vmail
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>La base de datos, tienes más o menos esta estructura:</p>
-
-<figure class='code'><figcaption><span>&#8220;estructura de las base de datos&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/ejemplo<span class="nv">$ </span>rails console
-</span><span class='line'>Loading development environment <span class="o">(</span>Rails 4.1.1<span class="o">)</span>
-</span><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:001:0&gt; User.column_names
-</span><span class='line'><span class="o">=</span>&gt; <span class="o">[</span><span class="s2">&quot;id&quot;</span>, <span class="s2">&quot;username&quot;</span>, <span class="s2">&quot;realname&quot;</span>, <span class="s2">&quot;password&quot;</span>, <span class="s2">&quot;created_at&quot;</span>, <span class="s2">&quot;updated_at&quot;</span>, <span class="s2">&quot;telefono&quot;</span>, <span class="s2">&quot;correo&quot;</span>, <span class="s2">&quot;quota&quot;</span><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lo que más nos interesa de aquí es username y password, sobre todo teniendo en
-cuenta que que se almacena cifrado, osea, un chorro de mierda hexagesimal.</p>
-
-<p>Ahora vamos al fichero &ldquo;/etc/dovecot/conf.d/10-auth.conf&rdquo;. al fondo, le
-descomentamos el autenticador sql y le comentamos el de pam. Nos quedaría así</p>
-
-<figure class='code'><figcaption><span>&#8220;fondo de 10-auth.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="c1">#!include auth-system.conf.ext</span>
-</span><span class='line'><span class="err">!include</span> <span class="err">auth-sql.conf.ext</span>
-</span><span class='line'><span class="c1">#!include auth-ldap.conf.ext</span>
-</span><span class='line'><span class="c1">#!include auth-passwdfile.conf.ext</span>
-</span><span class='line'><span class="c1">#!include auth-checkpassword.conf.ext</span>
-</span><span class='line'><span class="c1">#!include auth-vpopmail.conf.ext</span>
-</span><span class='line'><span class="c1">#!include auth-static.conf.ext</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora le diremos al autenticador como conectarse a la base de datos. El irá
-solito a buscar la table &ldquo;users&rdquo;. Especificamos las conexión. También le diremos
-las linea sql que debe tirar para buscar el username y el password.</p>
-
-<p>También modificaremos el mecanismo de cifrado, le diremos que use SHA256 que es
-el generado por Ruby en mi esquema.</p>
-
-<figure class='code'><figcaption><span>/etc/dovecot/dovecot-sql.conf.ext</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="na">connect</span> <span class="o">=</span> <span class="s">host=10.1.1.14 dbname=labasededatos user=usuario password=notelodiré</span>
-</span><span class='line'><span class="na">default_pass_scheme</span> <span class="o">=</span> <span class="s">SHA256</span>
-</span><span class='line'><span class="na">password_query</span> <span class="o">=</span> <span class="s">\</span>
-</span><span class='line'><span class="s">  SELECT username, password \</span>
-</span><span class='line'><span class="s">  FROM users WHERE username = &#39;%n&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Por último y antes de pasar a postfix. En el fichero conf.d/auth-sql.conf.ext
-declaramos como se gestionará la base datos.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/dovecot/conf.d/auth-sql.conf.ext&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">passdb</span> <span class="err">{</span>
-</span><span class='line'>  <span class="na">driver</span> <span class="o">=</span> <span class="s">sql</span>
-</span><span class='line'><span class="s">  args = /etc/dovecot/dovecot-sql.conf.ext</span>
-</span><span class='line'><span class="err">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">userdb</span> <span class="err">{</span>
-</span><span class='line'>  <span class="na">driver</span> <span class="o">=</span> <span class="s">static</span>
-</span><span class='line'><span class="s">  args = uid=vmail gid=vmail home=/var/vmail/%n</span>
-</span><span class='line'><span class="err">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Osea que el correo se almacene en /var/vmail/fulano y con usuario vmail. De
-hecho TODO el correo se almacenará con el usuario vmail; poniendo fin al
-perpetuo temor de escalada de permisos que descansa en el típico esquema
-/var/mail/fulano</p>
-
-<p>En este caso, se chequeará el password contra SQL pero el almacenamiento se
-hará en /var/vmail, con eso no vamos contra el princpio del cual siempre me
-agarro y es que las Bases de datos, NO son sistemas de archivos.</p>
-
-<p>Veremos en la próxima entrada, como se hace a postfix jugar con todo esto&hellip;</p>
+<p>   <blockquote><p>Los ricos que viven de su patrimonio<br/>   no pueden hablar de &ldquo;su trabajo&rdquo;.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
 </div>
-
-
-  <footer>
-    <p class="meta">
-      
+  
   
 
-<span class="byline author vcard">Posted by <span class="fn">låzaro</span></span>
 
-      
-
-
-
-
-<time class='entry-date' datetime='2014-06-09T08:56:43-04:00'><span class='date'>09/06/2014</span> <span class='time'>8:56 am</span></time>
-      
-
-
-    </p>
+    </article>
+  
+  <div class="pagination">
     
-      <div class="sharing">
-  
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2014/06/09/dovecot-entra-en-el-baile/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2014/06/09/dovecot-entra-en-el-baile/" >Tweet</a>
-  
-  
-  <div class="g-plusone" data-size="medium"></div>
-  
-  
-    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
-  
-</div>
-
+    <a href="/blog/archives">Blog Archives</a>
     
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/blog/2014/05/02/wordpress-para-todos/" title="Previous Post: wordpress para todos">&laquo; wordpress para todos</a>
-      
-      
-        <a class="basic-alignment right" href="/blog/2014/06/09/postfix-entrando-en-el-baile/" title="Next Post: postfix entrando en el baile">postfix entrando en el baile &raquo;</a>
-      
-    </p>
-  </footer>
-</article>
-
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a class="next" href="/posts/9">Newer &rarr;</a>
+    
+  </div>
 </div>
-  </section>
-
-</div>
-
 <aside class="sidebar">
   
     <section>
@@ -551,7 +418,6 @@ if (location.pathname!='/') {
   
 </aside>
 
-
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -566,10 +432,7 @@ if (location.pathname!='/') {
       var disqus_shortname = 'uranio-235';
       
         
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2014/06/09/dovecot-entra-en-el-baile/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2014/06/09/dovecot-entra-en-el-baile/';
-        var disqus_script = 'embed.js';
+        var disqus_script = 'count.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

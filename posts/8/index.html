@@ -9,10 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Con este script, se toman los datos de /opt/samba/ocs y se inyectan en la base
-de datos central de manera automatizada. "/usr/local/bin/ocs.sh"1
-2
-3 &hellip;">
+  <meta name="description" content="Después de que el chino se diera mil cabezasos con la papelística; Yoel le dijo
+que quería revisar el estado y organización de su papelística. De &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +80,103 @@ de datos central de manera automatizada. "/usr/local/bin/ocs.sh"1
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-08-25T20:19:27-04:00'><span class='date'>25/08/2014</span> <span class='time'>8:19 pm</span></time>
+        
+           | <a href="/blog/2014/08/25/el-server-de-correo/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/08/25/el-server-de-correo/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Después de que el chino se diera mil cabezasos con la papelística; Yoel le dijo
+que quería revisar el estado y organización de su papelística. De facto
+&ldquo;apareció&rdquo; la contraseña del MultiPOP. El que no puede ser nombrado se la sabía
+de memoria, minutos más tarde, apareció la papelística.</p>
+
+<p>El mismo, responde a la dirección &ldquo;multipop.sld.cu&rdquo;. El usuario y contraseña
+están escritos en el fetchmailrc. Si tienes acceso al servidor de correo, los
+puedes ver la susodicha en el fichero. En este caso te pondré unos &ldquo;??&rdquo; donde
+debería ir la contraseña.</p>
+
+<figure class='code'><figcaption><span>&#8220;/root/.fetchmailrc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">set </span>daemon 60
+</span><span class='line'><span class="nb">set </span>postmaster <span class="s2">&quot;root&quot;</span>
+</span><span class='line'><span class="nb">set </span>no bouncemail
+</span><span class='line'><span class="nb">set </span>no spambounce
+</span><span class='line'><span class="nb">set </span>logfile /var/log/fetchmail/fetchmail.log
+</span><span class='line'><span class="nb">set </span>no syslog
+</span><span class='line'>
+</span><span class='line'>defaults
+</span><span class='line'>    timeout 10
+</span><span class='line'>    no keep
+</span><span class='line'>    fetchall
+</span><span class='line'>    expunge 5
+</span><span class='line'>    dropstatus
+</span><span class='line'>
+</span><span class='line'>poll multipop.sld.cu port <span class="m">110</span> protocol pop3 localdomains hcg.sld.cu
+</span><span class='line'>    envelope <span class="m">1</span> <span class="s2">&quot;Delivered-To&quot;</span>
+</span><span class='line'>    no dns
+</span><span class='line'>    username ????
+</span><span class='line'>    password ?????????
+</span><span class='line'>    to * here
+</span><span class='line'>    limitflush
+</span><span class='line'>    smtphost localhost
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Aún me queda pendiente a verificar que encabezado genera Exim para entergar el
+correo, si no, fetchmail lo manda todo amablemente para el postmaster. Cuando
+arranque probaré si es ese; si no, debe ser &ldquo;X-Delivered-To:&rdquo;</p>
+
+<p>Ahora el problema está en que NO hay un puntero MX para el dominio <em>hcg.sld.cu</em>
+porque el contrato no está renovado (problemas papelísticos). En el nodo de
+infomed me dijeron que fuera al &ldquo;GAU&rdquo; para renovar el contrato.</p>
+
+<p>Solo falta poner en orden la parte burocrática&hellip;</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -416,66 +511,6 @@ nos repudian o envidian nos llaman &ldquo;autosuficientes&rdquo; o &ldquo;excén
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/27/crear-un-chroot-con-debian/">crear un chroot con debian</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-06-27T14:48:13-04:00'><span class='date'>27/06/2014</span> <span class='time'>2:48 pm</span></time>
-        
-           | <a href="/blog/2014/06/27/crear-un-chroot-con-debian/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/06/27/crear-un-chroot-con-debian/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>A menudo, necesitamos hacer una que otra barbaridad y no nos gustaría que esto
-sucediera en nuestro sistema base. La virtualización es una buena opción para
-aquellos que son enfermos a meter las patas; pero correr virtualbox solo para
-eso, es matar moscas a cañonazos y:</p>
-
-<p>   <blockquote><p>Prefiero lamer el piso del IPK que usar Proxmox.</p></blockquote></p>
-
-<p>En debian, tenemos la herramienta
-<a href="https://wiki.debian.org/es/debootstrap">debootstrap</a> que nos permite generar
-chroot con fines educativos. La mala noticias es que necesita bajar los paquetes
-de un mirror. Por suerte con un CD se resuelve el problema&hellip;</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mount debian-7.0.0-i386-CD-1.iso /media/cdrom
-</span><span class='line'>debootstrap --no-check-gpg wheezy /opt/chroot/ file:/media/cdrom
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Luego para echarlo a andar montamos /sys y /proc como bind del host en el chroot:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mount -o <span class="nb">bind</span> /sys /opt/chroot/sys
-</span><span class='line'>mount -o <span class="nb">bind</span> /proc /opt/chroot/proc
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Y luego hazle el chroot</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/9">&larr; Older</a>
@@ -495,6 +530,10 @@ de un mirror. Por suerte con un CD se resuelve el problema&hellip;</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2015/11/29/mc-demora-en-abrir/">mc demora en abrir</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2015/11/23/desmume-ultralento/">desmume ultralento</a>
