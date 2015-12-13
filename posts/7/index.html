@@ -575,7 +575,7 @@ dominio.</p>
 
 <p>Al reiniciar nginx y dnsmasq, todo debe estar listo&hellip;</p>
 
-<p>En caso de que no uses dnsmasq, asumiré que usas bind e ICS dhcpd&hellip;</p>
+<p>En caso de que <strong>no</strong> uses dnsmasq, asumiré que usas bind e ICS dhcpd&hellip;</p>
 
 <p>Para ICS dhcpd, la cosa es un tin más compleja, ya que hay que declarar
 globalmente el tipo de opción, pero darle el valor en cada subnet o en le única
@@ -638,6 +638,7 @@ donde descansa el <strong>wpad.dat</strong></p>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
+<span class='line-number'>10</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>servidor1    IN A     10.1.1.1
 </span><span class='line'>servidor2    IN A     10.1.1.2
 </span><span class='line'>mail         IN CNAME servidor2.dominio.cu.
@@ -646,6 +647,7 @@ donde descansa el <strong>wpad.dat</strong></p>
 </span><span class='line'>smtp         IN CNAME servidor2.dominio.cu.
 </span><span class='line'>proxy        IN CNAME servidor1.dominio.cu.
 </span><span class='line'>gateway      IN CNAME servidor1.dominio.cu.
+</span><span class='line'><span class="p">;</span> envía el proxy automático
 </span><span class='line'>wpad         IN CNAME servidor1.dominio.cu.
 </span></code></pre></td></tr></table></div></figure>
 
