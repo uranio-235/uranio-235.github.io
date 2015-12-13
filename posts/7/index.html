@@ -574,6 +574,83 @@ servidor donde está el wpad. Le recuerdo que &ldquo;hcg.sld.cu&rdquo; es el nom
 dominio.</p>
 
 <p>Al reiniciar nginx y dnsmasq, todo debe estar listo&hellip;</p>
+
+<p>En caso de que no uses dnsmasq, asumiré que usas bind e ICS dhcpd&hellip;</p>
+
+<p>Para ICS dhcpd, la cosa es un tin más compleja, ya que hay que declarar
+globalmente el tipo de opción, pero darle el valor en cada subnet o en le única
+que uses. A mi me pinchó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;dhcpd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># vim:filetype=config</span>
+</span><span class='line'>authoritative<span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># declaramos lo del proxy automático</span>
+</span><span class='line'>option <span class="nb">local</span>-proxy-config code <span class="nv">252</span> <span class="o">=</span> text<span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># la red</span>
+</span><span class='line'>subnet 10.1.1.0 netmask 255.255.255.0 <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># los parámetros del rango</span>
+</span><span class='line'>    range 10.1.1.100 10.1.1.254<span class="p">;</span>
+</span><span class='line'>    option domain-name <span class="s2">&quot;hcg.sld.cu&quot;</span><span class="p">;</span>
+</span><span class='line'>    option domain-name-servers 10.1.1.1<span class="p">;</span>
+</span><span class='line'>    option broadcast-address 10.1.1.255<span class="p">;</span>
+</span><span class='line'>    option subnet-mask 255.255.255.0<span class="p">;</span>
+</span><span class='line'>    option routers 10.1.1.1<span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># envía el proxy automático</span>
+</span><span class='line'>    option <span class="nb">local</span>-proxy-config <span class="s2">&quot;http://10.1.1.1/wpad.dat&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span> <span class="c"># subnet</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En el caso de vim, declaras un cname con el nombre wpad que apunte al servidor
+donde descansa el <strong>wpad.dat</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/bind/ejemplo/dominio.cu.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>servidor1    IN A     10.1.1.1
+</span><span class='line'>servidor2    IN A     10.1.1.2
+</span><span class='line'>mail         IN CNAME servidor2.dominio.cu.
+</span><span class='line'>pop          IN CNAME servidor2.dominio.cu.
+</span><span class='line'>pop3         IN CNAME servidor2.dominio.cu.
+</span><span class='line'>smtp         IN CNAME servidor2.dominio.cu.
+</span><span class='line'>proxy        IN CNAME servidor1.dominio.cu.
+</span><span class='line'>gateway      IN CNAME servidor1.dominio.cu.
+</span><span class='line'>wpad         IN CNAME servidor1.dominio.cu.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Firefox pincha al palo, los demás no se&hellip;</p>
 </div>
   
   
