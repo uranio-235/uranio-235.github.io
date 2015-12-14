@@ -148,9 +148,11 @@ que requiere NFS.</p>
 <figure class='code'><figcaption><span>&#8220;ltsp-build-client&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
+<span class='line-number'>4</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'> ltsp-build-client --http-proxy http://127.0.0.1:3128 <span class="se">\</span>
-</span><span class='line'> --mirror http://ftp.sld.cu/debian --security-mirror http://ftp.sld.cu/debian/ <span class="se">\</span>
-</span><span class='line'> --copy-sourceslist --copy-package-cache
+</span><span class='line'> --mirror http://ftp.sld.cu/debian <span class="se">\</span>
+</span><span class='line'> --security-mirror http://ftp.sld.cu/debian-security <span class="se">\</span>
+</span><span class='line'> --copy-sourceslist --copy-package-cache --accept-unsigned-packages
 </span></code></pre></td></tr></table></div></figure>
 
 
