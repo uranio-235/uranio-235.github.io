@@ -164,13 +164,13 @@ aclaramos el nuevo; a mi me quedó así:</p>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">types</span> <span class="err">{</span>
+</pre></td><td class='code'><pre><code class='lighttpd'><span class='line'><span class="k">types</span> <span class="p">{</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="err">application/x-ns-proxy-autoconfig</span>     <span class="err">dat</span><span class="c1">;</span>
-</span><span class='line'>    <span class="err">text/html</span>                             <span class="err">html</span> <span class="err">htm</span> <span class="err">shtml</span><span class="c1">;</span>
-</span><span class='line'>    <span class="err">text/css</span>                              <span class="err">css</span><span class="c1">;</span>
-</span><span class='line'>    <span class="err">(muchas</span> <span class="err">lineas</span> <span class="err">más</span> <span class="err">aqui)</span>
-</span><span class='line'><span class="err">}</span>
+</span><span class='line'>    <span class="k">application</span><span class="n">/x-ns-proxy-autoconfig</span>     <span class="k">dat</span><span class="err">;</span>
+</span><span class='line'>    <span class="k">text</span><span class="n">/html</span>                             <span class="k">html</span> <span class="k">htm</span> <span class="k">shtml</span><span class="err">;</span>
+</span><span class='line'>    <span class="k">text</span><span class="n">/css</span>                              <span class="k">css</span><span class="err">;</span>
+</span><span class='line'>    <span class="p">(</span><span class="k">muchas</span> <span class="k">lineas</span> <span class="k">m</span><span class="err">á</span><span class="k">s</span> <span class="k">aqui</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -179,7 +179,7 @@ aclaramos el nuevo; a mi me quedó así:</p>
 <p>Primero el método DHCP, declaramos una option cuyo código sea 252</p>
 
 <figure class='code'><figcaption><span>&#8220;/etc/dnsmasq.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="na">option</span><span class="o">=</span><span class="s">252,http://10.1.1.1/wpad.dat</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">option</span><span class="o">=</span>252,http://10.1.1.1/wpad.dat
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -216,27 +216,27 @@ que uses. A mi me pinchó así:</p>
 <span class='line-number'>19</span>
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="c1"># vim:filetype=config</span>
-</span><span class='line'><span class="err">authoritative</span><span class="c1">;</span>
+</pre></td><td class='code'><pre><code class='squidconf'><span class='line'><span class="c"># vim:filetype=config</span><span class="w"></span>
+</span><span class='line'>authoritative;<span class="w"></span>
 </span><span class='line'>
-</span><span class='line'><span class="c1"># declaramos lo del proxy automático</span>
-</span><span class='line'><span class="na">option local-proxy-config code 252</span> <span class="o">=</span> <span class="s">text;</span>
+</span><span class='line'><span class="c"># declaramos lo del proxy automático</span><span class="w"></span>
+</span><span class='line'>option<span class="w"> </span>local-proxy-config<span class="w"> </span>code<span class="w"> </span><span class="m">252</span><span class="w"> </span>=<span class="w"> </span>text;<span class="w"></span>
 </span><span class='line'>
-</span><span class='line'><span class="c1"># la red</span>
-</span><span class='line'><span class="err">subnet</span> <span class="err">10.1.1.0</span> <span class="err">netmask</span> <span class="err">255.255.255.0</span> <span class="err">{</span>
+</span><span class='line'><span class="c"># la red</span><span class="w"></span>
+</span><span class='line'>subnet<span class="w"> </span><span class="mf">10.1.1.0</span><span class="w"> </span>netmask<span class="w"> </span><span class="mf">255.255.255.0</span><span class="w"> </span>{<span class="w"></span>
 </span><span class='line'>
-</span><span class='line'>    <span class="c1"># los parámetros del rango</span>
-</span><span class='line'>    <span class="err">range</span> <span class="err">10.1.1.100</span> <span class="err">10.1.1.254</span><span class="c1">;</span>
-</span><span class='line'>    <span class="err">option</span> <span class="err">domain-name</span> <span class="err">&quot;hcg.sld.cu&quot;</span><span class="c1">;</span>
-</span><span class='line'>    <span class="err">option</span> <span class="err">domain-name-servers</span> <span class="err">10.1.1.1</span><span class="c1">;</span>
-</span><span class='line'>    <span class="err">option</span> <span class="err">broadcast-address</span> <span class="err">10.1.1.255</span><span class="c1">;</span>
-</span><span class='line'>    <span class="err">option</span> <span class="err">subnet-mask</span> <span class="err">255.255.255.0</span><span class="c1">;</span>
-</span><span class='line'>    <span class="err">option</span> <span class="err">routers</span> <span class="err">10.1.1.1</span><span class="c1">;</span>
+</span><span class='line'><span class="w">    </span><span class="c"># los parámetros del rango</span><span class="w"></span>
+</span><span class='line'><span class="w">    </span>range<span class="w"> </span><span class="mf">10.1.1.100</span><span class="w"> </span><span class="mf">10.1.1.254</span>;<span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>domain-name<span class="w"> </span>&quot;hcg.sld.cu&quot;;<span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>domain-name-servers<span class="w"> </span><span class="mf">10.1.1.1</span>;<span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>broadcast-address<span class="w"> </span><span class="mf">10.1.1.255</span>;<span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>subnet-mask<span class="w"> </span><span class="mf">255.255.255.0</span>;<span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>routers<span class="w"> </span><span class="mf">10.1.1.1</span>;<span class="w"></span>
 </span><span class='line'>
-</span><span class='line'>    <span class="c1"># envía el proxy automático</span>
-</span><span class='line'>    <span class="err">option</span> <span class="err">local-proxy-config</span> <span class="err">&quot;http://10.1.1.1/wpad.dat&quot;</span><span class="c1">;</span>
+</span><span class='line'><span class="w">    </span><span class="c"># envía el proxy automático</span><span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>local-proxy-config<span class="w"> </span>&quot;http://10.1.1.1/wpad.dat&quot;;<span class="w"></span>
 </span><span class='line'>
-</span><span class='line'><span class="err">}</span> <span class="c1"># subnet</span>
+</span><span class='line'>}<span class="w"> </span><span class="c"># subnet</span><span class="w"></span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -253,16 +253,16 @@ donde descansa el <strong>wpad.dat</strong></p>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">servidor1</span>    <span class="err">IN</span> <span class="err">A</span>     <span class="err">10.1.1.1</span>
-</span><span class='line'><span class="err">servidor2</span>    <span class="err">IN</span> <span class="err">A</span>     <span class="err">10.1.1.2</span>
-</span><span class='line'><span class="err">mail</span>         <span class="err">IN</span> <span class="err">CNAME</span> <span class="err">servidor2.dominio.cu.</span>
-</span><span class='line'><span class="err">pop</span>          <span class="err">IN</span> <span class="err">CNAME</span> <span class="err">servidor2.dominio.cu.</span>
-</span><span class='line'><span class="err">pop3</span>         <span class="err">IN</span> <span class="err">CNAME</span> <span class="err">servidor2.dominio.cu.</span>
-</span><span class='line'><span class="err">smtp</span>         <span class="err">IN</span> <span class="err">CNAME</span> <span class="err">servidor2.dominio.cu.</span>
-</span><span class='line'><span class="err">proxy</span>        <span class="err">IN</span> <span class="err">CNAME</span> <span class="err">servidor1.dominio.cu.</span>
-</span><span class='line'><span class="err">gateway</span>      <span class="err">IN</span> <span class="err">CNAME</span> <span class="err">servidor1.dominio.cu.</span>
-</span><span class='line'><span class="c1">; envía el proxy automático</span>
-</span><span class='line'><span class="err">wpad</span>         <span class="err">IN</span> <span class="err">CNAME</span> <span class="err">servidor1.dominio.cu.</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>servidor1    IN A     10.1.1.1
+</span><span class='line'>servidor2    IN A     10.1.1.2
+</span><span class='line'>mail         IN CNAME servidor2.dominio.cu.
+</span><span class='line'>pop          IN CNAME servidor2.dominio.cu.
+</span><span class='line'>pop3         IN CNAME servidor2.dominio.cu.
+</span><span class='line'>smtp         IN CNAME servidor2.dominio.cu.
+</span><span class='line'>proxy        IN CNAME servidor1.dominio.cu.
+</span><span class='line'>gateway      IN CNAME servidor1.dominio.cu.
+</span><span class='line'><span class="p">;</span> envía el proxy automático
+</span><span class='line'>wpad         IN CNAME servidor1.dominio.cu.
 </span></code></pre></td></tr></table></div></figure>
 
 
