@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Esta es una nota bien rápida pa que no se me olvide&hellip; Alguna vez han notado que los midnight commander con soporte operaciones de red
-( &hellip;">
+  <meta name="description" content="Lua, es uno de los tantos lenguajes interpretados que hay. Lo curioso de este es
+que es Made in Brasil&hellip; Aunque no les quedó mal, lo de ellos &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,175 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/12/14/servidor-jabber-con-prosody/">servidor jabber con prosody</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-12-14T18:22:29-05:00'><span class='date'>14/12/2015</span> <span class='time'>6:22 pm</span></time>
+        
+           | <a href="/blog/2015/12/14/servidor-jabber-con-prosody/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/12/14/servidor-jabber-con-prosody/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Lua, es uno de los tantos lenguajes interpretados que hay. Lo curioso de este es
+que es Made in Brasil&hellip;</p>
+
+<p>Aunque no les quedó mal, lo de ellos definitivamente es la samba y el futboll.
+Lo digo porque ese fue uno de los primeros lenguajes que estuve manoseando y No
+creo que halla un buen motivo para escribir algo con él.</p>
+
+<p>¡Pero <a href="https://prosody.im/">Prosody</a>, demuestra que me equivoco!</p>
+
+<p>La robusteza, simplicidad y el rendimiento de este servidor, quizás sean
+superiores a la de ejabberd (que está escrito en Erlang, un lenguaje aún más
+exótico que Lua). Por otra parte, su todo en uno, lo hace más versátil que otros
+cuantos. No tiene nada que envidiarle al cochino OpenFire y toda su parafernaria
+de Java.</p>
+
+<p>En su estado natural, prosody solo viene con lo básico. Ampliarlo, es solo
+cuestión de modificar la configuración. No piense en una extraña interfaz web
+como la de ejabber, hablamos de un fichero de configuración &ldquo;.lua&rdquo; con todo
+comentado. Lua, que es bien rarito, usa para comentario es &ldquo;&ndash;&rdquo; en vez de &ldquo;#&rdquo;</p>
+
+<p>Comenzamos. En debian todo es muy fácil:</p>
+
+<figure class='code'><figcaption><span>&#8220;aptitude&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install prosody
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Esto dará lugar un fichero de configuracion en: <strong>/etc/prosody/prosody.cfg.lua</strong></p>
+
+<p>De ahí modificaremos lo que necesitamos. Primero, poner la JID del admin, eso
+lo haremos aunque nuestro dominio no halla sido declarado.</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">admins</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;</span><span class="s">tu_usaurio@tudominio.cu&#39;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora vamos a la sesión modules_enabled. Todo bien comentadito. Yo lo habilito
+todo menos el servidor http y el telnet, como que no me da buena espina.</p>
+
+<p>Si habilitamos el módulo &ldquo;motd&rdquo; nuestro servidor contará con un MOTD,
+pero debemos especificarlo. De esta forma cada módulo es una función que puede
+o no llevar parámetros de configuración. Para argumentar la configuración
+de motd, escribimos FUERA de las sesión de módulos.</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">motd_text</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="s">este es el motd de mi server&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero <strong>motd_text</strong> no estaba escrito en ninguna parte. Para ver si un
+módulo tiene o no configuración, sus detalles, que hace y hasta un ejemplo,
+podemos verlo en la lista de módulos.</p>
+
+<p><a href="http://prosody.im/doc/modules">http://prosody.im/doc/modules</a></p>
+
+<p>Pero volvamos a la configuración. La siguiente linea de interés es la
+que permite el registro de usuarios.</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">allow_registration</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>OJO! se requiere un &ldquo;;&rdquo; al final de la configuración (razón por la cual abandoné
+Lua en aquel entonce). Si no quieres que los usuarios se registren déjalo en
+false. Puedes usar la aplicación de control para crear usuarios. Ejecuta
+<strong>prosodyctl</strong> sin parámetros y veras una pantalla aprueba de imbéciles que te
+dice como crear los usuarios y otras opciones interesantes.</p>
+
+<p>Por ejemplo, para crear un usuario</p>
+
+<figure class='code'><figcaption><span>&#8220;prosodyctl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>prosodyctl adduser fulanito@dominio.cu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lo siguiente es el SSL, no es bueno desabilitarlo porque muchos cliente jabbers
+traen por definición usar ssl. Mejor seguir a las que dice:</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">c2s_require_encryption</span> <span class="o">=</span> <span class="kc">false</span>
+</span><span class='line'><span class="n">s2s_require_encryption</span> <span class="o">=</span> <span class="kc">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Poniéndolas en false, el servidor usara lo mismo SSL que plana.</p>
+
+<p>Pero aún no hemos declarado el dominio. Resulta que como te dije todo es
+modular. Los dominios son VirtualHost. Al igual que en apache, incluso el
+dominio por defecto, es un virtual host. Podemos declarar varios dominios y
+dejarlos deshabilitados.</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">VirtualHost</span> <span class="s2">&quot;</span><span class="s">tudominio.cu&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya tenemos un dominio, podríamos tener más con solo agregarlos pero con eso ya
+tenemos un servidor con lo indispensable. Veamos en el próximo post, como es el
+caso de un servidor con sala de conferencias y con roster compartido; dos
+características que no faltan en servidor jabber corporativo.</p>
+
+<p>Por ejemplo, una sala de conferencia</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">Component</span> <span class="s2">&quot;</span><span class="s">conference.tudominio.cu&quot;</span> <span class="s2">&quot;</span><span class="s">muc&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora solo falta crear un puntero DNS que apunte a <strong>conference.tudominio.cu</strong></p>
+
+<p>Pero hablando de punteros DNS. Para que jabber pinche, necesita un puntero DNS
+especial.</p>
+
+<p>Para <strong>dnsmasq</strong>, supongamos que el servidor que correo el jabber se llama
+<strong>chat.tudominio.cu</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;dnsmasq.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">address</span><span class="o">=</span>/chat.tudominio.cu/10.1.1.1
+</span><span class='line'>srv-host<span class="o">=</span>_xmpp-client._tcp.chat.tudominio.cu,chat.tudominio.cu,5222
+</span><span class='line'>srv-host<span class="o">=</span>_xmpp-server._tcp.chat.tudominio.cu,chat.tudominio.cu,5269
+</span><span class='line'>txt-record<span class="o">=</span>_xmppconnect.chat.tudominio.cu,<span class="s2">&quot;_xmpp-client-xbosh=http://chat.tudominio.cu:5280/http-bind&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por cierto, eso último, es el puntero al servidor bosh.</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'> <span class="n">bosh_ports</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">5280</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y a cotorrear se ha dicho&hellip;</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -569,294 +738,6 @@ gente lo vean con aun gorda.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/03/tls-y-ssl-en-postfix/">tls y ssl en postfix</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-03T21:13:44-05:00'><span class='date'>03/11/2015</span> <span class='time'>9:13 pm</span></time>
-        
-           | <a href="/blog/2015/11/03/tls-y-ssl-en-postfix/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/03/tls-y-ssl-en-postfix/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Acá en salud, ahora <em>se están cayendo de la mata</em> y dándose cuenta de los
-peligroso que son las conexiones planas.</p>
-
-<p>Aún no logro hacerle entender a la gente, la diferencia entre un certificado
-autofirmado y un certificado emitido por una <a href="https://es.wikipedia.org/wiki/Autoridad_de_certificaci%C3%B3n">autoridad de certificación</a>
-; pero que más les vamos a pedir, si el certificado de nauta es autofirmado.</p>
-
-<p>De momento con darle la muela del candadito y las letricas verdes en el
-navegador, van cogiendo algo.</p>
-
-<p>Pero volviendo al tema <strong>postfix con SSL</strong>. Vamos a crear un certificado
-autofirmado, por tanto, regla de oro:</p>
-
-<h4>el hostname que provees en el certificado, debe ser machear al del servicio</h4>
-
-<p>En letra de molde. Si proveemos un certificado autofirmado, para conectarnos a
-<strong>smtp.hcg.sld.cu</strong> no puedes decir en el cliente de correo, que el servidor
-smtp es <strong>192.168.0.1</strong> porque no será válido.</p>
-
-<p>Aún cuando el certificado no sea válido, déjame recodarte que debemos ir
-haciéndole cultura de seguridad informática, si no&hellip; bueno&hellip; no me voy a meter
-en un lío diciendo las barbaridades que se logran suplantando identidades.</p>
-
-<p>Bueno entremos en materia. Lo Primero que haremos será generar la clave privada
-para el servidor.</p>
-
-<p>Donde dice <strong>smtp.tudominio.cu</strong> tu pondrás el hostname de que apunta para tu
-servidor smtp. Si eres un desastre y no tiene DNS. Pon la IP de tu servidor de
-correo.</p>
-
-<h4>REPITO</h4>
-
-<p>Donde dice <strong>FQDN or YOUR name</strong> debe decir la dirección del servidor SMTP. La
-dirección tal cual la pones en los clientes.</p>
-
-<p>Cuando lo hagas, te pedirá un password.</p>
-
-<figure class='code'><figcaption><span>&#8220;generando clave privada del servidor&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl genrsa -des3 -out smtp.tudominio.cu.key 2048
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora creamos el certificado. Te pedirá hasta la talla de calzoncillos que usas.
-<strong>NO respondas a lo locoi</strong>, recuerda el <strong>FQDN</strong>. Te acuerdas del password
-que pusiste?</p>
-
-<figure class='code'><figcaption><span>&#8220;creando el certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl req -new -key smtp.tudominio.cu.key -out smtp.tudominio.cu.csr
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Debes ver algo como esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;ceremonia de creación de certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Enter pass phrase <span class="k">for</span> smtp.tudominio.cu.key:
-</span><span class='line'>You are about to be asked to enter information that will be incorporated
-</span><span class='line'>into your certificate request.
-</span><span class='line'>What you are about to enter is what is called a Distinguished Name or a DN.
-</span><span class='line'>There are quite a few fields but you can leave some blank
-</span><span class='line'>For some fields there will be a default value,
-</span><span class='line'>If you enter <span class="s1">&#39;.&#39;</span>, the field will be left blank.
-</span><span class='line'>-----
-</span><span class='line'>Country Name <span class="o">(</span><span class="m">2</span> letter code<span class="o">)</span> <span class="o">[</span>AU<span class="o">]</span>:CU
-</span><span class='line'>State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>Some-State<span class="o">]</span>:Havana
-</span><span class='line'>Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[]</span>:Plaza
-</span><span class='line'>Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>Internet Widgits Pty Ltd<span class="o">]</span>:Calixto
-</span><span class='line'>Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[]</span>:Informatica
-</span><span class='line'>Common Name <span class="o">(</span>e.g. server FQDN or YOUR name<span class="o">)</span> <span class="o">[]</span>:smtp.tudominio.cu
-</span><span class='line'>Email Address <span class="o">[]</span>:ssl@tudominio.cu
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Bites verdad? Bueno, ya hicimos lo más importante, pero no hemos terminado.
-Vamos a firmar el certificado con la la llave emisora.</p>
-
-<figure class='code'><figcaption><span>&#8220;cri-cra firmando el certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl x509 -req -days <span class="m">365</span> -in smtp.tudominio.cu.csr -signkey smtp.tudominio.cu.key -out smtp.tudominio.cu.crt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora vamos a dar un paso <strong>cuestionable</strong>.</p>
-
-<p>Cada vez que un servicio con con un certificado SSL valla a ser iniciado.
-Debería pedir un password, para así asegurar que el legítimo operador de
-servicio ha sido quien le dio la arrancada. Pero poner un password cada vez que
-arranca postfix, no es ninguna gracia. Por tanto, quitamos el password.
-Obviamente, te lo pedirá una última vez.</p>
-
-<figure class='code'><figcaption><span>&#8220;quitando el password&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl rsa -in smtp.tudominio.cu.key -out smtp.tudominio.cu.key.sinpassword
-</span><span class='line'>mv smtp.tudominio.cu.key.sinpassword smtp.tudominio.cu.key
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Emitimos una autoridad de raíz (de pacotilla)</p>
-
-<figure class='code'><figcaption><span>&#8220;la CA del chiste&#8221; </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl req -new -x509 -extensions v3_ca -keyout cakey.pem -out cacert.pem -days 3650
-</span><span class='line'><span class="c"># aqui te pedirá la misma rutina, ojo con lo que pones en el campo FQDN or YOUR name</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Bueno, con el disi y con el mulo, ya tenemos una CA loca, que la podemos reusar
-para otros servicios, por tanto, tratemosla como tal.</p>
-
-<figure class='code'><figcaption><span>&#8220;los puntos sobre las ies&#8221; </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>chmod <span class="m">600</span> smtp.tudominio.cu.key
-</span><span class='line'>chmod <span class="m">600</span> cakey.pem
-</span><span class='line'>mv smtp.tudominio.cu.key /etc/ssl/private/
-</span><span class='line'>mv smtp.tudominio.cu.crt /etc/ssl/certs/
-</span><span class='line'>mv cakey.pem /etc/ssl/private/
-</span><span class='line'>mv cacert.pem /etc/ssl/certs/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora viene el turno de postfix. Haremos dos cosas</p>
-
-<ul>
-<li>habilitar el tranporte ssl/tls por el puerto 465</li>
-<li>habilitar las funciones ssl</li>
-</ul>
-
-
-<p>Ve al <strong>master.cf</strong> y busca la cadena de texto <strong>smtps</strong> debes ver algo como
-esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;parte del master.cf ANTES&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>smtp      inet  n       -       -       -       -       smtpd
-</span><span class='line'><span class="c">#smtp      inet  n       -       -       -       1       postscreen</span>
-</span><span class='line'><span class="c">#smtpd     pass  -       -       -       -       -       smtpd</span>
-</span><span class='line'><span class="c">#dnsblog   unix  -       -       -       -       0       dnsblog</span>
-</span><span class='line'><span class="c">#tlsproxy  unix  -       -       -       -       0       tlsproxy</span>
-</span><span class='line'><span class="c">#submission inet n       -       -       -       -       smtpd</span>
-</span><span class='line'><span class="c">#  -o syslog_name=postfix/submission</span>
-</span><span class='line'><span class="c">#  -o smtpd_tls_security_level=encrypt</span>
-</span><span class='line'><span class="c">#  -o smtpd_sasl_auth_enable=yes</span>
-</span><span class='line'><span class="c">#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject</span>
-</span><span class='line'><span class="c">#  -o milter_macro_daemon_name=ORIGINATING</span>
-</span><span class='line'><span class="c">#smtps     inet  n       -       -       -       -       smtpd</span>
-</span><span class='line'><span class="c">#  -o syslog_name=postfix/smtps</span>
-</span><span class='line'><span class="c">#  -o smtpd_tls_wrappermode=yes</span>
-</span><span class='line'><span class="c">#  -o smtpd_sasl_auth_enable=yes</span>
-</span><span class='line'><span class="c">#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject</span>
-</span><span class='line'><span class="c">#  -o milter_macro_daemon_name=ORIGINATING</span>
-</span><span class='line'><span class="c">#628       inet  n       -       -       -       -       qmqpd</span>
-</span><span class='line'>pickup    fifo  n       -       -       <span class="m">60</span>      <span class="m">1</span>       pickup
-</span><span class='line'>cleanup   unix  n       -       -       -       <span class="m">0</span>       cleanup
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Descomentamos todo lo que tenga que ver con <strong>smtps</strong> debe quedarte más o menos
-así:</p>
-
-<figure class='code'><figcaption><span>&#8220;parte del master.cf DESPUES&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>smtp      inet  n       -       -       -       -       smtpd
-</span><span class='line'><span class="c">#smtp      inet  n       -       -       -       1       postscreen</span>
-</span><span class='line'><span class="c">#smtpd     pass  -       -       -       -       -       smtpd</span>
-</span><span class='line'><span class="c">#dnsblog   unix  -       -       -       -       0       dnsblog</span>
-</span><span class='line'><span class="c">#tlsproxy  unix  -       -       -       -       0       tlsproxy</span>
-</span><span class='line'><span class="c">#submission inet n       -       -       -       -       smtpd</span>
-</span><span class='line'><span class="c">#  -o syslog_name=postfix/submission</span>
-</span><span class='line'><span class="c">#  -o smtpd_tls_security_level=encrypt</span>
-</span><span class='line'><span class="c">#  -o smtpd_sasl_auth_enable=yes</span>
-</span><span class='line'><span class="c">#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject</span>
-</span><span class='line'><span class="c">#  -o milter_macro_daemon_name=ORIGINATING</span>
-</span><span class='line'>smtps     inet  n       -       -       -       -       smtpd
-</span><span class='line'>  -o <span class="nv">syslog_name</span><span class="o">=</span>postfix/smtps
-</span><span class='line'>  -o <span class="nv">smtpd_tls_wrappermode</span><span class="o">=</span>yes
-</span><span class='line'>  -o <span class="nv">smtpd_sasl_auth_enable</span><span class="o">=</span>yes
-</span><span class='line'>  -o <span class="nv">smtpd_client_restrictions</span><span class="o">=</span>permit_sasl_authenticated,reject
-</span><span class='line'>  -o <span class="nv">milter_macro_daemon_name</span><span class="o">=</span>ORIGINATING
-</span><span class='line'><span class="c">#628       inet  n       -       -       -       -       qmqpd</span>
-</span><span class='line'>pickup    fifo  n       -       -       <span class="m">60</span>      <span class="m">1</span>       pickup
-</span><span class='line'>cleanup   unix  n       -       -       -       <span class="m">0</span>       cleanup
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora trabajemos con el <strong>main.cf</strong>, habilitamos las funciones que tengan que
-ver con SSL, declarando esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;tope del main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">smtpd_use_tls</span> <span class="o">=</span> yes
-</span><span class='line'><span class="nv">smtpd_tls_auth_only</span> <span class="o">=</span> no
-</span><span class='line'><span class="nv">smtpd_tls_key_file</span> <span class="o">=</span> /etc/ssl/private/smtp.tudominio.cu.key
-</span><span class='line'><span class="nv">smtpd_tls_cert_file</span> <span class="o">=</span> /etc/ssl/certs/smtp.tudominio.cu.crt
-</span><span class='line'><span class="nv">smtpd_tls_CAfile</span> <span class="o">=</span> /etc/ssl/certs/cacert.pem
-</span><span class='line'><span class="nv">tls_random_source</span> <span class="o">=</span> dev:/dev/urandom
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>No olvides correr <strong>postfix reload</strong></p>
-
-<p>   <blockquote><p>Te voy a coser el culo con un alambre finito.<br/>   No te quedará bonito, pero te quedará seguro.</p><footer><strong>Décima popular</strong></footer></blockquote></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -874,6 +755,10 @@ ver con SSL, declarando esto:</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2015/12/14/servidor-jabber-con-prosody/">servidor jabber con prosody</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2015/11/29/mc-demora-en-abrir/">mc demora en abrir</a>
