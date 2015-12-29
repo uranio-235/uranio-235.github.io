@@ -480,6 +480,26 @@ arranca.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
+<p>En el fichero <strong>/etc/adduser.conf</strong> puedes especificar los parámetros de los
+nuevos usuarios creados, ahí puedes declarar que se creen con sus pertinentes
+grupos.</p>
+
+<figure class='code'><figcaption><span>&#8220;adduser.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Set this if you want the --add_extra_groups option to adduser to add</span>
+</span><span class='line'><span class="c"># new users to other groups.</span>
+</span><span class='line'><span class="c"># This is the list of groups that new non-system users will be added to</span>
+</span><span class='line'><span class="c"># Default:</span>
+</span><span class='line'><span class="nv">EXTRA_GROUPS</span><span class="o">=</span><span class="s2">&quot;dialout cdrom audio video plugdev users netdev netdev messagebus pulse lpadmin&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El directorio <strong>/etc/skel/</strong> contiene la plantilla para crear el nuevo usuario.
+Crea un usuario, has la configuración que desees y cópialo pa /etc/skel.</p>
+
 <p>Otro palo común es que las memorias NTFS se montan como solo lectura. Solución,
 instala ntfs-3g EN EL CHROOT que está en /opt y vuelve a crear la imagen.</p>
 
