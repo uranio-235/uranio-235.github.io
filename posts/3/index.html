@@ -9,8 +9,9 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="NUNCA, he logrado entender, porque el asset pipeline de Rails carga
-TODAS las porquerías de todos los controladores en todas las vistas. ¡¡¡Como si &hellip;">
+  <meta name="description" content="De siempre, los usuarios que fueron forzados a abandonar
+MSAcces por un motivo u otro;
+sienten un incontenible necesidad por los &ldquo;informes& &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +81,201 @@ TODAS las porquerías de todos los controladores en todas las vistas. ¡¡¡Como
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-10-08T21:45:55-04:00'><span class='date'>08/10/2015</span> <span class='time'>9:45 pm</span></time>
+        
+           | <a href="/blog/2015/10/08/prawn-pdf-con-ruby/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/08/prawn-pdf-con-ruby/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>De siempre, los usuarios que fueron forzados a abandonar
+<a href="https://es.wikipedia.org/wiki/Microsoft_Access">MSAcces</a> por un motivo u otro;
+sienten un incontenible necesidad por los &ldquo;informes&rdquo;.</p>
+
+<p>A la hora de imprimir, muchos usaurios no entienden que un HTML se imprima.
+Incluso, habiéndoles hecho un javascript que muestra el diálogo de impresión,
+simplemente lo cierra y me preguntan &ldquo;¿y ahora que hago con esto?&rdquo;</p>
+
+<p>En recientes diálogos con un bibliotecario (que hereda la clase Usuario) me dijo
+que la gente entiende más de imprimir PDF.</p>
+
+<p>Hacer un PDF me pareció una tare bastante compleja; y lo es, pero
+<a href="http://prawn.majesticseacreature.com">Prawn</a> lo hace de una manera casi
+increíble. Para no aburrirte con el cuento, te mostraré como montarlo arriba del
+tren.</p>
+
+<p><strong>EjemploController</strong> que tu conoce:</p>
+
+<figure class='code'><figcaption><span>&#8220;ejemplo_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># el controlador bin ban bin ban</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">EjemploController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="k">def</span> <span class="nf">accion</span> <span class="c1"># la acción, como se llame</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># a según el sapo, la pedrá</span>
+</span><span class='line'>      <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+</span><span class='line'>
+</span><span class='line'>         <span class="c1"># tírame el pdf</span>
+</span><span class='line'>         <span class="nb">format</span><span class="o">.</span><span class="n">pdf</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># tráeme al animal</span>
+</span><span class='line'>            <span class="nb">require</span> <span class="s1">&#39;prawn&#39;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># créame un nuevo documento pdf</span>
+</span><span class='line'>            <span class="vi">@pdf</span><span class="o">=</span><span class="no">Prawn</span><span class="o">::</span><span class="no">Document</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># tírame el banner, el H1 como quien dice, tamaño de fuente 25px en negrita</span>
+</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">formatted_text</span> <span class="o">[</span> <span class="p">{</span><span class="ss">text</span><span class="p">:</span> <span class="s1">&#39;El título del documentos&#39;</span><span class="p">,</span><span class="ss">size</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span><span class="ss">styles</span><span class="p">:</span> <span class="o">[</span><span class="ss">:bold</span><span class="o">]</span><span class="p">}</span> <span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># hazle una rallita horizontal debano al header</span>
+</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">stroke_horizontal_line</span> <span class="mi">0</span><span class="p">,</span><span class="mi">235</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># mueve el cursor pa abajo</span>
+</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">20</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># la variable cuerpo contiene un texto laaaaaaargooo en HTML</span>
+</span><span class='line'>            <span class="c1"># un HTML muy rudimentario, Prawn lo interpresta, por ejemplo</span>
+</span><span class='line'>            <span class="c1"># las cláusulas &lt;strong&gt;</span>
+</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="vi">@cuerpo</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># por jemeplo, itera en el modelo User y escribe sus nombres</span>
+</span><span class='line'>            <span class="k">for</span> <span class="n">user</span> <span class="k">in</span> <span class="no">User</span><span class="o">.</span><span class="n">all</span>
+</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="s2">&quot;Nombre: </span><span class="si">#{</span><span class="n">user</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">10</span>
+</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="s2">&quot;Edad: </span><span class="si">#{</span><span class="n">user</span><span class="o">.</span><span class="n">edad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">30</span>
+</span><span class='line'>            <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># tírala!!!</span>
+</span><span class='line'>            <span class="n">send_data</span> <span class="vi">@pdf</span><span class="o">.</span><span class="n">render</span><span class="p">,</span> <span class="ss">filename</span><span class="p">:</span> <span class="s2">&quot;solicitud.pdf&quot;</span>
+</span><span class='line'>
+</span><span class='line'>         <span class="k">end</span> <span class="c1"># format</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">end</span> <span class="c1"># respond_to</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="k">end</span> <span class="c1"># def</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span> <span class="c1"># class</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Vamos a dividir en sílabas:</p>
+
+<h4>Línea 7</h4>
+
+<p>Rails, la acción responde a múltiples mime-types</p>
+
+<h4>Línea 10</h4>
+
+<p>Rails, application/pdf responde a la extensión PDF <em>format.pdf do</em></p>
+
+<h4>Línea 13</h4>
+
+<p>Carga la librería, sí, ya se que en Rails debes hacer eso en un initializer, de
+cualquier manera, aún, luego de haberlo agregado a tu Gemfile, no te olvides de
+requerirla, ya sea en un initializer o en el controlador.</p>
+
+<h4>Línea 16</h4>
+
+<p>Crea un nuevo PDF y almacénalo en la variable de instancia <strong>@pdf</strong></p>
+
+<h4>Línea 19</h4>
+
+<p>El método <strong>formatted_text</strong>, recibe como argumento un array de hashes</p>
+
+<p>Cada array en un bloque de texto y contiene un hash. La clave :text contiene el
+texto a renderizar, :size el tamaño y :style el estilo de fuente.</p>
+
+<h4>Línea 22</h4>
+
+<p>Trazar línea horizontal, el método <strong>stroke_horizontal_line</strong> recibe como
+argumento, de donde, a donde debe trazar la línea.</p>
+
+<h4>Pasemos a la línea 41</h4>
+
+<p>El método <strong>render</strong> devuelve el PDF. Si lo sacas con <strong>puts</strong> verás el PDF
+crudo. Podrías también tirarlo pa un fichero así:</p>
+
+<figure class='code'><figcaption><span>&#8220;fulanito.pdf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>   <span class="no">IO</span><span class="o">.</span><span class="n">write</span> <span class="s1">&#39;fulanito.pdf&#39;</span><span class="p">,</span><span class="vi">@pdf</span><span class="o">.</span><span class="n">render</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A los usuarios le encantan los PDF, hazlos feliz ;)</p>
+
+<p>   <blockquote><p>Existen dos tipos de personas,<br/>   las que hacen lo que le dicen; y,<br/>   las que dicen lo que hay que hacer.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -407,7 +603,7 @@ mi me quedó así:</p>
 </span><span class='line'><span class="c"># la red</span>
 </span><span class='line'>subnet 10.1.1.0 netmask 255.255.255.0 <span class="o">{</span>
 </span><span class='line'>    range 10.1.1.100 10.1.1.254<span class="p">;</span>
-</span><span class='line'>    option domain-name <span class="s2">&quot;example.com&quot;</span><span class="p">;</span>
+</span><span class='line'>    option domain-name <span class="s2">&quot;hcg.sld.cu&quot;</span><span class="p">;</span>
 </span><span class='line'>    option domain-name-servers 10.1.1.1<span class="p">;</span>
 </span><span class='line'>    option broadcast-address 10.1.1.255<span class="p">;</span>
 </span><span class='line'>    option subnet-mask 255.255.255.0<span class="p">;</span>
@@ -723,6 +919,17 @@ un repositorio de git; puede llegar a ser un verdadero problema.</p>
 
 
 <p>¿Rápido verdad? Es que solo cogió el HEAD, no el historial de commits completo.</p>
+
+<p>Si lo quieres pa siempre, pon en tu gitconfig esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;.gitconfig&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>clone<span class="o">]</span>
+</span><span class='line'>   <span class="nv">depth</span> <span class="o">=</span> 1
+</span></code></pre></td></tr></table></div></figure>
+
+
+
 </div>
   
   
@@ -818,137 +1025,6 @@ volátiles, uno nunca sabe cuando le va a hacer falta.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/01/squid-transparente/">squid transparente</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-09-01T14:23:00-04:00'><span class='date'>01/09/2015</span> <span class='time'>2:23 pm</span></time>
-        
-           | <a href="/blog/2015/09/01/squid-transparente/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/09/01/squid-transparente/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>La era de SSL, parece haber dejado a los proxies trasparentes un tanto pasados
-de moda. Los tiempos en que dos lineas de iptables resolvían el problema,
-simplemente quedaron atrás. Ahora necesitamos las dos lineas de iptables y un
-poquito más.</p>
-
-<p>Recientemente la comunidad de NetFilter (iptables) y la de squid, ha unido
-esfuerzos para crear solución. El protocolo TPROXY de iptables, entra en juego
-con la maquinaria de squid; dando lugar a un nateo especial. Aunque un está en
-pañales, el asunto promete. En esta entrada no le daremos cobertura a Tproxy,
-pero en la próxima pienso hacerlo.</p>
-
-<p>Esta la dejaremos reservada para &ldquo;ssl_bump&rdquo;</p>
-
-<p>Squid desarrolló un sistema especial para cachear y generar los certificados SSL
-que requiere. Esto al principio fue tema de discusión. Siempre que hay una
-aplicación externa, las vulnerabilidades se sirven con cuchara grande.
-Finalmente squid lo logró y desarrolló una especie de:</p>
-
-<p>&ldquo;ataque MITM corporativizado&rdquo;</p>
-
-<p>Como dirían los aldeanos: &ldquo;mamando se quita el frío&rdquo;, así que empezemos&hellip;</p>
-
-<p>Primero y principioso, es dejar nuestro squid funcionando con una ACL bien
-<em>lazy</em>.  Digamos por ejemplo, que la red 192.168.10.0/24 pasará a través del
-proxy transparente.</p>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>acl red_transparente src 192.168.10.0/24
-</span><span class='line'>http_access allow red_transparente
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Necesitaremos generar un certificado SSL en nuestro squid, certificado que; con
-suerte, el navegador se lo comerá con papa, creyendo que va pal sitio de verdad.</p>
-
-<p>Una vez que el usuario acepte este certificado. TODOS los sitios que pidan,
-vendrán con este certificado.</p>
-
-<figure class='code'><figcaption><span>&#8220;openssl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/squid/
-</span><span class='line'>mkdir ssl_cert
-</span><span class='line'><span class="nb">cd </span>ssl_cert
-</span><span class='line'>openssl req -new -newkey rsa:1024 -days <span class="m">365</span> -nodes -x509 -keyout squid.pem -out squid.pem
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora le decimos a calamardo, que escuche por el 3129 como interceptor. Además,
-le pondremos una serie de parametros que harán un funcionar al ssl_bumper. A mi
-me quedó así:</p>
-
-<h4>OJO con la segunda lina, es muy larga</h4>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>http_port 0.0.0.0:3128
-</span><span class='line'>http_port 0.0.0.0:3129 intercept ssl-bump generate-host-certificates<span class="o">=</span>on <span class="nv">dynamic_cert_mem_cache_size</span><span class="o">=</span>4MB <span class="nv">cert</span><span class="o">=</span>/etc/squid/ssl_cert/squid.pem
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora inicializamos el depósito donde colocaremos los certificados que vallamos
-cogiendo.</p>
-
-<figure class='code'><figcaption><span>&#8220;ssl_crtd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/usr/lib/squid/ssl_crtd -c -s /etc/squid/certificados
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Y le configuramos la maquinaria diabólica a squid.</p>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">dynamic_cert_mem_cache_size</span><span class="o">=</span>4MB <span class="nv">cert</span><span class="o">=</span>/etc/squid/ssl_cert/squid.pem
-</span><span class='line'>ssl_bump none localhost
-</span><span class='line'>ssl_bump server-first all
-</span><span class='line'>sslcrtd_program /usr/lib/squid/ssl_crtd -s /etc/squid/certificados -M 4MB
-</span><span class='line'>sslcrtd_children 5
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Entonces NetFilter en juego. Nuevamente salen a la palestras las dos lineas
-clásicas.</p>
-
-<figure class='code'><figcaption><span>&#8220;iptables&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iptables -t nat -A PREROUTING -i wlan0 -p tcp -m tcp --dport <span class="m">80</span> -j REDIRECT --to-ports 3129
-</span><span class='line'>iptables -t nat -A PREROUTING -i wlan0 -p tcp -m tcp --dport <span class="m">443</span> -j REDIRECT --to-ports 3129
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Claro, esto no lo es todo, vas a necesitar un DNS que apunte TODAS las
-direcciones URL a tu proxy.</p>
-
-<p>Eso lo veremos en la próxima entrada ;)</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -968,6 +1044,10 @@ direcciones URL a tu proxy.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/01/14/clamav-en-windows/">clamav en windows</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2015/12/14/servidor-jabber-con-prosody/">servidor jabber con prosody</a>
@@ -1236,7 +1316,7 @@ if (location.pathname!='/') {
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2015 - låzaro -
+  Copyright &copy; 2016 - låzaro -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

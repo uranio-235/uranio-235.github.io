@@ -9,7 +9,7 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Bienvenido al 5to infierno de infomed. Un sitio donde toda la comunicacion mas alla del mar, sale atravez del llamado
+  <meta name="description" content="Bienvenido al 5to infierno de infomed. Un sitio donde toda la comunicacion mas alla del mar, sale a traves del llamado
 &ldquo;proxy padre&rdquo;. &hellip;">
   
 
@@ -104,7 +104,7 @@
 
 <div class="entry-content"><p>Bienvenido al 5to infierno de infomed.</p>
 
-<p>Un sitio donde toda la comunicacion mas alla del mar, sale atravez del llamado
+<p>Un sitio donde toda la comunicacion mas alla del mar, sale a traves del llamado
 <em>&ldquo;proxy padre&rdquo;</em>. Siempre habia oido hablar de casos como estos, pero nunca lo
 habia vivido.</p>
 
@@ -142,7 +142,7 @@ caso, con uno solo basta. Veamos de cerca la configuración.</p>
 </span><span class='line'><span class="k">cache_peer</span><span class="w"> </span><span class="mf">201.220.211.7</span><span class="w"> </span><span class="no">parent</span><span class="w"> </span><span class="m">3128</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="no">default</span><span class="w"></span>
 </span><span class='line'>cache_peer_domain<span class="w"> </span><span class="mf">201.220.211.7</span><span class="w"> </span>!.sld.cu<span class="w"></span>
 </span><span class='line'>
-</span><span class='line'><span class="c"># infomed no sale a travez del proxy</span><span class="w"></span>
+</span><span class='line'><span class="c"># infomed no sale a traves del proxy</span><span class="w"></span>
 </span><span class='line'><span class="k">acl</span><span class="w"> </span>sitios_salud<span class="w"> </span><span class="k">dstdomain</span><span class="w"> </span>.sld.cu<span class="w"></span>
 </span><span class='line'><span class="k">always_direct</span><span class="w"> </span><span class="no">allow</span><span class="w"> </span>sitios_salud<span class="w"></span>
 </span><span class='line'><span class="k">never_direct</span><span class="w"> </span><span class="no">allow</span><span class="w"> </span><span class="no">all</span><span class="w"></span>
@@ -153,7 +153,7 @@ caso, con uno solo basta. Veamos de cerca la configuración.</p>
 
 <p>2 - declaramos el proxy</p>
 
-<p>3 - decimos que atraves de ese proxy, se usara todo lo que NO sea .sld.cu</p>
+<p>3 - decimos que a traves de ese proxy, se usara todo lo que NO sea .sld.cu</p>
 
 <p>6 - los sitios de salud, son aquellos que digan &ldquo;.sld.cu&rdquo;</p>
 
@@ -230,6 +230,10 @@ caso, con uno solo basta. Veamos de cerca la configuración.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/01/14/clamav-en-windows/">clamav en windows</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2015/12/14/servidor-jabber-con-prosody/">servidor jabber con prosody</a>
@@ -499,7 +503,7 @@ if (location.pathname!='/') {
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2015 - låzaro -
+  Copyright &copy; 2016 - låzaro -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

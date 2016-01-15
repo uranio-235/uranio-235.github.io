@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2015-12-29T13:04:07-05:00</updated>
+  <updated>2016-01-14T23:26:38-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,85 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[clamav en windows]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/01/14/clamav-en-windows/"/>
+    <updated>2016-01-14T21:39:45-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/01/14/clamav-en-windows</id>
+    <content type="html"><![CDATA[<p>Síiiii, por loco que suene&hellip;</p>
+
+<p>Una compañía llamada Source Fire, desarrolló un producto llamado &ldquo;immunenet&rdquo;,
+Por lo que vi, es una herramienta de &ldquo;cloud security&rdquo;. En teoría; un antivirus
+que no necesita ser actualizado, una especie de community driven (reescribió la
+rueda).</p>
+
+<p>Esto en cuba es un chiste, por el ancho de banda. No obstante, pasarle todos
+tus archivos a un servidor para que este los verifique, no me parece un buen
+negocio. Aunque sabe dios que hace windows con tus archivos&hellip;</p>
+
+<p>No obstante, estos señores, incluyeron el motor de clamav y frontend para
+escanear en tiempo real usando clamav y <strong>QUE PINCHA</strong>. Se la comieron!</p>
+
+<p>Quiero advertirte que: Mis conocimientos de windows son BIEN REDUCIDOS, así que
+veré como me hago entender. Trataré de escribir de memoria lo que hice, antes de
+que se me olvide.</p>
+
+<p>Primero llégate a <a href="http://www.immunenet.com">www.immunenet.com</a> y manda a
+descargar el antivirus. Te dará un ficherito triste de unos kilobytes. Este es
+el downloader.</p>
+
+<p>Ve a una máquina con windows y ejecuta el downloader. Pulsa un botón que dice
+&ldquo;detalles&rdquo;, para que veas que está instalando.</p>
+
+<p>Antes de que se cierre el dialogo del instalador, o sea, antes de pulsar el
+botón &ldquo;Finalizar&rdquo;, mira en las rutas, el directorio temporal donde se está
+descargando y localiza un fichero llamado <strong>protect-latest.exe</strong></p>
+
+<p>No he logrado capturar la URL!!! Sería bueno, así te evitas el ritual anterior.</p>
+
+<p>Una vez que tengas <strong>protect-latest.exe</strong> en la mano, podrás instalarlo donde
+quieras.</p>
+
+<p>Cuando termines, te puso el ícono de immunenet en el escritorio. Ejecútalo y
+dirígete a <strong>settings</strong>, ahí le pones el botón <strong>on</strong> a un chucho que dice
+<strong>Enable Clamav Engine</strong>.</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/immunenet_config.png"></p>
+
+<p>Cierra esa interfaz y has click secundario en el acceso directo del escritorio.</p>
+
+<p>Verás una opción en el menú que dice &ldquo;Abrir directorio que lo contiene&rdquo; o algo
+por el estilo, no recuerdo bien.</p>
+
+<p>Una vez en el directorio de Immunenet, sube un nivel y verás el directorio
+<strong>clamav</strong>. Entra ahí.</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/segui.png"></p>
+
+<p>Ejecuta el fichero <strong>sigui.exe</strong>(1) y en la pestaña derecha, verás una opción
+que dice &ldquo;Local Signature Management&rdquo;.</p>
+
+<p>Toca el boton &ldquo;Add&rdquo;(2) y te dará un browser de ficheros. Localiza el directorio
+donde tiene los *.cvd de clamav. Puedes seleccionar los tres ficheros de un
+palo, incluso, pincha por carpeta compartida.</p>
+
+<p>Cuando estén en la caja de arriba, has click en &ldquo;Verify and Install
+signatures&rdquo;(3).</p>
+
+<p>ANDANDO! Ya lo tienes configurado.</p>
+
+<p>En la máquina que lo probé. Restuaré la cuarentena de nod32 y el clamav se
+despacho los virus. A los 5 segundos, nod32 pedía reinicio para desinfectar
+amenazas. Simplemente lo desinstalé.</p>
+
+<p>Como muchos saben, el motor de clamav cambia constantemente. No se si será
+necesario la descarga y reinstalación del antivirus. Pero un compañero me
+planteaba que eso significaría un buen negocio.</p>
+
+<p>Suerte&hellip;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[servidor jabber con prosody]]></title>
@@ -118,11 +197,8 @@ dejarlos deshabilitados.</p>
 
 
 <p>Ya tenemos un dominio, podríamos tener más con solo agregarlos pero con eso ya
-tenemos un servidor con lo indispensable. Veamos en el próximo post, como es el
-caso de un servidor con sala de conferencias y con roster compartido; dos
-características que no faltan en servidor jabber corporativo.</p>
-
-<p>Por ejemplo, una sala de conferencia</p>
+tenemos un servidor con lo indispensable. Vamos a extenderlo un poco, una sala
+de conferencia:</p>
 
 <figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">Component</span> <span class="s2">&quot;</span><span class="s">conference.tudominio.cu&quot;</span> <span class="s2">&quot;</span><span class="s">muc&quot;</span>
@@ -204,9 +280,9 @@ herzios se me monta en los 80fps renderizando 3d. Con la Soul Silver, se me
 monta en +100 fps, ya que las peleas son en 2D.</p>
 
 <p>Te preguntarás por que usar Frameskip entonces. Pues al menos en mi caso, cuando
-el juego renderiza 3D, sin Frameskip, no ni a las 40FPS. Por suerte, con la
-opción marcada debajo, ni se siente el frame-skip, cosa que en otros emuladores
-es un dolor.</p>
+el juego renderiza 3D, sin Frameskip, no llega ni a las 40FPS. Por suerte, con
+la opción marcada debajo, ni se siente el frame-skip, cosa que en otros
+emuladores es un dolor.</p>
 
 <p>Por suerte el DS solo puede renderizar 3D en una sola pantalla a la vez. Ah!
 OpenGL es por gusto, desmume pincha arriba del micro.</p>
@@ -879,7 +955,7 @@ salida.</p>
 <li>crea un bridge llamado br0</li>
 <li>dile que lleva ipv4 (requerido, no se por qué)</li>
 <li>pon la interfaz en modo promiscuo</li>
-<li>levanta el enlace de estaion0</li>
+<li>levanta el enlace de estaicon0</li>
 <li>coloca a estacion0 como interfaz de salida del túnel</li>
 <li>levanta el bridge</li>
 </ul>
@@ -1147,8 +1223,8 @@ cliente para repositorios de android, osea como google market pero libre.</p>
 <a href="http://www.aptoide.com">aptoide</a>, verifico que sean seguros y copio la cache
 para el directorio repo/ de fdroid en el servidor con <a href="https://acrosync.com/">acrosync</a></p>
 
-<p>En el repo de debian y en AUR, el paquete se llama <strong>fdroidserver</strong> la rutina de
-instalación ya la conoces.</p>
+<p>En el repo de debian y en AUR, el paquete se llama <strong>fdroidserver</strong>. La rutina
+de instalación ya la conoces.</p>
 
 <p>Creamos el directorio donde meteremos el repo, en mi caso, aquí:</p>
 
@@ -1259,7 +1335,7 @@ listo, verás las aplicaciones disponibles.</p>
 
 <p>Ya solo te quedaría instalar un rsync que desemboque en el repo y con
 <a href="https://acrosync.com/">acrosync</a> subes la cache de aptotide para el repo, así
-como estoy haciendo yo ahora.</p>
+como lo estoy haciendo yo ahora.</p>
 ]]></content>
   </entry>
   
@@ -1719,7 +1795,7 @@ mi me quedó así:</p>
 </span><span class='line'><span class="c"># la red</span>
 </span><span class='line'>subnet 10.1.1.0 netmask 255.255.255.0 <span class="o">{</span>
 </span><span class='line'>    range 10.1.1.100 10.1.1.254<span class="p">;</span>
-</span><span class='line'>    option domain-name <span class="s2">&quot;example.com&quot;</span><span class="p">;</span>
+</span><span class='line'>    option domain-name <span class="s2">&quot;hcg.sld.cu&quot;</span><span class="p">;</span>
 </span><span class='line'>    option domain-name-servers 10.1.1.1<span class="p">;</span>
 </span><span class='line'>    option broadcast-address 10.1.1.255<span class="p">;</span>
 </span><span class='line'>    option subnet-mask 255.255.255.0<span class="p">;</span>
@@ -1989,6 +2065,17 @@ un repositorio de git; puede llegar a ser un verdadero problema.</p>
 
 
 <p>¿Rápido verdad? Es que solo cogió el HEAD, no el historial de commits completo.</p>
+
+<p>Si lo quieres pa siempre, pon en tu gitconfig esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;.gitconfig&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>clone<span class="o">]</span>
+</span><span class='line'>   <span class="nv">depth</span> <span class="o">=</span> 1
+</span></code></pre></td></tr></table></div></figure>
+
+
+
 ]]></content>
   </entry>
   
@@ -2210,121 +2297,6 @@ determinada. O por el contrario, se afirma que la máquina a esa hora NO estaba
 encendida y el uptime dice lo contrario.</p>
 
 <p>   <blockquote><p>Saque usted, sus propias concluciones&hellip;</p><footer><strong>Taladrid</strong> <cite>Pasaje a Lo Desconocido</cite></footer></blockquote></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[will_paginate]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/07/19/will-paginate/"/>
-    <updated>2015-07-19T14:58:30-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/07/19/will-paginate</id>
-    <content type="html"><![CDATA[<p>De siempre, en materia de web la paginación ha sido tremendo rollo. A mi en lo
-personal no me gustan los paginadores; pienso que nadie los usa. Pero siempre
-hay un cliente que pide con mucho fervor detallitos que consideran importantes.</p>
-
-<p>Una de las cosas que me gusta de MongoMapper es que viene con un paginador
-integrado, pero este no es el caso.</p>
-
-<p>No entiendo porque carajo ActiveRecords, que se jacta (con razón) de ser la ORM
-definitiva; no tiene un puñetero soporte nativo para la paginación. O porque
-esta subestimada gema, llamada
-<a href="https://github.com/mislav/will_paginate/">will_paginate</a> no viene incluida en
-el Gemfile que trae RoR por defecto. Se harían un buen favor.</p>
-
-<p>La cuestión es que will_paginate hace muy simple la tediosa tarea de paginar.</p>
-
-<figure class='code'><figcaption><span>&#8216;instalando will_paginate&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;gem &quot;will_paginate&quot;&#39;</span> &gt;&gt; Gemfile
-</span><span class='line'>bundle update
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora veamos como se pagina un modelo. Tengamos el ejemplo típico, el
-controlador &ldquo;User&rdquo; con los 1500 usuarios.</p>
-
-<figure class='code'><figcaption><span>&#8220;controlador del scaffold users&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="vi">@users</span><span class="o">=</span><span class="no">User</span>
-</span><span class='line'>  <span class="o">.</span><span class="n">all</span>
-</span><span class='line'>  <span class="o">.</span><span class="n">paginate</span><span class="p">(</span><span class="ss">:page</span> <span class="o">=&gt;</span> <span class="n">params</span><span class="o">[</span><span class="ss">:page</span><span class="o">]</span><span class="p">,</span> <span class="ss">:per_page</span> <span class="o">=&gt;</span> <span class="mi">15</span><span class="p">)</span>
-</span><span class='line'>  <span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="s1">&#39;updated_at asc&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>OJO! De la 3ra linea, te puedes tomar el atrevimiento de modificar el 15 y poner
-el número que te de la gana; pero NO toques al símbolo :page y su valor. En este
-caso, el 15 representa la cantidad de elementos que mostraremos por página.</p>
-
-<p>Te digo que no toques el params[:page] porque will_paginate lo hace todo solo.
-En la vista solo tienes que poner esto</p>
-
-<figure class='code'><figcaption><span>&#8220;app/views/users/index.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="x">   &lt;div class=&quot;text-center&quot;&gt;</span>
-</span><span class='line'><span class="x">      </span><span class="cp">&lt;%=</span> <span class="n">will_paginate</span> <span class="vi">@users</span> <span class="cp">%&gt;</span><span class="x"></span>
-</span><span class='line'><span class="x">   &lt;/div&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finalmente queda algo de lo más discreto pero 100% funcional:</p>
-
-<div class="text-center">
-<div class="pagination">
-<span class="previous_page disabled">&#8592; Anterior</span>
-<em class="current">1</em>
-<a rel="next" href="#">2</a> <a href="#">3</a>
-<a href="#">4</a>
-<a href="#">5</a>
-<a href="#">6</a> <a href="#">7</a>
-<a href="#">8</a> <a href="#">9</a>
-<span class="gap">&hellip;</span>
-<a href="#">28</a>
-<a href="#">29</a>
-<a class="next_page" rel="next" href="#">Próximo &#8594;</a>
-</div></div>
-
-
-<p>¡COOOOÑOóOOO! En español y todo. Por supuesto,  no es magia. Lo que pasa que el
-que hizo la gema, la hizo con tremendo cariño y parece conocer muy bien la API
-de ruby on rails; con lo cual tuvo muy en cuenta, la parte del i18n.</p>
-
-<p>Ejecute lo siguiente:</p>
-
-<figure class='code'><figcaption><span>&#8220;contenido de la gema&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>gem cont will_paginate<span class="p">|</span>grep en.yml
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Guíate por ese fichero y añádele a tu locale la traducción relacionada con
-will_paginate, en mi caso, quedo así:</p>
-
-<figure class='code'><figcaption><span>&#8220;en.yml&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">en</span><span class="p-Indicator">:</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># el locales de will_paginate</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">will_paginate</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">previous_label</span><span class="p-Indicator">:</span> <span class="s">&quot;&amp;#8592;</span><span class="nv"> </span><span class="s">Anterior&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">next_label</span><span class="p-Indicator">:</span> <span class="s">&quot;Próximo</span><span class="nv"> </span><span class="s">&amp;#8594;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">page_gap</span><span class="p-Indicator">:</span> <span class="s">&quot;&amp;hellip;&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>¡¡A paginar se ha dicho!!</p>
-
-<p>Thanks to <strong>Mislav Marohnić</strong> for you good job; developing will_paginate</p>
-
-<p>Si te ha gustado will_paginate, escríbele un <a href="mailto:mislav.marohnic@gmail.com">correo al autor</a>
-y muéstrale tu agradecimiento. Yo ya lo hize ;)</p>
 ]]></content>
   </entry>
   

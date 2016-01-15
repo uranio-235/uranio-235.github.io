@@ -4,7 +4,7 @@
   <title><![CDATA[Category: destacado | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/destacado/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2015-12-29T13:04:07-05:00</updated>
+  <updated>2016-01-14T23:26:38-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -213,8 +213,8 @@ cliente para repositorios de android, osea como google market pero libre.</p>
 <a href="http://www.aptoide.com">aptoide</a>, verifico que sean seguros y copio la cache
 para el directorio repo/ de fdroid en el servidor con <a href="https://acrosync.com/">acrosync</a></p>
 
-<p>En el repo de debian y en AUR, el paquete se llama <strong>fdroidserver</strong> la rutina de
-instalación ya la conoces.</p>
+<p>En el repo de debian y en AUR, el paquete se llama <strong>fdroidserver</strong>. La rutina
+de instalación ya la conoces.</p>
 
 <p>Creamos el directorio donde meteremos el repo, en mi caso, aquí:</p>
 
@@ -296,7 +296,7 @@ listo, verás las aplicaciones disponibles.</p>
 
 <p>Ya solo te quedaría instalar un rsync que desemboque en el repo y con
 <a href="https://acrosync.com/">acrosync</a> subes la cache de aptotide para el repo, así
-como estoy haciendo yo ahora.</p>
+como lo estoy haciendo yo ahora.</p>
 ]]></content>
   </entry>
   
