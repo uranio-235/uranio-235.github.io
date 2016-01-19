@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>postfix entrando en el baile - El SysAdmin del 3er Mundo</title>
+  <title>espejos de clamav y salud - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="En el episodio anterior, vimos como dovecot se sumaba al esquema mysql. Faltaría
-solamente postfix, para tener entonces un &ldquo;completo servidor &hellip;">
+  <meta name="description" content="ClamAV, el antivirus más subestimado en mi opinión. De siempre, lo he usado por
+compromiso; aunque nunca he sentido la necesidad de hacerlo. Infomed &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ solamente postfix, para tener entonces un &ldquo;completo servidor &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2014/06/09/postfix-entrando-en-el-baile/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2016/01/19/espejos-de-clamav/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -83,7 +83,7 @@ solamente postfix, para tener entonces un &ldquo;completo servidor &hellip;">
   
   <header>
     
-      <h1 class="entry-title">postfix entrando en el baile</h1>
+      <h1 class="entry-title">espejos de clamav y salud</h1>
     
     
       <p class="meta">
@@ -92,7 +92,7 @@ solamente postfix, para tener entonces un &ldquo;completo servidor &hellip;">
 
 
 
-<time class='entry-date' datetime='2014-06-09T15:19:03-04:00'><span class='date'>09/06/2014</span> <span class='time'>3:19 pm</span></time>
+<time class='entry-date' datetime='2016-01-19T13:32:53-05:00'><span class='date'>19/01/2016</span> <span class='time'>1:32 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -102,72 +102,56 @@ solamente postfix, para tener entonces un &ldquo;completo servidor &hellip;">
   </header>
 
 
-<div class="entry-content"><p>En el episodio anterior, vimos como dovecot se sumaba al esquema mysql. Faltaría
-solamente postfix, para tener entonces un &ldquo;completo servidor MySQL&rdquo;</p>
+<div class="entry-content"><p>ClamAV, el antivirus más subestimado en mi opinión. De siempre, lo he usado por
+compromiso; aunque nunca he sentido la necesidad de hacerlo.</p>
 
-<p>Cabe reconocer que el futuro de MySQL es incierto, pero meintras PostGres sea la
-gran basura que es, que conmigo ni cuenten.</p>
+<p>Infomed, mantiene un espejo de ClamAV bien al día pero no un mirror como tal.</p>
 
-<p>Normalmente postfix, entrega a través de procmail, pero ahora, nuestro dovecot
-con sus flamantes características, tendrá una manera más compleja de entregar.
-Por tanto, debemos usar el LDA (Local Deliver Agent) de Dovecot como el MDA por
-defecto de postfix.</p>
+<p>Decidí bajarlos para mi máquina y usar la misma como espejo. Después de todo, la
+misma tiene lo que necesita para correr un mirror. Es algo tan sencillo como
+crear un virtualhost y poner en su raíz las actualziaciones.</p>
 
-<p>Al fichero <em>/etc/postfix/main.cf</em> le agregamos en el fondo un nuevo transport.</p>
+<p>Más fácil aún, es usar /var/lib/clamav/ como raíz y así TU actualización se
+convierte en el mirror.</p>
 
-<figure class='code'><figcaption><span>/etc/postfix/master.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">dovecot</span> <span class="err">unix</span> <span class="err">-</span> <span class="err">n</span> <span class="err">n</span> <span class="err">-</span> <span class="err">-</span> <span class="err">pipe</span>
-</span><span class='line'>  <span class="na">flags</span><span class="o">=</span><span class="s">DRhu user=vmail:vmail argv=/usr/lib/dovecot/deliver -f ${sender} -d ${user}@${domain} -m ${extension}</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>En mi caso, el virtualhost de nginx me quedó así:</p>
 
-
-<p>Además de lo usual, al main.cf le declaramos que su nuevo transporte es  un tal
-&ldquo;dovecot&rdquo; y le agregaremos unas cuantas gangarreas extras que ya explicaré.</p>
-
-<figure class='code'><figcaption><span>/etc/postfix/main.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>&#8220;/etc/nginx/sites-enabled/clamav&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="c1"># el resto de u confuiguracion arriba</span>
-</span><span class='line'><span class="na">virtual_transport</span><span class="o">=</span><span class="s">dovecot</span>
-</span><span class='line'><span class="na">mailbox_command</span> <span class="o">=</span> <span class="s">/usr/lib/dovecot/deliver</span>
-</span><span class='line'><span class="na">mydestination</span> <span class="o">=</span> <span class="s">localhost, blackjack</span>
-</span><span class='line'><span class="na">virtual_mailbox_domains</span> <span class="o">=</span> <span class="s">hcg.sld.cu</span>
-</span><span class='line'><span class="na">virtual_mailbox_maps</span> <span class="o">=</span> <span class="s">$virtual_mailbox_domains</span>
-</span><span class='line'><span class="na">virtual_alias_maps</span> <span class="o">=</span> <span class="s">hash:/etc/aliases</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>server <span class="o">{</span>
+</span><span class='line'>   listen   10.1.1.14:80<span class="p">;</span>
+</span><span class='line'>   listen   10.1.1.14:443 ssl<span class="p">;</span>
+</span><span class='line'>   server_name clamav.hcg.sld.cu<span class="p">;</span>
+</span><span class='line'>   location / <span class="o">{</span>
+</span><span class='line'>      root /var/lib/clamav/<span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<ol>
-<li>Un comentario a prueba de imbéciles.</li>
-<li>Declaramos el nuevo transporte para el dominio virtual.</li>
-<li>Declaramos además, que se use el LDA de dovecot.</li>
-<li>Declaramos que solo localhost y blackjack son destinos locales.</li>
-<li>El dominio virtual será &ldquo;hcg.sld.cu&rdquo;.</li>
-<li>Y lo mapeamos igual.</li>
-<li>Por último, lo alias se quedan en el fichero tradicional.</li>
-</ol>
+<p>El resto del truco está en el lado del cliente, ya que hay que hacerle una
+burumba a freshclam. Decirle que no busque scripts, así me quedó el freshclam.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/clamav/freshclam.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>UpdateLogFile /var/log/clamav/freshclam.log
+</span><span class='line'>DatabaseMirror clamav.hcg.sld.cu
+</span><span class='line'>NotifyClamd /etc/clamav/clamd.conf
+</span><span class='line'>ScriptedUpdates no
+</span><span class='line'>PrivateMirror clamav.hcg.sld.cu
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Ahora si creamos un usaurio llamado &ldquo;usuario&rdquo; en la base de datos;
-usuario@localhost no será válido porque solo existe en el domino virtual.</p>
-
-<p>Además, le agregamos que los alisas, son un hash en /etc/alisas, al estilo
-antiguo. No vamos a cargar la base de datos con los alisases. Sobre todo
-teniendo en cuenta lo pocos que son. De esta forma, cuando por ejemplo, se manda
-un correo a root que es una alias de lazaro, postfix preguntara quien es lazaro
-y responderá un usaurio del dominio virtual. Genial eh?</p>
-
-<p>Tanto los alisas como los dominios virtuales, podrían ser tablas de MySQL, pero
-como mi aplicación no maneja eso, lo haces al estilo tradicional. En caso de que
-más adelante desarrollase algún esquema tipo proveedor de servicios; otro gallo
-cantaría.</p>
-
-<p>No olvidemos &ldquo;postfix reload&rdquo;</p>
+<p>No olvides el puntero a <strong>clamav.tudominio.cu</strong></p>
 </div>
 
 
@@ -183,7 +167,7 @@ cantaría.</p>
 
 
 
-<time class='entry-date' datetime='2014-06-09T15:19:03-04:00'><span class='date'>09/06/2014</span> <span class='time'>3:19 pm</span></time>
+<time class='entry-date' datetime='2016-01-19T13:32:53-05:00'><span class='date'>19/01/2016</span> <span class='time'>1:32 pm</span></time>
       
 
 
@@ -191,7 +175,7 @@ cantaría.</p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2014/06/09/postfix-entrando-en-el-baile/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2014/06/09/postfix-entrando-en-el-baile/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2016/01/19/espejos-de-clamav/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2016/01/19/espejos-de-clamav/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -204,10 +188,8 @@ cantaría.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/06/09/dovecot-entra-en-el-baile/" title="Previous Post: dovecot entra en el baile">&laquo; dovecot entra en el baile</a>
+        <a class="basic-alignment left" href="/blog/2016/01/14/clamav-en-windows/" title="Previous Post: clamav en windows">&laquo; clamav en windows</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/06/10/autenticador-sql-en-el-proxy/" title="Next Post: autenticador SQL en el proxy">autenticador SQL en el proxy &raquo;</a>
       
     </p>
   </footer>
@@ -519,8 +501,8 @@ if (location.pathname!='/') {
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2014/06/09/postfix-entrando-en-el-baile/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2014/06/09/postfix-entrando-en-el-baile/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2016/01/19/espejos-de-clamav/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2016/01/19/espejos-de-clamav/';
         var disqus_script = 'embed.js';
       
     (function () {

@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-01-19T12:56:31-05:00</updated>
+  <updated>2016-01-19T13:55:42-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -14,19 +14,77 @@
 
   
   <entry>
+    <title type="html"><![CDATA[espejos de clamav y salud]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/01/19/espejos-de-clamav/"/>
+    <updated>2016-01-19T13:32:53-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/01/19/espejos-de-clamav</id>
+    <content type="html"><![CDATA[<p>ClamAV, el antivirus más subestimado en mi opinión. De siempre, lo he usado por
+compromiso; aunque nunca he sentido la necesidad de hacerlo.</p>
+
+<p>Infomed, mantiene un espejo de ClamAV bien al día pero no un mirror como tal.</p>
+
+<p>Decidí bajarlos para mi máquina y usar la misma como espejo. Después de todo, la
+misma tiene lo que necesita para correr un mirror. Es algo tan sencillo como
+crear un virtualhost y poner en su raíz las actualziaciones.</p>
+
+<p>Más fácil aún, es usar /var/lib/clamav/ como raíz y así TU actualización se
+convierte en el mirror.</p>
+
+<p>En mi caso, el virtualhost de nginx me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/nginx/sites-enabled/clamav&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>server <span class="o">{</span>
+</span><span class='line'>   listen   10.1.1.14:80<span class="p">;</span>
+</span><span class='line'>   listen   10.1.1.14:443 ssl<span class="p">;</span>
+</span><span class='line'>   server_name clamav.hcg.sld.cu<span class="p">;</span>
+</span><span class='line'>   location / <span class="o">{</span>
+</span><span class='line'>      root /var/lib/clamav/<span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El resto del truco está en el lado del cliente, ya que hay que hacerle una
+burumba a freshclam. Decirle que no busque scripts, así me quedó el freshclam.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/clamav/freshclam.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>UpdateLogFile /var/log/clamav/freshclam.log
+</span><span class='line'>DatabaseMirror clamav.hcg.sld.cu
+</span><span class='line'>NotifyClamd /etc/clamav/clamd.conf
+</span><span class='line'>ScriptedUpdates no
+</span><span class='line'>PrivateMirror clamav.hcg.sld.cu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No olvides el puntero a <strong>clamav.tudominio.cu</strong></p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[clamav en windows]]></title>
     <link href="http://uranio-235.github.io/blog/2016/01/14/clamav-en-windows/"/>
     <updated>2016-01-14T21:39:45-05:00</updated>
     <id>http://uranio-235.github.io/blog/2016/01/14/clamav-en-windows</id>
     <content type="html"><![CDATA[<p>Síiiii, por loco que suene&hellip;</p>
 
-<p>Una compañía llamada Source Fire, desarrolló un producto llamado &ldquo;immunet&rdquo;,
-Por lo que vi, es una herramienta de &ldquo;cloud security&rdquo;. En teoría; un antivirus
-que no necesita ser actualizado, una especie de community driven (reescribió la
-rueda).</p>
+<p>Una compañía llamada Source Fire, desarrolló un producto llamado &ldquo;immunet&rdquo;, Por
+lo que vi, es una herramienta de &ldquo;cloud security&rdquo;. En teoría; un antivirus que
+no necesita ser actualizado, una especie de community driven (reescribió la
+rueda y le quedó bien).</p>
 
-<p>Esto en cuba es un chiste, por el ancho de banda. No obstante, pasarle todos
-tus archivos a un servidor para que este los verifique, no me parece un buen
+<p>Esto en cuba es un chiste, por el ancho de banda. No obstante, pasarle todos tus
+archivos a un servidor para que este los verifique, no me parece un buen
 negocio. Aunque sabe dios que hace windows con tus archivos&hellip;</p>
 
 <p>No obstante, estos señores, incluyeron el motor de clamav y frontend para
@@ -2250,54 +2308,6 @@ clásicas.</p>
 direcciones URL a tu proxy.</p>
 
 <p>Eso lo veremos en la próxima entrada ;)</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[compute remote uptime]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime/"/>
-    <updated>2015-08-28T12:21:58-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime</id>
-    <content type="html"><![CDATA[<p>Vamos de atrás pa alante, el truco primero y la muela después.</p>
-
-<figure class='code'><figcaption><span>&#8220;nmap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># nmap -O -v 10.1.1.1|grep -i uptime</span>
-</span><span class='line'>Uptime guess: 18.006 days <span class="o">(</span>since Fri Aug <span class="m">10</span> 12:24:47 2015<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>¿Que acaba de suceder?</h4>
-
-<p>Calculamos el tiempo que lleva el servidor remoto en pie. Fíjese que nos dice la
-fecha en la que el servidor arrancó.</p>
-
-<h4>¿Para que sirve esta información?</h4>
-
-<p>Para poner al responsable de la computadora remota <em>contra las cuerdas</em> en una
-situación crítica donde el momento de encendido o apagado de la máquina podría
-ser crucial.</p>
-
-<h4>Ejemplos:</h4>
-
-<p>Nuestro proveedor, el servidor proxy padre, afirma descaradamente que NO ha
-tenido problemas técnicos, pero nosotros sabemos que sí. En una discución
-crucial podría dejarle caer la pregunta. <em>¿Entonces porque su servidor se
-reinició el día tal?</em></p>
-
-<p>Un servicio determinado falla a una hora determinada de la noche. Con esto
-podríamos saber si el servidor se está reiniciando, cuando y con que frecuencia.</p>
-
-<p>El proveedor dice que ha tenido que reiniciar el servidor cuando en realidad
-nunca lo ha hecho.</p>
-
-<p>El usuario dice que la máquina se le reinicia constantemente.</p>
-
-<p>El usuario o el proveedor afirman que la máquina fue encendida a una hora
-determinada. O por el contrario, se afirma que la máquina a esa hora NO estaba
-encendida y el uptime dice lo contrario.</p>
-
-<p>   <blockquote><p>Saque usted, sus propias concluciones&hellip;</p><footer><strong>Taladrid</strong> <cite>Pasaje a Lo Desconocido</cite></footer></blockquote></p>
 ]]></content>
   </entry>
   
