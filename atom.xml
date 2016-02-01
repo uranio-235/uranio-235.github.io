@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-02-01T14:20:21-05:00</updated>
+  <updated>2016-02-01T14:23:54-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -32,6 +32,8 @@ resulta una verdadera novedad, poder compartir un paquete.</p>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@samsung ~<span class="o">]</span><span class="c"># cd /var/cache/pacman/pkg/</span>
 </span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># bacman nginx</span>
 </span><span class='line'><span class="o">==</span>&gt; Package: nginx-1.8.1-1
@@ -39,6 +41,8 @@ resulta una verdadera novedad, poder compartir un paquete.</p>
 </span><span class='line'>    -&gt; Generating .PKGINFO metadata...
 </span><span class='line'>    -&gt; Generating the package...
 </span><span class='line'>  <span class="o">==</span>&gt; Done.
+</span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># ls nginx*</span>
+</span><span class='line'>nginx-1.8.1-1-x86_64.pkg.tar.xz
 </span></code></pre></td></tr></table></div></figure>
 
 
