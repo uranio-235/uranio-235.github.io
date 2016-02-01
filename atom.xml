@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-01-19T13:55:42-05:00</updated>
+  <updated>2016-02-01T14:20:21-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,187 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[arch compartir paquetes]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/02/01/arch-compartir-paquetes/"/>
+    <updated>2016-02-01T13:56:56-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/02/01/arch-compartir-paquetes</id>
+    <content type="html"><![CDATA[<p>No se cuando, pero al fin, un sueño echo realidad en ArchLinux. Revertir un
+paquete de su forma instalada, a su forma de paquete. Esto puede no resultar
+algo novedoso para el que tenga internet, pero para los cubanos de a pie,
+resulta una verdadera novedad, poder compartir un paquete.</p>
+
+<p>O sea, digamos que mi socio necesita instalar nginx:</p>
+
+<figure class='code'><figcaption><span>&#8220;bacman en acción&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@samsung ~<span class="o">]</span><span class="c"># cd /var/cache/pacman/pkg/</span>
+</span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># bacman nginx</span>
+</span><span class='line'><span class="o">==</span>&gt; Package: nginx-1.8.1-1
+</span><span class='line'>  -&gt; Copying package files...
+</span><span class='line'>    -&gt; Generating .PKGINFO metadata...
+</span><span class='line'>    -&gt; Generating the package...
+</span><span class='line'>  <span class="o">==</span>&gt; Done.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pues <strong>bacman</strong> es la respuesta. Ahora se puede regresar un paquete a su estado;
+diagmos &ldquo;pristino&rdquo;.</p>
+
+<p>Mi proxima idea es reconstruir el grupo <strong>base</strong> completo dentro de la cache y
+luego con <strong>repo-add</strong> crear un mirror, capaz de llevar a cabo una instalación
+de sistema.</p>
+
+<p>De momento quiero probar este script:</p>
+
+<figure class='code'><figcaption><span>&#8220;pristine.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># cambiate al directorio de cache</span>
+</span><span class='line'><span class="nb">cd</span> /var/cache/pacman/pkg/
+</span><span class='line'>
+</span><span class='line'><span class="c"># itera por los paquetes del sistema base</span>
+</span><span class='line'><span class="k">for</span> pkg in <span class="k">$(</span>pacman -Qs base <span class="p">|</span>grep -v <span class="s1">&#39;^ &#39;</span><span class="p">|</span>cut -d / -f 2<span class="p">|</span>cut -d <span class="s1">&#39; &#39;</span> -f 1<span class="k">)</span><span class="p">;</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># háblate</span>
+</span><span class='line'>   <span class="nb">echo</span> <span class="nv">$pkg</span> <span class="s1">&#39;&gt;&#39;</span> <span class="k">$(</span>pacman -Qi apache<span class="p">|</span>grep Description<span class="p">|</span>cut -d : -f 2<span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># reviértelo</span>
+</span><span class='line'>   bacman <span class="nv">$pkg</span> 2&gt; /dev/null &gt; /dev/null
+</span><span class='line'>
+</span><span class='line'><span class="k">done</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># crea el repo</span>
+</span><span class='line'>rm /var/cache/pacman/pkg/custom.db.tar.gz
+</span><span class='line'>repo-add /var/cache/pacman/pkg/custom.db.tar.gz /var/cache/pacman/pkg/*.pkg.tar.xz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Tendré que probar a instalar usando mi cache como repo. Poniéndole a la máquina
+una source como esta:</p>
+
+<figure class='code'><figcaption><span>&#8220;pacman.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>mirepo<span class="o">]</span>
+</span><span class='line'><span class="nv">SigLevel</span> <span class="o">=</span> Optional TrustAll
+</span><span class='line'><span class="nv">Server</span> <span class="o">=</span> http://localhost:8080
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y para servir tu cache como repo, puedes usar darkhttpd</p>
+
+<figure class='code'><figcaption><span>&#8220;darkhttpd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>darkhttpd /var/cache/pacman/pkg/ --chroot --port 8080
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[bind9, registro arbitratio]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/01/25/hostname-arbitrario-en-bind9/"/>
+    <updated>2016-01-25T20:35:37-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/01/25/hostname-arbitrario-en-bind9</id>
+    <content type="html"><![CDATA[<p>Para este tipo de cosas, usualmente recomiendo
+<a href="https://wiki.archlinux.org/index.php/dnsmasq">dnsmasq</a> pero aveces, no nos
+queda más remiendo que usar bind9, por N motivos.</p>
+
+<p>En algunas ocasiones, nos vemos forzados a declarar registros para punteros, a
+host que nada tienen que ver con nuestro domino. Por ejemplo, queremos que el
+host time.windows.com apunte a nuestro servidor de tiempo, para que todos las
+computadoras con windows de la red, se actualicen por nuestro servidor ntp.</p>
+
+<p>En salud, aveces es mejor declarar localmente los punteros a los servidores de
+correo de salud, que hacer otro forward y además, tener que especificarle un
+segundo servidor DNS a nuestros usuarios.</p>
+
+<p>Para lograr esto, debemos declarar una raíz dns en nuestro named.conf, que
+responda a todo, o sea, &ldquo;.&rdquo;, a mi me quedó así.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/bind/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// la zona pa hacer lo que me de la gana</span>
+</span><span class='line'><span class="nx">zone</span> <span class="s2">&quot;.&quot;</span> <span class="p">{</span>
+</span><span class='line'>   <span class="nx">type</span> <span class="nx">master</span><span class="p">;</span>
+</span><span class='line'>   <span class="nx">file</span> <span class="s2">&quot;/etc/bind/fakeroot.zone&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Acá, el fichero <strong>fakeroot.zone</strong> tendrá los registros, donde declaramos los
+FQDN como si fueran hostnames.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/bind/fakeroot.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err">@</span>       <span class="nx">IN</span>      <span class="nx">SOA</span>     <span class="p">.</span> <span class="nx">hostmaster</span><span class="p">.</span><span class="nx">dominio</span><span class="p">.</span><span class="nx">cu</span><span class="p">.</span> <span class="p">(</span> <span class="mi">1</span> <span class="mi">3</span><span class="nx">h</span> <span class="mi">1</span><span class="nx">h</span> <span class="mi">1</span><span class="nx">w</span> <span class="mi">1</span><span class="nx">d</span> <span class="p">)</span>
+</span><span class='line'>                      <span class="nx">IN</span>      <span class="nx">NS</span>      <span class="mf">127.0</span><span class="p">.</span><span class="mf">0.1</span>
+</span><span class='line'><span class="o">*</span>                     <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">127.0</span><span class="p">.</span><span class="mf">0.1</span>
+</span><span class='line'><span class="p">;</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">Los</span> <span class="nx">servidores</span> <span class="nx">de</span> <span class="nx">correo</span> <span class="nx">de</span> <span class="nx">infomed</span>
+</span><span class='line'><span class="nx">smtp</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">200.100</span><span class="p">.</span><span class="mf">99.7</span>
+</span><span class='line'><span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>            <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">200.100</span><span class="p">.</span><span class="mf">99.11</span>
+</span><span class='line'><span class="nx">pop3</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>
+</span><span class='line'><span class="nx">imap</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>
+</span><span class='line'><span class="p">;</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">Los</span> <span class="nx">servidores</span> <span class="nx">de</span> <span class="nx">tiempo</span> <span class="nx">m</span><span class="err">á</span><span class="nx">s</span> <span class="nx">pedidos</span>
+</span><span class='line'><span class="nx">time</span><span class="p">.</span><span class="nx">microsoft</span><span class="p">.</span><span class="nx">com</span>    <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">192.168</span><span class="p">.</span><span class="mf">0.1</span>
+</span><span class='line'><span class="nx">time</span><span class="p">.</span><span class="nx">windows</span><span class="p">.</span><span class="nx">com</span>      <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">time</span><span class="p">.</span><span class="nx">microsoft</span><span class="p">.</span><span class="nx">com</span>
+</span><span class='line'><span class="nx">ntp</span><span class="o">-</span><span class="nx">ios</span><span class="p">.</span><span class="nx">apple</span><span class="p">.</span><span class="nx">com</span>     <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">time</span><span class="p">.</span><span class="nx">microsoft</span><span class="p">.</span><span class="nx">com</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En este caso de ejemplo, declaramos un par de host que son de salud, con una ip
+externa. Abajo, los host ntp más típicos, apuntando a nuestro servidor de
+tiempo.</p>
+
+<p>Es muy importante, que arriba esté el registro &ldquo;* IN A&rdquo; ya que este será lo que
+de el toque mágico al asunto.</p>
+
+<p>Cualquier otro hostname que sea preguntado en la red, devolverá a 127.0.0.1 como
+dirección resuelta. Genial para que no molesten las aplicacion bobas de los
+teléfonos.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[espejos de clamav y salud]]></title>
@@ -2135,179 +2316,6 @@ un repositorio de git; puede llegar a ser un verdadero problema.</p>
 
 
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[archlinux con dos kernel]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/09/07/archlinux-dos-kernel/"/>
-    <updated>2015-09-07T20:32:57-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/09/07/archlinux-dos-kernel</id>
-    <content type="html"><![CDATA[<p>Tener los dos kernel y elegir cual butear con el grub al principio; no es algo
-sencillo en archlinux.</p>
-
-<p>Por defecto, el grub dice tener dichas entradas en un submenú que nunca se ve.
-Para lograrlo, tenemos que hacer unos paces mágicos en el fichero:</p>
-
-<h4>/etc/default/grub</h4>
-
-<p>Primero instalamos los kernels; el lts y el fresco.</p>
-
-<figure class='code'><figcaption><span>&#8220;los kernels&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S linux linux-lts
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora la configuración con la que logré eso, fue agregándole al final estas
-lineas:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/default/grub&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">GRUB_DISABLE_SUBMENU</span><span class="o">=</span>y
-</span><span class='line'><span class="nv">GRUB_DEFAULT</span><span class="o">=</span>saved
-</span><span class='line'><span class="nv">GRUB_SAVEDEFAULT</span><span class="o">=</span><span class="nb">true</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con eso, se salva la última entrada ejecutada. Por que, lo más obvio, es que la
-próxima vez que arranques, se cargue el último kernel que usaste. Lo inusual
-sería que cambies de opinión y cargues otro. Desgraciadamente, si como yo, usas
-btrfs como sistema de archivo, grub no podrá escribir el fichero con la última
-entrada seleccionada. Incluso te dará un error, diciendo que no puede escribir
-el fichero no se que.</p>
-
-<p>Seguimos&hellip; Localiza y la linea de recovery y ponla en false:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/default/grub&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Uncomment to disable generation of recovery mode menu entries</span>
-</span><span class='line'><span class="nv">GRUB_DISABLE_RECOVERY</span><span class="o">=</span><span class="nb">false</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>NO SE POR QUE</strong>, pero no se generan las dichosas entradas si eso no está en
-false. Además, tener el menú de recovery es bastante útil, en estas distros
-volátiles, uno nunca sabe cuando le va a hacer falta.</p>
-
-<p>Paso final, generar el grub.cfg</p>
-
-<figure class='code'><figcaption><span>&#8220;grub-mkconfig&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>grub-mkconfig -o /boot/grub/grub.cfg
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Va y si quieres, no es obligado, pero para probar, <strong>REINICIA</strong>.</p>
-
-<p>   <blockquote><p>Prefiero lidiar con las pifias de una comunidad<br/>   que con las mazmorras de una compañía.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[squid transparente]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/09/01/squid-transparente/"/>
-    <updated>2015-09-01T14:23:00-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/09/01/squid-transparente</id>
-    <content type="html"><![CDATA[<p>La era de SSL, parece haber dejado a los proxies trasparentes un tanto pasados
-de moda. Los tiempos en que dos lineas de iptables resolvían el problema,
-simplemente quedaron atrás. Ahora necesitamos las dos lineas de iptables y un
-poquito más.</p>
-
-<p>Recientemente la comunidad de NetFilter (iptables) y la de squid, ha unido
-esfuerzos para crear solución. El protocolo TPROXY de iptables, entra en juego
-con la maquinaria de squid; dando lugar a un nateo especial. Aunque un está en
-pañales, el asunto promete. En esta entrada no le daremos cobertura a Tproxy,
-pero en la próxima pienso hacerlo.</p>
-
-<p>Esta la dejaremos reservada para &ldquo;ssl_bump&rdquo;</p>
-
-<p>Squid desarrolló un sistema especial para cachear y generar los certificados SSL
-que requiere. Esto al principio fue tema de discusión. Siempre que hay una
-aplicación externa, las vulnerabilidades se sirven con cuchara grande.
-Finalmente squid lo logró y desarrolló una especie de:</p>
-
-<p>&ldquo;ataque MITM corporativizado&rdquo;</p>
-
-<p>Como dirían los aldeanos: &ldquo;mamando se quita el frío&rdquo;, así que empezemos&hellip;</p>
-
-<p>Primero y principioso, es dejar nuestro squid funcionando con una ACL bien
-<em>lazy</em>.  Digamos por ejemplo, que la red 192.168.10.0/24 pasará a través del
-proxy transparente.</p>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>acl red_transparente src 192.168.10.0/24
-</span><span class='line'>http_access allow red_transparente
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Necesitaremos generar un certificado SSL en nuestro squid, certificado que; con
-suerte, el navegador se lo comerá con papa, creyendo que va pal sitio de verdad.</p>
-
-<p>Una vez que el usuario acepte este certificado. TODOS los sitios que pidan,
-vendrán con este certificado.</p>
-
-<figure class='code'><figcaption><span>&#8220;openssl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/squid/
-</span><span class='line'>mkdir ssl_cert
-</span><span class='line'><span class="nb">cd </span>ssl_cert
-</span><span class='line'>openssl req -new -newkey rsa:1024 -days <span class="m">365</span> -nodes -x509 -keyout squid.pem -out squid.pem
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora le decimos a calamardo, que escuche por el 3129 como interceptor. Además,
-le pondremos una serie de parametros que harán un funcionar al ssl_bumper. A mi
-me quedó así:</p>
-
-<h4>OJO con la segunda lina, es muy larga</h4>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>http_port 0.0.0.0:3128
-</span><span class='line'>http_port 0.0.0.0:3129 intercept ssl-bump generate-host-certificates<span class="o">=</span>on <span class="nv">dynamic_cert_mem_cache_size</span><span class="o">=</span>4MB <span class="nv">cert</span><span class="o">=</span>/etc/squid/ssl_cert/squid.pem
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora inicializamos el depósito donde colocaremos los certificados que vallamos
-cogiendo.</p>
-
-<figure class='code'><figcaption><span>&#8220;ssl_crtd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/usr/lib/squid/ssl_crtd -c -s /etc/squid/certificados
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Y le configuramos la maquinaria diabólica a squid.</p>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">dynamic_cert_mem_cache_size</span><span class="o">=</span>4MB <span class="nv">cert</span><span class="o">=</span>/etc/squid/ssl_cert/squid.pem
-</span><span class='line'>ssl_bump none localhost
-</span><span class='line'>ssl_bump server-first all
-</span><span class='line'>sslcrtd_program /usr/lib/squid/ssl_crtd -s /etc/squid/certificados -M 4MB
-</span><span class='line'>sslcrtd_children 5
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Entonces NetFilter en juego. Nuevamente salen a la palestras las dos lineas
-clásicas.</p>
-
-<figure class='code'><figcaption><span>&#8220;iptables&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iptables -t nat -A PREROUTING -i wlan0 -p tcp -m tcp --dport <span class="m">80</span> -j REDIRECT --to-ports 3129
-</span><span class='line'>iptables -t nat -A PREROUTING -i wlan0 -p tcp -m tcp --dport <span class="m">443</span> -j REDIRECT --to-ports 3129
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Claro, esto no lo es todo, vas a necesitar un DNS que apunte TODAS las
-direcciones URL a tu proxy.</p>
-
-<p>Eso lo veremos en la próxima entrada ;)</p>
 ]]></content>
   </entry>
   

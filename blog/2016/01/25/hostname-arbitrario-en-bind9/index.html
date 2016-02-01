@@ -5,12 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>systemd automount - El SysAdmin del 3er Mundo</title>
+  <title>bind9, registro arbitratio - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Resulta que el todopoderoso systemd
-tiene un soporte para automontar discos. Aún sigo pensando que nadie inventa un software para autodesmontar &hellip;">
+  <meta name="description" content="Para este tipo de cosas, usualmente recomiendo
+dnsmasq pero aveces, no nos
+queda más remiendo que usar bind9, por N motivos. En algunas ocasiones, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +20,7 @@ tiene un soporte para automontar discos. Aún sigo pensando que nadie inventa un
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/06/12/systemd-automount/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2016/01/25/hostname-arbitrario-en-bind9/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -83,7 +84,7 @@ tiene un soporte para automontar discos. Aún sigo pensando que nadie inventa un
   
   <header>
     
-      <h1 class="entry-title">systemd automount</h1>
+      <h1 class="entry-title">bind9, registro arbitratio</h1>
     
     
       <p class="meta">
@@ -92,7 +93,7 @@ tiene un soporte para automontar discos. Aún sigo pensando que nadie inventa un
 
 
 
-<time class='entry-date' datetime='2015-06-12T12:18:10-04:00'><span class='date'>12/06/2015</span> <span class='time'>12:18 pm</span></time>
+<time class='entry-date' datetime='2016-01-25T20:35:37-05:00'><span class='date'>25/01/2016</span> <span class='time'>8:35 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -102,42 +103,79 @@ tiene un soporte para automontar discos. Aún sigo pensando que nadie inventa un
   </header>
 
 
-<div class="entry-content"><p>Resulta que el todopoderoso <a href="https://wiki.archlinux.org/index.php/Systemd">systemd</a>
-tiene un soporte para automontar discos.</p>
+<div class="entry-content"><p>Para este tipo de cosas, usualmente recomiendo
+<a href="https://wiki.archlinux.org/index.php/dnsmasq">dnsmasq</a> pero aveces, no nos
+queda más remiendo que usar bind9, por N motivos.</p>
 
-<p>Aún sigo pensando que nadie inventa un software para auto<strong>des</strong>montar discos.
-No le veo sentido a que algo se monte automáticamente si luego hay que
-desmontarlo de manera manual.</p>
+<p>En algunas ocasiones, nos vemos forzados a declarar registros para punteros, a
+host que nada tienen que ver con nuestro domino. Por ejemplo, queremos que el
+host time.windows.com apunte a nuestro servidor de tiempo, para que todos las
+computadoras con windows de la red, se actualicen por nuestro servidor ntp.</p>
 
-<p>Pero como te decía, el automount&hellip;</p>
+<p>En salud, aveces es mejor declarar localmente los punteros a los servidores de
+correo de salud, que hacer otro forward y además, tener que especificarle un
+segundo servidor DNS a nuestros usuarios.</p>
 
-<p>Si en el fstab usas la opción <strong>x-systemd.automount</strong>, las unidades reflejadas
-en el fstab se montarán de manera automática cuando se haga contacto con el
-punto de montaje y el dispositivo esté presente.</p>
+<p>Para lograr esto, debemos declarar una raíz dns en nuestro named.conf, que
+responda a todo, o sea, &ldquo;.&rdquo;, a mi me quedó así.</p>
 
-<figure class='code'><figcaption><span>&#8220;fstab&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/dev/sdb1   /mnt/sdb1  auto  rw,users,x-systemd.automount,noauto  <span class="m">0</span>  0
+<figure class='code'><figcaption><span>&#8220;/etc/bind/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// la zona pa hacer lo que me de la gana</span>
+</span><span class='line'><span class="nx">zone</span> <span class="s2">&quot;.&quot;</span> <span class="p">{</span>
+</span><span class='line'>   <span class="nx">type</span> <span class="nx">master</span><span class="p">;</span>
+</span><span class='line'>   <span class="nx">file</span> <span class="s2">&quot;/etc/bind/fakeroot.zone&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Al posarte en un directorio que sea punto de montaje, este se montará de manera
-automática. Si quieres que quede escopetón de verdad, usa estas opciones:</p>
+<p>Acá, el fichero <strong>fakeroot.zone</strong> tendrá los registros, donde declaramos los
+FQDN como si fueran hostnames.</p>
 
-<figure class='code'><figcaption><span>&#8220;opciones&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>nofail,x-systemd.automount,x-systemd.device-timeout<span class="o">=</span>2s,sync,rw,user,noauto
+<figure class='code'><figcaption><span>&#8220;/etc/bind/fakeroot.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err">@</span>       <span class="nx">IN</span>      <span class="nx">SOA</span>     <span class="p">.</span> <span class="nx">hostmaster</span><span class="p">.</span><span class="nx">dominio</span><span class="p">.</span><span class="nx">cu</span><span class="p">.</span> <span class="p">(</span> <span class="mi">1</span> <span class="mi">3</span><span class="nx">h</span> <span class="mi">1</span><span class="nx">h</span> <span class="mi">1</span><span class="nx">w</span> <span class="mi">1</span><span class="nx">d</span> <span class="p">)</span>
+</span><span class='line'>                      <span class="nx">IN</span>      <span class="nx">NS</span>      <span class="mf">127.0</span><span class="p">.</span><span class="mf">0.1</span>
+</span><span class='line'><span class="o">*</span>                     <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">127.0</span><span class="p">.</span><span class="mf">0.1</span>
+</span><span class='line'><span class="p">;</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">Los</span> <span class="nx">servidores</span> <span class="nx">de</span> <span class="nx">correo</span> <span class="nx">de</span> <span class="nx">infomed</span>
+</span><span class='line'><span class="nx">smtp</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">200.100</span><span class="p">.</span><span class="mf">99.7</span>
+</span><span class='line'><span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>            <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">200.100</span><span class="p">.</span><span class="mf">99.11</span>
+</span><span class='line'><span class="nx">pop3</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>
+</span><span class='line'><span class="nx">imap</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>
+</span><span class='line'><span class="p">;</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">Los</span> <span class="nx">servidores</span> <span class="nx">de</span> <span class="nx">tiempo</span> <span class="nx">m</span><span class="err">á</span><span class="nx">s</span> <span class="nx">pedidos</span>
+</span><span class='line'><span class="nx">time</span><span class="p">.</span><span class="nx">microsoft</span><span class="p">.</span><span class="nx">com</span>    <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">192.168</span><span class="p">.</span><span class="mf">0.1</span>
+</span><span class='line'><span class="nx">time</span><span class="p">.</span><span class="nx">windows</span><span class="p">.</span><span class="nx">com</span>      <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">time</span><span class="p">.</span><span class="nx">microsoft</span><span class="p">.</span><span class="nx">com</span>
+</span><span class='line'><span class="nx">ntp</span><span class="o">-</span><span class="nx">ios</span><span class="p">.</span><span class="nx">apple</span><span class="p">.</span><span class="nx">com</span>     <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">time</span><span class="p">.</span><span class="nx">microsoft</span><span class="p">.</span><span class="nx">com</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Así, no se monta desde el arranque (y no cuelga el arranque) y si el dispositivo
-tarde 2 segundos en cargarse se rinde; esto es muy bueno para las memorias que
-dan palo o para unidades de red que podrían estar no disponibles en el momento
-que se le solicitan.</p>
+<p>En este caso de ejemplo, declaramos un par de host que son de salud, con una ip
+externa. Abajo, los host ntp más típicos, apuntando a nuestro servidor de
+tiempo.</p>
 
-<p>Lo único bueno que tiene esto sobre udisk, es que puedes especificar los
-parámetros y opciones con las que montarás el disco, no como en udisk que se
-monta con las opciones que le de la gana a el; te guste o no.</p>
+<p>Es muy importante, que arriba esté el registro &ldquo;* IN A&rdquo; ya que este será lo que
+de el toque mágico al asunto.</p>
 
-<p>Además, no te imagino instalando udisk es un servidor :D</p>
+<p>Cualquier otro hostname que sea preguntado en la red, devolverá a 127.0.0.1 como
+dirección resuelta. Genial para que no molesten las aplicacion bobas de los
+teléfonos.</p>
 </div>
 
 
@@ -153,7 +191,7 @@ monta con las opciones que le de la gana a el; te guste o no.</p>
 
 
 
-<time class='entry-date' datetime='2015-06-12T12:18:10-04:00'><span class='date'>12/06/2015</span> <span class='time'>12:18 pm</span></time>
+<time class='entry-date' datetime='2016-01-25T20:35:37-05:00'><span class='date'>25/01/2016</span> <span class='time'>8:35 pm</span></time>
       
 
 
@@ -161,7 +199,7 @@ monta con las opciones que le de la gana a el; te guste o no.</p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/06/12/systemd-automount/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/06/12/systemd-automount/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2016/01/25/hostname-arbitrario-en-bind9/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2016/01/25/hostname-arbitrario-en-bind9/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -174,10 +212,10 @@ monta con las opciones que le de la gana a el; te guste o no.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/06/07/openvpn-en-arch/" title="Previous Post: OpenVPN en Arch">&laquo; OpenVPN en Arch</a>
+        <a class="basic-alignment left" href="/blog/2016/01/19/espejos-de-clamav/" title="Previous Post: espejos de clamav y salud">&laquo; espejos de clamav y salud</a>
       
       
-        <a class="basic-alignment right" href="/blog/2015/06/14/revocar-certificados-de-ovpn/" title="Next Post: revocar certificados de OVPN">revocar certificados de OVPN &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2016/02/01/arch-compartir-paquetes/" title="Next Post: arch compartir paquetes">arch compartir paquetes &raquo;</a>
       
     </p>
   </footer>
@@ -497,8 +535,8 @@ if (location.pathname!='/') {
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2015/06/12/systemd-automount/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2015/06/12/systemd-automount/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2016/01/25/hostname-arbitrario-en-bind9/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2016/01/25/hostname-arbitrario-en-bind9/';
         var disqus_script = 'embed.js';
       
     (function () {

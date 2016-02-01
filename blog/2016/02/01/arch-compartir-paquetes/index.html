@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>systemd automount - El SysAdmin del 3er Mundo</title>
+  <title>arch compartir paquetes - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Resulta que el todopoderoso systemd
-tiene un soporte para automontar discos. Aún sigo pensando que nadie inventa un software para autodesmontar &hellip;">
+  <meta name="description" content="No se cuando, pero al fin, un sueño echo realidad en ArchLinux. Revertir un
+paquete de su forma instalada, a su forma de paquete. Esto puede no &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ tiene un soporte para automontar discos. Aún sigo pensando que nadie inventa un
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/06/12/systemd-automount/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2016/02/01/arch-compartir-paquetes/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -83,7 +83,7 @@ tiene un soporte para automontar discos. Aún sigo pensando que nadie inventa un
   
   <header>
     
-      <h1 class="entry-title">systemd automount</h1>
+      <h1 class="entry-title">arch compartir paquetes</h1>
     
     
       <p class="meta">
@@ -92,7 +92,7 @@ tiene un soporte para automontar discos. Aún sigo pensando que nadie inventa un
 
 
 
-<time class='entry-date' datetime='2015-06-12T12:18:10-04:00'><span class='date'>12/06/2015</span> <span class='time'>12:18 pm</span></time>
+<time class='entry-date' datetime='2016-02-01T13:56:56-05:00'><span class='date'>01/02/2016</span> <span class='time'>1:56 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -102,42 +102,98 @@ tiene un soporte para automontar discos. Aún sigo pensando que nadie inventa un
   </header>
 
 
-<div class="entry-content"><p>Resulta que el todopoderoso <a href="https://wiki.archlinux.org/index.php/Systemd">systemd</a>
-tiene un soporte para automontar discos.</p>
+<div class="entry-content"><p>No se cuando, pero al fin, un sueño echo realidad en ArchLinux. Revertir un
+paquete de su forma instalada, a su forma de paquete. Esto puede no resultar
+algo novedoso para el que tenga internet, pero para los cubanos de a pie,
+resulta una verdadera novedad, poder compartir un paquete.</p>
 
-<p>Aún sigo pensando que nadie inventa un software para auto<strong>des</strong>montar discos.
-No le veo sentido a que algo se monte automáticamente si luego hay que
-desmontarlo de manera manual.</p>
+<p>O sea, digamos que mi socio necesita instalar nginx:</p>
 
-<p>Pero como te decía, el automount&hellip;</p>
-
-<p>Si en el fstab usas la opción <strong>x-systemd.automount</strong>, las unidades reflejadas
-en el fstab se montarán de manera automática cuando se haga contacto con el
-punto de montaje y el dispositivo esté presente.</p>
-
-<figure class='code'><figcaption><span>&#8220;fstab&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/dev/sdb1   /mnt/sdb1  auto  rw,users,x-systemd.automount,noauto  <span class="m">0</span>  0
+<figure class='code'><figcaption><span>&#8220;bacman en acción&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@samsung ~<span class="o">]</span><span class="c"># cd /var/cache/pacman/pkg/</span>
+</span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># bacman nginx</span>
+</span><span class='line'><span class="o">==</span>&gt; Package: nginx-1.8.1-1
+</span><span class='line'>  -&gt; Copying package files...
+</span><span class='line'>    -&gt; Generating .PKGINFO metadata...
+</span><span class='line'>    -&gt; Generating the package...
+</span><span class='line'>  <span class="o">==</span>&gt; Done.
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Al posarte en un directorio que sea punto de montaje, este se montará de manera
-automática. Si quieres que quede escopetón de verdad, usa estas opciones:</p>
+<p>Pues <strong>bacman</strong> es la respuesta. Ahora se puede regresar un paquete a su estado;
+diagmos &ldquo;pristino&rdquo;.</p>
 
-<figure class='code'><figcaption><span>&#8220;opciones&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>nofail,x-systemd.automount,x-systemd.device-timeout<span class="o">=</span>2s,sync,rw,user,noauto
+<p>Mi proxima idea es reconstruir el grupo <strong>base</strong> completo dentro de la cache y
+luego con <strong>repo-add</strong> crear un mirror, capaz de llevar a cabo una instalación
+de sistema.</p>
+
+<p>De momento quiero probar este script:</p>
+
+<figure class='code'><figcaption><span>&#8220;pristine.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># cambiate al directorio de cache</span>
+</span><span class='line'><span class="nb">cd</span> /var/cache/pacman/pkg/
+</span><span class='line'>
+</span><span class='line'><span class="c"># itera por los paquetes del sistema base</span>
+</span><span class='line'><span class="k">for</span> pkg in <span class="k">$(</span>pacman -Qs base <span class="p">|</span>grep -v <span class="s1">&#39;^ &#39;</span><span class="p">|</span>cut -d / -f 2<span class="p">|</span>cut -d <span class="s1">&#39; &#39;</span> -f 1<span class="k">)</span><span class="p">;</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># háblate</span>
+</span><span class='line'>   <span class="nb">echo</span> <span class="nv">$pkg</span> <span class="s1">&#39;&gt;&#39;</span> <span class="k">$(</span>pacman -Qi apache<span class="p">|</span>grep Description<span class="p">|</span>cut -d : -f 2<span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># reviértelo</span>
+</span><span class='line'>   bacman <span class="nv">$pkg</span> 2&gt; /dev/null &gt; /dev/null
+</span><span class='line'>
+</span><span class='line'><span class="k">done</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># crea el repo</span>
+</span><span class='line'>rm /var/cache/pacman/pkg/custom.db.tar.gz
+</span><span class='line'>repo-add /var/cache/pacman/pkg/custom.db.tar.gz /var/cache/pacman/pkg/*.pkg.tar.xz
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Así, no se monta desde el arranque (y no cuelga el arranque) y si el dispositivo
-tarde 2 segundos en cargarse se rinde; esto es muy bueno para las memorias que
-dan palo o para unidades de red que podrían estar no disponibles en el momento
-que se le solicitan.</p>
+<p>Tendré que probar a instalar usando mi cache como repo. Poniéndole a la máquina
+una source como esta:</p>
 
-<p>Lo único bueno que tiene esto sobre udisk, es que puedes especificar los
-parámetros y opciones con las que montarás el disco, no como en udisk que se
-monta con las opciones que le de la gana a el; te guste o no.</p>
+<figure class='code'><figcaption><span>&#8220;pacman.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>mirepo<span class="o">]</span>
+</span><span class='line'><span class="nv">SigLevel</span> <span class="o">=</span> Optional TrustAll
+</span><span class='line'><span class="nv">Server</span> <span class="o">=</span> http://localhost:8080
+</span></code></pre></td></tr></table></div></figure>
 
-<p>Además, no te imagino instalando udisk es un servidor :D</p>
+
+<p>Y para servir tu cache como repo, puedes usar darkhttpd</p>
+
+<figure class='code'><figcaption><span>&#8220;darkhttpd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>darkhttpd /var/cache/pacman/pkg/ --chroot --port 8080
+</span></code></pre></td></tr></table></div></figure>
+
 </div>
 
 
@@ -153,7 +209,7 @@ monta con las opciones que le de la gana a el; te guste o no.</p>
 
 
 
-<time class='entry-date' datetime='2015-06-12T12:18:10-04:00'><span class='date'>12/06/2015</span> <span class='time'>12:18 pm</span></time>
+<time class='entry-date' datetime='2016-02-01T13:56:56-05:00'><span class='date'>01/02/2016</span> <span class='time'>1:56 pm</span></time>
       
 
 
@@ -161,7 +217,7 @@ monta con las opciones que le de la gana a el; te guste o no.</p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/06/12/systemd-automount/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/06/12/systemd-automount/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2016/02/01/arch-compartir-paquetes/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2016/02/01/arch-compartir-paquetes/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -174,10 +230,8 @@ monta con las opciones que le de la gana a el; te guste o no.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/06/07/openvpn-en-arch/" title="Previous Post: OpenVPN en Arch">&laquo; OpenVPN en Arch</a>
+        <a class="basic-alignment left" href="/blog/2016/01/25/hostname-arbitrario-en-bind9/" title="Previous Post: bind9, registro arbitratio">&laquo; bind9, registro arbitratio</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2015/06/14/revocar-certificados-de-ovpn/" title="Next Post: revocar certificados de OVPN">revocar certificados de OVPN &raquo;</a>
       
     </p>
   </footer>
@@ -497,8 +551,8 @@ if (location.pathname!='/') {
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2015/06/12/systemd-automount/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2015/06/12/systemd-automount/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2016/02/01/arch-compartir-paquetes/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2016/02/01/arch-compartir-paquetes/';
         var disqus_script = 'embed.js';
       
     (function () {
