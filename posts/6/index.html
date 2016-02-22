@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Resulta que el todopoderoso systemd
-tiene un soporte para automontar discos. Aún sigo pensando que nadie inventa un software para autodesmontar &hellip;">
+  <meta name="description" content="Pensaba escribir una entrada sobre como hacer que se vean los glyphicons luego
+de instalar la gema de boostrap en rails 4; pero, recientemente he &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -86,6 +86,320 @@ tiene un soporte para automontar discos. Aún sigo pensando que nadie inventa un
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-30T12:19:42-04:00'><span class='date'>30/06/2015</span> <span class='time'>12:19 pm</span></time>
+        
+           | <a href="/blog/2015/06/30/bootstrap-en-rails-4/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/30/bootstrap-en-rails-4/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Pensaba escribir una entrada sobre como hacer que se vean los glyphicons luego
+de instalar la gema de boostrap en rails 4; pero, recientemente he recibido
+numerosas críticas, sobre entradas de mi blog. Dicen que hablo sobre como
+solucionar problemas de cosas que ni si quiera conocen pero al parecer están muy
+buenas.</p>
+
+<p><a href="http://getbootstrap.com">Bootstrap</a> es un framework CSS patrocinado por Twitter
+y es el fin de los dolores de cabeza para todo el que como yo, le tiene terror a
+programar CSS. Por supuesto, como todo en materia de framework, tiene sus pro y
+sus contras.</p>
+
+<p>La ventaja de usar un framework, es que te ahorras un mundo de código. La
+ventaja además; de usar un framework CSS, es que estás de manera automática
+arriba de los último en materia de CSS.</p>
+
+<p>La desventaja de usar un Framework (cea CSS o no) es que en la mayoría de los
+casos, carga mil y un elemento que nunca usarás. Por ejemplo, tengo una
+aplicación que NO usa carrousel; pero como está hecha a la carrera, no he tenido
+tiempo de determinar que elementos o no cargar con bootstrap. Por definición, se
+cargan todos.</p>
+
+<p>En nuestro Gemfile, debemos declarar que use bootstrap así:</p>
+
+<figure class='code'><figcaption><span>&#8220;scope del Gemfile&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s2">&quot;twitter-bootstrap-rails&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Luego, procedemos a la instalación del tema CSS, en mi caso, como no uso less ni
+nada de eso, lo hago así:</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando el engine&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rails generate bootstrap:install static
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso, supuestamente ya está listo. Pero como todo en ruby on rails se queda
+atrás, resulta que el asset pipeline moderno no carga las fuentes y en el
+fichero <strong>application.css</strong> hay que añadirle el siguiente código:</p>
+
+<figure class='code'><figcaption><span>&#8220;app/assets/stylesheets/application.css&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="c">/* Esto va al final de la CSS */</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@font-face</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nt">font-family</span><span class="o">:</span> <span class="s1">&#39;Glyphicons Halflings&#39;</span><span class="o">;</span>
+</span><span class='line'>  <span class="nt">src</span><span class="o">:</span> <span class="nt">url</span><span class="o">(</span><span class="s1">&#39;../assets/glyphicons-halflings-regular.eot&#39;</span><span class="o">);</span>
+</span><span class='line'>  <span class="nt">src</span><span class="o">:</span> <span class="nt">url</span><span class="o">(</span><span class="s1">&#39;../assets/glyphicons-halflings-regular.eot?#iefix&#39;</span><span class="o">)</span> <span class="nt">format</span><span class="o">(</span><span class="s1">&#39;embedded-opentype&#39;</span><span class="o">),</span>
+</span><span class='line'>       <span class="nt">url</span><span class="o">(</span><span class="s1">&#39;../assets/glyphicons-halflings-regular.woff&#39;</span><span class="o">)</span> <span class="nt">format</span><span class="o">(</span><span class="s1">&#39;woff&#39;</span><span class="o">),</span>
+</span><span class='line'>       <span class="nt">url</span><span class="o">(</span><span class="s1">&#39;../assets/glyphicons-halflings-regular.ttf&#39;</span><span class="o">)</span> <span class="nt">format</span><span class="o">(</span><span class="s1">&#39;truetype&#39;</span><span class="o">),</span>
+</span><span class='line'>       <span class="nt">url</span><span class="o">(</span><span class="s1">&#39;../assets/glyphicons-halflings-regular.svg#glyphicons_halflingsregular&#39;</span><span class="o">)</span> <span class="nt">format</span><span class="o">(</span><span class="s1">&#39;svg&#39;</span><span class="o">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¿Qué como conseguí eso? Ni preguntes, me lo mandó por correo un salvaje de la
+materia.</p>
+
+<p>Otra cosa:</p>
+
+<p>Si no sabes usar boostrap, te recomiendo que le eches un vistazo. Si sabes
+escribir CSS, te recomiendo que lo veas igual, pues tiene una buena API para
+personalizarlo como te de la gana.</p>
+
+<h3>pero está la gema bootstrap-sass</h3>
+
+<p>Sí, ya se que está <a href="http://badge.fury.io/rb/bootstrap-sass">bootstrap-sass</a>,
+que es además <em>es el port oficial de bootstrap</em> y que rails usa
+<a href="http://sass-lang.com">SASS</a>; pero te imaginarás el criterio que tengo sobre
+sass.</p>
+
+<p>Por mi, coffe-script y sass pueden cogerlos, doblarlos bien y meterselos ambos
+en el&hellip;. BOLSILLO. El programador web que no quiera aprender JavaScript y CSS
+está embarcao. Por otra parte, para aprender SASS y CoffeScript hay que saber
+CSS y JavaScript :D ¿Que problema verdad?</p>
+
+<h3>Helpers de utildad</h3>
+
+<p>La diferencia entre bootstrap-sass y twitter-bootstrap-rails  es que
+boostrap-sass la hizo la gente de bootstrap y la segunda, la hicieron usuarios
+de ruby on rails&hellip;</p>
+
+<p>Te explico:</p>
+
+<figure class='code'><figcaption><span>&#8220;fulanito.erb.html&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="cp">&lt;%=</span> <span class="n">nav_bar</span> <span class="ss">brand</span><span class="p">:</span> <span class="s2">&quot;Páfata&quot;</span> <span class="k">do</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">    </span><span class="cp">&lt;%=</span> <span class="n">menu_text</span> <span class="s2">&quot;El texto de la barra&quot;</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Eso generará un navbar como este:</p>
+
+<figure class='code'><figcaption><span>&#8220;render output&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;nav</span> <span class="na">class=</span><span class="s">&quot;navbar navbar-default&quot;</span> <span class="na">role=</span><span class="s">&quot;navigation&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;a</span> <span class="na">class=</span><span class="s">&quot;navbar-brand&quot;</span> <span class="na">href=</span><span class="s">&quot;http://127.0.0.1:3000/&quot;</span><span class="nt">&gt;</span>Páfata<span class="nt">&lt;/a&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;navbar-text&quot;</span><span class="nt">&gt;</span>El texto de la barra<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'><span class="nt">&lt;/div&gt;&lt;/nav&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si eso no te pareció emocionante, mira el helper de flash. Ponte tu que halla un
+error y lo metes en el flash.</p>
+
+<figure class='code'><figcaption><span>&#8220;ejemplo_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">fulanito</span>
+</span><span class='line'>   <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]=</span><span class="s1">&#39;Bofatás! El error del milenio&#39;</span>
+</span><span class='line'>   <span class="n">render</span> <span class="ss">:fulanito</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En la vista, pones está simple linea:</p>
+
+<figure class='code'><figcaption><span>&#8220;fulanito.erb.html&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="cp">&lt;%=</span> <span class="n">bootstrap_flash</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y se renderiza:</p>
+
+<figure class='code'><figcaption><span>&#8220;render output&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;alert fade in alert-danger &quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;button</span> <span class="na">class=</span><span class="s">&quot;close&quot;</span><span class="na">data-dismiss=</span><span class="s">&quot;alert&quot;</span><span class="nt">&gt;</span><span class="ni">&amp;times;</span><span class="nt">&lt;/button&gt;</span>
+</span><span class='line'>Bofatás! El error del milenio
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Échale un vistazo al link de abajo, pa que veas como renderizan breadcumb
+declarando los componentes en los controladores.</p>
+
+<p>Mas detalles aquí: <a href="https://github.com/seyhunak/twitter-bootstrap-rails">https://github.com/seyhunak/twitter-bootstrap-rails</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/14/revocar-certificados-de-ovpn/">revocar certificados de OVPN</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-14T18:36:49-04:00'><span class='date'>14/06/2015</span> <span class='time'>6:36 pm</span></time>
+        
+           | <a href="/blog/2015/06/14/revocar-certificados-de-ovpn/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/14/revocar-certificados-de-ovpn/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Acá en mi tierra, SSL es algo relativamente novedoso. Hasta el otro día, las
+conexiones cifradas eran la peste; pero ahora resulta que el SSL es
+prácticamente obligatorio.</p>
+
+<p>En el episodio anterior, hablábamos sobre OpenVPN. Mencionamos que la
+autenticación podría hacerse a nivel de certificados.</p>
+
+<p>Algunos retrógrados preferirían hacerlo con nombre de usuario y contraseña, pero
+realmente emitir un certificado para cada cliente, es un método más seguro y
+simple.</p>
+
+<p>El objetivo es deshacernos de un cliente</p>
+
+<p>En el ejemplo anterior teníamos a &ldquo;cliente1&rdquo;. Por N motivo, no queremos que
+cliente1 se conecte más. El que no sepa lo que es la CRL (Certificate Revocation
+List) me imagino que acabará poniendo disímiles direcciones ip en el cortafuegos.</p>
+
+<p>Primero, revocamos el certificado que le dimos al cliente.</p>
+
+<figure class='code'><figcaption><span>&#8220;revocando certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/openvpn/easy-rsa
+</span><span class='line'><span class="nb">source</span> ./vars
+</span><span class='line'>./revoke-full cliente1
+</span><span class='line'>Using configuration from /etc/openvpn/easy-rsa/openssl-1.0.0.cnf
+</span><span class='line'>Revoking Certificate 02.
+</span><span class='line'>Data Base Updated
+</span><span class='line'>Using configuration from /etc/openvpn/easy-rsa/openssl-1.0.0.cnf
+</span><span class='line'>cliente1.crt: <span class="nv">C</span> <span class="o">=</span> CU, <span class="nv">ST</span> <span class="o">=</span> HAV, <span class="nv">L</span> <span class="o">=</span> Plaza, <span class="nv">O</span> <span class="o">=</span> DOMINIO, <span class="nv">OU</span> <span class="o">=</span> DOMINIO, <span class="nv">CN</span> <span class="o">=</span>
+</span><span class='line'>cliente1, <span class="nv">name</span> <span class="o">=</span> RSA, <span class="nv">emailAddress</span> <span class="o">=</span> vpn@dominio.cu
+</span><span class='line'>error <span class="m">23</span> at <span class="m">0</span> depth lookup:certificate revoked
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ve en la última linea, dice que se ha cometido un error 23, porque no se
+pudo ver la firma. EL certificado ha sido revocado.</p>
+
+<p>Ahora debemos instruir al servidor de que el fichero <strong>keys/crl.pem</strong> contiene
+la lista de certificados revocados. A la configuración del servidor, le
+agregamos la cláusula <strong>crl-verify</strong> y como argumento le damos la ruta absoluta
+al crl.pem</p>
+
+<figure class='code'><figcaption><span>&#8220;crl.pem&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;crl-verify crl.pem&#39;</span> &gt;&gt; /etc/openvpn/servidor.conf
+</span><span class='line'>ln -s /etc/openvpn/easy-rsa/keys/crl.pem
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No se puede especificar una ruta completa porque no pincha, no me preguntes por
+que. El crl.pem debe estar en el mismo directorio que el fichero de
+configuración del servidor.</p>
+
+<p><strong>OJO</strong> No olvide reinciar el servidor!</p>
+
+<p>Probemos como le va a un cliente con su certificado revocado.</p>
+
+<figure class='code'><figcaption><span>&#8220;cliente1 embarcao&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@rasp openvpn<span class="o">]</span><span class="c"># openvpn --config cliente1.conf </span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> OpenVPN 2.3.6 i686-pc-linux-gnu <span class="o">[</span>SSL <span class="o">(</span>OpenSSL<span class="o">)]</span> <span class="o">[</span>LZO<span class="o">]</span> <span class="o">[</span>EPOLL<span class="o">]</span> <span class="o">[</span>MH<span class="o">]</span> <span class="o">[</span>IPv6<span class="o">]</span> built on Dec  <span class="m">2</span> 2014
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> library versions: OpenSSL 1.0.2a <span class="m">19</span> Mar 2015, LZO 2.09
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> WARNING: No server certificate verification method has been enabled.  See http://openvpn.net/howto.html#mitm <span class="k">for</span> more info.
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> Attempting to establish TCP connection with <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443 <span class="o">[</span>nonblock<span class="o">]</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCP connection established with <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCPv4_CLIENT link <span class="nb">local</span>: <span class="o">[</span>undef<span class="o">]</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCPv4_CLIENT link remote: <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> VERIFY OK: <span class="nv">depth</span><span class="o">=</span>1, <span class="nv">C</span><span class="o">=</span>CU, <span class="nv">ST</span><span class="o">=</span>HAV, <span class="nv">L</span><span class="o">=</span>Plaza, <span class="nv">O</span><span class="o">=</span>DOMINIO, <span class="nv">OU</span><span class="o">=</span>DOMINIO, <span class="nv">CN</span><span class="o">=</span>DOMINIO CA, <span class="nv">name</span><span class="o">=</span>RSA, <span class="nv">emailAddress</span><span class="o">=</span>vpn@dominio.cu
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> VERIFY OK: <span class="nv">depth</span><span class="o">=</span>0, <span class="nv">C</span><span class="o">=</span>CU, <span class="nv">ST</span><span class="o">=</span>HAV, <span class="nv">L</span><span class="o">=</span>Plaza, <span class="nv">O</span><span class="o">=</span>DOMINIO, <span class="nv">OU</span><span class="o">=</span>dominio, <span class="nv">CN</span><span class="o">=</span>vpn.dominio.cu, <span class="nv">name</span><span class="o">=</span>RSA, <span class="nv">emailAddress</span><span class="o">=</span>vpn@dominio.cu
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> write TCPv4_CLIENT: Broken pipe <span class="o">(</span><span class="nv">code</span><span class="o">=</span>32<span class="o">)</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> write TCPv4_CLIENT: Broken pipe <span class="o">(</span><span class="nv">code</span><span class="o">=</span>32<span class="o">)</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> Connection reset, restarting <span class="o">[</span>0<span class="o">]</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> SIGUSR1<span class="o">[</span>soft,connection-reset<span class="o">]</span> received, process restarting
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ve, el servidor &ldquo;le cuelga&rdquo; y le deja hablando. Porque el certificado que
+el cliente está mandándole, no le cuadra.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2015/06/12/systemd-automount/">systemd automount</a></h1>
     
     
@@ -110,7 +424,10 @@ tiene un soporte para automontar discos.</p>
 
 <p>Aún sigo pensando que nadie inventa un software para auto<strong>des</strong>montar discos.
 No le veo sentido a que algo se monte automáticamente si luego hay que
-desmontarlo de manera manual.</p>
+desmontarlo de manera manual. Ese <strong>autofs</strong> que te motaba las memorias al
+pararte sobre el punto de montaje y luego te las desmontaba al rato de estar sin
+usa, que tiempo aquellos. Puedo bueno, systemd-automount trata de hacer algo
+similar y casi lo logra.</p>
 
 <p>Pero como te decía, el automount&hellip;</p>
 
@@ -1055,172 +1372,6 @@ ahora ya sabes una parte, te dejo que investigues el resto.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/05/28/cambiar-user-agent-en-squid/">cambiar user agent con squid</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-05-28T18:46:04-04:00'><span class='date'>28/05/2015</span> <span class='time'>6:46 pm</span></time>
-        
-           | <a href="/blog/2015/05/28/cambiar-user-agent-en-squid/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/05/28/cambiar-user-agent-en-squid/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>En esta sofocante tarde de verano cubano y en un lugar que no diré, me encontré
-detrás de un proxy administrador por la
-<a href="http://es.wikipedia.org/wiki/Schutzstaffel">Schutzstaffel</a>. Lo que no se
-parezca a un navegador, NO PASA. Por tanto, Ruby, Wget y demás, NO pinchan.</p>
-
-<p>Por suerte, tengo la costumbre de usar un squid local, para no tener que estar
-configurando el navegador. En ese squid declaro como padre el squid del momento
-(ya sea salud u otro) y ahí pongo el nombre de usuario con la contraseña una
-sola vez. Si estás en cuba y tienes una laptop con linux, te aconsejo que acates
-esa costumbre.</p>
-
-<p>Solución:</p>
-
-<p>Reescribir el encabezado User-Agent de las peticiones en el squid local. Así
-todas salen de un supuesto firefox.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/squid/squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>request_header_access User-Agent deny all
-</span><span class='line'>request_header_replace User-Agent Mozilla/5.0 <span class="o">(</span>X11<span class="p">;</span> U<span class="p">;</span> Linux i686<span class="p">;</span> en-US<span class="p">;</span> rv:1.8.1.4<span class="o">)</span> Gecko/20070515 Firefox/2.0.0.4
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>   <blockquote><p>Al carajo albañiles que se acabó la mezcla.</p></blockquote></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/05/26/nic-bonding/">NIC bonding</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-05-26T16:32:02-04:00'><span class='date'>26/05/2015</span> <span class='time'>4:32 pm</span></time>
-        
-           | <a href="/blog/2015/05/26/nic-bonding/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/05/26/nic-bonding/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Recién terminé el servidor de LTSP; pero aún estoy como niño con juguete nuevo,
-viendo que otra gangarrea le puedo poner. En la <a href="http://gutl.jovenclub.cu/">lista de GUTL</a> un colega
-me comentó que sería bueno darle explotación a ambas tarjetas de red. Enseguida
-dijo lo primero en que piensan mis coterráneos, un proxy. Yo le comenté que le
-había hecho un bonding, operación a la cual yo denomíno &ldquo;albóndiga&rdquo; y consiste
-en levantar una interfaz de red especial que usa dos tarjetas de red como si
-fueran una.</p>
-
-<p>Esto; para un servidor de tanto tráfico como es el caso de ltsp, es un verdadero
-batazo. Otros colegas parecieron sorprendidos al ver tal cosa y me pidieron que
-escribiera un tutorial de como hacerlo; sobre todo para que llegase a aquellos
-que no tienen internet.</p>
-
-<p>Instala un paquete llamado  <strong>ifenslave</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;instalando ifenslave&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install ifenslave
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Luego declaras en &ldquo;/etc/network/interfaces&rdquo; una interfaz llamada bond0 en la
-cual declaras que interface quieres unir.</p>
-
-<p>A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/network/interfaces&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@ganker:~# cat /etc/network/interfaces
-</span><span class='line'><span class="c"># This file describes the network interfaces available on your system</span>
-</span><span class='line'><span class="c"># and how to activate them. For more information, see interfaces(5).</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">source</span> /etc/network/interfaces.d/*
-</span><span class='line'>
-</span><span class='line'><span class="c"># The loopback network interface</span>
-</span><span class='line'>auto lo
-</span><span class='line'>iface lo inet loopback
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>auto bond0
-</span><span class='line'>iface bond0 inet static
-</span><span class='line'>    address 10.1.1.3
-</span><span class='line'>    netmask 255.255.255.0
-</span><span class='line'>    network 10.1.1.0
-</span><span class='line'>    gateway 10.1.1.1
-</span><span class='line'>    dns-nameservers 10.1.1.1
-</span><span class='line'>    dns-search hcg.sld.cu
-</span><span class='line'>    slaves eth0 eth1
-</span><span class='line'>    bond_mode active-backup
-</span><span class='line'>    bond_miimon 100
-</span><span class='line'>    bond_downdelay 200
-</span><span class='line'>    bond_updelay 200
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Donde eth0 y eth1 son las interfaces que se unirán. Eso es todo&hellip;</p>
-
-<p>OJO! Si tienes un cortafuegos que involucre reglas de interfaces, ya tienestarea
-pa la casa.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/7">&larr; Older</a>
@@ -1240,6 +1391,14 @@ pa la casa.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/02/22/data-confirm-en-un-boton/">data confirm en un boton</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/02/20/hooks-de-pacman/">los hooks de pacman</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/02/01/arch-compartir-paquetes/">arch compartir paquetes</a>

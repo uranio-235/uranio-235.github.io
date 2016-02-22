@@ -5,14 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>compute remote uptime - El SysAdmin del 3er Mundo</title>
+  <title>los hooks de pacman - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Vamos de atrás pa alante, el truco primero y la muela después. "nmap"1
-2
-[root@artema ~]# nmap -O -v 10.1.1.1|grep -i uptime
-Uptime guess: 18.006 &hellip;">
+  <meta name="description" content="Finalmente, después de tantas plegarias, tenemos hooks en pacman. Lo cual
+nos permite, por medio de la poderosa API de alpm correr script antes o &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -21,7 +19,7 @@ Uptime guess: 18.006 &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2016/02/20/hooks-de-pacman/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -85,7 +83,7 @@ Uptime guess: 18.006 &hellip;">
   
   <header>
     
-      <h1 class="entry-title">compute remote uptime</h1>
+      <h1 class="entry-title">los hooks de pacman</h1>
     
     
       <p class="meta">
@@ -94,7 +92,7 @@ Uptime guess: 18.006 &hellip;">
 
 
 
-<time class='entry-date' datetime='2015-08-28T12:21:58-04:00'><span class='date'>28/08/2015</span> <span class='time'>12:21 pm</span></time>
+<time class='entry-date' datetime='2016-02-20T03:14:28-05:00'><span class='date'>20/02/2016</span> <span class='time'>3:14 am</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -104,46 +102,161 @@ Uptime guess: 18.006 &hellip;">
   </header>
 
 
-<div class="entry-content"><p>Vamos de atrás pa alante, el truco primero y la muela después.</p>
+<div class="entry-content"><p>Finalmente, después de tantas plegarias, tenemos <strong>hooks</strong> en pacman. Lo cual
+nos permite, por medio de la poderosa API de alpm correr script antes o después
+de cada instalación.</p>
 
-<figure class='code'><figcaption><span>&#8220;nmap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># nmap -O -v 10.1.1.1|grep -i uptime</span>
-</span><span class='line'>Uptime guess: 18.006 days <span class="o">(</span>since Fri Aug <span class="m">10</span> 12:24:47 2015<span class="o">)</span>
+<p>Desgraciadamente, hay poca documentación sobre el tema. Para colmo, la página de
+man de alpm-hooks, no dice como deben llamarse los archivos. Tuve que adivinar
+que la extensión <strong>.hook</strong> era necesaria.</p>
+
+<p>Primero que todo, vamos a especificar en <strong>/etc/pacman.con</strong> que el directorio
+de hooks está en otro lado.</p>
+
+<figure class='code'><figcaption><span>&#8220;escope de</span><a href='/etc/pacman.conf"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">HookDir</span> <span class="o">=</span> /etc/pacman.d/hooks/
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h4>¿Que acaba de suceder?</h4>
+<p>¿Por qué aquí? Muy sencillo. Quiero que al hacer una salva de mi configuración
+de pacman, los hooks también se salven. Un hook sencillo, podría correr un
+comando simple, como el del ejemplo en la página de man; sin embargo, uno
+complejo, sería mejor ponerlo en un script.</p>
 
-<p>Calculamos el tiempo que lleva el servidor remoto en pie. Fíjese que nos dice la
-fecha en la que el servidor arrancó.</p>
+<p>Lo más importante: El fichero con el hook <strong>debe tener la extensión .hook</strong> Si
+no pacman se limpia el culo con él.</p>
 
-<h4>¿Para que sirve esta información?</h4>
+<p>Creemos uno de ejemplo, llamado /etc/pacman.d/hooks/migancho<strong>.hook</strong> y
+digámosle que ejecutará el script, sito en /etc/pacman.d/hooks/migancho.sh</p>
 
-<p>Para poner al responsable de la computadora remota <em>contra las cuerdas</em> en una
-situación crítica donde el momento de encendido o apagado de la máquina podría
-ser crucial.</p>
+<p>Sería así:</p>
 
-<h4>Ejemplos:</h4>
+<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.hook&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>Trigger<span class="o">]</span>
+</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Install
+</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Upgrade
+</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Remove
+</span><span class='line'><span class="nv">Type</span> <span class="o">=</span> Package
+</span><span class='line'><span class="nv">Target</span> <span class="o">=</span> *
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Action<span class="o">]</span>
+</span><span class='line'><span class="nv">Description</span> <span class="o">=</span> sincronizando disco
+</span><span class='line'><span class="nv">Depends</span> <span class="o">=</span> coreutils
+</span><span class='line'><span class="nv">When</span> <span class="o">=</span> PostTransaction
+</span><span class='line'><span class="nv">Exec</span> <span class="o">=</span> /etc/pacman.d/hooks/migancho.sh
+</span></code></pre></td></tr></table></div></figure>
 
-<p>Nuestro proveedor, el servidor proxy padre, afirma descaradamente que NO ha
-tenido problemas técnicos, pero nosotros sabemos que sí. En una discución
-crucial podría dejarle caer la pregunta. <em>¿Entonces porque su servidor se
-reinició el día tal?</em></p>
 
-<p>Un servicio determinado falla a una hora determinada de la noche. Con esto
-podríamos saber si el servidor se está reiniciando, cuando y con que frecuencia.</p>
+<p>Como ve, la cláusula <strong>Operation</strong> está repetida, con los 3 posibles momentos
+que se disparará el gancho. Podrías hacerlo en uno de ellos solamente. La
+cláusula <strong>Description</strong> se verá cuando pacman termine de instalar. En este caso
+cuando termine, ya que la cláusula <strong>When</strong> especifica <em>PreTransaction</em> o
+<em>PostTransaction</em> (antes o después de la transacción).</p>
 
-<p>El proveedor dice que ha tenido que reiniciar el servidor cuando en realidad
-nunca lo ha hecho.</p>
+<p>Ahora creamos el script <strong>migancho.sh</strong> y le ponemos todas las aberraciones que
+queremos llevar a cabo tras una instalación, desinstalación o actualización.</p>
 
-<p>El usuario dice que la máquina se le reinicia constantemente.</p>
+<p>Digamos por ejemplo, en este caso uno trivial, ejecutar sync cuando termine una
+operación, lo cual evita que si falla la energía en ese momento, queden datos
+por escribirse en la cache disco.</p>
 
-<p>El usuario o el proveedor afirman que la máquina fue encendida a una hora
-determinada. O por el contrario, se afirma que la máquina a esa hora NO estaba
-encendida y el uptime dice lo contrario.</p>
+<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>/usr/bin/sync
+</span></code></pre></td></tr></table></div></figure>
 
-<p>   <blockquote><p>Saque usted, sus propias concluciones&hellip;</p><footer><strong>Taladrid</strong> <cite>Pasaje a Lo Desconocido</cite></footer></blockquote></p>
+
+<p>Veámoslo en acción</p>
+
+<figure class='code'><figcaption><span>&#8220;el hook&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># pacman -S --noconfirm unrar</span>
+</span><span class='line'>warning: unrar-1:5.3.11-1 is up to date -- reinstalling
+</span><span class='line'>resolving dependencies...
+</span><span class='line'>looking <span class="k">for</span> conflicting packages...
+</span><span class='line'>
+</span><span class='line'>Packages <span class="o">(</span>1<span class="o">)</span> unrar-1:5.3.11-1
+</span><span class='line'>
+</span><span class='line'>Total Installed Size:  0.32 MiB
+</span><span class='line'>Net Upgrade Size:      0.00 MiB
+</span><span class='line'>
+</span><span class='line'>:: Proceed with installation? <span class="o">[</span>Y/n<span class="o">]</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking keys in keyring                                                   <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking package integrity                                                 <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> loading package files                                                      <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking <span class="k">for</span> file conflicts                                                <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking available disk space                                              <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'>:: Processing package changes...
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> reinstalling unrar                                                         <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'>:: Running post-transaction hooks...
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> sincronizando disco
+</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c">#</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Véanlo como dice <em>sincronizando discos</em> en español, corriendo la operación (1/1)
+ya que hay un solo hook.</p>
+
+<p>Sencillo!!! Como todo en ArchLinux: KISS</p>
+
+<p>Podría volverse más creativo&hellip;</p>
+
+<p>Digamos por ejemplo, que yo quiero tener la lista de paquetes que tiene mi
+sistema antes y después de una instalación, para saber que se instalo y cuando.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/listpackages.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>pacman -Qe &gt; /root/<span class="k">$(</span>date +%j%H%M%S<span class="k">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Eso creará un fichero similar a /root/051153712, el nombre, es el yday (día del
+año) y con la hora, minuto y segundo. Dentro del fichero, una lista de todos los
+paquetes instalados. Muy útil si eres tester o desarrollador, o simplemente
+quieres saber que paquetes había antes o después de instalar.</p>
+
+<p>Por cierto, otra manera de saber que si instalo hoy y ayer, es esta:</p>
+
+<figure class='code'><figcaption><span>&#8220;¿cuando fue?&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ls -ltcr --time-style +%j /var/lib/pacman/local/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Devuelve el día del año en el que se instaló un paquete. Así sabes que se
+instaló hoy. Te recuerdo, que en ArchLinux, todos los días hay algo nuevo que
+instalar :D</p>
 </div>
 
 
@@ -159,21 +272,15 @@ encendida y el uptime dice lo contrario.</p>
 
 
 
-<time class='entry-date' datetime='2015-08-28T12:21:58-04:00'><span class='date'>28/08/2015</span> <span class='time'>12:21 pm</span></time>
+<time class='entry-date' datetime='2016-02-20T03:14:28-05:00'><span class='date'>20/02/2016</span> <span class='time'>3:14 am</span></time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/destacado/'>destacado</a>
-  
-</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2016/02/20/hooks-de-pacman/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2016/02/20/hooks-de-pacman/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -186,10 +293,10 @@ encendida y el uptime dice lo contrario.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/07/19/will-paginate/" title="Previous Post: will_paginate">&laquo; will_paginate</a>
+        <a class="basic-alignment left" href="/blog/2016/02/01/arch-compartir-paquetes/" title="Previous Post: arch compartir paquetes">&laquo; arch compartir paquetes</a>
       
       
-        <a class="basic-alignment right" href="/blog/2015/09/01/squid-transparente/" title="Next Post: squid transparente">squid transparente &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2016/02/22/data-confirm-en-un-boton/" title="Next Post: data confirm en un boton">data confirm en un boton &raquo;</a>
       
     </p>
   </footer>
@@ -517,8 +624,8 @@ if (location.pathname!='/') {
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2016/02/20/hooks-de-pacman/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2016/02/20/hooks-de-pacman/';
         var disqus_script = 'embed.js';
       
     (function () {

@@ -9,7 +9,7 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="No se cuando, pero al fin, un sueño echo realidad en ArchLinux. Revertir un
+  <meta name="description" content="No desde cuando, pero por fin, un sueño echo realidad en ArchLinux. Revertir un
 paquete de su forma instalada, a su forma de paquete. Esto puede no &hellip;">
   
 
@@ -102,12 +102,13 @@ paquete de su forma instalada, a su forma de paquete. Esto puede no &hellip;">
   </header>
 
 
-<div class="entry-content"><p>No se cuando, pero al fin, un sueño echo realidad en ArchLinux. Revertir un
+<div class="entry-content"><p>No desde cuando, pero por fin, un sueño echo realidad en ArchLinux. Revertir un
 paquete de su forma instalada, a su forma de paquete. Esto puede no resultar
-algo novedoso para el que tenga internet, pero para los cubanos de a pie,
-resulta una verdadera novedad, poder compartir un paquete.</p>
+algo novedoso para el que tenga internet como algo cotidiano, pero para los
+cubanos de a pie, resulta una verdadera novedad.</p>
 
-<p>O sea, digamos que mi socio necesita instalar nginx:</p>
+<p>Digamos que mi socio necesita instalar nginx en su arch, misma arquitectura que
+el mío. Simplemente, le genero el paquete a partir de mi instalación y listo.</p>
 
 <figure class='code'><figcaption><span>&#8220;bacman en acción&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -131,7 +132,13 @@ resulta una verdadera novedad, poder compartir un paquete.</p>
 
 
 <p>Pues <strong>bacman</strong> es la respuesta. Ahora se puede regresar un paquete a su estado;
-diagmos &ldquo;pristino&rdquo;.</p>
+digamos &ldquo;pristino&rdquo;.</p>
+
+<p>¡¡OJO!! <strong>TUS</strong> ficheros de configuración, también se empaquetan.</p>
+
+<p>Usualmente solía mantener en mi caché los paquetes necesarios para llevar a cabo
+una instalación de archlinux usando mi laptop; pero con este nuevo método, la
+cosa cambia bastante. Ahora solo debo cargar con el &ldquo;.iso&rdquo;</p>
 
 <p>Mi proxima idea es reconstruir el grupo <strong>base</strong> completo dentro de la cache y
 luego con <strong>repo-add</strong> crear un mirror, capaz de llevar a cabo una instalación
@@ -164,10 +171,10 @@ de sistema.</p>
 </span><span class='line'><span class="nb">cd</span> /var/cache/pacman/pkg/
 </span><span class='line'>
 </span><span class='line'><span class="c"># itera por los paquetes del sistema base</span>
-</span><span class='line'><span class="k">for</span> pkg in <span class="k">$(</span>pacman -Qs base <span class="p">|</span>grep -v <span class="s1">&#39;^ &#39;</span><span class="p">|</span>cut -d / -f 2<span class="p">|</span>cut -d <span class="s1">&#39; &#39;</span> -f 1<span class="k">)</span><span class="p">;</span> <span class="k">do</span>
+</span><span class='line'><span class="k">for</span> pkg in <span class="k">$(</span>pacman -Qeg base<span class="p">|</span>awk <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span><span class="p">;</span> <span class="k">do</span>
 </span><span class='line'>
 </span><span class='line'>   <span class="c"># háblate</span>
-</span><span class='line'>   <span class="nb">echo</span> <span class="nv">$pkg</span> <span class="s1">&#39;&gt;&#39;</span> <span class="k">$(</span>pacman -Qi apache<span class="p">|</span>grep Description<span class="p">|</span>cut -d : -f 2<span class="k">)</span>
+</span><span class='line'>   <span class="nb">echo</span> <span class="nv">$pkg</span> <span class="s1">&#39;&gt;&#39;</span> <span class="k">$(</span>pacman -Qi <span class="nv">$pkg</span><span class="p">|</span>grep Description<span class="p">|</span>cut -d : -f 2<span class="k">)</span>
 </span><span class='line'>
 </span><span class='line'>   <span class="c"># reviértelo</span>
 </span><span class='line'>   bacman <span class="nv">$pkg</span> 2&gt; /dev/null &gt; /dev/null
@@ -191,6 +198,8 @@ una source como esta:</p>
 </span><span class='line'><span class="nv">Server</span> <span class="o">=</span> http://localhost:8080
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p><em>Nota para los imbéciles: Cambiar <strong>localhost</strong> por la ip de la máquina que está compartiendo la caché.</em></p>
 
 <p>Y para servir tu cache como repo, puedes usar darkhttpd</p>
 
@@ -237,6 +246,8 @@ una source como esta:</p>
         <a class="basic-alignment left" href="/blog/2016/01/25/hostname-arbitrario-en-bind9/" title="Previous Post: bind9, registro arbitratio">&laquo; bind9, registro arbitratio</a>
       
       
+        <a class="basic-alignment right" href="/blog/2016/02/20/hooks-de-pacman/" title="Next Post: los hooks de pacman">los hooks de pacman &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -258,6 +269,14 @@ una source como esta:</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/02/22/data-confirm-en-un-boton/">data confirm en un boton</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/02/20/hooks-de-pacman/">los hooks de pacman</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/02/01/arch-compartir-paquetes/">arch compartir paquetes</a>

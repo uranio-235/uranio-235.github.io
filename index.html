@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="No se cuando, pero al fin, un sueño echo realidad en ArchLinux. Revertir un
-paquete de su forma instalada, a su forma de paquete. Esto puede no &hellip;">
+  <meta name="description" content="Usualmente, tenemos un botón en un formulario y nos gustaría que al pulsar este,
+nos preguntara algo para confirmar. He aquí un buen ejemplo: " &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -86,6 +86,244 @@ paquete de su forma instalada, a su forma de paquete. Esto puede no &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/02/22/data-confirm-en-un-boton/">data confirm en un boton</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-02-22T14:20:33-05:00'><span class='date'>22/02/2016</span> <span class='time'>2:20 pm</span></time>
+        
+           | <a href="/blog/2016/02/22/data-confirm-en-un-boton/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/02/22/data-confirm-en-un-boton/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Usualmente, tenemos un botón en un formulario y nos gustaría que al pulsar este,
+nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
+
+<figure class='code'><figcaption><span>&#8221;_navbar.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='rhtml'><span class='line'>  <span class="cp">&lt;%=</span> <span class="n">form_tag</span> <span class="n">manager_email_path</span><span class="p">,</span><span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;navbar-form navbar-left&#39;</span><span class="p">,</span><span class="ss">role</span><span class="p">:</span> <span class="s1">&#39;search&#39;</span><span class="p">,</span><span class="nb">method</span><span class="p">:</span> <span class="ss">:post</span> <span class="k">do</span> <span class="cp">%&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;form-group&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">name=</span><span class="s">&quot;email&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">class=</span><span class="s">&quot;form-control&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;fulanito@infomed.sld.cu&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>     <span class="cp">&lt;%=</span> <span class="n">button_tag</span><span class="p">(</span><span class="ss">:class</span> <span class="o">=&gt;</span> <span class="s2">&quot;btn btn-default&quot;</span><span class="p">,</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span><span class="ss">:confirm</span> <span class="o">=&gt;</span> <span class="s1">&#39;Seguro?&#39;</span><span class="p">}</span> <span class="p">)</span> <span class="k">do</span> <span class="cp">%&gt;</span>
+</span><span class='line'>        Enviar
+</span><span class='line'>     <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+</span><span class='line'>  <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/02/20/hooks-de-pacman/">los hooks de pacman</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-02-20T03:14:28-05:00'><span class='date'>20/02/2016</span> <span class='time'>3:14 am</span></time>
+        
+           | <a href="/blog/2016/02/20/hooks-de-pacman/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/02/20/hooks-de-pacman/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Finalmente, después de tantas plegarias, tenemos <strong>hooks</strong> en pacman. Lo cual
+nos permite, por medio de la poderosa API de alpm correr script antes o después
+de cada instalación.</p>
+
+<p>Desgraciadamente, hay poca documentación sobre el tema. Para colmo, la página de
+man de alpm-hooks, no dice como deben llamarse los archivos. Tuve que adivinar
+que la extensión <strong>.hook</strong> era necesaria.</p>
+
+<p>Primero que todo, vamos a especificar en <strong>/etc/pacman.con</strong> que el directorio
+de hooks está en otro lado.</p>
+
+<figure class='code'><figcaption><span>&#8220;escope de</span><a href='/etc/pacman.conf"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">HookDir</span> <span class="o">=</span> /etc/pacman.d/hooks/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¿Por qué aquí? Muy sencillo. Quiero que al hacer una salva de mi configuración
+de pacman, los hooks también se salven. Un hook sencillo, podría correr un
+comando simple, como el del ejemplo en la página de man; sin embargo, uno
+complejo, sería mejor ponerlo en un script.</p>
+
+<p>Lo más importante: El fichero con el hook <strong>debe tener la extensión .hook</strong> Si
+no pacman se limpia el culo con él.</p>
+
+<p>Creemos uno de ejemplo, llamado /etc/pacman.d/hooks/migancho<strong>.hook</strong> y
+digámosle que ejecutará el script, sito en /etc/pacman.d/hooks/migancho.sh</p>
+
+<p>Sería así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.hook&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>Trigger<span class="o">]</span>
+</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Install
+</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Upgrade
+</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Remove
+</span><span class='line'><span class="nv">Type</span> <span class="o">=</span> Package
+</span><span class='line'><span class="nv">Target</span> <span class="o">=</span> *
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Action<span class="o">]</span>
+</span><span class='line'><span class="nv">Description</span> <span class="o">=</span> sincronizando disco
+</span><span class='line'><span class="nv">Depends</span> <span class="o">=</span> coreutils
+</span><span class='line'><span class="nv">When</span> <span class="o">=</span> PostTransaction
+</span><span class='line'><span class="nv">Exec</span> <span class="o">=</span> /etc/pacman.d/hooks/migancho.sh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ve, la cláusula <strong>Operation</strong> está repetida, con los 3 posibles momentos
+que se disparará el gancho. Podrías hacerlo en uno de ellos solamente. La
+cláusula <strong>Description</strong> se verá cuando pacman termine de instalar. En este caso
+cuando termine, ya que la cláusula <strong>When</strong> especifica <em>PreTransaction</em> o
+<em>PostTransaction</em> (antes o después de la transacción).</p>
+
+<p>Ahora creamos el script <strong>migancho.sh</strong> y le ponemos todas las aberraciones que
+queremos llevar a cabo tras una instalación, desinstalación o actualización.</p>
+
+<p>Digamos por ejemplo, en este caso uno trivial, ejecutar sync cuando termine una
+operación, lo cual evita que si falla la energía en ese momento, queden datos
+por escribirse en la cache disco.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>/usr/bin/sync
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Veámoslo en acción</p>
+
+<figure class='code'><figcaption><span>&#8220;el hook&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># pacman -S --noconfirm unrar</span>
+</span><span class='line'>warning: unrar-1:5.3.11-1 is up to date -- reinstalling
+</span><span class='line'>resolving dependencies...
+</span><span class='line'>looking <span class="k">for</span> conflicting packages...
+</span><span class='line'>
+</span><span class='line'>Packages <span class="o">(</span>1<span class="o">)</span> unrar-1:5.3.11-1
+</span><span class='line'>
+</span><span class='line'>Total Installed Size:  0.32 MiB
+</span><span class='line'>Net Upgrade Size:      0.00 MiB
+</span><span class='line'>
+</span><span class='line'>:: Proceed with installation? <span class="o">[</span>Y/n<span class="o">]</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking keys in keyring                                                   <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking package integrity                                                 <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> loading package files                                                      <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking <span class="k">for</span> file conflicts                                                <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking available disk space                                              <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'>:: Processing package changes...
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> reinstalling unrar                                                         <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'>:: Running post-transaction hooks...
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> sincronizando disco
+</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c">#</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Véanlo como dice <em>sincronizando discos</em> en español, corriendo la operación (1/1)
+ya que hay un solo hook.</p>
+
+<p>Sencillo!!! Como todo en ArchLinux: KISS</p>
+
+<p>Podría volverse más creativo&hellip;</p>
+
+<p>Digamos por ejemplo, que yo quiero tener la lista de paquetes que tiene mi
+sistema antes y después de una instalación, para saber que se instalo y cuando.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/listpackages.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>pacman -Qe &gt; /root/<span class="k">$(</span>date +%j%H%M%S<span class="k">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Eso creará un fichero similar a /root/051153712, el nombre, es el yday (día del
+año) y con la hora, minuto y segundo. Dentro del fichero, una lista de todos los
+paquetes instalados. Muy útil si eres tester o desarrollador, o simplemente
+quieres saber que paquetes había antes o después de instalar.</p>
+
+<p>Por cierto, otra manera de saber que si instalo hoy y ayer, es esta:</p>
+
+<figure class='code'><figcaption><span>&#8220;¿cuando fue?&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ls -ltcr --time-style +%j /var/lib/pacman/local/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Devuelve el día del año en el que se instaló un paquete. Así sabes que se
+instaló hoy. Te recuerdo, que en ArchLinux, todos los días hay algo nuevo que
+instalar :D</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2016/02/01/arch-compartir-paquetes/">arch compartir paquetes</a></h1>
     
     
@@ -105,12 +343,13 @@ paquete de su forma instalada, a su forma de paquete. Esto puede no &hellip;">
   </header>
 
 
-  <div class="entry-content"><p>No se cuando, pero al fin, un sueño echo realidad en ArchLinux. Revertir un
+  <div class="entry-content"><p>No desde cuando, pero por fin, un sueño echo realidad en ArchLinux. Revertir un
 paquete de su forma instalada, a su forma de paquete. Esto puede no resultar
-algo novedoso para el que tenga internet, pero para los cubanos de a pie,
-resulta una verdadera novedad, poder compartir un paquete.</p>
+algo novedoso para el que tenga internet como algo cotidiano, pero para los
+cubanos de a pie, resulta una verdadera novedad.</p>
 
-<p>O sea, digamos que mi socio necesita instalar nginx:</p>
+<p>Digamos que mi socio necesita instalar nginx en su arch, misma arquitectura que
+el mío. Simplemente, le genero el paquete a partir de mi instalación y listo.</p>
 
 <figure class='code'><figcaption><span>&#8220;bacman en acción&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -134,7 +373,13 @@ resulta una verdadera novedad, poder compartir un paquete.</p>
 
 
 <p>Pues <strong>bacman</strong> es la respuesta. Ahora se puede regresar un paquete a su estado;
-diagmos &ldquo;pristino&rdquo;.</p>
+digamos &ldquo;pristino&rdquo;.</p>
+
+<p>¡¡OJO!! <strong>TUS</strong> ficheros de configuración, también se empaquetan.</p>
+
+<p>Usualmente solía mantener en mi caché los paquetes necesarios para llevar a cabo
+una instalación de archlinux usando mi laptop; pero con este nuevo método, la
+cosa cambia bastante. Ahora solo debo cargar con el &ldquo;.iso&rdquo;</p>
 
 <p>Mi proxima idea es reconstruir el grupo <strong>base</strong> completo dentro de la cache y
 luego con <strong>repo-add</strong> crear un mirror, capaz de llevar a cabo una instalación
@@ -167,10 +412,10 @@ de sistema.</p>
 </span><span class='line'><span class="nb">cd</span> /var/cache/pacman/pkg/
 </span><span class='line'>
 </span><span class='line'><span class="c"># itera por los paquetes del sistema base</span>
-</span><span class='line'><span class="k">for</span> pkg in <span class="k">$(</span>pacman -Qs base <span class="p">|</span>grep -v <span class="s1">&#39;^ &#39;</span><span class="p">|</span>cut -d / -f 2<span class="p">|</span>cut -d <span class="s1">&#39; &#39;</span> -f 1<span class="k">)</span><span class="p">;</span> <span class="k">do</span>
+</span><span class='line'><span class="k">for</span> pkg in <span class="k">$(</span>pacman -Qeg base<span class="p">|</span>awk <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span><span class="p">;</span> <span class="k">do</span>
 </span><span class='line'>
 </span><span class='line'>   <span class="c"># háblate</span>
-</span><span class='line'>   <span class="nb">echo</span> <span class="nv">$pkg</span> <span class="s1">&#39;&gt;&#39;</span> <span class="k">$(</span>pacman -Qi apache<span class="p">|</span>grep Description<span class="p">|</span>cut -d : -f 2<span class="k">)</span>
+</span><span class='line'>   <span class="nb">echo</span> <span class="nv">$pkg</span> <span class="s1">&#39;&gt;&#39;</span> <span class="k">$(</span>pacman -Qi <span class="nv">$pkg</span><span class="p">|</span>grep Description<span class="p">|</span>cut -d : -f 2<span class="k">)</span>
 </span><span class='line'>
 </span><span class='line'>   <span class="c"># reviértelo</span>
 </span><span class='line'>   bacman <span class="nv">$pkg</span> 2&gt; /dev/null &gt; /dev/null
@@ -194,6 +439,8 @@ una source como esta:</p>
 </span><span class='line'><span class="nv">Server</span> <span class="o">=</span> http://localhost:8080
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p><em>Nota para los imbéciles: Cambiar <strong>localhost</strong> por la ip de la máquina que está compartiendo la caché.</em></p>
 
 <p>Y para servir tu cache como repo, puedes usar darkhttpd</p>
 
@@ -493,215 +740,6 @@ planteaba que eso significaría un buen negocio.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/14/servidor-jabber-con-prosody/">servidor jabber con prosody</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-12-14T18:22:29-05:00'><span class='date'>14/12/2015</span> <span class='time'>6:22 pm</span></time>
-        
-           | <a href="/blog/2015/12/14/servidor-jabber-con-prosody/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/12/14/servidor-jabber-con-prosody/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Lua, es uno de los tantos lenguajes interpretados que hay. Lo curioso de este es
-que es Made in Brasil&hellip;</p>
-
-<p>Aunque no les quedó mal, lo de ellos definitivamente es la samba y el futboll.
-Lo digo porque ese fue uno de los primeros lenguajes que estuve manoseando y No
-creo que halla un buen motivo para escribir algo con él.</p>
-
-<p>¡Pero <a href="https://prosody.im/">Prosody</a>, demuestra que me equivoco!</p>
-
-<p>La robusteza, simplicidad y el rendimiento de este servidor, quizás sean
-superiores a la de ejabberd (que está escrito en Erlang, un lenguaje aún más
-exótico que Lua). Por otra parte, su todo en uno, lo hace más versátil que otros
-cuantos. No tiene nada que envidiarle al cochino OpenFire y toda su parafernaria
-de Java.</p>
-
-<p>En su estado natural, prosody solo viene con lo básico. Ampliarlo, es solo
-cuestión de modificar la configuración. No piense en una extraña interfaz web
-como la de ejabber, hablamos de un fichero de configuración &ldquo;.lua&rdquo; con todo
-comentado. Lua, que es bien rarito, usa para comentario es &ldquo;&ndash;&rdquo; en vez de &ldquo;#&rdquo;</p>
-
-<p>Comenzamos. En debian todo es muy fácil:</p>
-
-<figure class='code'><figcaption><span>&#8220;aptitude&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install prosody
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Esto dará lugar un fichero de configuracion en: <strong>/etc/prosody/prosody.cfg.lua</strong></p>
-
-<p>De ahí modificaremos lo que necesitamos. Primero, poner la JID del admin, eso
-lo haremos aunque nuestro dominio no halla sido declarado.</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">admins</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;</span><span class="s">tu_usaurio@tudominio.cu&#39;</span> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora vamos a la sesión modules_enabled. Todo bien comentadito. Yo lo habilito
-todo menos el servidor http y el telnet, como que no me da buena espina.</p>
-
-<p>Si habilitamos el módulo &ldquo;motd&rdquo; nuestro servidor contará con un MOTD,
-pero debemos especificarlo. De esta forma cada módulo es una función que puede
-o no llevar parámetros de configuración. Para argumentar la configuración
-de motd, escribimos FUERA de las sesión de módulos.</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">motd_text</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="s">este es el motd de mi server&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Pero <strong>motd_text</strong> no estaba escrito en ninguna parte. Para ver si un
-módulo tiene o no configuración, sus detalles, que hace y hasta un ejemplo,
-podemos verlo en la lista de módulos.</p>
-
-<p><a href="http://prosody.im/doc/modules">http://prosody.im/doc/modules</a></p>
-
-<p>Pero volvamos a la configuración. La siguiente linea de interés es la
-que permite el registro de usuarios.</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">allow_registration</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>OJO! se requiere un &ldquo;;&rdquo; al final de la configuración (razón por la cual abandoné
-Lua en aquel entonce). Si no quieres que los usuarios se registren déjalo en
-false. Puedes usar la aplicación de control para crear usuarios. Ejecuta
-<strong>prosodyctl</strong> sin parámetros y veras una pantalla aprueba de imbéciles que te
-dice como crear los usuarios y otras opciones interesantes.</p>
-
-<p>Por ejemplo, para crear un usuario</p>
-
-<figure class='code'><figcaption><span>&#8220;prosodyctl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>prosodyctl adduser fulanito@dominio.cu
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lo siguiente es el SSL, no es bueno desabilitarlo porque muchos cliente jabbers
-traen por definición usar ssl. Mejor seguir a las que dice:</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">c2s_require_encryption</span> <span class="o">=</span> <span class="kc">false</span>
-</span><span class='line'><span class="n">s2s_require_encryption</span> <span class="o">=</span> <span class="kc">false</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Poniéndolas en false, el servidor usara lo mismo SSL que plana.</p>
-
-<p>Pero aún no hemos declarado el dominio. Resulta que como te dije todo es
-modular. Los dominios son VirtualHost. Al igual que en apache, incluso el
-dominio por defecto, es un virtual host. Podemos declarar varios dominios y
-dejarlos deshabilitados.</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">VirtualHost</span> <span class="s2">&quot;</span><span class="s">tudominio.cu&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ya tenemos un dominio, podríamos tener más con solo agregarlos pero con eso ya
-tenemos un servidor con lo indispensable. Vamos a extenderlo un poco, una sala
-de conferencia:</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">Component</span> <span class="s2">&quot;</span><span class="s">conference.tudominio.cu&quot;</span> <span class="s2">&quot;</span><span class="s">muc&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora solo falta crear un puntero DNS que apunte a <strong>conference.tudominio.cu</strong></p>
-
-<p>Pero hablando de punteros DNS. Para que jabber pinche, necesita un puntero DNS
-especial.</p>
-
-<p>Para <strong>dnsmasq</strong>, supongamos que el servidor que correo el jabber se llama
-<strong>chat.tudominio.cu</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;dnsmasq.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">address</span><span class="o">=</span>/chat.tudominio.cu/10.1.1.1
-</span><span class='line'>srv-host<span class="o">=</span>_xmpp-client._tcp.chat.tudominio.cu,chat.tudominio.cu,5222
-</span><span class='line'>srv-host<span class="o">=</span>_xmpp-server._tcp.chat.tudominio.cu,chat.tudominio.cu,5269
-</span><span class='line'>txt-record<span class="o">=</span>_xmppconnect.chat.tudominio.cu,<span class="s2">&quot;_xmpp-client-xbosh=http://chat.tudominio.cu:5280/http-bind&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Por cierto, eso último, es el puntero al servidor bosh.</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'> <span class="n">bosh_ports</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">5280</span> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>y a cotorrear se ha dicho&hellip;</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/29/mc-demora-en-abrir/">mc demora en abrir</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-29T19:37:00-05:00'><span class='date'>29/11/2015</span> <span class='time'>7:37 pm</span></time>
-        
-           | <a href="/blog/2015/11/29/mc-demora-en-abrir/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/29/mc-demora-en-abrir/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Esta es una nota bien rápida pa que no se me olvide&hellip;</p>
-
-<p>Alguna vez han notado que los midnight commander con soporte operaciones de red
-(especialmente samba) y al arrancarlo, se mete tremendo rato levantando?</p>
-
-<p><img class="right" src="/images/mc.png" title="" ></p>
-
-<p>Pues resulta que buscar el propio hostname de la máquina, se mete tremendo rato
-haciendo un reverse lookup. Cuando tiene declaro un servidor dns inalcanzable,
-se pone más feo todavía.</p>
-
-<p>Solución. Pon tu propio hostname en <strong>/etc/hosts</strong> junto a localhost</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -719,6 +757,14 @@ se pone más feo todavía.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/02/22/data-confirm-en-un-boton/">data confirm en un boton</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/02/20/hooks-de-pacman/">los hooks de pacman</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/02/01/arch-compartir-paquetes/">arch compartir paquetes</a>
