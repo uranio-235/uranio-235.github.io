@@ -9,9 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="En esta sofocante tarde de verano cubano y en un lugar que no diré, me encontré
-detrás de un proxy administrador por la
-Schutzstaffel. Lo que no se &hellip;">
+  <meta name="description" content="Una de mis grandes testarudeces (profesionales) siempre ha sido la negativa a
+usar ext4. Acostumbrado a los discos IDE, siempre me pareció que el &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +80,389 @@ Schutzstaffel. Lo que no se &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-03T23:08:27-04:00'><span class='date'>03/06/2015</span> <span class='time'>11:08 pm</span></time>
+        
+           | <a href="/blog/2015/06/03/transando-a-ext4/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/03/transando-a-ext4/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Una de mis grandes testarudeces (profesionales) siempre ha sido la negativa a
+usar ext4. Acostumbrado a los discos IDE, siempre me pareció que el journal
+escribía demasiado en el disco. Además, solía verse ext4dev y eso me sonaba a
+que se usaría mi sistema como ratón de laboratorio.</p>
+
+<p>Tanta fue mi fobia, que hoy en día aún uso discos montados en ext2. Por ejemplo,
+mi laptop estaba montada en ext2 hasta ahora mismo; también la partición /home
+del servidor LTSP.</p>
+
+<p>Un fallo eléctrico reciente, me demostró que el journal es un mal necesario. En
+discos de tanta escritura, como es el caso del /home de los clientes ligeros, la
+integridad de los datos es definitivamente una clave para el sistema. Además,
+todo el que usó ext4dev no se quejó nunca.</p>
+
+<figure class='code'><figcaption><span>&#8220;tune2fs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>tune2fs -O extents,uninit_bg,dir_index /dev/sda2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso, le pones a tu ext2 todas las gangarreas del 4. A este punto, reza
+porque no se valla luz! Hay que dar otro paso y es pasar un fsck.</p>
+
+<figure class='code'><figcaption><span>&#8220;tune2fs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>tune2fs -c <span class="m">0</span> /dev/sda <span class="o">&amp;&amp;</span> reboot
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Marca el disco para chequear y reinicia. Cuando levante, verás que da unos palos
+raros ahí pero tú tranquilo.</p>
+
+<p>Las memorias si las dejo con ext2. Pues no necesitan un journal escribiendo
+tanto y acortando su vida útil.</p>
+
+<p>Lo próximo que instale, lo haré con BtrFS que está <em>más mejoL en todavía</em>. Dice
+tener un soporte especial para discos SSD con lo cual me imagino que para las
+memorias flash sea más óptimo.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/01/pacman-bajo-el-microscopio/">pacman bajo el microscopio</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-01T21:13:05-04:00'><span class='date'>01/06/2015</span> <span class='time'>9:13 pm</span></time>
+        
+           | <a href="/blog/2015/06/01/pacman-bajo-el-microscopio/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/01/pacman-bajo-el-microscopio/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>En este post, me propongo mostrarle algunas de las bondades de pacman. Cualquier
+que conozca Arch Linux, sabe de lo que estoy hablando.</p>
+
+<p>Veremos bien de cerca el engranaje de está compleja maquinaria.</p>
+
+<p>Pacman, es una herramienta lo suficientemente versátil como para llevar el
+nombre de &ldquo;administrador de paquetes&rdquo;. Su nombre es un juego de palabras que
+proviene de juntar las palabras &ldquo;PACkage MANager&rdquo;.</p>
+
+<p>A diferencia de ciertas y determinadas distribuciones (entiéndase debian); que
+requieren más de 3 softwares para esa pincha. Pacman solo es autosuficiente para
+gestionar la paquetería. La herramienta repo-add, está incluída dentro del
+paquete de pacman y se usa para crear repositorios personalizados.</p>
+
+<figure class='code'><figcaption><span>&#8220;huevo de pascua de pacman&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>repo-elephant
+</span><span class='line'>     __
+</span><span class='line'>    <span class="s1">&#39;. \</span>
+</span><span class='line'><span class="s1">     &#39;</span>- <span class="se">\</span>
+</span><span class='line'>      / /_         .---.
+</span><span class='line'>     / <span class="p">|</span> <span class="se">\\</span>,.<span class="se">\/</span>--.//    <span class="o">)</span>
+</span><span class='line'>     <span class="p">|</span>  <span class="se">\/</span>/        <span class="o">)</span>/  /
+</span><span class='line'>      <span class="se">\ </span> <span class="s1">&#39; ^ ^    /    )____.----..  6</span>
+</span><span class='line'><span class="s1">       &#39;</span>.____.    .___/            <span class="se">\.</span>_<span class="o">)</span>
+</span><span class='line'>          .<span class="se">\/</span>.                      <span class="o">)</span>
+</span><span class='line'>           <span class="s1">&#39;\                       /</span>
+</span><span class='line'><span class="s1">           _/ \/    ).        )    (</span>
+</span><span class='line'><span class="s1">          /#  .!    |        /\    /</span>
+</span><span class='line'><span class="s1">          \  C// #  /&#39;</span>-----<span class="s1">&#39;&#39;</span>/ <span class="c">#  /</span>
+</span><span class='line'>       .   <span class="s1">&#39;C/ |    |    |   |    |mrf  ,</span>
+</span><span class='line'><span class="s1">       \), .. .&#39;</span>OOO-<span class="s1">&#39;. ..&#39;</span>OOO<span class="s1">&#39;OOO-&#39;</span>. ..<span class="se">\(</span>,
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ya sabrán (o se darán por enterado) Arch Linux no es por release, si no que
+un canal en constante desarrollo, hace como upstream, donde se depositan los
+paquetes consideraros estables. Esto es lo que en distribuciones estáticas se
+llamara &ldquo;repo&rdquo;. Pacman lleva la ardua tarea de mantener el sistema debidamente
+actualizado. Nuestro sistema no tendrá &ldquo;actualizaciones&rdquo; si no que evolucionará
+constantemente desde el &ldquo;core&rdquo;, escalando horizontalmente el sistema completo.</p>
+
+<p>De esta manera se logra el mítico equilibrio entre estabilidad y novedad.</p>
+
+<p>Para ello, pacman debe tener constancia local de la lista de paquetes que hay en
+el upstream. Estas listas son ficheros de textos, comprimidos con gzip, que
+contienen información acerca de lo que hay arriba. Por ejemplo, contiene la URL
+de como descargarlos.</p>
+
+<p>Para pacman, instalar un paquete o alar está lista, es casi la misma operación.
+Se llama &ldquo;sync&rdquo; (sincronizar)</p>
+
+<figure class='code'><figcaption><span>&#8220;-Sy&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -Sy
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero puedes de un solo viaje, sincronizar y actualizar todo el sistema.</p>
+
+<figure class='code'><figcaption><span>&#8220;lo úlitmo que trajo el barco </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -Syu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Buscar un paquete también es una operación de sincronización.</p>
+
+<figure class='code'><figcaption><span>&#8220;buscar fulanito&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -Ss fulanito
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>También puedes, bajar la lista, actualizar el sistema e instalar algo de un solo
+golpe.</p>
+
+<figure class='code'><figcaption><span>&#8220;todo junto&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -Syu fulanito
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pacman irá a los sitios que tiene declarado en el fichero: <strong>/etc/pacman.d/mirrorlist</strong>
+y bajará esos ficheros. Seguidamente los depositará en el directorio /var/lib/pacman/sync/</p>
+
+<figure class='code'><figcaption><span>&#8220;bases de datos&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>file /var/lib/pacman/sync/*.db
+</span><span class='line'>/var/lib/pacman/sync/archlinuxfr.db: gzip compressed data, last modified: Thu May <span class="m">21</span> 04:31:59 2015, from Unix
+</span><span class='line'>/var/lib/pacman/sync/community.db:   gzip compressed data, last modified: Fri May <span class="m">29</span> 08:47:01 2015, from Unix
+</span><span class='line'>/var/lib/pacman/sync/core.db:        gzip compressed data, last modified: Wed May <span class="m">27</span> 19:02:40 2015, from Unix
+</span><span class='line'>/var/lib/pacman/sync/extra.db:       gzip compressed data, last modified: Fri May <span class="m">29</span> 04:27:15 2015, from Unix
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora nuestro sistema sabe lo que hay &ldquo;arriba&rdquo; (en el repo) y está listo para
+compararlo con lo que está &ldquo;abajo&rdquo; (instalado). La información sobre todo los
+paquetes que el sistema tiene instalado, se almacena en el directorio
+<strong>/var/lib/pacman/local/</strong></p>
+
+<p>La lista es muy grande para mostrarla. Pero dentro hay directorios con la
+versión de cada programa instalado. Dentro de ese subdirectorio, hay 4 ficheros
+que contiene la información del paquete instalado.</p>
+
+<p>Por ejemplo, el paquete <strong>ruby</strong>, en su versión <strong>2.2.2-1</strong> responde al
+directorio <strong>/var/lib/pacman/local/ruby-2.2.2-1</strong></p>
+
+<p>Cada directorio, contiene 4 ficheros:</p>
+
+<figure class='code'><figcaption><span>&#8220;metainfo de un paquete instalado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>ls /var/lib/pacman/local/ruby-2.2.2-1/
+</span><span class='line'>desc  files  install  mtree
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El fichero <strong>desc</strong> contiene la información que describe al paquete, versión,
+nombre, etc..</p>
+
+<p>El fichero <strong>files</strong> contiene la lista de ficheros que instala dicho paquete.</p>
+
+<p>El fichero <strong>install</strong> contiene una serie de comando disparadores, como
+post_install. Dentro de install, se declaró una función llamada post_install()
+que será llamada cuando el paquete termine de ser instalado.</p>
+
+<p>Por último, <strong>mtree</strong> (que está comprimido con gz) contiene lo mismo que files,
+pero con la suma MD5 de cada fichero. Esto es usado por pacman para verificar la
+integridad de los archivos instalados.</p>
+
+<p>Por ejemplo, si quisiéramos ver que ficheros contiene el paquete ruby, podríamos
+ver el contenido del fichero <strong>files</strong> pero sería más fácil usar el comando
+<strong>Query</strong> con el argumento <strong>list</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;pacman -Ql fulano&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>pacman -Ql ruby<span class="p">|</span>grep <span class="s1">&#39;/usr/bin/&#39;</span>
+</span><span class='line'>ruby /usr/bin/
+</span><span class='line'>ruby /usr/bin/erb
+</span><span class='line'>ruby /usr/bin/gem
+</span><span class='line'>ruby /usr/bin/irb
+</span><span class='line'>ruby /usr/bin/rake
+</span><span class='line'>ruby /usr/bin/rdoc
+</span><span class='line'>ruby /usr/bin/ri
+</span><span class='line'>ruby /usr/bin/ruby
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El principal fichero de pacman, es <strong>/etc/pacman.conf</strong> y a diferencia de otros
+package managers, este es bien sencillo. Además, es MUY personalizable.</p>
+
+<p>Por ejemplo, la cláusala XferCommand, permite especificar que comando usar para
+bajar los paquetes. Las variables, %u y %o serán enviadas como URL del paquetes
+y fichero en disco.</p>
+
+<figure class='code'><figcaption><span>&#8216;scope de</span><a href='/etc/pacman.conf''>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/pacman.conf<span class="p">|</span>grep Xfer
+</span><span class='line'><span class="c">#XferCommand = /usr/bin/curl --retry-delay 5 --progress-bar -C - -f %u &gt; %o</span>
+</span><span class='line'><span class="nv">XferCommand</span> <span class="o">=</span> /usr/bin/wget --no-cache -t <span class="m">0</span> -T <span class="m">10</span> --max-redirect<span class="o">=</span><span class="m">0</span> -w <span class="m">5</span> --passive-ftp -c -O %o %u
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ese es un buen ejemplo de una configuración para wget en conexiones &ldquo;hostiles&rdquo;.
+Para que tengas una idea de cuan personalizable puede llegar a ser:</p>
+
+<figure class='code'><figcaption><span>&#8220;NoExtract&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/pacman.conf<span class="p">|</span>grep NoEx
+</span><span class='line'><span class="nv">NoExtract</span> <span class="o">=</span> *.mo
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En este caso, los ficheros <strong>.mo</strong> no serán extraídos de los paquetes durante el
+proceso de instalación. Como yo uso el sistema en inglés, no me interesa tener
+las traducciones de sepetecientos idiomas.</p>
+
+<p>Los paquetes que instales, irán al directorio <strong>/var/cache/pacman/pkg/</strong> y
+podrías usar dicho directorio como repo para compartirlo con aquellos que no
+tiene acceso a internet; o bien, llevártelo para tu casa, lugar donde te
+integras al grupo antes mencionado.</p>
+
+<p>Quizás te interese crear tu propio repo. La idea de crear un repo a partir de la
+cache, le ha tirado un cabo a una pila de gente. En un viaje reciente que hice
+por el oriente de la isla, cargué mi laptop con todo el software necesario he
+instalé 3 servidores con arch <strong>sin conectarme a internet</strong> (vergonzosa hazaña).</p>
+
+<p>Con esta opción:</p>
+
+<figure class='code'><figcaption><span>&#8220;mantener paquetes&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/pacman.conf<span class="p">|</span>grep Clea
+</span><span class='line'><span class="nv">CleanMethod</span> <span class="o">=</span> KeepCurrent
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Aquellos paquetes que una vez fuero instalados se mantienen. Por tanto, supón
+que quieres tener en la otra máquina (la de tu casa) &ldquo;geary&rdquo; el cliente de
+correo. Simplemente lo instalas y lo desinstalas en la máquina privilegiada.</p>
+
+<figure class='code'><figcaption><span>&#8220;cacheando paquetes&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S geary <span class="o">&amp;&amp;</span> pacman -R geary
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora el paquete está en la cache, y aunque ya no está en el sistema, se
+conservará en la cache hasta que no lo borres. Claro, esto tiene como desventaja
+que no se bajarán actualizaciones para ese paquete.</p>
+
+<p>En mi caso, yo tengo este escripcito al que llamo <strong>mkrepo.sh</strong></p>
+
+<figure class='code'><figcaption><span>mkrepo.sh</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># elimina esa base de datos</span>
+</span><span class='line'>rm /var/cache/pacman/pkg/custom.db.tar.gz
+</span><span class='line'>
+</span><span class='line'><span class="c"># crea una nueva</span>
+</span><span class='line'>repo-add /var/cache/pacman/pkg/custom.db.tar.gz /var/cache/pacman/pkg/*.pkg.tar.xz
+</span><span class='line'>
+</span><span class='line'><span class="c"># dime que tengo que poner</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s1">&#39;&#39;&#39;</span>
+</span><span class='line'><span class="s1">[mirepo]</span>
+</span><span class='line'><span class="s1">SigLevel = Optional TrustAll</span>
+</span><span class='line'><span class="s1">Server = http://localhost:8080</span>
+</span><span class='line'><span class="s1">&#39;&#39;&#39;</span>
+</span><span class='line'><span class="c"># sírvelo con darkhttpd</span>
+</span><span class='line'>darkhttpd /var/cache/pacman/pkg/ --chroot --port 8080
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al correrlo, la cache se indexa; lista para ser usada como repo. El script hace
+un <strong>echo</strong>, para recordarte como sería la configuración que debes poner en
+/etc/pacman.conf para usar ese repo.</p>
+
+<p>Finalmente, darkhttpd (un servidor web que viene con el Live de arch) sirve ese
+repo.</p>
+
+<p>Quizás tengas una memoria flash donde creas el repo. En ese caso, bastaría con
+especificar una linea Server con la dirección file:///</p>
+
+<p>Server = file:///media/MEMORIA/repo/</p>
+
+<p>Simple verdad?</p>
+
+<p>Pensé hacer esta entrada más larga, pero sería aburrir al lector. En cambio,
+ahora ya sabes una parte, te dejo que investigues el resto.</p>
+
+<h4>Happy Hacking!</h4>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1018,238 +1400,6 @@ carece de nodejs. Por ejemplo, algunos de mis clientes usan Ubuntu del año 4.</
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-02-21T14:16:49-05:00'><span class='date'>21/02/2015</span> <span class='time'>2:16 pm</span></time>
-        
-           | <a href="/blog/2015/02/21/sasl-homeclub-only/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/21/sasl-homeclub-only/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>De siempre, me ha molestado que los hacker de hipatia.net, hagan ataquitos para
-autenticarse por fuerza bruta.</p>
-
-<p>Mis paisanos suelen resolver ese problema poniendo una pasarela de correo
-&ldquo;relay-only&rdquo; delante de su servidor principal o simplemente con fail2ban.</p>
-
-<p>fail2ban tiene sus ventajas, pues bloqueas a un atacante que podría hacer eso y
-otras muchas cosas que no imaginamos.</p>
-
-<p>Pero por suerte, <a href="http://www.postfix.org/postconf.5.html#smtpd_sasl_exceptions_networks">postfix tiene su método para deshacerse del problema&hellip;</a></p>
-
-<p>Como no tengo nada en mynetworks, a mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;scope del main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># sasl solo para nuestra red local</span>
-</span><span class='line'><span class="nv">smtpd_sasl_exceptions_networks</span> <span class="o">=</span> !10.1.1.0/24
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Osea: &ldquo;a lo que NO este en esa red, no se le ofrece autenticación&rdquo;</p>
-
-<h4>Se acabó la autenticación pa afuera</h4>
-
-<p>   <blockquote><p>Te das cuenta que NO todo se resuelve con violencia,<br/>   cuando se te pusa un mosquito en los testículos.</p></blockquote></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/19/delay-pools-de-squid/">delay pools de squid</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-02-19T12:03:48-05:00'><span class='date'>19/02/2015</span> <span class='time'>12:03 pm</span></time>
-        
-           | <a href="/blog/2015/02/19/delay-pools-de-squid/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/19/delay-pools-de-squid/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Los delay pool de squid, son una herramienta que permite determinar cuanto ancho
-de vianda le corresponde a ciertas conexiones. A mi en lo personal su uso me
-disgusta bastante; por el mero hecho de que pone a squid leeeeento. Cuando los
-delay pools están pinchando, las peticiones se demoran más al ser respondidas y
-el proto cache manager empieza a hacer cosas raras.</p>
-
-<p>En fin, cierra el chat, apriétate el cinto y abre las entendederas que esto es
-complicado&hellip;</p>
-
-<p>Supón que tienes 128Kbit y queremos repartir el ancho de vianda de manera
-&ldquo;equitativa&rdquo;</p>
-
-<p>El ancho de vianda se vende en KBit pero squid entiende de K Bytes.</p>
-
-<figure class='code'><figcaption><span>&#8216;conversion de Kbit/s a KBytes/s&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:611:0&gt; 128/8
-</span><span class='line'><span class="o">=</span>&gt; 16
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>O sea, que tú canal llega a los 16 Kylo Bytes por segundos&hellip;</p>
-
-<p>Nuestro discriminante sistema de castas, tendrá 2 clases</p>
-
-<p>&ldquo;lo dioses&rdquo; y &ldquo;los mortales&rdquo;</p>
-
-<p>Los dioses cuentan con el 60% del ancho de vianda disponible, mientras que los
-mortales solo cuentan con el 20%.</p>
-
-<p>OJO: No des a nadie el 100%, ya que podría acaparar todo el canal y dejar a todo
-el mundo sin navegación.</p>
-
-<p>Los delay pool de clase 2, son los que reparten &ldquo;ancho de banda por cabeza&rdquo;
-Osease, &ldquo;esto es lo que le toca a esa persona&rdquo;. Los parámetros de los delay pool
-de la clase dos son sucesivamente: ancho de banda y ráfaga</p>
-
-<p>El ancho de banda, no puede ser una cosa rígida, porque los datos no
-se transmiten de manera rígida. Aveces se requiere mucho ancho de banda
-durante 2 milisegundos para establecer una conexión SSL.</p>
-
-<p>Ahí es donde viene a jugar la ráfaga. Osea: &ldquo;cuanto ancho de banda
-máximo tendrá durante los picos&rdquo;</p>
-
-<p>Digamos que el delay pool será un 20% del canal</p>
-
-<figure class='code'><figcaption><span>&#8220;el 20%&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">612</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">16</span><span class="o">*</span><span class="mi">20</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="mi">1024</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">3072</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A la ráfaga le das un Kylo más</p>
-
-<figure class='code'><figcaption><span>&#8220;un kylo más&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">613</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">3072</span><span class="o">+</span><span class="mi">1024</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">4096</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El delay_pool te viene quedando así:</p>
-
-<figure class='code'><figcaption><span>&#8220;delay_pool #1&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>delay_parameters <span class="m">1</span> 3072/3072 4096/4096
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora creamos un delay_pool que tiene el 80% del ancho de banda</p>
-
-<figure class='code'><figcaption><span>&#8220;el 80%&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">614</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">16</span><span class="o">*</span><span class="mi">80</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="mi">1024</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">12288</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Sea entonces el delay_pool 2 así:</p>
-
-<figure class='code'><figcaption><span>&#8220;delay_pool #2&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>delay_parameters <span class="m">2</span> 12288/12288 13312/13312
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Al final el squid.con</p>
-
-<figure class='code'><figcaption><span>&#8216;squid.conf&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># tendremos 2 delai puls</span>
-</span><span class='line'>delay_pools 2
-</span><span class='line'>
-</span><span class='line'><span class="c"># ambos de la clase 2</span>
-</span><span class='line'>delay_class <span class="m">1</span> 2
-</span><span class='line'>delay_class <span class="m">2</span> 2
-</span><span class='line'>
-</span><span class='line'><span class="c"># los mortales van al 20%</span>
-</span><span class='line'>delay_parameters <span class="m">1</span> 3072/3072 4096/4096
-</span><span class='line'>
-</span><span class='line'><span class="c"># y los dioses van al 80%</span>
-</span><span class='line'>delay_parameters <span class="m">2</span> 12288/12288 13312/13312
-</span><span class='line'>
-</span><span class='line'><span class="c"># los dioses, aquellos cuyo nombre de usuario machee esta lista</span>
-</span><span class='line'>acl dioses proxy_auth tuusuario eljefe eldirector lajevita lasecretaria
-</span><span class='line'>
-</span><span class='line'><span class="c"># en el 1 metemos a los dioses</span>
-</span><span class='line'>delay_access <span class="m">1</span> allow dioses
-</span><span class='line'>delay_access <span class="m">1</span> deny all
-</span><span class='line'>
-</span><span class='line'><span class="c"># el resto, pal 2</span>
-</span><span class='line'>delay_access <span class="m">2</span> allow all
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ah otra cosa! MUY IMPORTANTE</p>
-
-<h4>NADIE debe quedar fuera de delay pool una vez que creas el primero.</h4>
-
-<p>Si quieres TÚ (el informático que es tremendo decarao) quires navegar más rápido
-que nadie, create un delay pool con el 100% del ancho de banda, pero no te
-quedes fuera de ningún delaypool.</p>
-
-<p>Desde ese momento empezarás a acaparar todo el canal al punto de que NO se podrá
-navegar. A ese punto te buscarás un lío, no reserves para ti solo más del 80%
-del canal y navega con cordura.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/8">&larr; Older</a>
@@ -1269,6 +1419,14 @@ del canal y navega con cordura.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/03/07/cargar-rvm/">cargar rvm</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/03/01/intensivo-de-docker/">intensivo de docker</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/02/22/data-confirm-en-un-boton/">data confirm en un boton</a>

@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-02-22T14:24:22-05:00</updated>
+  <updated>2016-03-07T21:32:28-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,52 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[cargar rvm]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/03/07/cargar-rvm/"/>
+    <updated>2016-03-07T21:25:44-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/03/07/cargar-rvm</id>
+    <content type="html"><![CDATA[<p>De siempre, desplegar Ruby con RVM, ha sido un método catalogado de &ldquo;burdo&rdquo; o
+&ldquo;sucio&rdquo; aunque sin dudas, es el más rápido.</p>
+
+<p>Un problema que se enfrenta con RVM, es a la hora de integrarlo a entornos que
+no carguen el el bashrc modificado por el instalador. Por ejemplo, un script de
+arrancada con el sistema o un script del cron.</p>
+
+<p>He aquí un ejemplo, de un escript.sh que levanta una aplicación de ruby on
+rails, luego de haber cargado el entorno de RVM.</p>
+
+<figure class='code'><figcaption><span>&#8220;startapp.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="nb">cd</span> /opt/aplicacion
+</span><span class='line'><span class="nb">source</span> /usr/local/rvm/environments/default
+</span><span class='line'>unicorn -l 0:8080 -D
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como vemos, el dichero en <strong>environments</strong> carga todas las variables de entorno
+requerida y de facto, <strong>unicorn</strong> pasa a ser un ejecutable, ya que <strong>$PATH</strong>
+ahora contiene también la ruta bin/ donde se instalaron las gemas&hellip;</p>
+
+<p>Problema <em>resolvido</em>&hellip;</p>
+
+<p>Note en caso de tener varios rubies instalados, en environments, tendrás junto a
+default, los demás script necesarios para cargar dichos rubies.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[intensivo de docker]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/03/01/intensivo-de-docker/"/>
+    <updated>2016-03-01T23:59:53-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/03/01/intensivo-de-docker</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[data confirm en un boton]]></title>
@@ -1950,357 +1996,6 @@ crudo. Podrías también tirarlo pa un fichero así:</p>
 <p>A los usuarios le encantan los PDF, hazlos feliz ;)</p>
 
 <p>   <blockquote><p>Existen dos tipos de personas,<br/>   las que hacen lo que le dicen; y,<br/>   las que dicen lo que hay que hacer.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[assets por controlador]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/10/05/assets-por-controlador/"/>
-    <updated>2015-10-05T21:45:45-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/10/05/assets-por-controlador</id>
-    <content type="html"><![CDATA[<p><strong>NUNCA</strong>, he logrado entender, porque el asset pipeline de Rails carga
-<strong>TODAS</strong> las porquerías de todos los controladores en todas las vistas.</p>
-
-<p>¡¡¡Como si fuese poco tener que cargar el mismo javascript por controlador!!!</p>
-
-<p>La documentación dice que puedes cargar solamente el del controlador; pero
-cuando la sigues al pie de la letra; Rails te da tremendo palo, diciendo que una
-asset se escapó sin compilar. La &ldquo;una&rdquo; suele ser la del controlador que estés
-cargando, o sea, todas.</p>
-
-<p>La solución que plantea la documentación, es un Proc asqueroso que tampoco
-pincha.</p>
-
-<p>Te cuento como lo hice:</p>
-
-<p>Primero tienes que quitar la cláusula &ldquo;<strong>require_tree .</strong>&rdquo; del <strong>application.js</strong></p>
-
-<p>A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>application.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">// This is a manifest file that&#39;ll be compiled into application.js, which will include all the files</span>
-</span><span class='line'><span class="c1">// listed below.</span>
-</span><span class='line'><span class="c1">//</span>
-</span><span class='line'><span class="c1">// Any JavaScript/Coffee file within this directory, lib/assets/javascripts, vendor/assets/javascripts,</span>
-</span><span class='line'><span class="c1">// or any plugin&#39;s vendor/assets/javascripts directory can be referenced here using a relative path.</span>
-</span><span class='line'><span class="c1">//</span>
-</span><span class='line'><span class="c1">// It&#39;s not advisable to add code directly here, but if you do, it&#39;ll appear at the bottom of the</span>
-</span><span class='line'><span class="c1">// compiled file.</span>
-</span><span class='line'><span class="c1">//</span>
-</span><span class='line'><span class="c1">// Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details</span>
-</span><span class='line'><span class="c1">// about supported directives.</span>
-</span><span class='line'><span class="c1">//</span>
-</span><span class='line'><span class="c1">//= require jquery</span>
-</span><span class='line'><span class="c1">//= require jquery_ujs</span>
-</span><span class='line'><span class="c1">//= require turbolinks</span>
-</span><span class='line'><span class="c1">//  require_tree . fíjate que quitamos el =</span>
-</span><span class='line'><span class="nx">Turbolinks</span><span class="p">.</span><span class="nx">enableProgressBar</span><span class="p">();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora vamos a dar un toque mágico para que las assets se compilen de manera
-dinámica, sin tener que colocarle manualmente al arreglo los nuevos .js
-generados. El fichero <strong>config/initializers/assets.rb</strong> me quedó así; <strong>OJO</strong> que es
-una linea bien larga:</p>
-
-<figure class='code'><figcaption><span>&#8220;assets.rb - ojo con la linea larga&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Be sure to restart your server when you modify this file.</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Version of your assets, change this if you want to expire all your assets.</span>
-</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;1.0&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Add additional assets to the asset load path</span>
-</span><span class='line'><span class="c1"># Rails.application.config.assets.paths &lt;&lt; Emoji.images_path</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Precompile additional assets.</span>
-</span><span class='line'><span class="c1"># application.js, application.css, and all non-JS/CSS in app/assets folder are already added.</span>
-</span><span class='line'><span class="c1"># Rails.application.config.assets.precompile += %w( search.js )</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># compila todo lo que te encuentres por el camino</span>
-</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">precompile</span> <span class="o">+=</span> <span class="no">Dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">to_path</span><span class="p">,</span><span class="s1">&#39;app/assets/javascripts/*.j*&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">1</span><span class="o">].</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># activa el debug de la asset pipeline, solo en entorno de desarrollo</span>
-</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RAILS_ENV&#39;</span><span class="o">]</span> <span class="ow">and</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RAILS_ENV&#39;</span><span class="o">].</span><span class="n">include?</span> <span class="s1">&#39;development&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Podría hacer lo mismo con las CSS si usa un poquito la células grises. Note como
-además, agregamos que se debugue la asset pipeline si y solo si estamos en
-development.</p>
-
-<p>Pero no hemos terminado, la vista lleva unos toques&hellip; pues debemos decirle lo
-más importante, que cargue solo las .js de su controlador. A mi me quedó así:</p>
-
-<p>  &lt;%= javascript_include_tag params[:controller] %></p>
-
-<figure class='code'><figcaption><span>&#8220;app/views/layouts/application.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
-</span><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;title&gt;</span>El Título<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'>  <span class="err">&lt;</span>%= stylesheet_link_tag    &#39;application&#39;, media: &#39;all&#39;, &#39;data-turbolinks-track&#39; =&gt; true %&gt;
-</span><span class='line'>  <span class="err">&lt;</span>%= javascript_include_tag &#39;application&#39;, &#39;data-turbolinks-track&#39; =&gt; true %&gt;
-</span><span class='line'>  <span class="c">&lt;!-- carga solo las .js del controlador dado --&gt;</span>
-</span><span class='line'>  <span class="err">&lt;</span>%= javascript_include_tag params[:controller] %&gt;
-</span><span class='line'>  <span class="err">&lt;</span>%= csrf_meta_tags %&gt;
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">&lt;</span>%= yield %&gt;
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahí te das cuenta que el que carga todo, es el manifest (application.js) con su
-&ldquo;requiere_tree .&rdquo; pero la cláusula en la línea 8 le dice que cargue la .js del
-controlador especificado en <strong>params[:controller]</strong></p>
-
-<p>Bueno así debe pinchar con javascript y con CoffeScript, al menos a mi me pinchó
-con ambos. Veamos que trae rails 5 con esto, porque la mejora urge&hellip;</p>
-
-<p>Si la cosa sigue así en la versión 5, me estoy mudando para Volt</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[dhcp por grupos]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/09/17/dhcp-por-grupos/"/>
-    <updated>2015-09-17T17:42:04-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/09/17/dhcp-por-grupos</id>
-    <content type="html"><![CDATA[<p>La fiebre LTSP sigue subiendo en el Calixto. La solución definitiva para toda
-máquina que butee por la red, sin importar su cantidad de RAM o micro&hellip;</p>
-
-<p>Pero cuando hay más de un servidor con DHCP en la misma red, se forma el rollo.</p>
-
-<h4>isc-dhcp no se puede bloquear con iptables</h4>
-
-<p>Si tienes alguna duda de la afirmación anterior, has la tarea y busca en google.
-De nada vale ponerle un cortafuegos a cada servidor porque <strong>isc</strong> usa &ldquo;raw
-packets&rdquo; y se caga en lo que diga iptables. Por suerte de afuera pa dentro eso
-no se aplica. No obstante, ojo si pones un isc con múltiples interfaces, no sea
-que acabes dándole DHCP al ruter.</p>
-
-<p>En un ambiente como este, no queda otra que hacer un DHCP central con múltiples
-parámetros, de forma que los clientes ligeros se agrupen por MAC address y se
-seleccione el servidor adecuado a la hora de butear.</p>
-
-<p>El fichero de configuración es <strong>/etc/dhcp/dhcpd.conf</strong> y bajo la declaración de
-la subnet puedes poner una cláusula <strong>group</strong> para dar parámetros diferentes.</p>
-
-<p>La sintaxis es sencilla:</p>
-
-<figure class='code'><figcaption><span>&#8220;ejemplo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>subnet <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>   parametros de la red
-</span><span class='line'>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>group <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>   parametros del grupo
-</span><span class='line'>
-</span><span class='line'>   host nombre <span class="o">{</span>
-</span><span class='line'>      parametros del host
-</span><span class='line'>   <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Tomemos el caso de dos servidores LTSP en la red, el 10.1.1.6 y el 10.1.1.3, a
-mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/dhcp/dhcpd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># vim:filetype=config</span>
-</span><span class='line'>authoritative<span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># la red</span>
-</span><span class='line'>subnet 10.1.1.0 netmask 255.255.255.0 <span class="o">{</span>
-</span><span class='line'>    range 10.1.1.100 10.1.1.254<span class="p">;</span>
-</span><span class='line'>    option domain-name <span class="s2">&quot;hcg.sld.cu&quot;</span><span class="p">;</span>
-</span><span class='line'>    option domain-name-servers 10.1.1.1<span class="p">;</span>
-</span><span class='line'>    option broadcast-address 10.1.1.255<span class="p">;</span>
-</span><span class='line'>    option subnet-mask 255.255.255.0<span class="p">;</span>
-</span><span class='line'><span class="o">}</span> <span class="c"># subnet</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="c"># ganker y su pandilla, la gente de archivos médicos</span>
-</span><span class='line'>group <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c"># clientes ligeros con linux y ltsp</span>
-</span><span class='line'>    option root-path <span class="s2">&quot;/opt/ltsp/i386&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">if</span> substring<span class="o">(</span> option vendor-class-identifier, 0, <span class="m">9</span> <span class="o">)</span> <span class="o">=</span> <span class="s2">&quot;PXEClient&quot;</span> <span class="o">{</span>
-</span><span class='line'>        filename <span class="s2">&quot;/ltsp/i386/pxelinux.0&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>        filename <span class="s2">&quot;/ltsp/i386/nbi.img&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c"># buteen por ganker</span>
-</span><span class='line'>   next-server 10.1.1.3<span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c"># los clientes</span>
-</span><span class='line'>   host clganker1 <span class="o">{</span> hardware ethernet 00:1E:90:E1:B4:0A<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>   host clganker2 <span class="o">{</span> hardware ethernet 00:1E:90:E2:6E:1A<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>   host clganker3 <span class="o">{</span> hardware ethernet 00:1E:90:E2:75:B6<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>   host clganker4 <span class="o">{</span> hardware ethernet 00:1E:90:F5:E8:A5<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>   host clganker5 <span class="o">{</span> hardware ethernet 00:1E:90:F5:E9:88<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">}</span> <span class="c"># ganker</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="c"># atenea y su flotilla, el servidor de la biblioteca</span>
-</span><span class='line'>group <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c"># clientes ligeros con linux y ltsp</span>
-</span><span class='line'>    option root-path <span class="s2">&quot;/opt/ltsp/i386&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">if</span> substring<span class="o">(</span> option vendor-class-identifier, 0, <span class="m">9</span> <span class="o">)</span> <span class="o">=</span> <span class="s2">&quot;PXEClient&quot;</span> <span class="o">{</span>
-</span><span class='line'>        filename <span class="s2">&quot;/ltsp/i386/pxelinux.0&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>        filename <span class="s2">&quot;/ltsp/i386/nbi.img&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c"># buteen por el servidor de la bibliteoca</span>
-</span><span class='line'>   next-server 10.1.1.6<span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c"># los clientes</span>
-</span><span class='line'>   host biblioteca1 <span class="o">{</span> hardware ethernet 00:1E:90:E1:B4:0A<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>   host biblioteca2 <span class="o">{</span> hardware ethernet 00:1E:90:E2:6E:1A<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>   host biblioteca3 <span class="o">{</span> hardware ethernet 00:1E:90:E2:75:B6<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>   host biblioteca4 <span class="o">{</span> hardware ethernet 00:1E:90:F5:E8:A5<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>   host biblioteca5 <span class="o">{</span> hardware ethernet 00:1E:90:F5:E9:88<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">}</span> <span class="c"># ganker</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>¿Qué hicimos? Sencillo, declaramos un grupo con distintos parámetros, aunque en
-este caso solo <strong>next-server</strong> es verdaderamente distinto. En ambos casos se
-engatilla el mismo <strong>file-name</strong> y <strong>root-path</strong> ya que ambos servidores hay lo
-mismo.  Pero quizás en su red usted tiene otro servidor bootp o PXE y no querrá
-que las opciones de LTSP sean la misma.</p>
-
-<p>Finalmente el parámetro <strong>next-server</strong> difiere y es que es este el que le da
-porque servidor bootear.</p>
 ]]></content>
   </entry>
   

@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Lua, es uno de los tantos lenguajes interpretados que hay. Lo curioso de este es
-que es Made in Brasil&hellip; Aunque no les quedó mal, lo de ellos &hellip;">
+  <meta name="description" content="ClamAV, el antivirus más subestimado en mi opinión. De siempre, lo he usado por
+compromiso; aunque nunca he sentido la necesidad de hacerlo. Infomed &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,190 @@ que es Made in Brasil&hellip; Aunque no les quedó mal, lo de ellos &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/19/espejos-de-clamav/">espejos de clamav y salud</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-01-19T13:32:53-05:00'><span class='date'>19/01/2016</span> <span class='time'>1:32 pm</span></time>
+        
+           | <a href="/blog/2016/01/19/espejos-de-clamav/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/01/19/espejos-de-clamav/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>ClamAV, el antivirus más subestimado en mi opinión. De siempre, lo he usado por
+compromiso; aunque nunca he sentido la necesidad de hacerlo.</p>
+
+<p>Infomed, mantiene un espejo de ClamAV bien al día pero no un mirror como tal.</p>
+
+<p>Decidí bajarlos para mi máquina y usar la misma como espejo. Después de todo, la
+misma tiene lo que necesita para correr un mirror. Es algo tan sencillo como
+crear un virtualhost y poner en su raíz las actualziaciones.</p>
+
+<p>Más fácil aún, es usar /var/lib/clamav/ como raíz y así TU actualización se
+convierte en el mirror.</p>
+
+<p>En mi caso, el virtualhost de nginx me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/nginx/sites-enabled/clamav&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>server <span class="o">{</span>
+</span><span class='line'>   listen   10.1.1.14:80<span class="p">;</span>
+</span><span class='line'>   listen   10.1.1.14:443 ssl<span class="p">;</span>
+</span><span class='line'>   server_name clamav.hcg.sld.cu<span class="p">;</span>
+</span><span class='line'>   location / <span class="o">{</span>
+</span><span class='line'>      root /var/lib/clamav/<span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El resto del truco está en el lado del cliente, ya que hay que hacerle una
+burumba a freshclam. Decirle que no busque scripts, así me quedó el freshclam.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/clamav/freshclam.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>UpdateLogFile /var/log/clamav/freshclam.log
+</span><span class='line'>DatabaseMirror clamav.hcg.sld.cu
+</span><span class='line'>NotifyClamd /etc/clamav/clamd.conf
+</span><span class='line'>ScriptedUpdates no
+</span><span class='line'>PrivateMirror clamav.hcg.sld.cu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No olvides el puntero a <strong>clamav.tudominio.cu</strong></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/14/clamav-en-windows/">clamav en windows</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-01-14T21:39:45-05:00'><span class='date'>14/01/2016</span> <span class='time'>9:39 pm</span></time>
+        
+           | <a href="/blog/2016/01/14/clamav-en-windows/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/01/14/clamav-en-windows/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Síiiii, por loco que suene&hellip;</p>
+
+<p>Una compañía llamada Source Fire, desarrolló un producto llamado &ldquo;immunet&rdquo;, Por
+lo que vi, es una herramienta de &ldquo;cloud security&rdquo;. En teoría; un antivirus que
+no necesita ser actualizado, una especie de community driven (reescribió la
+rueda y le quedó bien).</p>
+
+<p>Esto en cuba es un chiste, por el ancho de banda. No obstante, pasarle todos tus
+archivos a un servidor para que este los verifique, no me parece un buen
+negocio. Aunque sabe dios que hace windows con tus archivos&hellip;</p>
+
+<p>No obstante, estos señores, incluyeron el motor de clamav y frontend para
+escanear en tiempo real usando clamav y <strong>QUE PINCHA</strong>. Se la comieron!</p>
+
+<p>Quiero advertirte que: Mis conocimientos de windows son BIEN REDUCIDOS, así que
+veré como me hago entender. Trataré de escribir de memoria lo que hice, antes de
+que se me olvide.</p>
+
+<p>Primero llégate a <a href="http://www.immunet.com/free/index.html">www.immunet.com</a> y
+manda a descargar el antivirus. Te dará un ficherito triste de unos kilobytes.
+Este es el downloader.</p>
+
+<p>Ve a una máquina con windows y ejecuta el downloader. Pulsa un botón que dice
+&ldquo;detalles&rdquo;, para que veas que está instalando.</p>
+
+<p>Antes de que se cierre el dialogo del instalador, o sea, antes de pulsar el
+botón &ldquo;Finalizar&rdquo;, mira en las rutas, el directorio temporal donde se está
+descargando y localiza un fichero llamado <strong>protect-latest.exe</strong></p>
+
+<p>No he logrado capturar la URL!!! Sería bueno, así te evitas el ritual anterior.
+No es algo que puedas trazar con squid, ya que la descarga es una conexión SSL.</p>
+
+<p>Una vez que tengas <strong>protect-latest.exe</strong> en la mano, podrás instalarlo donde
+quieras.</p>
+
+<p>Cuando termines, te puso el ícono de immunet en el escritorio. Ejecútalo y
+dirígete a <strong>settings</strong>, ahí le pones el botón <strong>on</strong> a un chucho que dice
+<strong>Enable Clamav Engine</strong>.</p>
+
+<p><img class="center" src="/images/immunenet_config.png"></p>
+
+<p>Cierra esa interfaz y has click secundario en el acceso directo del escritorio.</p>
+
+<p>Verás una opción en el menú que dice &ldquo;Abrir directorio que lo contiene&rdquo; o algo
+por el estilo, no recuerdo bien.</p>
+
+<p>Una vez en el directorio de Immunet, sube un nivel y verás el directorio
+<strong>clamav</strong>. Entra ahí.</p>
+
+<p><img class="center" src="/images/segui.png"></p>
+
+<p>Ejecuta el fichero <strong>sigui.exe</strong>(1) y en la pestaña derecha, verás una opción
+que dice &ldquo;Local Signature Management&rdquo;.</p>
+
+<p>Toca el boton &ldquo;Add&rdquo;(2) y te dará un browser de ficheros. Localiza el directorio
+donde tiene los *.cvd de clamav. Puedes seleccionar los tres ficheros de un
+palo, incluso, pincha por carpeta compartida.</p>
+
+<p>Cuando estén en la caja de arriba, has click en &ldquo;Verify and Install
+signatures&rdquo;(3).</p>
+
+<p>ANDANDO! Ya lo tienes configurado.</p>
+
+<p>En la máquina que lo probé. Restuaré la cuarentena de nod32 y el clamav se
+despacho los virus. A los 5 segundos, nod32 pedía reinicio para desinfectar
+amenazas. Simplemente lo desinstalé.</p>
+
+<p>Como muchos saben, el motor de clamav cambia constantemente. No se si será
+necesario la descarga y reinstalación del antivirus. Pero un compañero me
+planteaba que eso significaría un buen negocio.</p>
+
+<p>Suerte&hellip;</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -525,216 +709,6 @@ hackers por ahí.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-12T09:49:30-05:00'><span class='date'>12/11/2015</span> <span class='time'>9:49 am</span></time>
-        
-           | <a href="/blog/2015/11/12/rc-dot-local-en-systemd/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/12/rc-dot-local-en-systemd/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Déjame decirte, que es un gran mojón de parte de systemd; el hecho de que no
-halla una puñetera compatibilidad con el <strong>rc.local</strong>. Si buscas en google, como
-correr un comando al butear, verás que complicado se vuelve.</p>
-
-<p>Para palear este desmesurado inconveniente. Me he creado una unit del tipo
-oneshot, que cargue el /etc/rc.local</p>
-
-<p>Crea el fichero <strong>/etc/systemd/system/rclocal.service</strong> y métele esto:</p>
-
-<figure class='code'><figcaption><span>/etc/systemd/system/rclocal.service</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>Unit<span class="o">]</span>
-</span><span class='line'><span class="nv">Description</span><span class="o">=</span>El viejo /etc/rc.local
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Service<span class="o">]</span>
-</span><span class='line'><span class="nv">Type</span><span class="o">=</span>oneshot
-</span><span class='line'><span class="nv">ExecStart</span><span class="o">=</span>/bin/bash /etc/rc.local
-</span><span class='line'><span class="nv">TimeoutSec</span><span class="o">=</span>0
-</span><span class='line'><span class="nv">StandardOutput</span><span class="o">=</span>tty
-</span><span class='line'><span class="nv">RemainAfterExit</span><span class="o">=</span>yes
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Install<span class="o">]</span>
-</span><span class='line'><span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lo habilitamos:</p>
-
-<figure class='code'><figcaption><span>&#8220;systemctl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl daemon-reload
-</span><span class='line'>systemctl <span class="nb">enable </span>rclocal
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A singar por tuberías, esto es todo&hellip;</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/03/las-mujeres-gordas/">las mujeres gordas</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-03T23:41:52-05:00'><span class='date'>03/11/2015</span> <span class='time'>11:41 pm</span></time>
-        
-           | <a href="/blog/2015/11/03/las-mujeres-gordas/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/03/las-mujeres-gordas/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><em>¿Como te gustan las mujeres gordas o flacas?</em></p>
-
-<p><img class="right" src="/images/gorda2.jpg" width="190" height="290" title="" ></p>
-
-<p>Esa pregunta se a vuelto un boicot.</p>
-
-<p>Hasta los <del>cojones</del> estoy de vivir en una sociedad que desprecia a las mujeres por
-que su figura no encaja en un patrón de belleza que <strong>alguien</strong> impuso.</p>
-
-<p>Resulta que &ldquo;delgado&rdquo; es sinónimo de &ldquo;lindo&rdquo;.</p>
-
-<p>Nadie hizo una encuesta ni le preguntó a los hombres si preferían a las mujeres
-flacas o gordas, simplemente, impusieron un paradigma.</p>
-
-<p>Hay gustos para todo y eso hay que tenerlo en cuenta.</p>
-
-<p><em>&ldquo;no debemos juzgar a una mujer por su figura&rdquo;</em> <strong>FALSO</strong> Las seguiremos
-juzgando por su figura, porque tenemos ojos en la cara, pero no con paradigmas
-impuesto por una sociedad, si no con nuestro gusto.</p>
-
-<p>¿A qué hombre no le gusta una mujer con las piernas gordas, los senos
-extratalla y las nalgas grandes.</p>
-
-<p>&ldquo;hembras y con masa&rdquo;</p>
-
-<p>Ah! Casi todas las gordas tienen la cara linda, eso es casi axiomático, aunque
-toda regla tiene su acepción.</p>
-
-<h4>NO estoy aplaudiendo la obesidad.</h4>
-
-<p>Las gordas lindas son las gordas que hacen ejercicio.</p>
-
-<ul>
-<li> tiene cintura</li>
-<li> no tienen mucho abdomen</li>
-<li> no están flácidas</li>
-<li> tienen carne en vez de grasa</li>
-</ul>
-
-
-<p>Gorda con Ejercicio</p>
-
-<p>Mi hermano, a una mujer así, múerdete la lengua antes de decirle gorda, porque
-estás ante un monumento.</p>
-
-<p>Si eres mujer y te sientes pasada de peso. No hagas ejercicios para bajar de
-peso. Has ejercicios para mejorar tu figura. Mi esposa usa ajustadores talla 44
-y cuando baja de peso le empiezan a quedar grandes. Pal coppelia urgente.</p>
-
-<p>Preocúpense por estar macizas en vez de grasosas, no por bajar de peso.</p>
-
-<p>Cuando coges una gorda sentada, le aprietas un muslo y te dice &ldquo;ay! eso duele&rdquo;,
-esa es masa pura. Si no le duele, es manteca.</p>
-
-<h4>deterioro de la autoestima</h4>
-
-<p><img class="right" src="/images/gorda1.jpg" width="190" height="290" title="" ></p>
-
-<p>Este tema es muy peliagudo y repercute, tanto pa las gordas, como para los
-amantes de las curvas.</p>
-
-<p>Los hombres, en la mayoría de los casos, NO andamos diciéndole a las mujeres si
-están gordas. Pero entre ellas mismas, se dicen &ldquo;ay mija que gorda estás&rdquo; y
-todas las sandeces esas.</p>
-
-<p>Resulta que una mujer gorda, se autoconsidera fea generalmente. <strong>Por el mero
-hecho de que a ella no le gusta lo que ve en el espejo.</strong> ¿Ya te cercioraste si
-a alguien de tu trabajo y barrio le gusta?</p>
-
-<p>Quizás quiere acercarse alguien, pero postpone el plan para cuando baje un poco
-de peso (nunca). Por esa misma razón: no va a la playa, no usa sayas cortas, no
-usa la ropa tal, etc&hellip;</p>
-
-<p>Por suerte las licras han vuelto a ponerse de moda.</p>
-
-<p>Otro caso es que le decimos a la mujer &ldquo;me gusta que seas gorda&rdquo; y casi se
-ofenden: &ldquo;¿me estás diciendo gorda?&rdquo; Síiii! Te estoy diciendo gorda! ¿Qué hay de
-malo en eso?</p>
-
-<p>Muchas mujeres <em>quieren</em> bajar de peso pero no tienen la voluntad suficiente
-para lograrlo. Mientras tanto, viven flagelándose con las dietas.</p>
-
-<h4>Si fueras flaca a lo mejor él no te hubiera mirado!!!</h4>
-
-<p>El tema <a href="https://es.wikipedia.org/wiki/All_About_That_Bass">All About That Bass</a>
-de Meghan Trainor, tuvo una crítica muy disímil por esta razón. Dijeron que era
-antifeminista. Como si ser gorda fuera ir contra la feminidad. No obstante, el
-tema estuvo en la cima de Billboard Hot 100 ocho semanas (y eso es mucho decir)
-así que la gente aceptó la cancioncita.</p>
-
-<p>Y vamos a estar aquí. Soy flaco como un güin, pero pa flaco yo. Prefiero abultar
-ideas que bíceps. Yo estoy malo, malo, maaaalooo y digo: <em>las lagartijas, pa
-poder treparse en la pared, no pueden ser musculosas</em>. No me preocupa mi figura,
-porque hay mujeres que le encantan los flacos desbaratados y por lo general, son
-gordas (afortunadamente).</p>
-
-<p>Las mujeres si no están en esa bobería. Está la rubia que le encantan los negros
-y NO se esconde para decirlo, se pasea con su prieto por la calle. En cambio, el
-tipo que le gustan las gordas, le pesa reconocerlo e incluso, le da pena que la
-gente lo vean con aun gorda.</p>
-
-<p>   <blockquote><p>Los huesos son para los perros,<br/>   los hombres comen carne.</p></blockquote></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -754,6 +728,14 @@ gente lo vean con aun gorda.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/03/07/cargar-rvm/">cargar rvm</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/03/01/intensivo-de-docker/">intensivo de docker</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/02/22/data-confirm-en-un-boton/">data confirm en un boton</a>
