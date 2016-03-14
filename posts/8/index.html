@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="De siempre, me ha molestado que los hacker de hipatia.net, hagan ataquitos para
-autenticarse por fuerza bruta. Mis paisanos suelen resolver ese &hellip;">
+  <meta name="description" content="Una de las cosas que más me gusta de Rails 4.2 es que al fin se pueden crear
+aplicaciones SIN Turbolink. En versiones anterior estábamos obligados a &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,393 @@ autenticarse por fuerza bruta. Mis paisanos suelen resolver ese &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/22/rails-sin-turbolink/">rails sin turbolinks</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-22T02:48:23-05:00'><span class='date'>22/02/2015</span> <span class='time'>2:48 am</span></time>
+        
+           | <a href="/blog/2015/02/22/rails-sin-turbolink/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/22/rails-sin-turbolink/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Una de las cosas que más me gusta de Rails 4.2 es que al fin se pueden crear
+aplicaciones SIN Turbolink. En versiones anterior estábamos obligados a
+deshabilitarlo luego de inicializada una App nueva y las cosas no siempre salían
+como esperábamos.</p>
+
+<p>Una de las características de las que se jacta la <a href="http://guides.rubyonrails.org/asset_pipeline.html">asset pipeline</a> de rails
+es que los Sprockets cargan de manera individual para cada controlador&hellip;</p>
+
+<p>Al menos eso dicen&hellip;</p>
+
+<p>Pero con la introducción de Turbolinks y con el cuento de la comprimidera, se
+cargan todos los Srockets de todos los controladores; formando tremenda
+morsilla.</p>
+
+<p>A todas esas, necesitas execjs instalado y por supuesto, nodejs o el dichoso
+therubyracer (ambos me caen como una patada en un cordal).</p>
+
+<p>Los que usan CoffeScript (le tienen miedo a JavaScript puro) necesitan toda esa
+porquería y por otra parte, al que no le guste andar enseñando su código
+JavaScript (porque son unos egoístas) Turbolinks y Uglifier les comprime y les
+hace tremenda morsilla ilegible a simple vista. Fíjese que bien le queda el
+nombre a la gema que comprime el JavaScript &ldquo;uglifier&rdquo;, algo así como &ldquo;afeador&rdquo;.</p>
+
+<p>Este cubano que está aquí, prefiere los &ldquo;.js.erb&rdquo; constantes y sonantes. Así que
+se pueden meter Turbolinks donde mejor le quepa. Mis &ldquo;.js&rdquo; están bajo la GPL y
+bien comentados, para todo el que quiera leerlos.</p>
+
+<p>Entonces vamos crear una App de rails, libre de Turbolinks, CoffeScript y demás
+gangárreas.</p>
+
+<h3>rails new ejemplo -T &ndash;skip-turbolinks</h3>
+
+<p>Al Gemfile le quitamos la porquería, a mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;Gemfile&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#source &#39;https://rubygems.org&#39;</span>
+</span><span class='line'><span class="n">source</span> <span class="s2">&quot;file:///media/sdb1/ruby/repo/&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Bundle edge Rails instead: gem &#39;rails&#39;, github: &#39;rails/rails&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;rails&#39;</span><span class="p">,</span> <span class="s1">&#39;4.2.0&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Use sqlite3 as the database for Active Record</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;sqlite3&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Use jquery as the JavaScript library</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;jquery-rails&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Bueno corre bundle install y terminamos la primera fase.</p>
+
+<p>Los próximo será localizar el layout principal y decirle que en que incluye solo
+los Sprockets que macheen a este controlador.</p>
+
+<p>Lo que teníamos así:</p>
+
+<figure class='code'><figcaption><span>&#8220;application.html.erb ORIGINAl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;title&gt;</span>Ejemplo<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>  <span class="err">&lt;</span>%= stylesheet_link_tag    &#39;application&#39;, media: &#39;all&#39; %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>%= javascript_include_tag &#39;application&#39; %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>%= csrf_meta_tags %&gt;
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">&lt;</span>%= yield %&gt;
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nos debe quedar así:</p>
+
+<figure class='code'><figcaption><span>&#8220;application.html.erb MODIFICADO&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;title&gt;</span>Ejemplo<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>  <span class="err">&lt;</span>%= stylesheet_link_tag    &#39;application&#39; %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>%= javascript_include_tag &#39;application&#39; %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>%= stylesheet_link_tag params[:controller] %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>%= javascript_include_tag params[:controller] %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>%= csrf_meta_tags %&gt;
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">&lt;</span>%= yield %&gt;
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>NO QUITAMOS el &lsquo;application&rsquo;, si no cargará SOLAMENTE los del controlador y nos
+interesa que a través de application se carguen otros; por ejemplo, nuestra css
+principal que debe estar presente en todas las rutas.</p>
+
+<p>OJO! Ahora debemos quitar el require_tree en &lsquo;application&rsquo; de los sprockets,
+tanto CSS como JS. Ya que si no, sería lo mismo, al cargar application, se
+cargarían TODOS los Sprockets.</p>
+
+<p>Además, seguro tiene tu CSS que quieres usar en TODO tu proyecto. Las declaramos
+ahí.</p>
+
+<figure class='code'><figcaption><span>&#8220;application.js ANTES&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">// This is a manifest file that&#39;ll be compiled into application.js, which will include all the files</span>
+</span><span class='line'><span class="c1">// listed below.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// Any JavaScript/Coffee file within this directory, lib/assets/javascripts, vendor/assets/javascripts,</span>
+</span><span class='line'><span class="c1">// or any plugin&#39;s vendor/assets/javascripts directory can be referenced here using a relative path.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// It&#39;s not advisable to add code directly here, but if you do, it&#39;ll appear at the bottom of the</span>
+</span><span class='line'><span class="c1">// compiled file.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details</span>
+</span><span class='line'><span class="c1">// about supported directives.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">//= require jquery</span>
+</span><span class='line'><span class="c1">//= require jquery_ujs</span>
+</span><span class='line'><span class="c1">//= require_tree . // esto lo quitamos</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Quitando la porquería:</p>
+
+<figure class='code'><figcaption><span>&#8220;application.js DESPUÉS&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">//= require jquery</span>
+</span><span class='line'><span class="c1">//= require jquery_ujs</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora hacemos lo mismo con las CSS</p>
+
+<figure class='code'><figcaption><span>&#8220;application.css ANTES&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="c">/*</span>
+</span><span class='line'><span class="c"> * This is a manifest file that&#39;ll be compiled into application.css, which will include all the files</span>
+</span><span class='line'><span class="c"> * listed below.</span>
+</span><span class='line'><span class="c"> *</span>
+</span><span class='line'><span class="c"> * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,</span>
+</span><span class='line'><span class="c"> * or any plugin&#39;s vendor/assets/stylesheets directory can be referenced here using a relative path.</span>
+</span><span class='line'><span class="c"> *</span>
+</span><span class='line'><span class="c"> * You&#39;re free to add application-wide styles to this file and they&#39;ll appear at the bottom of the</span>
+</span><span class='line'><span class="c"> * compiled file so the styles you add here take precedence over styles defined in any styles</span>
+</span><span class='line'><span class="c"> * defined in the other CSS/SCSS files in this directory. It is generally better to create a new</span>
+</span><span class='line'><span class="c"> * file per style scope.</span>
+</span><span class='line'><span class="c"> *</span>
+</span><span class='line'><span class="c"> *= require_tree .</span>
+</span><span class='line'><span class="c"> *= require_self</span>
+</span><span class='line'><span class="c"> */</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Luego de la dieta</p>
+
+<figure class='code'><figcaption><span>&#8220;application.css DESPUÉS</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="c">/*</span>
+</span><span class='line'><span class="c"> *= require_self</span>
+</span><span class='line'><span class="c"> *= require tu_css_general</span>
+</span><span class='line'><span class="c"> */</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Hasta aquí todo está lindo, pero resulta que al pasar por el pipeline, te dice
+una asset del controlador se filtró pa afuera y no será servida. Pero además da
+palo!</p>
+
+<p>Hay 2 maneras de solucionar esto.</p>
+
+<ul>
+<li> La fácil de copiar y manter; pero difícil de entender</li>
+<li> La que viene por defecto, fácil de entender y difícil de recordar o mantener</li>
+</ul>
+
+
+<p>Una manera, compleja y absoluta:</p>
+
+<p>Una vez más, los initializer salvan el día. Al initializers de las assets le agregamos esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;config/initializers/assets.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Be sure to restart your server when you modify this file.</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Version of your assets, change this if you want to expire all your assets.</span>
+</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;1.0&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Add additional assets to the asset load path</span>
+</span><span class='line'><span class="c1"># Rails.application.config.assets.paths &lt;&lt; Emoji.images_path</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Precompile additional assets.</span>
+</span><span class='line'><span class="c1"># application.js, application.css, and all non-JS/CSS in app/assets folder are already added.</span>
+</span><span class='line'><span class="c1"># Rails.application.config.assets.precompile += %w( search.js )</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># AQUÍ</span>
+</span><span class='line'><span class="c1"># le agregamos esto, tal como sale en la documentación oficial</span>
+</span><span class='line'><span class="c1"># http://guides.rubyonrails.org/asset_pipeline.html#precompiling-assets</span>
+</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">precompile</span> <span class="o">&lt;&lt;</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span> <span class="o">|</span><span class="n">path</span><span class="o">|</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">path</span> <span class="o">=~</span> <span class="sr">/\.(css|js)\z/</span>
+</span><span class='line'>    <span class="n">full_path</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">to_path</span>
+</span><span class='line'>    <span class="n">app_assets_path</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;app&#39;</span><span class="p">,</span> <span class="s1">&#39;assets&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_path</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">full_path</span><span class="o">.</span><span class="n">starts_with?</span> <span class="n">app_assets_path</span>
+</span><span class='line'>      <span class="kp">true</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="kp">false</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="kp">false</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En la documentación oficial sale ese burumba como remiendo para compilar todas
+las Assets pero tiene un logger true y false; lo cual da palo en rails 4.2 (y
+creo que en todos). Además: Para que loguear que se compiló toda es mierda? Si
+fallar la compilación; será logueado por el controlador ;)</p>
+
+<p>La simple y difícil de mantener:</p>
+
+<p>Sin la brujería anterior, habría que usar lo que dice el comentario y poner
+junto a search.js el resto de las assets. Quizás tú uses su CSS en solo fichero,
+siendo el caso, con añadir ese solo fichero, resolvió el problema.</p>
+
+<p>El rollo vendrá en que si agrega una CSS más tarde, no se recordará que debe
+compilarla; agregando el nombre al array donde está search.js.</p>
+
+<p>Nota para lo imbéciles: El fichero &ldquo;search.js&rdquo; es un ejemplo. Quítalo y pon el
+nombre de tu Asset</p>
+
+<p>A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;config/initializers/assets.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;1.0&#39;</span>
+</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">precompile</span> <span class="o">+=</span> <span class="sx">%w( tu_css_general.css tu_framework.js )</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¿Por qué esto es tan complejo? Porque Rails exhorta a sus usaurios a usar
+Turbolinks (realmente es la mejor opción) y la configuración por defecto, deja
+que Turbolinks se ocupe de esas cosas.</p>
+
+<h3>Turbolink es una muy buena opción!</h3>
+
+<p>Sobre todo para aplicaciones de cara a internet o bien de cara a una red lenta
+(infomed u otro PPP de Cuba). A mi en los personal Turbolinks me resulta un
+estorbo a la hora de desplegar una aplicación de rails en una máquina que
+carece de nodejs. Por ejemplo, algunos de mis clientes usan Ubuntu del año 4.</p>
+
+<h3>En mi opinión:</h3>
+
+<ul>
+<li><p> Turbolinks es un asco, tiene que mejorar mucho todavía</p></li>
+<li><p> CoffeScript sobra, al final debes saber JavaScript para programar con Coffe</p></li>
+</ul>
+
+
+<p>   <blockquote><p>Donde V8 o nodejs sean un problema, turbolinks lo será.</p><footer><strong>Murphy</strong> <cite>Ley De Turbolinks</cite></footer></blockquote></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -916,101 +1303,6 @@ BUNLDER.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/12/02/welcome-aboard/">welcome aboard</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-12-02T09:12:44-05:00'><span class='date'>02/12/2014</span> <span class='time'>9:12 am</span></time>
-        
-           | <a href="/blog/2014/12/02/welcome-aboard/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/12/02/welcome-aboard/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>De siempre, me ha gustado la paginita que pone ruby on rails en &ldquo;/&rdquo;. Pero
-sucede que en producción esto no sale. Sería genial tener eso como página de
-root, sobre todo cuando no tenemos/queremos mostrar una página CMS que diga
-click aquí o click allá para tal cosa.</p>
-
-<p>Resulta que esa vista está en railties y si adivinamos bien la ruta, la puedes
-renderizar en una vista que responde a &ldquo;/&rdquo;. Para eso, creamos el método
-&ldquo;welcome&rdquo; en el controlador genérico que está en controllers/application_controller.rb</p>
-
-<p>A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;controllers/application_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ApplicationController</span> <span class="o">&lt;</span> <span class="no">ActionController</span><span class="o">::</span><span class="no">Base</span>
-</span><span class='line'>  <span class="c1"># Prevent CSRF attacks by raising an exception.</span>
-</span><span class='line'>  <span class="c1"># For APIs, you may want to use :null_session instead.</span>
-</span><span class='line'>  <span class="n">protect_from_forgery</span> <span class="ss">with</span><span class="p">:</span> <span class="ss">:exception</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># agregamos el método &quot;welcome&quot;</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">welcome</span>
-</span><span class='line'>     <span class="n">render</span> <span class="ss">file</span><span class="p">:</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="no">Gem</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">first</span><span class="p">,</span><span class="s2">&quot;gems/railties-</span><span class="si">#{</span><span class="no">Rails</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">/lib/rails/templates/rails/welcome/index.html.erb&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Je! No creerías que me iba bajar con una rutica escrita que debería cambiar con
-cada release de rails verdad? Vamo, que no somos programadores por gusto y si
-estoy con rails desde la versión 2; no fue comiendome los mocos.</p>
-
-<p>Dividido en sílaba: File.join conjuga la ruta de, Gem.path.first, osea el repo
-con las gemas. Ahí ha de estar gem/railties- seguido por la versión de rails;
-que porsupuesto, no hay que leer el árbol de directorios para deducirla.</p>
-
-<p>Ahora el método welcome irá a buscar el welcome a board en railties. Solo falta
-declarar la ruta, pa que pinche en cualquier entorno.</p>
-
-<figure class='code'><figcaption><span>&#8220;config/routes.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>   <span class="c1"># el root clásico</span>
-</span><span class='line'>   <span class="n">get</span> <span class="s1">&#39;/&#39;</span> <span class="o">=&gt;</span> <span class="s2">&quot;application#welcome&quot;</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c1"># las demás rutas aquí abajo</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Bienvenido a bordo, estas sobre rieles!!!</h3>
-
-<p><img class="center" src="/images/welcomeaboard.png"></p>
-
-<p>El ejemplo esta hecho con &ldquo;get &lsquo;/&rsquo;&rdquo; por razones lógicas. Lo más apropiado es que
-seteeas &ldquo;application#welcome&rdquo; como root, en vez de hacer esa chapusería.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/9">&larr; Older</a>
@@ -1030,6 +1322,10 @@ seteeas &ldquo;application#welcome&rdquo; como root, en vez de hacer esa chapuse
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/03/14/misterio-con-ethernet-foxconn/">misterio con ethernet foxconn</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/03/07/cargar-rvm/">cargar rvm</a>

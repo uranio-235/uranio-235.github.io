@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Todo el que halla configurado un navegador con proxy; o sea, todo cubano que
-halla configurado un navegador, quizás halla visto que una de las tantas &hellip;">
+  <meta name="description" content="De siempre, me ha gustado la paginita que pone ruby on rails en &ldquo;/&rdquo;. Pero
+sucede que en producción esto no sale. Sería genial tener eso &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,101 @@ halla configurado un navegador, quizás halla visto que una de las tantas &helli
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/02/welcome-aboard/">welcome aboard</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-12-02T09:12:44-05:00'><span class='date'>02/12/2014</span> <span class='time'>9:12 am</span></time>
+        
+           | <a href="/blog/2014/12/02/welcome-aboard/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/12/02/welcome-aboard/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>De siempre, me ha gustado la paginita que pone ruby on rails en &ldquo;/&rdquo;. Pero
+sucede que en producción esto no sale. Sería genial tener eso como página de
+root, sobre todo cuando no tenemos/queremos mostrar una página CMS que diga
+click aquí o click allá para tal cosa.</p>
+
+<p>Resulta que esa vista está en railties y si adivinamos bien la ruta, la puedes
+renderizar en una vista que responde a &ldquo;/&rdquo;. Para eso, creamos el método
+&ldquo;welcome&rdquo; en el controlador genérico que está en controllers/application_controller.rb</p>
+
+<p>A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;controllers/application_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ApplicationController</span> <span class="o">&lt;</span> <span class="no">ActionController</span><span class="o">::</span><span class="no">Base</span>
+</span><span class='line'>  <span class="c1"># Prevent CSRF attacks by raising an exception.</span>
+</span><span class='line'>  <span class="c1"># For APIs, you may want to use :null_session instead.</span>
+</span><span class='line'>  <span class="n">protect_from_forgery</span> <span class="ss">with</span><span class="p">:</span> <span class="ss">:exception</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># agregamos el método &quot;welcome&quot;</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">welcome</span>
+</span><span class='line'>     <span class="n">render</span> <span class="ss">file</span><span class="p">:</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="no">Gem</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">first</span><span class="p">,</span><span class="s2">&quot;gems/railties-</span><span class="si">#{</span><span class="no">Rails</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">/lib/rails/templates/rails/welcome/index.html.erb&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Je! No creerías que me iba bajar con una rutica escrita que debería cambiar con
+cada release de rails verdad? Vamo, que no somos programadores por gusto y si
+estoy con rails desde la versión 2; no fue comiendome los mocos.</p>
+
+<p>Dividido en sílaba: File.join conjuga la ruta de, Gem.path.first, osea el repo
+con las gemas. Ahí ha de estar gem/railties- seguido por la versión de rails;
+que porsupuesto, no hay que leer el árbol de directorios para deducirla.</p>
+
+<p>Ahora el método welcome irá a buscar el welcome a board en railties. Solo falta
+declarar la ruta, pa que pinche en cualquier entorno.</p>
+
+<figure class='code'><figcaption><span>&#8220;config/routes.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>   <span class="c1"># el root clásico</span>
+</span><span class='line'>   <span class="n">get</span> <span class="s1">&#39;/&#39;</span> <span class="o">=&gt;</span> <span class="s2">&quot;application#welcome&quot;</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c1"># las demás rutas aquí abajo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Bienvenido a bordo, estas sobre rieles!!!</h3>
+
+<p><img class="center" src="/images/welcomeaboard.png"></p>
+
+<p>El ejemplo esta hecho con &ldquo;get &lsquo;/&rsquo;&rdquo; por razones lógicas. Lo más apropiado es que
+seteeas &ldquo;application#welcome&rdquo; como root, en vez de hacer esa chapusería.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -592,84 +687,6 @@ de datos central de manera automatizada.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/15/subdesarrollo/">subdesarrollo</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-08-15T10:28:28-04:00'><span class='date'>15/08/2014</span> <span class='time'>10:28 am</span></time>
-        
-           | <a href="/blog/2014/08/15/subdesarrollo/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/08/15/subdesarrollo/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>¿Sabe usted que es el Subdesarrollo?</h3>
-
-<p>El subdesarrollo, es un fenómeno social y mental, que poco tiene que ver con la
-economía&hellip;</p>
-
-<p>A menudo se disfraza de socialismo, otras de capitalismo, porque a diferencia de
-estos dos, el subdesarrollo no está escrito en ninguna parte. Aun así, no deja
-de ser el sistema regente en américa latina y el Caribe</p>
-
-<p>Todo comenzó en la época precolombina. Cuando los colonos españoles llegaron a
-Cuba, mostraron un producto desarrollado y capturaron la facinación de los
-nativos. Enseguida picaron un espejo y se le cambiaron por oro. Este es el
-principio básico de subdesarrollo en el aspecto industrial.</p>
-
-<p>Los desarrollados compran la materia prima y luego te vender el producto final.</p>
-
-<p>Pero el fenómeno es mental, ya que el colono preguntó de donde provenía el oro,
-pero: El indio NO PREGUNTÓ COMO SE HACÍA EL ESPEJO!!!!</p>
-
-<p>De esta forma, los colonos modernos, subvencionan nuestras economías,
-vendiéndonos productos que si bien no son indispensables para la vida, se
-vuelven una necesidad. En sus paises, los desarrolladores fabrican esos
-productos, y la compra de los mismos, es un gasto que se subsidia de manera
-interna. Pero para los subdesarrollados, adquirir esos productos, implica una
-perdida en el producto interno bruto (dinero que sale).</p>
-
-<p>Como ven, el subdesarrollo, aparenta estar ligado a la economía, pero esto NO es
-así. Sucede que todos queremos celulares, pero a nadie se le ocurre pensar en
-fabricarlos&hellip;</p>
-
-<p>Por ejemplo, en nuestro momento histórico, si yo le digo a usted que tengo
-dinero y quiero invertir en un negocio, su pregunta más inmediata será:</p>
-
-<h3>¿qué quieres vender en tu cafetería?</h3>
-
-<p>Porque lo único que tenemos son timbiriches para vender comida o brujería.
-Algunos osados incursionaron con talleres textiles o cosas así MEDIEVALES.</p>
-
-<h3>Pregunto: -¿por qué no fabricamos radios?</h3>
-
-<p>Si ahora yo le digo a usted: -fabriquemos agujas para vendérselas a los talleres
-textiles. Su primera reacción será decir: -tú estás loco de verdad? Con razón,
-ya que en nuestra tierra, no hay un solo ingeniero mecánico capaz de inventar
-una máquina que le abra huecos a las agujas, al menos no sin importar
-componentes ya fabricados por los rubios.</p>
-
-<p>Ahí volvemos al problema del espejo&hellip;</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/10">&larr; Older</a>
@@ -689,6 +706,10 @@ componentes ya fabricados por los rubios.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/03/14/misterio-con-ethernet-foxconn/">misterio con ethernet foxconn</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/03/07/cargar-rvm/">cargar rvm</a>

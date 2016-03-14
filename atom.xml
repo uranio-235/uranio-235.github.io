@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-03-07T21:32:28-05:00</updated>
+  <updated>2016-03-14T14:57:41-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,28 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[misterio con ethernet foxconn]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/03/14/misterio-con-ethernet-foxconn/"/>
+    <updated>2016-03-14T14:52:46-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/03/14/misterio-con-ethernet-foxconn</id>
+    <content type="html"><![CDATA[<p>Para nadie es un secreto que foxconn, no le descarga a Linux. Hacen mil mierdas
+para entorpecerlo cuando corre sobre su hardware.</p>
+
+<p>Uno de los misterios, es cuando las tajetas de red permiten conexiones, pues dan
+ping sin problema. Pero al intentar transferir grandes bloques de red, da
+timeout.</p>
+
+<p>Problema, el tamaño del MTU por defecto en sus putas tarjetas</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ip l set dev eth0 mtu 1492</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Veremos con que se bajan la próxima vez</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[cargar rvm]]></title>
@@ -1824,178 +1846,6 @@ listo, verás las aplicaciones disponibles.</p>
 <p>Ya solo te quedaría instalar un rsync que desemboque en el repo y con
 <a href="https://acrosync.com/">acrosync</a> subes la cache de aptotide para el repo, así
 como lo estoy haciendo yo ahora.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[prawn, pdf con ruby]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/10/08/prawn-pdf-con-ruby/"/>
-    <updated>2015-10-08T21:45:55-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/10/08/prawn-pdf-con-ruby</id>
-    <content type="html"><![CDATA[<p>De siempre, los usuarios que fueron forzados a abandonar
-<a href="https://es.wikipedia.org/wiki/Microsoft_Access">MSAcces</a> por un motivo u otro;
-sienten un incontenible necesidad por los &ldquo;informes&rdquo;.</p>
-
-<p>A la hora de imprimir, muchos usaurios no entienden que un HTML se imprima.
-Incluso, habiéndoles hecho un javascript que muestra el diálogo de impresión,
-simplemente lo cierra y me preguntan &ldquo;¿y ahora que hago con esto?&rdquo;</p>
-
-<p>En recientes diálogos con un bibliotecario (que hereda la clase Usuario) me dijo
-que la gente entiende más de imprimir PDF.</p>
-
-<p>Hacer un PDF me pareció una tare bastante compleja; y lo es, pero
-<a href="http://prawn.majesticseacreature.com">Prawn</a> lo hace de una manera casi
-increíble. Para no aburrirte con el cuento, te mostraré como montarlo arriba del
-tren.</p>
-
-<p><strong>EjemploController</strong> que tu conoce:</p>
-
-<figure class='code'><figcaption><span>&#8220;ejemplo_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># el controlador bin ban bin ban</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">EjemploController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="k">def</span> <span class="nf">accion</span> <span class="c1"># la acción, como se llame</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="c1"># a según el sapo, la pedrá</span>
-</span><span class='line'>      <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
-</span><span class='line'>
-</span><span class='line'>         <span class="c1"># tírame el pdf</span>
-</span><span class='line'>         <span class="nb">format</span><span class="o">.</span><span class="n">pdf</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># tráeme al animal</span>
-</span><span class='line'>            <span class="nb">require</span> <span class="s1">&#39;prawn&#39;</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># créame un nuevo documento pdf</span>
-</span><span class='line'>            <span class="vi">@pdf</span><span class="o">=</span><span class="no">Prawn</span><span class="o">::</span><span class="no">Document</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># tírame el banner, el H1 como quien dice, tamaño de fuente 25px en negrita</span>
-</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">formatted_text</span> <span class="o">[</span> <span class="p">{</span><span class="ss">text</span><span class="p">:</span> <span class="s1">&#39;El título del documentos&#39;</span><span class="p">,</span><span class="ss">size</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span><span class="ss">styles</span><span class="p">:</span> <span class="o">[</span><span class="ss">:bold</span><span class="o">]</span><span class="p">}</span> <span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># hazle una rallita horizontal debano al header</span>
-</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">stroke_horizontal_line</span> <span class="mi">0</span><span class="p">,</span><span class="mi">235</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># mueve el cursor pa abajo</span>
-</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">20</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># la variable cuerpo contiene un texto laaaaaaargooo en HTML</span>
-</span><span class='line'>            <span class="c1"># un HTML muy rudimentario, Prawn lo interpresta, por ejemplo</span>
-</span><span class='line'>            <span class="c1"># las cláusulas &lt;strong&gt;</span>
-</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="vi">@cuerpo</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># por jemeplo, itera en el modelo User y escribe sus nombres</span>
-</span><span class='line'>            <span class="k">for</span> <span class="n">user</span> <span class="k">in</span> <span class="no">User</span><span class="o">.</span><span class="n">all</span>
-</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="s2">&quot;Nombre: </span><span class="si">#{</span><span class="n">user</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
-</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">10</span>
-</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="s2">&quot;Edad: </span><span class="si">#{</span><span class="n">user</span><span class="o">.</span><span class="n">edad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
-</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">30</span>
-</span><span class='line'>            <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># tírala!!!</span>
-</span><span class='line'>            <span class="n">send_data</span> <span class="vi">@pdf</span><span class="o">.</span><span class="n">render</span><span class="p">,</span> <span class="ss">filename</span><span class="p">:</span> <span class="s2">&quot;solicitud.pdf&quot;</span>
-</span><span class='line'>
-</span><span class='line'>         <span class="k">end</span> <span class="c1"># format</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">end</span> <span class="c1"># respond_to</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="k">end</span> <span class="c1"># def</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span> <span class="c1"># class</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Vamos a dividir en sílabas:</p>
-
-<h4>Línea 7</h4>
-
-<p>Rails, la acción responde a múltiples mime-types</p>
-
-<h4>Línea 10</h4>
-
-<p>Rails, application/pdf responde a la extensión PDF <em>format.pdf do</em></p>
-
-<h4>Línea 13</h4>
-
-<p>Carga la librería, sí, ya se que en Rails debes hacer eso en un initializer, de
-cualquier manera, aún, luego de haberlo agregado a tu Gemfile, no te olvides de
-requerirla, ya sea en un initializer o en el controlador.</p>
-
-<h4>Línea 16</h4>
-
-<p>Crea un nuevo PDF y almacénalo en la variable de instancia <strong>@pdf</strong></p>
-
-<h4>Línea 19</h4>
-
-<p>El método <strong>formatted_text</strong>, recibe como argumento un array de hashes</p>
-
-<p>Cada array en un bloque de texto y contiene un hash. La clave :text contiene el
-texto a renderizar, :size el tamaño y :style el estilo de fuente.</p>
-
-<h4>Línea 22</h4>
-
-<p>Trazar línea horizontal, el método <strong>stroke_horizontal_line</strong> recibe como
-argumento, de donde, a donde debe trazar la línea.</p>
-
-<h4>Pasemos a la línea 41</h4>
-
-<p>El método <strong>render</strong> devuelve el PDF. Si lo sacas con <strong>puts</strong> verás el PDF
-crudo. Podrías también tirarlo pa un fichero así:</p>
-
-<figure class='code'><figcaption><span>&#8220;fulanito.pdf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>   <span class="no">IO</span><span class="o">.</span><span class="n">write</span> <span class="s1">&#39;fulanito.pdf&#39;</span><span class="p">,</span><span class="vi">@pdf</span><span class="o">.</span><span class="n">render</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A los usuarios le encantan los PDF, hazlos feliz ;)</p>
-
-<p>   <blockquote><p>Existen dos tipos de personas,<br/>   las que hacen lo que le dicen; y,<br/>   las que dicen lo que hay que hacer.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
 ]]></content>
   </entry>
   
