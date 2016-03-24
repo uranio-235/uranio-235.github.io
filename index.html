@@ -150,8 +150,8 @@ timeout.</p>
   </header>
 
 
-  <div class="entry-content"><p>De siempre, desplegar Ruby con RVM, ha sido un método catalogado de &ldquo;burdo&rdquo; o
-&ldquo;sucio&rdquo; aunque sin dudas, es el más rápido.</p>
+  <div class="entry-content"><p>De siempre, desplegar Ruby con <a href="https://rvm.io/">RVM</a>, ha sido un método
+catalogado de &ldquo;burdo&rdquo; o &ldquo;sucio&rdquo; aunque sin dudas, es el más rápido.</p>
 
 <p>Un problema que se enfrenta con RVM, es a la hora de integrarlo a entornos que
 no carguen el el bashrc modificado por el instalador. Por ejemplo, un script de
@@ -179,38 +179,6 @@ ahora contiene también la ruta bin/ donde se instalaron las gemas&hellip;</p>
 
 <p>Note en caso de tener varios rubies instalados, en environments, tendrás junto a
 default, los demás script necesarios para cargar dichos rubies.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/03/01/intensivo-de-docker/">intensivo de docker</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-03-01T23:59:53-05:00'><span class='date'>01/03/2016</span> <span class='time'>11:59 pm</span></time>
-        
-           | <a href="/blog/2016/03/01/intensivo-de-docker/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/03/01/intensivo-de-docker/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content">
 </div>
   
   
@@ -592,6 +560,107 @@ una source como esta:</p>
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/25/hostname-arbitrario-en-bind9/">bind9, registro arbitratio</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-01-25T20:35:37-05:00'><span class='date'>25/01/2016</span> <span class='time'>8:35 pm</span></time>
+        
+           | <a href="/blog/2016/01/25/hostname-arbitrario-en-bind9/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/01/25/hostname-arbitrario-en-bind9/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Para este tipo de cosas, usualmente recomiendo
+<a href="https://wiki.archlinux.org/index.php/dnsmasq">dnsmasq</a> pero aveces, no nos
+queda más remiendo que usar bind9, por N motivos.</p>
+
+<p>En algunas ocasiones, nos vemos forzados a declarar registros para punteros, a
+host que nada tienen que ver con nuestro domino. Por ejemplo, queremos que el
+host time.windows.com apunte a nuestro servidor de tiempo, para que todos las
+computadoras con windows de la red, se actualicen por nuestro servidor ntp.</p>
+
+<p>En salud, aveces es mejor declarar localmente los punteros a los servidores de
+correo de salud, que hacer otro forward y además, tener que especificarle un
+segundo servidor DNS a nuestros usuarios.</p>
+
+<p>Para lograr esto, debemos declarar una raíz dns en nuestro named.conf, que
+responda a todo, o sea, &ldquo;.&rdquo;, a mi me quedó así.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/bind/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// la zona pa hacer lo que me de la gana</span>
+</span><span class='line'><span class="nx">zone</span> <span class="s2">&quot;.&quot;</span> <span class="p">{</span>
+</span><span class='line'>   <span class="nx">type</span> <span class="nx">master</span><span class="p">;</span>
+</span><span class='line'>   <span class="nx">file</span> <span class="s2">&quot;/etc/bind/fakeroot.zone&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Acá, el fichero <strong>fakeroot.zone</strong> tendrá los registros, donde declaramos los
+FQDN como si fueran hostnames.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/bind/fakeroot.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err">@</span>       <span class="nx">IN</span>      <span class="nx">SOA</span>     <span class="p">.</span> <span class="nx">hostmaster</span><span class="p">.</span><span class="nx">domain</span><span class="p">.</span><span class="nx">com</span><span class="p">.</span> <span class="p">(</span> <span class="mi">1</span> <span class="mi">3</span><span class="nx">h</span> <span class="mi">1</span><span class="nx">h</span> <span class="mi">1</span><span class="nx">w</span> <span class="mi">1</span><span class="nx">d</span> <span class="p">)</span>
+</span><span class='line'><span class="nx">localhost</span>             <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">127.0</span><span class="p">.</span><span class="mf">0.1</span>
+</span><span class='line'><span class="err">@</span>                     <span class="nx">IN</span>      <span class="nx">NS</span>      <span class="nx">localhost</span><span class="p">.</span>
+</span><span class='line'><span class="p">;</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">Los</span> <span class="nx">servidores</span> <span class="nx">de</span> <span class="nx">correo</span> <span class="nx">de</span> <span class="nx">infomed</span>
+</span><span class='line'><span class="nx">smtp</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">201.220</span><span class="p">.</span><span class="mf">211.39</span>
+</span><span class='line'><span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>            <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">201.220</span><span class="p">.</span><span class="mf">211.7</span>
+</span><span class='line'><span class="nx">pop3</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>
+</span><span class='line'><span class="nx">imap</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>
+</span><span class='line'><span class="p">;</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">Los</span> <span class="nx">servidores</span> <span class="nx">de</span> <span class="nx">tiempo</span> <span class="nx">m</span><span class="err">á</span><span class="nx">s</span> <span class="nx">pedidos</span>
+</span><span class='line'><span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>          <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">10.1</span><span class="p">.</span><span class="mf">1.1</span>
+</span><span class='line'><span class="o">*</span><span class="p">.</span><span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span><span class="p">.</span>       <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
+</span><span class='line'><span class="nx">time</span><span class="p">.</span><span class="nx">microsoft</span><span class="p">.</span><span class="nx">com</span>    <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
+</span><span class='line'><span class="nx">time</span><span class="p">.</span><span class="nx">windows</span><span class="p">.</span><span class="nx">com</span>      <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
+</span><span class='line'><span class="nx">time</span><span class="o">-</span><span class="nx">ios</span><span class="p">.</span><span class="nx">apple</span><span class="p">.</span><span class="nx">com</span>    <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En este caso de ejemplo, declaramos un par de host que son de salud, con una ip
+externa. Abajo, los host ntp más típicos, apuntando a nuestro servidor de
+tiempo.</p>
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -616,10 +685,6 @@ una source como esta:</p>
 		
 		<li class="post">
 			<a href="/blog/2016/03/07/cargar-rvm/">cargar rvm</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2016/03/01/intensivo-de-docker/">intensivo de docker</a>
 		</li>
 		
 		<li class="post">

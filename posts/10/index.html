@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="¿Sabe usted que es el Subdesarrollo? El subdesarrollo, es un fenómeno social y mental, que poco tiene que ver con la
-economía&hellip; A menudo se &hellip;">
+  <meta name="description" content="Parece que ahora se ha vuelto una costumbre meterle las manos al parque informático del Calixto
+García. Por lo que dicen los jefes, la cosa está que &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,84 +80,6 @@ economía&hellip; A menudo se &hellip;">
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/15/subdesarrollo/">subdesarrollo</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-08-15T10:28:28-04:00'><span class='date'>15/08/2014</span> <span class='time'>10:28 am</span></time>
-        
-           | <a href="/blog/2014/08/15/subdesarrollo/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/08/15/subdesarrollo/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>¿Sabe usted que es el Subdesarrollo?</h3>
-
-<p>El subdesarrollo, es un fenómeno social y mental, que poco tiene que ver con la
-economía&hellip;</p>
-
-<p>A menudo se disfraza de socialismo, otras de capitalismo, porque a diferencia de
-estos dos, el subdesarrollo no está escrito en ninguna parte. Aun así, no deja
-de ser el sistema regente en américa latina y el Caribe</p>
-
-<p>Todo comenzó en la época precolombina. Cuando los colonos españoles llegaron a
-Cuba, mostraron un producto desarrollado y capturaron la facinación de los
-nativos. Enseguida picaron un espejo y se le cambiaron por oro. Este es el
-principio básico de subdesarrollo en el aspecto industrial.</p>
-
-<p>Los desarrollados compran la materia prima y luego te vender el producto final.</p>
-
-<p>Pero el fenómeno es mental, ya que el colono preguntó de donde provenía el oro,
-pero: El indio NO PREGUNTÓ COMO SE HACÍA EL ESPEJO!!!!</p>
-
-<p>De esta forma, los colonos modernos, subvencionan nuestras economías,
-vendiéndonos productos que si bien no son indispensables para la vida, se
-vuelven una necesidad. En sus paises, los desarrolladores fabrican esos
-productos, y la compra de los mismos, es un gasto que se subsidia de manera
-interna. Pero para los subdesarrollados, adquirir esos productos, implica una
-perdida en el producto interno bruto (dinero que sale).</p>
-
-<p>Como ven, el subdesarrollo, aparenta estar ligado a la economía, pero esto NO es
-así. Sucede que todos queremos celulares, pero a nadie se le ocurre pensar en
-fabricarlos&hellip;</p>
-
-<p>Por ejemplo, en nuestro momento histórico, si yo le digo a usted que tengo
-dinero y quiero invertir en un negocio, su pregunta más inmediata será:</p>
-
-<h3>¿qué quieres vender en tu cafetería?</h3>
-
-<p>Porque lo único que tenemos son timbiriches para vender comida o brujería.
-Algunos osados incursionaron con talleres textiles o cosas así MEDIEVALES.</p>
-
-<h3>Pregunto: -¿por qué no fabricamos radios?</h3>
-
-<p>Si ahora yo le digo a usted: -fabriquemos agujas para vendérselas a los talleres
-textiles. Su primera reacción será decir: -tú estás loco de verdad? Con razón,
-ya que en nuestra tierra, no hay un solo ingeniero mecánico capaz de inventar
-una máquina que le abra huecos a las agujas, al menos no sin importar
-componentes ya fabricados por los rubios.</p>
-
-<p>Ahí volvemos al problema del espejo&hellip;</p>
-</div>
-  
-  
-
-
-    </article>
   
   
     <article>
@@ -556,6 +478,103 @@ la base de datos.</p>
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/09/postfix-entrando-en-el-baile/">postfix entrando en el baile</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-06-09T15:19:03-04:00'><span class='date'>09/06/2014</span> <span class='time'>3:19 pm</span></time>
+        
+           | <a href="/blog/2014/06/09/postfix-entrando-en-el-baile/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/06/09/postfix-entrando-en-el-baile/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>En el episodio anterior, vimos como dovecot se sumaba al esquema mysql. Faltaría
+solamente postfix, para tener entonces un &ldquo;completo servidor MySQL&rdquo;</p>
+
+<p>Cabe reconocer que el futuro de MySQL es incierto, pero meintras PostGres sea la
+gran basura que es, que conmigo ni cuenten.</p>
+
+<p>Normalmente postfix, entrega a través de procmail, pero ahora, nuestro dovecot
+con sus flamantes características, tendrá una manera más compleja de entregar.
+Por tanto, debemos usar el LDA (Local Deliver Agent) de Dovecot como el MDA por
+defecto de postfix.</p>
+
+<p>Al fichero <em>/etc/postfix/main.cf</em> le agregamos en el fondo un nuevo transport.</p>
+
+<figure class='code'><figcaption><span>/etc/postfix/master.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">dovecot</span> <span class="err">unix</span> <span class="err">-</span> <span class="err">n</span> <span class="err">n</span> <span class="err">-</span> <span class="err">-</span> <span class="err">pipe</span>
+</span><span class='line'>  <span class="na">flags</span><span class="o">=</span><span class="s">DRhu user=vmail:vmail argv=/usr/lib/dovecot/deliver -f ${sender} -d ${user}@${domain} -m ${extension}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Además de lo usual, al main.cf le declaramos que su nuevo transporte es  un tal
+&ldquo;dovecot&rdquo; y le agregaremos unas cuantas gangarreas extras que ya explicaré.</p>
+
+<figure class='code'><figcaption><span>/etc/postfix/main.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="c1"># el resto de u confuiguracion arriba</span>
+</span><span class='line'><span class="na">virtual_transport</span><span class="o">=</span><span class="s">dovecot</span>
+</span><span class='line'><span class="na">mailbox_command</span> <span class="o">=</span> <span class="s">/usr/lib/dovecot/deliver</span>
+</span><span class='line'><span class="na">mydestination</span> <span class="o">=</span> <span class="s">localhost, blackjack</span>
+</span><span class='line'><span class="na">virtual_mailbox_domains</span> <span class="o">=</span> <span class="s">hcg.sld.cu</span>
+</span><span class='line'><span class="na">virtual_mailbox_maps</span> <span class="o">=</span> <span class="s">$virtual_mailbox_domains</span>
+</span><span class='line'><span class="na">virtual_alias_maps</span> <span class="o">=</span> <span class="s">hash:/etc/aliases</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>Un comentario a prueba de imbéciles.</li>
+<li>Declaramos el nuevo transporte para el dominio virtual.</li>
+<li>Declaramos además, que se use el LDA de dovecot.</li>
+<li>Declaramos que solo localhost y blackjack son destinos locales.</li>
+<li>El dominio virtual será &ldquo;hcg.sld.cu&rdquo;.</li>
+<li>Y lo mapeamos igual.</li>
+<li>Por último, lo alias se quedan en el fichero tradicional.</li>
+</ol>
+
+
+<p>Ahora si creamos un usaurio llamado &ldquo;usuario&rdquo; en la base de datos;
+usuario@localhost no será válido porque solo existe en el domino virtual.</p>
+
+<p>Además, le agregamos que los alisas, son un hash en /etc/alisas, al estilo
+antiguo. No vamos a cargar la base de datos con los alisases. Sobre todo
+teniendo en cuenta lo pocos que son. De esta forma, cuando por ejemplo, se manda
+un correo a root que es una alias de lazaro, postfix preguntara quien es lazaro
+y responderá un usaurio del dominio virtual. Genial eh?</p>
+
+<p>Tanto los alisas como los dominios virtuales, podrían ser tablas de MySQL, pero
+como mi aplicación no maneja eso, lo haces al estilo tradicional. En caso de que
+más adelante desarrollase algún esquema tipo proveedor de servicios; otro gallo
+cantaría.</p>
+
+<p>No olvidemos &ldquo;postfix reload&rdquo;</p>
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/posts/11">&larr; Older</a>
@@ -582,10 +601,6 @@ la base de datos.</p>
 		
 		<li class="post">
 			<a href="/blog/2016/03/07/cargar-rvm/">cargar rvm</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2016/03/01/intensivo-de-docker/">intensivo de docker</a>
 		</li>
 		
 		<li class="post">
