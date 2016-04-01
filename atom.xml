@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-03-26T19:48:21-04:00</updated>
+  <updated>2016-04-01T14:32:16-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,244 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[WPA2 con freeradius]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/04/01/wpa2-con-freeradius/"/>
+    <updated>2016-04-01T13:13:59-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/04/01/wpa2-con-freeradius</id>
+    <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/wireless_defense.png" width="190" height="290"></p>
+
+<p>Ahora con el bun de la WiFi, comienzan las necesidades básicas, como cifrad de
+red y protección de acceso. Todavía el cubano no sabe la diferencia entre
+<a href="https://es.wikipedia.org/wiki/Wired_Equivalent_Privacy">WEP</a> y
+<a href="https://es.wikipedia.org/wiki/Wi-Fi_Protected_Access">WPA</a> pero bueno, para el
+que lea esto, el tutorial va por el camino duro pero correcto.</p>
+
+<p>¿Qué haremos?</p>
+
+<p>Configurar <a href="http://w1.fi/hostapd/">hostapd</a> con <a href="http://freeradius.org/">freeradius</a> para proveer una WiFi con WPA2</p>
+
+<p>Si no sabes que cosa es <a href="http://lmgtfy.com/?q=como+funciona+WPA2">WPA2 míralo aquí</a></p>
+
+<p>Para la ocación, usaremos ArchLinux y requeriremos los paquetes siguientes
+<strong>hostapd</strong> y <strong>freeradius</strong>. ¿No tengo que decirte como instalarlos verdad?
+Entonces, supongamos que tienes la WiFi en <strong>wlan0</strong>.</p>
+
+<p>Vamos a empezar de atrás pa alante, el AP. Como no tenemos un ap profesional muy
+de pinga, vamos a usar hostapd. A mi la configuración me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/hostapd/hostapd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">ssid</span><span class="o">=</span>APconLinux
+</span><span class='line'><span class="nv">interface</span><span class="o">=</span>wlp2s0b1
+</span><span class='line'><span class="nv">driver</span><span class="o">=</span>nl80211
+</span><span class='line'><span class="nv">ieee8021x</span><span class="o">=</span>1
+</span><span class='line'><span class="nv">hw_mode</span><span class="o">=</span>g
+</span><span class='line'><span class="nv">channel</span><span class="o">=</span>1
+</span><span class='line'><span class="nv">wpa</span><span class="o">=</span>2
+</span><span class='line'><span class="nv">wpa_key_mgmt</span><span class="o">=</span>WPA-EAP
+</span><span class='line'><span class="nv">rsn_pairwise</span><span class="o">=</span>CCMP
+</span><span class='line'><span class="nv">auth_algs</span><span class="o">=</span>1
+</span><span class='line'><span class="nv">auth_server_addr</span><span class="o">=</span>127.0.0.1
+</span><span class='line'><span class="nv">auth_server_port</span><span class="o">=</span>1812
+</span><span class='line'><span class="nv">auth_server_shared_secret</span><span class="o">=</span>mifortalezaimperial
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora localizamos el fichero donde se configura el EAP, en el caso de archlinux,
+este fichero está en <strong>/etc/raddb/mods-enabled/eap</strong> ahí localizamos una linea
+que dice <strong>default_eap_type</strong> y donde dice <strong>md5</strong> y le ponemos <strong>peap</strong>. A mi
+me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/raddb/mods-enabled/eap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>   eap <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="nv">default_eap_type</span> <span class="o">=</span> peap
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># (el resto del fichero)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Esa cláusula está por la línea 27&hellip; Bueno ahora vamos a declarar los usaurios
+en el fichero <strong>users</strong> el mio está en <strong>/etc/raddb/users</strong>, ahí le pones al
+fondo el usuario y el password, a mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/raddb/users&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>  <span class="c"># (la parte de arriba del fichero)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c"># el usaurio secretísimo</span>
+</span><span class='line'>  usuario Cleartext-Password :<span class="o">=</span> <span class="s2">&quot;secretisimo&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora declararemos la dirección IP del AP, que en este caso, sería un cliente
+radius eso está en el fichero <strong>clients.conf</strong>.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/raddb/clients.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>client 127.0.0.1 <span class="o">{</span>
+</span><span class='line'>   <span class="nv">secret</span> <span class="o">=</span> mifortalezaimperial
+</span><span class='line'>   <span class="nv">shortname</span> <span class="o">=</span> hostapd
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Le declaramos que el cliente que se conecte desde la 127.0.0.1 usando como
+secreto la cadena de texto &ldquo;mifortalezaimperial&rdquo; será hostapd.</p>
+
+<p>Bueno, vamos a empezar la conga, instrumento por instrumento. Primero el AP</p>
+
+<p><strong>hostapd /etc/hostapd/hostapd.conf</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;hostapd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Configuration file: /etc/raddb/hostapd.conf
+</span><span class='line'>Using interface wlp2s0b1 with hwaddr 4c:ed:de:df:ad:f1 and ssid <span class="s2">&quot;APconLinux&quot;</span>
+</span><span class='line'>RADIUS: socket<span class="o">[</span>PF_INET6,SOCK_DGRAM<span class="o">]</span>: Address family not supported by protocol
+</span><span class='line'>wlan0: RADIUS Authentication server 127.0.0.1:1812
+</span><span class='line'>wlan0: interface state UNINITIALIZED-&gt;ENABLED
+</span><span class='line'>wlan0: AP-ENABLED
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora el radius:</p>
+
+<p><strong>raduisd -X</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;radiusd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Listening on auth address 127.0.0.1 port <span class="m">1812</span> bound to server default
+</span><span class='line'>Listening on acct address * port <span class="m">1813</span> bound to server default
+</span><span class='line'>Listening on auth address 127.0.0.1 port <span class="m">18120</span> bound to server inner-tunnel
+</span><span class='line'>Listening on proxy address * port 38055
+</span><span class='line'>Ready to process requests
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y el toque final, dnsmasq como DHCP</p>
+
+<figure class='code'><figcaption><span>&#8220;dnsmasq&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip a a 10.0.0.1/24 dev wlan0
+</span><span class='line'>
+</span><span class='line'><span class="c"># OJO linea larga</span>
+</span><span class='line'>dnsmasq -a 10.0.0.1 -F 10.0.0.2,10.0.0.100 -i wlan0 -K --log-dhcp  -R -d --log-queries --log-dhcp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Te recuerdo, que si android, al conectarse a una WiFi, no recibe ip, considera
+que hubo error de autenticación&hellip;</p>
+
+<p>Al escanear verás algo como esto.</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/wpa2-1.png"></p>
+
+<p>Note como dice que APconLinux, está asegurada con 802.1x y al intentar
+conectarte, verás algo como esto:</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/wpa2-2.png"></p>
+
+<p>Desliza el menú ese, para que veas lo que está al fondo. Ahí es donde va la
+burumba. Donde dice <strong>identity</strong> pones el usuario, donde dice <strong>Anonymous
+Identity</strong>, lo dejas en balnco y donde dice <strong>password</strong> pones el precio actual
+de la libra de papa (o mejor aún, el password que declaraste en <strong>users</strong>)</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/wpa2-3.png"></p>
+
+<p>Se quedará un ratico en <strong>Authenticating&hellip;</strong></p>
+
+<p>Mientras tanto, <strong>hostapd</strong> mostrará algo como esto</p>
+
+<figure class='code'><figcaption><span>&#8220;salida de hostapd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad IEEE 802.11: authenticated
+</span><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad IEEE 802.11: associated <span class="o">(</span>aid 1<span class="o">)</span>
+</span><span class='line'>wlan0: CTRL-EVENT-EAP-STARTED 78:9e:d0:f2:9e:ad
+</span><span class='line'>wlan0: CTRL-EVENT-EAP-PROPOSED-METHOD <span class="nv">vendor</span><span class="o">=</span><span class="m">0</span> <span class="nv">method</span><span class="o">=</span>1
+</span><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad WPA: pairwise key handshake completed <span class="o">(</span>RSN<span class="o">)</span>
+</span><span class='line'>wlan0: AP-STA-CONNECTED 78:9e:d0:f2:9e:ad
+</span><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad RADIUS: starting accounting session EFB68C31-00000000
+</span><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad IEEE 802.1X: authenticated - EAP <span class="nb">type</span>: <span class="m">25</span> <span class="o">(</span>PEAP<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y radius dirá algo como esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;salida de freeradius&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">(</span>9<span class="o">)</span> eap: Sending EAP Success <span class="o">(</span>code 3<span class="o">)</span> ID <span class="m">112</span> length 4
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span> eap: Freeing handler
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span>     <span class="o">[</span>eap<span class="o">]</span> <span class="o">=</span> ok
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   <span class="o">}</span> <span class="c"># authenticate = ok</span>
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span> <span class="c"># Executing section post-auth from file /etc/raddb/sites-enabled/default</span>
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span> Sent Access-Accept Id <span class="m">9</span> from 127.0.0.1:1812 to 127.0.0.1:58792 length 0
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   MS-MPPE-Recv-Key <span class="o">=</span> 0x486910b6930c3d5beae2e5831a3d15545066fcd8964d4a396d9950f1d2142b59
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   MS-MPPE-Send-Key <span class="o">=</span> 0xcfbf7ae337d7bd5c9e747c2a6f5864746b308523d7a4fb261bc1b32a5cdafce2
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   EAP-Message <span class="o">=</span> 0x03700004
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   Message-Authenticator <span class="o">=</span> 0x00000000000000000000000000000000
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   User-Name <span class="o">=</span> <span class="s2">&quot;username&quot;</span>
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span> Finished request
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La salida de dnsmasq quizás estes aburrido de verla, nada nuevo, le dio la ip,
+etc&hellip; dnsmasq es necesario en este caso para completar la autenticación ya que
+nuestro hostapd no tiene un dhcp incluído. Más adelante, veremos que radius
+puede asignar una ip a cada usaurio e incluso se tira contra mysql, pero ahora
+mismo esto es un experimento para familiarizarnos con radius, así que con eso
+bastará.</p>
+
+<p>Pasamos a comerciales y próximamente veremos como hace con MySQL, no te prometo
+nada, solo lo haré si logro vender el producto; ya que aquí somos partidarios de
+que &ldquo;la wifi sin contraseña es más fácil&rdquo; sin pensar en riesgos&hellip;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[misterio con ethernet foxconn]]></title>
@@ -1837,178 +2075,6 @@ listo, verás las aplicaciones disponibles.</p>
 <p>Ya solo te quedaría instalar un rsync que desemboque en el repo y con
 <a href="https://acrosync.com/">acrosync</a> subes la cache de aptotide para el repo, así
 como lo estoy haciendo yo ahora.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[prawn, pdf con ruby]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/10/08/prawn-pdf-con-ruby/"/>
-    <updated>2015-10-08T21:45:55-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/10/08/prawn-pdf-con-ruby</id>
-    <content type="html"><![CDATA[<p>De siempre, los usuarios que fueron forzados a abandonar
-<a href="https://es.wikipedia.org/wiki/Microsoft_Access">MSAcces</a> por un motivo u otro;
-sienten un incontenible necesidad por los &ldquo;informes&rdquo;.</p>
-
-<p>A la hora de imprimir, muchos usaurios no entienden que un HTML se imprima.
-Incluso, habiéndoles hecho un javascript que muestra el diálogo de impresión,
-simplemente lo cierra y me preguntan &ldquo;¿y ahora que hago con esto?&rdquo;</p>
-
-<p>En recientes diálogos con un bibliotecario (que hereda la clase Usuario) me dijo
-que la gente entiende más de imprimir PDF.</p>
-
-<p>Hacer un PDF me pareció una tare bastante compleja; y lo es, pero
-<a href="http://prawn.majesticseacreature.com">Prawn</a> lo hace de una manera casi
-increíble. Para no aburrirte con el cuento, te mostraré como montarlo arriba del
-tren.</p>
-
-<p><strong>EjemploController</strong> que tu conoce:</p>
-
-<figure class='code'><figcaption><span>&#8220;ejemplo_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># el controlador bin ban bin ban</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">EjemploController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="k">def</span> <span class="nf">accion</span> <span class="c1"># la acción, como se llame</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="c1"># a según el sapo, la pedrá</span>
-</span><span class='line'>      <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
-</span><span class='line'>
-</span><span class='line'>         <span class="c1"># tírame el pdf</span>
-</span><span class='line'>         <span class="nb">format</span><span class="o">.</span><span class="n">pdf</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># tráeme al animal</span>
-</span><span class='line'>            <span class="nb">require</span> <span class="s1">&#39;prawn&#39;</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># créame un nuevo documento pdf</span>
-</span><span class='line'>            <span class="vi">@pdf</span><span class="o">=</span><span class="no">Prawn</span><span class="o">::</span><span class="no">Document</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># tírame el banner, el H1 como quien dice, tamaño de fuente 25px en negrita</span>
-</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">formatted_text</span> <span class="o">[</span> <span class="p">{</span><span class="ss">text</span><span class="p">:</span> <span class="s1">&#39;El título del documentos&#39;</span><span class="p">,</span><span class="ss">size</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span><span class="ss">styles</span><span class="p">:</span> <span class="o">[</span><span class="ss">:bold</span><span class="o">]</span><span class="p">}</span> <span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># hazle una rallita horizontal debano al header</span>
-</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">stroke_horizontal_line</span> <span class="mi">0</span><span class="p">,</span><span class="mi">235</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># mueve el cursor pa abajo</span>
-</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">20</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># la variable cuerpo contiene un texto laaaaaaargooo en HTML</span>
-</span><span class='line'>            <span class="c1"># un HTML muy rudimentario, Prawn lo interpresta, por ejemplo</span>
-</span><span class='line'>            <span class="c1"># las cláusulas &lt;strong&gt;</span>
-</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="vi">@cuerpo</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># por jemeplo, itera en el modelo User y escribe sus nombres</span>
-</span><span class='line'>            <span class="k">for</span> <span class="n">user</span> <span class="k">in</span> <span class="no">User</span><span class="o">.</span><span class="n">all</span>
-</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="s2">&quot;Nombre: </span><span class="si">#{</span><span class="n">user</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
-</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">10</span>
-</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="s2">&quot;Edad: </span><span class="si">#{</span><span class="n">user</span><span class="o">.</span><span class="n">edad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
-</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">30</span>
-</span><span class='line'>            <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># tírala!!!</span>
-</span><span class='line'>            <span class="n">send_data</span> <span class="vi">@pdf</span><span class="o">.</span><span class="n">render</span><span class="p">,</span> <span class="ss">filename</span><span class="p">:</span> <span class="s2">&quot;solicitud.pdf&quot;</span>
-</span><span class='line'>
-</span><span class='line'>         <span class="k">end</span> <span class="c1"># format</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">end</span> <span class="c1"># respond_to</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="k">end</span> <span class="c1"># def</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span> <span class="c1"># class</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Vamos a dividir en sílabas:</p>
-
-<h4>Línea 7</h4>
-
-<p>Rails, la acción responde a múltiples mime-types</p>
-
-<h4>Línea 10</h4>
-
-<p>Rails, application/pdf responde a la extensión PDF <em>format.pdf do</em></p>
-
-<h4>Línea 13</h4>
-
-<p>Carga la librería, sí, ya se que en Rails debes hacer eso en un initializer, de
-cualquier manera, aún, luego de haberlo agregado a tu Gemfile, no te olvides de
-requerirla, ya sea en un initializer o en el controlador.</p>
-
-<h4>Línea 16</h4>
-
-<p>Crea un nuevo PDF y almacénalo en la variable de instancia <strong>@pdf</strong></p>
-
-<h4>Línea 19</h4>
-
-<p>El método <strong>formatted_text</strong>, recibe como argumento un array de hashes</p>
-
-<p>Cada array en un bloque de texto y contiene un hash. La clave :text contiene el
-texto a renderizar, :size el tamaño y :style el estilo de fuente.</p>
-
-<h4>Línea 22</h4>
-
-<p>Trazar línea horizontal, el método <strong>stroke_horizontal_line</strong> recibe como
-argumento, de donde, a donde debe trazar la línea.</p>
-
-<h4>Pasemos a la línea 41</h4>
-
-<p>El método <strong>render</strong> devuelve el PDF. Si lo sacas con <strong>puts</strong> verás el PDF
-crudo. Podrías también tirarlo pa un fichero así:</p>
-
-<figure class='code'><figcaption><span>&#8220;fulanito.pdf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>   <span class="no">IO</span><span class="o">.</span><span class="n">write</span> <span class="s1">&#39;fulanito.pdf&#39;</span><span class="p">,</span><span class="vi">@pdf</span><span class="o">.</span><span class="n">render</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A los usuarios le encantan los PDF, hazlos feliz ;)</p>
-
-<p>   <blockquote><p>Existen dos tipos de personas,<br/>   las que hacen lo que le dicen; y,<br/>   las que dicen lo que hay que hacer.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
 ]]></content>
   </entry>
   

@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Tener los dos kernel y elegir cual butear con el grub al principio; no es algo
-sencillo en archlinux. Por defecto, el grub dice tener dichas entradas &hellip;">
+  <meta name="description" content="En paises con internet lento (adivina a cual me refiero) el mero hecho de clonar
+un repositorio de git; puede llegar a ser un verdadero problema. " &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,57 @@ sencillo en archlinux. Por defecto, el grub dice tener dichas entradas &hellip;"
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/07/git-clone-rapido/">git clone rápido</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-07T22:36:56-04:00'><span class='date'>07/09/2015</span> <span class='time'>10:36 pm</span></time>
+        
+           | <a href="/blog/2015/09/07/git-clone-rapido/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/09/07/git-clone-rapido/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>En paises con internet lento (adivina a cual me refiero) el mero hecho de clonar
+un repositorio de git; puede llegar a ser un verdadero problema.</p>
+
+<figure class='code'><figcaption><span>&#8220;git&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone --depth<span class="o">=</span><span class="m">1</span> http://repositorio.tld/fulanito/aplicacion.git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¿Rápido verdad? Es que solo cogió el HEAD, no el historial de commits completo.</p>
+
+<p>Si lo quieres pa siempre, pon en tu gitconfig esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;.gitconfig&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>clone<span class="o">]</span>
+</span><span class='line'>   <span class="nv">depth</span> <span class="o">=</span> 1
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -686,161 +737,6 @@ ponerlos a tu manera. Osea, el contenido de ese YAML se lo adicionas al tuyo.</p
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/07/11/openvas-en-archlinux/">OpenVAS en Archlinux</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-07-11T19:19:59-04:00'><span class='date'>11/07/2015</span> <span class='time'>7:19 pm</span></time>
-        
-           | <a href="/blog/2015/07/11/openvas-en-archlinux/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/07/11/openvas-en-archlinux/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="left" src="/images/greenbone.png" title="Login del Greenbone" alt="Login del Greenbone"></p>
-
-<p>Recientemente, un &ldquo;Webmaster&rdquo; usó en uno de los servidores que patrocino; un
-escaner de vulnerabilidades. El administrador de red del lugar, le dio acceso al
-servidor; claro está. El informe reveló un cartapaso de vulnerabilidades. Por
-ejemplo, la ausencia de una partición swap; podría dar lugar a un kernel-panic
-por falta de memoria RAM; en un servidor de correo con 4 Gigas de RAM. Además,
-advertía que la versión de bash (con sus parches puestos) era muy vieja y
-recomendaba usar una reciente. Como si instalar software reciente en debian
-fuese jamón.</p>
-
-<p>No vi nada con respecto a postfix o dovecot pero de inmediato me llamaron para
-que explicara como era posible que mi servidor tuviera semejantes
-vulnerabilidades. Claro, con acceso a root cualquiera busca vulnerabilidades.</p>
-
-<p>Soy de los que pasa HORAS, intentando penetrar mi propia seguridad; pero el caso
-llevaba un contra ataque más elaborado.</p>
-
-<p>El sosftware por excelencia para probar la seguridad: <a href="http://es.wikipedia.org/wiki/OpenVAS">OpenVAS</a></p>
-
-<h3>No solo identifica el problema, también te dice como arreglarlo.</h3>
-
-<p>Funciona de manera similar a un antivirus. Una base de datos se actualiza y ala
-las vulnerabilidades conocidas. Luego, una interfaz web, de lo más cómoda;
-permite llevar a cabo un análisis tanto ligero como exhaustivo del sistema
-seleccionado como objetivo. Además, se pueden programar análisis de manera
-automatizada.</p>
-
-<p>Su interfaz web, el llamado &ldquo;Greenbone Security Assistant&rdquo;, nos hará la vida muy
-fácil una vez instalado.</p>
-
-<p>En archlinux todo es un rollo, así que empezemos:</p>
-
-<figure class='code'><figcaption><span>&#8220;instalando openvas&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S openvas
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>La interfaz web de openvas (el greenbone) debe ser contactada por SSL (obligao).
-Como siempre, crear los certificados es todo una ceremonia.</p>
-
-<figure class='code'><figcaption><span>&#8220;creando certificados&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvas-mkcert
-</span><span class='line'>openvas-mkcert-client -n -i
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora lo más importante. Descargarnos la base de datos con las amenazas, o sea,
-con las vulnerabilidades.</p>
-
-<figure class='code'><figcaption><span>&#8220;actualizando las bases&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvas-nvt-sync
-</span><span class='line'>openvas-scapdata-sync
-</span><span class='line'>openvas-certdata-sync
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El escaner, es un servicio, que en producción, está supuestamente corriendo y
-realizando escaneos bajo demanda. Lo echamos a andar:</p>
-
-<figure class='code'><figcaption><span>&#8220;el servicio&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl start openvas-scanner
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Una vez que tenemos las bases de datos descargadas, las instalamos en openvas</p>
-
-<figure class='code'><figcaption><span>&#8220;instalando las bases&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvasmd --rebuild --progress
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Y hasta aquí es donde la wiki de arch está bien. Pues para crear el usuario de
-openvas y echar a andar el greenbone, se forma la moña.</p>
-
-<p>Primero debemos crear el usuario de openvas. En este caso de ejemplo, el
-usuario será <strong>admin</strong> con password <strong>admin</strong>.</p>
-
-<figure class='code'><figcaption><span>&#8220;creando usuarios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvasmd --create-user<span class="o">=</span>admin --role<span class="o">=</span>Admin
-</span><span class='line'>openvasmd --user<span class="o">=</span>admin --new-password<span class="o">=</span>admin
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Por último, echamos a andar la interfaz web:</p>
-
-<figure class='code'><figcaption><span>&#8220;iniciando gsad&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>gsad --http-only --listen<span class="o">=</span>127.0.0.1 -p 9392
-</span><span class='line'>openvasmd -p <span class="m">9390</span> -a 127.0.0.1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Abre un navegador y apunta para <a href="http://127.0.0.1:9392">http://127.0.0.1:9392</a></p>
-
-<p>Una vez dentro, verás la página donde se almacenan los escaneos. Ahí localiza un
-botón morado con una barita mágica. Vea la imagen de abajo</p>
-
-<p><img class="center" src="/images/openvas_wiz.png" title="Botón del Wizard" alt="Botón del Wizard"></p>
-
-<p>En la pantalla que le sigue, especificamos el host al que queremos escanear.</p>
-
-<p><img class="center" src="/images/openvas_scan.png" title="Seleccionar Objetivo" alt="Seleccionar objetivo"></p>
-
-<p>Apto seguido, comenzará el escaneo. Es posible que el servidor deje de prestar
-servicios; pues openvas le da con todo.</p>
-
-<p>Finalmente, cuando el escaneo esté terminado, en vez de un tanto por ciento,
-verás; como en la primera imagen, un letrero que dice &ldquo;<strong>done</strong>&rdquo; sobre la barra
-azul.</p>
-
-<p><img class="center" src="/images/openvas_result.png" title="resultado del escaneo" alt="resultado de escaneo"></p>
-
-<p>La imagen muestra, el resultado del webmaster que le tiró piedras al tejado del
-vecino con el suyo de vidrio. Al hacer click en la vulnerabilidad, nos muestra
-la solución, como es el ejemplo de esta:</p>
-
-<p><img class="center" src="/images/openvas_sol.png" title="solución" alt="solución"></p>
-
-<p>Hermosa pareja; el problema y la solución junticos&hellip;</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/6">&larr; Older</a>
@@ -860,6 +756,10 @@ la solución, como es el ejemplo de esta:</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/04/01/wpa2-con-freeradius/">WPA2 con freeradius</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/03/14/misterio-con-ethernet-foxconn/">misterio con ethernet foxconn</a>
