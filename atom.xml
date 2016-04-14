@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-04-01T14:32:16-04:00</updated>
+  <updated>2016-04-14T11:55:36-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -20,7 +20,7 @@
     <id>http://uranio-235.github.io/blog/2016/04/01/wpa2-con-freeradius</id>
     <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/wireless_defense.png" width="190" height="290"></p>
 
-<p>Ahora con el bun de la WiFi, comienzan las necesidades básicas, como cifrad de
+<p>Ahora con el bun de la WiFi, comienzan las necesidades básicas, como cifrado de
 red y protección de acceso. Todavía el cubano no sabe la diferencia entre
 <a href="https://es.wikipedia.org/wiki/Wired_Equivalent_Privacy">WEP</a> y
 <a href="https://es.wikipedia.org/wiki/Wi-Fi_Protected_Access">WPA</a> pero bueno, para el
@@ -32,7 +32,7 @@ que lea esto, el tutorial va por el camino duro pero correcto.</p>
 
 <p>Si no sabes que cosa es <a href="http://lmgtfy.com/?q=como+funciona+WPA2">WPA2 míralo aquí</a></p>
 
-<p>Para la ocación, usaremos ArchLinux y requeriremos los paquetes siguientes
+<p>Para la ocasión, usaremos ArchLinux y requeriremos los paquetes siguientes
 <strong>hostapd</strong> y <strong>freeradius</strong>. ¿No tengo que decirte como instalarlos verdad?
 Entonces, supongamos que tienes la WiFi en <strong>wlan0</strong>.</p>
 
@@ -181,8 +181,8 @@ conectarte, verás algo como esto:</p>
 
 <p>Desliza el menú ese, para que veas lo que está al fondo. Ahí es donde va la
 burumba. Donde dice <strong>identity</strong> pones el usuario, donde dice <strong>Anonymous
-Identity</strong>, lo dejas en balnco y donde dice <strong>password</strong> pones el precio actual
-de la libra de papa (o mejor aún, el password que declaraste en <strong>users</strong>)</p>
+Identity</strong>, LO DEJAS EN BLANCO y donde dice <strong>password</strong> pones el precio actual
+de la libra de papa.</p>
 
 <p><img class="center" src="http://uranio-235.github.io/images/wpa2-3.png"></p>
 
@@ -282,7 +282,7 @@ timeout.</p>
 catalogado de &ldquo;burdo&rdquo; o &ldquo;sucio&rdquo; aunque sin dudas, es el más rápido.</p>
 
 <p>Un problema que se enfrenta con RVM, es a la hora de integrarlo a entornos que
-no carguen el el bashrc modificado por el instalador. Por ejemplo, un script de
+no carguen el bashrc modificado por el instalador. Por ejemplo, un script de
 arrancada con el sistema o un script del cron.</p>
 
 <p>He aquí un ejemplo, de un escript.sh que levanta una aplicación de ruby on
@@ -300,7 +300,7 @@ rails, luego de haber cargado el entorno de RVM.</p>
 
 
 <p>Como vemos, el dichero en <strong>environments</strong> carga todas las variables de entorno
-requerida y de facto, <strong>unicorn</strong> pasa a ser un ejecutable, ya que <strong>$PATH</strong>
+requerida y de facto; <strong>unicorn</strong> pasa a ser un ejecutable, ya que <strong>$PATH</strong>
 ahora contiene también la ruta bin/ donde se instalaron las gemas&hellip;</p>
 
 <p>Problema <em>resolvido</em>&hellip;</p>
@@ -352,7 +352,7 @@ de cada instalación.</p>
 man de alpm-hooks, no dice como deben llamarse los archivos. Tuve que adivinar
 que la extensión <strong>.hook</strong> era necesaria.</p>
 
-<p>Primero que todo, vamos a especificar en <strong>/etc/pacman.con</strong> que el directorio
+<p>Primero que todo, vamos a especificar en <strong>/etc/pacman.conf</strong> que el directorio
 de hooks está en otro lado.</p>
 
 <figure class='code'><figcaption><span>&#8220;escope de</span><a href='http://uranio-235.github.io/etc/pacman.conf"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -411,7 +411,7 @@ queremos llevar a cabo tras una instalación, desinstalación o actualización.<
 
 <p>Digamos por ejemplo, en este caso uno trivial, ejecutar sync cuando termine una
 operación, lo cual evita que si falla la energía en ese momento, queden datos
-por escribirse en la cache disco.</p>
+por escribirse en la cache disco (con suerte).</p>
 
 <figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -843,7 +843,7 @@ que es Made in Brasil&hellip;</p>
 Lo digo porque ese fue uno de los primeros lenguajes que estuve manoseando y No
 creo que halla un buen motivo para escribir algo con él.</p>
 
-<p>¡Pero <a href="https://prosody.im/">Prosody</a>, demuestra que me equivoco!</p>
+<p>¡Pero <a href="https://prosody.im/">Proŝody</a>, demuestra que me equivoco!</p>
 
 <p>La robusteza, simplicidad y el rendimiento de este servidor, quizás sean
 superiores a la de ejabberd (que está escrito en Erlang, un lenguaje aún más
@@ -981,12 +981,13 @@ especial.</p>
     <id>http://uranio-235.github.io/blog/2015/11/29/mc-demora-en-abrir</id>
     <content type="html"><![CDATA[<p>Esta es una nota bien rápida pa que no se me olvide&hellip;</p>
 
-<p>Alguna vez han notado que los midnight commander con soporte operaciones de red
-(especialmente samba) y al arrancarlo, se mete tremendo rato levantando?</p>
+<p>Alguna vez han notado que los midnight commander con soporte para operaciones de
+red (especialmente samba) y al arrancarlo, se mete tremendo rato levantando?
+Pues esta es la razón por la cual debian <em>bota el sofá</em>.</p>
 
 <p><img class="right" src="http://uranio-235.github.io/images/mc.png" title="" ></p>
 
-<p>Pues resulta que buscar el propio hostname de la máquina, se mete tremendo rato
+<p>Resulta que buscar el propio hostname de la máquina, se mete tremendo rato
 haciendo un reverse lookup. Cuando tiene declaro un servidor dns inalcanzable,
 se pone más feo todavía.</p>
 

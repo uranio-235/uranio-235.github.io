@@ -110,7 +110,7 @@ de cada instalación.</p>
 man de alpm-hooks, no dice como deben llamarse los archivos. Tuve que adivinar
 que la extensión <strong>.hook</strong> era necesaria.</p>
 
-<p>Primero que todo, vamos a especificar en <strong>/etc/pacman.con</strong> que el directorio
+<p>Primero que todo, vamos a especificar en <strong>/etc/pacman.conf</strong> que el directorio
 de hooks está en otro lado.</p>
 
 <figure class='code'><figcaption><span>&#8220;escope de</span><a href='/etc/pacman.conf"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -169,7 +169,7 @@ queremos llevar a cabo tras una instalación, desinstalación o actualización.<
 
 <p>Digamos por ejemplo, en este caso uno trivial, ejecutar sync cuando termine una
 operación, lo cual evita que si falla la energía en ese momento, queden datos
-por escribirse en la cache disco.</p>
+por escribirse en la cache disco (con suerte).</p>
 
 <figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -614,7 +614,22 @@ if (location.pathname!='/') {
 
 
 
-Include file &#8216;asides/googleplus.html _includes/google_analytics.html&#8217; contains invalid characters or sequencesIncluded file &#8216;asides/googleplus.html _includes/google_analytics.html&#8217; not found in _includes directory
+
+
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-68987437-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
   
 </aside>
 
