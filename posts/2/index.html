@@ -9,9 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Para este tipo de cosas, usualmente recomiendo
-dnsmasq pero aveces, no nos
-queda más remiendo que usar bind9, por N motivos. En algunas ocasiones, &hellip;">
+  <meta name="description" content="No desde cuando, pero por fin, un sueño echo realidad en ArchLinux. Revertir un
+paquete de su forma instalada, a su forma de paquete. Esto puede no &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +80,142 @@ queda más remiendo que usar bind9, por N motivos. En algunas ocasiones, &hellip
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/02/01/arch-compartir-paquetes/">arch compartir paquetes</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-02-01T13:56:56-05:00'><span class='date'>01/02/2016</span> <span class='time'>1:56 pm</span></time>
+        
+           | <a href="/blog/2016/02/01/arch-compartir-paquetes/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/02/01/arch-compartir-paquetes/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>No desde cuando, pero por fin, un sueño echo realidad en ArchLinux. Revertir un
+paquete de su forma instalada, a su forma de paquete. Esto puede no resultar
+algo novedoso para el que tenga internet como algo cotidiano, pero para los
+cubanos de a pie, resulta una verdadera novedad.</p>
+
+<p>Digamos que mi socio necesita instalar nginx en su arch, misma arquitectura que
+el mío. Simplemente, le genero el paquete a partir de mi instalación y listo.</p>
+
+<figure class='code'><figcaption><span>&#8220;bacman en acción&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@samsung ~<span class="o">]</span><span class="c"># cd /var/cache/pacman/pkg/</span>
+</span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># bacman nginx</span>
+</span><span class='line'><span class="o">==</span>&gt; Package: nginx-1.8.1-1
+</span><span class='line'>  -&gt; Copying package files...
+</span><span class='line'>    -&gt; Generating .PKGINFO metadata...
+</span><span class='line'>    -&gt; Generating the package...
+</span><span class='line'>  <span class="o">==</span>&gt; Done.
+</span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># ls nginx*</span>
+</span><span class='line'>nginx-1.8.1-1-x86_64.pkg.tar.xz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pues <strong>bacman</strong> es la respuesta. Ahora se puede regresar un paquete a su estado;
+digamos &ldquo;pristino&rdquo;.</p>
+
+<p>¡¡OJO!! <strong>TUS</strong> ficheros de configuración, también se empaquetan.</p>
+
+<p>Usualmente solía mantener en mi caché los paquetes necesarios para llevar a cabo
+una instalación de archlinux usando mi laptop; pero con este nuevo método, la
+cosa cambia bastante. Ahora solo debo cargar con el &ldquo;.iso&rdquo;</p>
+
+<p>Mi proxima idea es reconstruir el grupo <strong>base</strong> completo dentro de la cache y
+luego con <strong>repo-add</strong> crear un mirror, capaz de llevar a cabo una instalación
+de sistema.</p>
+
+<p>De momento quiero probar este script:</p>
+
+<figure class='code'><figcaption><span>&#8220;pristine.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># cambiate al directorio de cache</span>
+</span><span class='line'><span class="nb">cd</span> /var/cache/pacman/pkg/
+</span><span class='line'>
+</span><span class='line'><span class="c"># itera por los paquetes del sistema base</span>
+</span><span class='line'><span class="k">for</span> pkg in <span class="k">$(</span>pacman -Qeg base<span class="p">|</span>awk <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span><span class="p">;</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># háblate</span>
+</span><span class='line'>   <span class="nb">echo</span> <span class="nv">$pkg</span> <span class="s1">&#39;&gt;&#39;</span> <span class="k">$(</span>pacman -Qi <span class="nv">$pkg</span><span class="p">|</span>grep Description<span class="p">|</span>cut -d : -f 2<span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># reviértelo</span>
+</span><span class='line'>   bacman <span class="nv">$pkg</span> 2&gt; /dev/null &gt; /dev/null
+</span><span class='line'>
+</span><span class='line'><span class="k">done</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># crea el repo</span>
+</span><span class='line'>rm /var/cache/pacman/pkg/custom.db.tar.gz
+</span><span class='line'>repo-add /var/cache/pacman/pkg/custom.db.tar.gz /var/cache/pacman/pkg/*.pkg.tar.xz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Tendré que probar a instalar usando mi cache como repo. Poniéndole a la máquina
+una source como esta:</p>
+
+<figure class='code'><figcaption><span>&#8220;pacman.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>mirepo<span class="o">]</span>
+</span><span class='line'><span class="nv">SigLevel</span> <span class="o">=</span> Optional TrustAll
+</span><span class='line'><span class="nv">Server</span> <span class="o">=</span> http://localhost:8080
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>Nota para los imbéciles: Cambiar <strong>localhost</strong> por la ip de la máquina que está compartiendo la caché.</em></p>
+
+<p>Y para servir tu cache como repo, puedes usar darkhttpd</p>
+
+<figure class='code'><figcaption><span>&#8220;darkhttpd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>darkhttpd /var/cache/pacman/pkg/ --chroot --port 8080
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -577,63 +712,6 @@ se pone más feo todavía.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/23/desmume-ultralento/">desmume ultralento</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-23T21:37:40-05:00'><span class='date'>23/11/2015</span> <span class='time'>9:37 pm</span></time>
-        
-           | <a href="/blog/2015/11/23/desmume-ultralento/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/23/desmume-ultralento/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Es tremendo mojón departe del desmume, no venir con el compilador JIT activado
-por defecto. Los juegos de DS corren suúuuuper lentos. Pero si corres desmume
-con los siguientes argumentos:</p>
-
-<figure class='code'><figcaption><span>&#8220;desmume&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>desmume  --fwlang<span class="o">=</span><span class="m">5</span> --jit-size<span class="o">=</span><span class="m">100</span> --cpu-mode<span class="o">=</span><span class="m">1</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Se activará el <a href="https://es.wikipedia.org/wiki/Compilaci%C3%B3n_en_tiempo_de_ejecuci%C3%B3n">Compilador en Tiempo de Ejecución</a>
-que tiene desmume y créeme, la mejora es increíble. Tanto que luego se dispara
-de una manera descomunal, así que será necesario limitar el FrameSkip a 60 FPS.</p>
-
-<p><img class="right" src="/images/desmume.png"></p>
-
-<p>Como ven en la imagen, está corriendo Le pokemón negro, y con un micro de 2 mil
-herzios se me monta en los 80fps renderizando 3d. Con la Soul Silver, se me
-monta en +100 fps, ya que las peleas son en 2D.</p>
-
-<p>Te preguntarás por que usar Frameskip entonces. Pues al menos en mi caso, cuando
-el juego renderiza 3D, sin Frameskip, no llega ni a las 40FPS. Por suerte, con
-la opción marcada debajo, ni se siente el frame-skip, cosa que en otros
-emuladores es un dolor.</p>
-
-<p>Por suerte el DS solo puede renderizar 3D en una sola pantalla a la vez. Ah!
-OpenGL es por gusto, desmume pincha arriba del micro.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -653,6 +731,10 @@ OpenGL es por gusto, desmume pincha arriba del micro.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/04/29/reparar-archivos-de-innodb/">reparar archivos de innodb</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/04/01/wpa2-con-freeradius/">WPA2 con freeradius</a>

@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>plymouth boot screen - El SysAdmin del 3er Mundo</title>
+  <title>reparar archivos de innodb - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Sigo con mi plan de &ldquo;civilizarme&rdquo;, me he propuesto dejar de parecer un friki en
-materia de software. He cambiado i3 por MATE (en la &hellip;">
+  <meta name="description" content="Los archivos binarios que almacenan las bases de datos de mysql (percona o
+mariadb) suelen acabar corruptos o dañados por fallos eléctricos. Al mirar &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ materia de software. He cambiado i3 por MATE (en la &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/09/10/plymouth-boot-screen/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2016/04/29/reparar-archivos-de-innodb/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -83,7 +83,7 @@ materia de software. He cambiado i3 por MATE (en la &hellip;">
   
   <header>
     
-      <h1 class="entry-title">plymouth boot screen</h1>
+      <h1 class="entry-title">reparar archivos de innodb</h1>
     
     
       <p class="meta">
@@ -92,7 +92,7 @@ materia de software. He cambiado i3 por MATE (en la &hellip;">
 
 
 
-<time class='entry-date' datetime='2015-09-10T18:28:48-04:00'><span class='date'>10/09/2015</span> <span class='time'>6:28 pm</span></time>
+<time class='entry-date' datetime='2016-04-29T23:22:33-04:00'><span class='date'>29/04/2016</span> <span class='time'>11:22 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -102,187 +102,26 @@ materia de software. He cambiado i3 por MATE (en la &hellip;">
   </header>
 
 
-<div class="entry-content"><p>Sigo con mi plan de &ldquo;civilizarme&rdquo;, me he propuesto dejar de parecer un friki en
-materia de software. He cambiado i3 por MATE (en la máquina personal) e incluso
-tengo un tema en el grub. Intenté cambiar Atom por Vim, evolution por mutt y
-double-cmd por mc; pero por gusto, acabé virando pa atrá.</p>
+<div class="entry-content"><p>Los archivos binarios que almacenan las bases de datos de mysql (percona o
+mariadb) suelen acabar corruptos o dañados por fallos eléctricos. Al mirar el
+log, podemos ver que, a pesar de que la base de datos funciona; por un motivo u
+otro, hay miles de warning y los ficheros binarios se vuelven cada vez más
+frágiles.</p>
 
-<p>Una de las cosas que antes solía molestarme en las distros duras como debian,
-era el hecho de que no tuvieran una pantalla bien bonita mientras buteaban.
-Ubuntu por ejemplo, te pone las bolitas.</p>
+<p>Solución, exportar TODAS las bases de datos un fichero</p>
 
-<p>Archlinux es particularmente rápido buteando, pero aún tenía conmigo mismo la
-deuda del bootscren pendiente.</p>
-
-<p>Resulta que ya splashy no se usa, ahora la talla es un software con nombre de
-almendrón: <strong>Plymouth</strong></p>
-
-<p>Plymouth, es una proyecto de fedora, para proveer una pantalla de buteo a nivel
-de framebuffer. Hoy en día casi todas las distros butean con el framebuffer en
-la máxima resolución posible, así que me imagino que Plymouth sea algo bastante
-simple.</p>
-
-<p>En el repo de arch no está incluido pero como todo, está disponible en AUR. La
-rutina ya la conoces. Selecciona el que dice plymouth pelao.</p>
-
-<figure class='code'><figcaption><span>&#8220;yaourt&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>yaourt plymouth
+<figure class='code'><figcaption><span>&#8220;mysqldump&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mysqldump --all-databases &gt; dumpeo.sql
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Ahora vamos a cambiar unos parámetros en el generador de imágenes de inicio.
-Localiza el fichero <strong>/etc/mkinitcpio.conf</strong> y ahí vamos a cambiar unas
-cosillas.</p>
+<p>Desinstalar mySQL y eliminar los ficheros binarios, generalmente están en
+/var/lib/mysql Por último, instala mySQL y restaura las bases de datos.</p>
 
-<p>Primero necesitaremos poner el <strong>HOOK</strong> para plymouth. La documentación advierte
-que debe ser después de <strong>base</strong> y de <strong>udev</strong>, así que mejor <strong>ponlo de
-último</strong>. Por tanto, dentro de las comillas colocarás <strong>plymouth</strong> como un
-objeto más de dicha lista; como el último.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/mkinitcpio.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">HOOKS</span><span class="o">=</span><span class="s2">&quot;base udev fulanito menganito el_ultimo plymouth&quot;</span>
+<figure class='code'><figcaption><span>&#8220;mysqldump&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mysql &lt; dumpeo.sql
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p><strong>Nota para los imbéciles:</strong> <em>Si copias y pegas el código anterior, el sistema no te arrancará más.</em></p>
-
-<p>Necesitaremos el módulo apropiado para pinchar el framebufer. En mi caso,
-desgraciadamente, uso nvidia, así que me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/mkinitcpio.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">MODULES</span><span class="o">=</span><span class="s2">&quot;nouveau&quot;</span>
-</span><span class='line'><span class="c">#MODULES=&quot;i915&quot;</span>
-</span><span class='line'><span class="c">#MODULES=&quot;radeon&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Fíjate que los demás quedaron a modo de comentario. Te aclaro que <strong>i915</strong> es
-para las tarjetas de video Intel.</p>
-
-<p>Si usas el blob oficial de nvidia, te jodiste. Ni sigas leyendo.</p>
-
-<p>Ahora tenemos que decirle al grub, que incluya el parámetro <strong>splash</strong> en la
-linea de buteo. Eso lo hacemos editando el fichero <strong>/etc/default/grub</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/default/grub&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">GRUB_CMDLINE_LINUX_DEFAULT</span><span class="o">=</span><span class="s2">&quot;quiet splash&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Yo en lo personal suelo quitarle &ldquo;quiet&rdquo; porque me gusta ver lo que hace el
-sistema mientras butea. Aunque ya no da tiempo. Como te dije, los sistemas
-modernos butean MUY rápido. Es más el tiempo en que carga init o el display
-manager, que el de buteo como tal.</p>
-
-<p>Más adelante veremos que hacer para que la pantalla se vea más tiempo, por ahora
-terminemos de configurar. Tanto el grub como initramfs, tienen que reflejar los
-cambios</p>
-
-<figure class='code'><figcaption><span>&#8220;reflejando cambios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>grub-mkconfig -o /boot/grub/grub.cfg
-</span><span class='line'>mkinitcpio -p linux
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Si usas linux-lts, corre:</p>
-
-<figure class='code'><figcaption><span>&#8220;reflejando cambios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkinitcpio -p linux-lts
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Algo que suele molestar, es que el display manager te caiga en la cara de
-pronto. Arch suele manejar bien ese tema, pero por si acaso, nos aseguramos de
-habilitar la unit para cada display manager.</p>
-
-<p>En mi caso yo uso slim y corrí:</p>
-
-<figure class='code'><figcaption><span>&#8220;enable&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl <span class="nb">enable </span>slim-plymouth.service
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Puede que el tuyo sea:</p>
-
-<ul>
-<li>gdm-plymouth.service</li>
-<li>kdm-plymouth.service</li>
-<li>lxdm-plymouth.service</li>
-</ul>
-
-
-<p>Con eso ya debe estar listo para pinchar pero vamos a darle unos toquesitos
-finales.</p>
-
-<p>El fichero <strong>/etc/plymouth/plymouthd.conf</strong> contiene los parámetros de
-configuración del mismo. El mío luce así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/plymouth/plymouthd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/plymouth/plymouthd.conf
-</span><span class='line'><span class="c"># Distribution defaults. Changes to this file will get overwritten during</span>
-</span><span class='line'><span class="c"># upgrades.</span>
-</span><span class='line'><span class="o">[</span>Daemon<span class="o">]</span>
-</span><span class='line'><span class="nv">Theme</span><span class="o">=</span>tribar
-</span><span class='line'><span class="nv">ShowDelay</span><span class="o">=</span>2
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El parámetro <strong>ShowDelay</strong>, define que tiempo se mostrará la pantalla. Como ya
-te dije, arch a mi me butea en segundos. Si pones 5 ahí, la pantalla de buteo se
-mostrará cinco segundos. Dos buteando y otros tres pa que tu la mires mostrando
-su animación.</p>
-
-<p>Yo cuando terminé de verla correr la primera vez; desinstalé plymouth. No me
-interesa tener 2 segundos adicionales de media por el mero hecho de que sea más
-bonito.</p>
-
-<p>El otro parámetro, <strong>Theme</strong>, setea el tema que usarás. Para ver que temas
-tienes en el menú, corre:</p>
-
-<figure class='code'><figcaption><span>&#8220;plymouth-set-default-theme&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>plymouth-set-default-theme -l
-</span><span class='line'>details
-</span><span class='line'>fade-in
-</span><span class='line'>glow
-</span><span class='line'>script
-</span><span class='line'>solar
-</span><span class='line'>spinfinity
-</span><span class='line'>spinner
-</span><span class='line'>text
-</span><span class='line'>tribar
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A mi me gustó &ldquo;tribar&rdquo; y el que viene por defecto también está lindo, pero es
-una copia al carbón de MacOS.</p>
-
-<h4>OJO!</h4>
-
-<p>Cada vez que cambies un parámetro ahí, debes correr &ldquo;mkinitcpio -p&rdquo;</p>
-
-<p>Ah! Una cosita, si en algún momento quieres ver lo que está haciendo el kernel
-por detrás de plymouth, presiona &ldquo;home&rdquo; mientras butea.</p>
-
-<p>Eso es todo. ¡Reinicia!</p>
-
-<p>   <blockquote><p>Si no te queda bueno, al menos que te quede lindo.</p><footer><strong>Bill Gates</strong></footer></blockquote></p>
 </div>
 
 
@@ -298,7 +137,7 @@ por detrás de plymouth, presiona &ldquo;home&rdquo; mientras butea.</p>
 
 
 
-<time class='entry-date' datetime='2015-09-10T18:28:48-04:00'><span class='date'>10/09/2015</span> <span class='time'>6:28 pm</span></time>
+<time class='entry-date' datetime='2016-04-29T23:22:33-04:00'><span class='date'>29/04/2016</span> <span class='time'>11:22 pm</span></time>
       
 
 
@@ -306,7 +145,7 @@ por detrás de plymouth, presiona &ldquo;home&rdquo; mientras butea.</p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/09/10/plymouth-boot-screen/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/09/10/plymouth-boot-screen/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2016/04/29/reparar-archivos-de-innodb/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2016/04/29/reparar-archivos-de-innodb/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -319,10 +158,8 @@ por detrás de plymouth, presiona &ldquo;home&rdquo; mientras butea.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/09/07/git-clone-rapido/" title="Previous Post: git clone rápido">&laquo; git clone rápido</a>
+        <a class="basic-alignment left" href="/blog/2016/04/01/wpa2-con-freeradius/" title="Previous Post: WPA2 con freeradius">&laquo; WPA2 con freeradius</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2015/09/17/dhcp-por-grupos/" title="Next Post: dhcp por grupos">dhcp por grupos &raquo;</a>
       
     </p>
   </footer>
@@ -679,8 +516,8 @@ if (location.pathname!='/') {
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2015/09/10/plymouth-boot-screen/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2015/09/10/plymouth-boot-screen/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2016/04/29/reparar-archivos-de-innodb/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2016/04/29/reparar-archivos-de-innodb/';
         var disqus_script = 'embed.js';
       
     (function () {

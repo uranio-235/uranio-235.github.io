@@ -9,8 +9,7 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="De siempre, me ha gustado la paginita que pone ruby on rails en &ldquo;/&rdquo;. Pero
-sucede que en producción esto no sale. Sería genial tener eso &hellip;">
+  <meta name="description" content="Parece que a mi paisanos, la portabilidad les resulta un problemón. Sienten una imperiosa necesidad de desarollar aplicaciones que corran en &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +79,212 @@ sucede que en producción esto no sale. Sería genial tener eso &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/01/bundle/">bundle</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-01T11:40:20-05:00'><span class='date'>01/02/2015</span> <span class='time'>11:40 am</span></time>
+        
+           | <a href="/blog/2015/02/01/bundle/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/01/bundle/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Parece que a mi paisanos, la portabilidad les resulta un problemón.</p>
+
+<p>Sienten una imperiosa necesidad de desarollar aplicaciones que corran en
+cualquier máquina. (yo prefiero una aplicación web que corra en la mia).
+Recién varios me han comentado que con ruby, la dependencias de gemas es un
+problema, a la hora de mover una aplicación.</p>
+
+<h3><a href="http://bundler.io/">PARECE QUE NO CONOCEN BUNDLER!!!</a></h3>
+
+<p>Bundler se describe a si mismo como:</p>
+
+<p><img class="center" src="/images/gembundler.png"></p>
+
+<p>Que además, es usado por muchísimas aplicaciones de Ruby.</p>
+
+<p>Bueno, veamos un ejemplo sencillo. Supongamos que tenemos la aplicacion y
+queremos que esta se distribuya en una o varias maquinas que solo cuentan con
+Ruby instalado.</p>
+
+<p>Bundler usa los llamados <a href="http://bundler.io/gemfile.html">Gemfiles</a> para manejar
+las dependencias de tu gema. Entonces. Empacaremos una aplicación con sinatra
+(un framework web sencillo).</p>
+
+<p>Creamos el directorio con la aplicacion:</p>
+
+<figure class='code'><figcaption><span>&#8220;nueva app&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~<span class="nv">$ </span>mkdir proyecto
+</span><span class='line'>lazaro@leviatan:~<span class="nv">$ </span><span class="nb">cd </span>proyecto/
+</span><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span>touch Gemfile
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si no, haces el procedimiento normal en TU máquina</p>
+
+<figure class='code'><figcaption><span>&#8220;instalar bundler&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~<span class="nv">$ </span>gem in bundler
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En el gemfile, declaramos dos cosas básicas. El source (donde están las gemas) y
+las gemas. Supongamos que tiene acceso a internet (como es lógico pero poco usual).
+Su suorce sería así:</p>
+
+<figure class='code'><figcaption><span>&#8216;source&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;https://rubygems.org&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero si no tiene, supongamos que tiene el repo de gemas en una memoria, montada
+en /media/memoria/</p>
+
+<figure class='code'><figcaption><span>&#8216;source&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;file:///media/memoria/ruby/repo/&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Bueno, el gemfile de este ejemplo, usara las gemas de mi repo en la memoria. A
+mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>Gemfile </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;file:///media/sdb1/ruby/repo/&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;sinatra&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Si nada de eso te juega, puede usar &ndash;local y usara tu cache de gemas :D</h3>
+
+<p>Obviamente, también empaquetaremos bunlder, porque allá puede que no esté.</p>
+
+<figure class='code'><figcaption><span>&#8220;bundler install&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span>bundler ins --standalone
+</span><span class='line'>Fetching <span class="nb">source </span>index from file:/media/sdb1/ruby/repo/
+</span><span class='line'>Resolving dependencies...
+</span><span class='line'>Using bundler 1.7.2
+</span><span class='line'>Installing rack 1.5.2
+</span><span class='line'>Installing rack-protection 1.5.3
+</span><span class='line'>Installing tilt 1.4.1
+</span><span class='line'>Installing sinatra 1.4.5
+</span><span class='line'>Your bundle is <span class="nb">complete</span>!
+</span><span class='line'>It was installed into ./bundle
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>AY que lindo!!! Todo se empaquetó! Por si no lo notaste, el logo de bundler es
+un rollo de makingtype, lo que usa pa sellar las cajas, solo le falta la
+etiqueta que diga: &ldquo;listo para exportar&rdquo;</p>
+
+<p>Bueno, creamos una aplicación estupidamente simple con sinatra.</p>
+
+<figure class='code'><figcaption><span>aplicacion.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># he aquí el toque mágico</span>
+</span><span class='line'><span class="n">require_relative</span> <span class="s1">&#39;../bundle/bundler/setup&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;sinatra&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">get</span> <span class="s1">&#39;/&#39;</span> <span class="k">do</span>
+</span><span class='line'>   <span class="s1">&#39;Tírame la musiquita Frank!&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Debes tener algo como esto en el directorio</p>
+
+<figure class='code'><figcaption><span>&#8221;~/proyecto&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span>ls
+</span><span class='line'>aplicacion.rb Gemfile  Gemfile.lock bundle
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y listo, distruibuimos nuestra aplicaion en la computadora tercermundista sin
+acceso a internet.</p>
+
+<p>DIN DON DEN DIN! pasajeros con destino a donde el diablo dio las 7 voces y
+nadie lo escuchó; por favor, abordar el tren por el andén número 4. NO olviden
+llevar la memoria flash con la aplicacion.</p>
+
+<figure class='code'><figcaption><span>&#8220;empacando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span><span class="nb">cd</span> ..
+</span><span class='line'>lazaro@leviatan:~<span class="nv">$ </span>cp -ruv proyecto/ /media/sdb1/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al fin, voy a estrenar mi juguete nuevo, un Raspberry Pi :D</p>
+
+<p>Llegamos al destino, montamos la memoria y ejecutamos la aplicacion DESDE
+BUNLDER.</p>
+
+<figure class='code'><figcaption><span>&#8220;empacando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pi@raspberry:~/proyecto<span class="nv">$ </span>ruby aplicacion.rb
+</span><span class='line'><span class="o">[</span>2015-02-01 12:43:34<span class="o">]</span> INFO  WEBrick 1.3.1
+</span><span class='line'><span class="o">[</span>2015-02-01 12:43:34<span class="o">]</span> INFO  ruby 2.2.0 <span class="o">(</span>2014-12-25<span class="o">)</span> <span class="o">[</span>i686-linux<span class="o">]</span>
+</span><span class='line'><span class="o">==</span> Sinatra/1.4.5 has taken the stage on <span class="m">4567</span> <span class="k">for</span> development with backup from
+</span><span class='line'>WEBrick
+</span><span class='line'><span class="o">[</span>2015-02-01 12:43:34<span class="o">]</span> INFO  WEBrick::HTTPServer#start: <span class="nv">pid</span><span class="o">=</span><span class="m">4741</span> <span class="nv">port</span><span class="o">=</span>4567
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A ver&hellip;</p>
+
+<figure class='code'><figcaption><span>&#8220;1, 2, 3, Probando&#8230;&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pi@raspberry:~<span class="nv">$ </span>w3m -dump http://localhost:4567
+</span><span class='line'>Tírame la musiquita Frank!
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Opensource y Cross Plataform</h3>
+
+<p>Señores, el código compilado APESTA!!!!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -629,64 +834,6 @@ infomed me dijeron que fuera al &ldquo;GAU&rdquo; para renovar el contrato.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/25/mas-de-ocs/">más de OCS</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-08-25T10:01:09-04:00'><span class='date'>25/08/2014</span> <span class='time'>10:01 am</span></time>
-        
-           | <a href="/blog/2014/08/25/mas-de-ocs/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/08/25/mas-de-ocs/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Con este script, se toman los datos de /opt/samba/ocs y se inyectan en la base
-de datos central de manera automatizada.</p>
-
-<figure class='code'><figcaption><span>&#8220;/usr/local/bin/ocs.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># posicionate en el directorio</span>
-</span><span class='line'>mkdir -p /opt/samba/ocs
-</span><span class='line'><span class="nb">cd</span> /opt/samba/ocs
-</span><span class='line'>
-</span><span class='line'><span class="c"># itera en los ficheros .ocs y cárgalos</span>
-</span><span class='line'><span class="k">for</span> ocs in /opt/samba/ocs/*.ocs<span class="p">;</span> <span class="k">do</span>
-</span><span class='line'>   <span class="nb">echo</span> <span class="k">$(</span><span class="nb">echo</span> <span class="nv">$ocs</span><span class="p">|</span>cut -d / -f 5<span class="k">)</span>
-</span><span class='line'>   ocsinventory-injector.pl -r -f <span class="s2">&quot;$ocs&quot;</span>
-</span><span class='line'><span class="k">done</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/10">&larr; Older</a>
@@ -706,6 +853,10 @@ de datos central de manera automatizada.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/04/29/reparar-archivos-de-innodb/">reparar archivos de innodb</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/04/01/wpa2-con-freeradius/">WPA2 con freeradius</a>

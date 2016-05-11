@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Ya hemos visto en varios post, que para hacer un servicio con SSL, requerimos un
-certificado autofirmado. De ahora en lo adelante, no pienso repetir &hellip;">
+  <meta name="description" content="Es tremendo mojón departe del desmume, no venir con el compilador JIT activado
+por defecto. Los juegos de DS corren suúuuuper lentos. Pero si corres &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,63 @@ certificado autofirmado. De ahora en lo adelante, no pienso repetir &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/23/desmume-ultralento/">desmume ultralento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-23T21:37:40-05:00'><span class='date'>23/11/2015</span> <span class='time'>9:37 pm</span></time>
+        
+           | <a href="/blog/2015/11/23/desmume-ultralento/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/23/desmume-ultralento/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Es tremendo mojón departe del desmume, no venir con el compilador JIT activado
+por defecto. Los juegos de DS corren suúuuuper lentos. Pero si corres desmume
+con los siguientes argumentos:</p>
+
+<figure class='code'><figcaption><span>&#8220;desmume&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>desmume  --fwlang<span class="o">=</span><span class="m">5</span> --jit-size<span class="o">=</span><span class="m">100</span> --cpu-mode<span class="o">=</span><span class="m">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Se activará el <a href="https://es.wikipedia.org/wiki/Compilaci%C3%B3n_en_tiempo_de_ejecuci%C3%B3n">Compilador en Tiempo de Ejecución</a>
+que tiene desmume y créeme, la mejora es increíble. Tanto que luego se dispara
+de una manera descomunal, así que será necesario limitar el FrameSkip a 60 FPS.</p>
+
+<p><img class="right" src="/images/desmume.png"></p>
+
+<p>Como ven en la imagen, está corriendo Le pokemón negro, y con un micro de 2 mil
+herzios se me monta en los 80fps renderizando 3d. Con la Soul Silver, se me
+monta en +100 fps, ya que las peleas son en 2D.</p>
+
+<p>Te preguntarás por que usar Frameskip entonces. Pues al menos en mi caso, cuando
+el juego renderiza 3D, sin Frameskip, no llega ni a las 40FPS. Por suerte, con
+la opción marcada debajo, ni se siente el frame-skip, cosa que en otros
+emuladores es un dolor.</p>
+
+<p>Por suerte el DS solo puede renderizar 3D en una sola pantalla a la vez. Ah!
+OpenGL es por gusto, desmume pincha arriba del micro.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -965,118 +1022,6 @@ NetworkManager.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/18/systemd-timesyncd/">systemd-timesyncd</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-10-18T13:19:01-04:00'><span class='date'>18/10/2015</span> <span class='time'>1:19 pm</span></time>
-        
-           | <a href="/blog/2015/10/18/systemd-timesyncd/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/18/systemd-timesyncd/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Mantener un reloj sincronizado y en hora, siempre ha sido un dilema. Algunas
-personas no reconocen la necesidad de esto; y además son tan imbéciles, que
-luego se quejan cuando la desfasada fecha de su computadora les impide
-conectarse a un sitio SSL.</p>
-
-<p>En los servidores y en las estaciones de trabajo que se respeten; siempre ha
-sido una opción usar un cliente NTP. Pero los ntp, cuando la fecha no está en el
-día adecuado, no se toman la molestia de sincronizar. En los raspberry-pi eso
-puede llegar a ser un tremendo problema, ya que NO tienen reloj de hardware y ni
-siquiera conservan la fecha.</p>
-
-<p>El tan criticado <a href="https://es.wikipedia.org/wiki/Systemd">Systemd</a>, tiene una
-solución para este problema. Sucia y burda, pero muy eficiente. Normalmente, los
-&ldquo;clientes&rdquo; <a href="https://es.wikipedia.org/wiki/Network_Time_Protocol">NTP</a>, son
-cliente y servidor. En el caso de systemd-timsyncd, no se tomaron la molestia de
-implementar un servidor; solamente un cliente minimalista. Además, guarda las
-sincronizaciones en un fichero, para determinar si tu reloj de hardware se
-adelante o atraza y contrarrestar dicho efecto.</p>
-
-<p>Lo bueno que tiene es que agarra la fecha y hora de cualquier parte; luego, la
-setea sin chistar. La configuración es sencillísima. Localiza el fichero:</p>
-
-<p><strong>/etc/systemd/timesyncd.conf</strong></p>
-
-<p>Declárale un servidor principal y si te da la gana, uno o varios adicionales. A
-mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>/etc/systemd/timesyncd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#  This file is part of systemd.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#  systemd is free software; you can redistribute it and/or modify it</span>
-</span><span class='line'><span class="c">#  under the terms of the GNU Lesser General Public License as published by</span>
-</span><span class='line'><span class="c">#  the Free Software Foundation; either version 2.1 of the License, or</span>
-</span><span class='line'><span class="c">#  (at your option) any later version.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># You can override the directives in this file by creating files in</span>
-</span><span class='line'><span class="c"># /etc/systemd/timesyncd.conf.d/*.conf.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># See timesyncd.conf(5) for details</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Time<span class="o">]</span>
-</span><span class='line'><span class="nv">NTP</span><span class="o">=</span>time.hcg.sld.cu
-</span><span class='line'><span class="nv">FallbackNTP</span><span class="o">=</span>time.sld.cu time.microsoft.com
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Generalmente, mi laptop está en el calixto, por eso puse mi servidor local como
-primario; pero si no lo estuviera, de seguro <strong>time.sld.cu</strong> sería alcanzable. En
-el dificilísimo caso de que estuviera de cara a internet, quizás responda el de
-microsoft, que no está malo. Por cierto, los comentarios del fichero son
-bastante útiles, vale la pena leerlos.</p>
-
-<p>Por último, lo más importante, habilitar y arrancar el servicio:</p>
-
-<p>systemctl <strong>start</strong> systemd-timesyncd.service</p>
-
-<p>systemctl <strong>enable</strong> systemd-timesyncd.service</p>
-
-<p>Para saber el estado del servicio, corre:</p>
-
-<p><strong>timedatectl</strong></p>
-
-<p>Te dirá la hora local y la UTC; te dirá además si está sincronizando por NTP.
-Con ese comando puede hacer un montón de operaciones, por ejemplo, setear la
-hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.org/wiki/Reloj_en_tiempo_real">RTC</a> también.</p>
-
-<p>   <blockquote><p>No existe juez más justo, que el pasar del tiempo.</p></blockquote></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -1096,6 +1041,10 @@ hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.or
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/04/29/reparar-archivos-de-innodb/">reparar archivos de innodb</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/04/01/wpa2-con-freeradius/">WPA2 con freeradius</a>

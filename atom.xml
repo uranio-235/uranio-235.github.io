@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-04-14T11:55:36-04:00</updated>
+  <updated>2016-05-11T17:58:22-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,34 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[reparar archivos de innodb]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/04/29/reparar-archivos-de-innodb/"/>
+    <updated>2016-04-29T23:22:33-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/04/29/reparar-archivos-de-innodb</id>
+    <content type="html"><![CDATA[<p>Los archivos binarios que almacenan las bases de datos de mysql (percona o
+mariadb) suelen acabar corruptos o dañados por fallos eléctricos. Al mirar el
+log, podemos ver que, a pesar de que la base de datos funciona; por un motivo u
+otro, hay miles de warning y los ficheros binarios se vuelven cada vez más
+frágiles.</p>
+
+<p>Solución, exportar TODAS las bases de datos un fichero</p>
+
+<figure class='code'><figcaption><span>&#8220;mysqldump&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mysqldump --all-databases &gt; dumpeo.sql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Desinstalar mySQL y eliminar los ficheros binarios, generalmente están en
+/var/lib/mysql Por último, instala mySQL y restaura las bases de datos.</p>
+
+<figure class='code'><figcaption><span>&#8220;mysqldump&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mysql &lt; dumpeo.sql
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[WPA2 con freeradius]]></title>
@@ -1941,141 +1969,6 @@ ponerle inmutable podría causar fallos en la aplicación.</p>
 fíjese que está junto a los lease del DHCP. No tengo certeza de que modificando
 esa configuración manualmente esta persista; pero ya llevo una semana con el
 problema resuelto.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[repo de fdroid]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/10/15/repo-de-fdroid/"/>
-    <updated>2015-10-15T14:38:20-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/10/15/repo-de-fdroid</id>
-    <content type="html"><![CDATA[<p>&ldquo;La que se avecina&rdquo;, sería una buena manera para describir la revolución de
-aparatos con android que habrá en el Calixto García muy pronto. Yo siempre con
-el paso al frente y las luz larga (modestia y aparte) estuve pensando que tener
-nuestro propio repositorio de aplicaciones para android; sería una buena manera
-de mantener a todo el mundo bien actualizado, sobre todo a aquellos que no
-tienen acceso a internet.</p>
-
-<p>Para el que no lo conozca, <a href="https://f-droid.org/">fdroid</a> es una herramienta
-cliente para repositorios de android, osea como google market pero libre.</p>
-
-<p>La mecánica es sencilla: Bajo los paquetes con
-<a href="http://www.aptoide.com">aptoide</a>, verifico que sean seguros y copio la cache
-para el directorio repo/ de fdroid en el servidor con <a href="https://acrosync.com/">acrosync</a></p>
-
-<p>En el repo de debian y en AUR, el paquete se llama <strong>fdroidserver</strong>. La rutina
-de instalación ya la conoces.</p>
-
-<p>Creamos el directorio donde meteremos el repo, en mi caso, aquí:</p>
-
-<figure class='code'><figcaption><span>mkdir</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -p /srv/http/fdroid/repo
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Creamos la configuración de nginx, a mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>nginx.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>server <span class="o">{</span>
-</span><span class='line'>     listen   10.1.1.14:80<span class="p">;</span>
-</span><span class='line'>     listen   10.1.1.14:443 ssl<span class="p">;</span>
-</span><span class='line'>     server_name android.hcg.sld.cu<span class="p">;</span>
-</span><span class='line'>     location / <span class="o">{</span>
-</span><span class='line'>     root /srv/http/fdroid/repo/<span class="p">;</span>
-</span><span class='line'>     <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Un virtualhost nombrado <em>android</em>. <strong>No olvide crear el puntero DNS</strong></p>
-
-<p>Ahora, ve al directorio raíz del repo, OJO <strong>A LA RAIZ</strong>, NO a donde dice repo/.</p>
-
-<figure class='code'><figcaption><span>fdroid</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /srv/http/fdroid/
-</span><span class='line'>fdroid init
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Te preguntará por la <strong>android-sdk</strong>, por lo general, está en /opt/android-sdk,
-dale la ruta.</p>
-
-<p>¿¿No tienes la SDK de android?? Ah pues estás muy jodio&hellip; En el caso de arch,
-el repo de bbqlinux contiene la sdk completa, solo para 64 bits.</p>
-
-<p>Pero volviendo con fdroid:</p>
-
-<p>Ahora debe habérse creado el directorio <strong>repo/</strong> dentro del directorio
-<strong>/srv/http/fdroid</strong> y es ahí donde copiarás las APK.</p>
-
-<p>cp /donde/esten/tus/*.apk /srv/http/fdroid/<strong>repo/</strong></p>
-
-<p>Pero claro, querrás que tu repo se identifique.  El fichero
-<strong>/srv/http/fdroid/config.py</strong> contiene lo que buscas. Por la linea trenta y
-pico; a mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>config.py</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">...</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">repo_url</span> <span class="o">=</span> <span class="s">&quot;http://android.hcg.sld.cu&quot;</span>
-</span><span class='line'><span class="n">repo_name</span> <span class="o">=</span> <span class="s">&quot;Calixto Garcia&quot;</span>
-</span><span class='line'><span class="n">repo_icon</span> <span class="o">=</span> <span class="s">&quot;calixto_xsm.png&quot;</span>
-</span><span class='line'><span class="n">repo_description</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
-</span><span class='line'><span class="s">Repositorio de aplicaciones de android del calixto. Intentaremos proveerle</span>
-</span><span class='line'><span class="s">aplicaciones debidamente actualizadas. Sientase libre de colaborar, trayendonos</span>
-</span><span class='line'><span class="s">las mas recientes APK.</span>
-</span><span class='line'><span class="s">&quot;&quot;&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">...</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ah! y sin tildes, si no, python se vuelve loco con el encoding.</p>
-
-<p>Ahora vamos a crear el índice inicial, pero eso mismo comando lo correrás cuando
-agregues aplicaciones a tu repo.</p>
-
-<figure class='code'><figcaption><span>fdroid</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>fdroid update --create-metadata
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>OJO!! Asegúrate de que las APK no tengan un espacio en su nombre; muchísimo
-menos un caracter raro. Si todo salió bien debes ver algo como &ldquo;Generating
-metada&rdquo;.</p>
-
-<p>Con eso terminaste el servidor&hellip; Ve a fdroid y ponle la URL del virtualhost
-como repo, luego update y listo&hellip;</p>
-
-<p>¿Cómo se hace? Facilito. Párate en la primer pantalla, aprieta el botón de menú
-del dispositivo y toca donde dice &ldquo;Gestionar Repositorios&rdquo; o en inglés, &ldquo;Manage
-Repos&rdquo;</p>
-
-<p>Desactiva los respos inalcanzables y añade tu repo local. Luego actualiza y
-listo, verás las aplicaciones disponibles.</p>
-
-<p>Ya solo te quedaría instalar un rsync que desemboque en el repo y con
-<a href="https://acrosync.com/">acrosync</a> subes la cache de aptotide para el repo, así
-como lo estoy haciendo yo ahora.</p>
 ]]></content>
   </entry>
   
