@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-05-11T17:58:22-04:00</updated>
+  <updated>2016-05-12T13:22:31-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -18,7 +18,9 @@
     <link href="http://uranio-235.github.io/blog/2016/04/29/reparar-archivos-de-innodb/"/>
     <updated>2016-04-29T23:22:33-04:00</updated>
     <id>http://uranio-235.github.io/blog/2016/04/29/reparar-archivos-de-innodb</id>
-    <content type="html"><![CDATA[<p>Los archivos binarios que almacenan las bases de datos de mysql (percona o
+    <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/hypno.png"></p>
+
+<p>Los archivos binarios que almacenan las bases de datos de mysql (percona o
 mariadb) suelen acabar corruptos o dañados por fallos eléctricos. Al mirar el
 log, podemos ver que, a pesar de que la base de datos funciona; por un motivo u
 otro, hay miles de warning y los ficheros binarios se vuelven cada vez más
