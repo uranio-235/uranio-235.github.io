@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Es tremendo mojón departe del desmume, no venir con el compilador JIT activado
-por defecto. Los juegos de DS corren suúuuuper lentos. Pero si corres &hellip;">
+  <meta name="description" content="Esta es una nota bien rápida pa que no se me olvide&hellip; Alguna vez han notado que los midnight commander con soporte para operaciones de
+red ( &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,50 @@ por defecto. Los juegos de DS corren suúuuuper lentos. Pero si corres &hellip;"
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/29/mc-demora-en-abrir/">mc demora en abrir</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-29T19:37:00-05:00'><span class='date'>29/11/2015</span> <span class='time'>7:37 pm</span></time>
+        
+           | <a href="/blog/2015/11/29/mc-demora-en-abrir/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/29/mc-demora-en-abrir/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Esta es una nota bien rápida pa que no se me olvide&hellip;</p>
+
+<p>Alguna vez han notado que los midnight commander con soporte para operaciones de
+red (especialmente samba) y al arrancarlo, se mete tremendo rato levantando?
+Pues esta es la razón por la cual debian <em>bota el sofá</em>.</p>
+
+<p><img class="right" src="/images/mc.png" title="" ></p>
+
+<p>Resulta que buscar el propio hostname de la máquina, se mete tremendo rato
+haciendo un reverse lookup. Cuando tiene declaro un servidor dns inalcanzable,
+se pone más feo todavía.</p>
+
+<p>Solución. Pon tu propio hostname en <strong>/etc/hosts</strong> junto a localhost</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -814,214 +858,6 @@ ver con SSL, declarando esto:</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/20/compartir-la-wifi/">compartir la wifi</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-10-20T23:36:19-04:00'><span class='date'>20/10/2015</span> <span class='time'>11:36 pm</span></time>
-        
-           | <a href="/blog/2015/10/20/compartir-la-wifi/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/20/compartir-la-wifi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="right" src="/images/23_gente.jpg" width="300" height="500" title="" ></p>
-
-<p>Cada vez que paso por
-<a href="http://www.ecured.cu/index.php/Calle_23_%28Vedado%29">23</a>, me cuentro mil y una
-red cuyo ESSID tiene el sufijo <strong>Conectify</strong> delante. Insultado por semejante
-derroche de windows, le comentaba a un colega, que daba tristeza no ver un
-linuxero ahí conectado.</p>
-
-<p>El socio me dijo: -en linux no se puede compartir la wifi</p>
-
-<p>PA DARLE POR LA CARA!</p>
-
-<p>Dos paquetes nada más que hacen falta: <strong>iw</strong>, <strong>hostapd</strong></p>
-
-<p>La idea es:</p>
-
-<ul>
-<li>crear una interfaz wifi como estacion</li>
-<li>crear una interfaz wifi como AP</li>
-<li>crear un interfaz bridge (puente)</li>
-<li>declarar que la interfaz de salida del puente, es la estación</li>
-<li>echar a andar el AP por software</li>
-</ul>
-
-
-<h3>¿SE ENTENDIÓ?</h3>
-
-<p>Si tienes el puñetero NetworkManager corriendo, este es un buen momento para
-pararlo.</p>
-
-<p>La interfaz que usualmente vez como <strong>wlan0</strong> es en realidad <strong>phy0</strong>. ¿Quieres
-verlo? Corre esto:</p>
-
-<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw dev wlan0 del
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>¿Te fijaste que<strong> wlan0</strong> desapareció? No te preocupes, puedes volver a crearla.
-Así:</p>
-
-<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw phy phy0 interface add estacion0 <span class="nb">type </span>station
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como mismo hicimos una estación, podemos hacer un AP.</p>
-
-<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw phy phy0 interface add hotspot0 <span class="nb">type </span>__ap
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora creamos la interfaz de puente y le asignamos a <strong>wlan0</strong> como extremo de
-salida.</p>
-
-<figure class='code'><figcaption><span>br0</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip link add name br0 <span class="nb">type </span>bridge
-</span><span class='line'>iw dev estacion0 <span class="nb">set </span>4addr on
-</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 promisc on
-</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 up
-</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 master br0
-</span><span class='line'>ip link <span class="nb">set </span>up dev br0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En letra de molde:</p>
-
-<ul>
-<li>crea un bridge llamado br0</li>
-<li>dile que lleva ipv4 (requerido, no se por qué)</li>
-<li>pon la interfaz en modo promiscuo</li>
-<li>levanta el enlace de estaicon0</li>
-<li>coloca a estacion0 como interfaz de salida del túnel</li>
-<li>levanta el bridge</li>
-</ul>
-
-
-<p>Ahora viene lo más importante, el AP. El fichero <strong>/etc/hostapd/hostapd.conf</strong>
-contendrá la configuración de nuestros AP. A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>/etc/hostapd/hostapd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># el nombre de tu wifi</span>
-</span><span class='line'><span class="nv">ssid</span><span class="o">=</span>Linux
-</span><span class='line'>
-</span><span class='line'><span class="c"># la contraseña de tu wifi</span>
-</span><span class='line'><span class="nv">wpa_passphrase</span><span class="o">=</span>secretisisimo
-</span><span class='line'>
-</span><span class='line'><span class="c"># la interfaz de red que hará de AP</span>
-</span><span class='line'><span class="nv">interface</span><span class="o">=</span>hostspot0
-</span><span class='line'>
-</span><span class='line'><span class="c"># el puente al que se acoplará</span>
-</span><span class='line'><span class="nv">bridge</span><span class="o">=</span>br0
-</span><span class='line'>
-</span><span class='line'><span class="c"># el canal, lo puede seleccionar manual</span>
-</span><span class='line'><span class="c"># pero un valor de 0, hará el survey.</span>
-</span><span class='line'><span class="c"># Mejor que el ap lo seleccione, así</span>
-</span><span class='line'><span class="c"># no chocas con ningún canal de etecsa en 23</span>
-</span><span class='line'><span class="c"># y aprovechemos ahora que podemos hacer lo</span>
-</span><span class='line'><span class="c"># que nos de la gana con el espectro radioeléctrico</span>
-</span><span class='line'><span class="nv">channel</span><span class="o">=</span>0
-</span><span class='line'>
-</span><span class='line'><span class="c"># no toques más nada de aquí pa abajo</span>
-</span><span class='line'><span class="nv">auth_algs</span><span class="o">=</span>3
-</span><span class='line'><span class="nv">driver</span><span class="o">=</span>nl80211
-</span><span class='line'><span class="nv">hw_mode</span><span class="o">=</span>g
-</span><span class='line'><span class="nv">logger_stdout</span><span class="o">=</span>-1
-</span><span class='line'><span class="nv">logger_stdout_level</span><span class="o">=</span>2
-</span><span class='line'><span class="nv">max_num_sta</span><span class="o">=</span>5
-</span><span class='line'><span class="nv">rsn_pairwise</span><span class="o">=</span>CCMP
-</span><span class='line'><span class="nv">wpa</span><span class="o">=</span>2
-</span><span class='line'><span class="nv">wpa_key_mgmt</span><span class="o">=</span>WPA-PSK
-</span><span class='line'><span class="nv">wpa_pairwise</span><span class="o">=</span>TKIP CCMP
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>y arráncalo:</p>
-
-<figure class='code'><figcaption><span>systemctl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl start hostapd
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Desde entonces, lo que se conecte a tu wifi con ESSID &ldquo;Linux&rdquo; en este caso, irá
-a dar a la red que tengas conectada en tu Wifi. En este caso la red de br0, cuyo
-otro extremo sería la wifi de etecsa.</p>
-
-<p>Lo mismo puede hacer cambiando el extremo del tunel. Por ejemplo, con eth0
-saldría hacia una red cableada. Una manera de meter una WiFi en una red.</p>
-
-<h4>Además</h4>
-
-<p>De esta misma forma, si tuvieras dos tarjetas wifi, pones una como AP y le pones
-la otra como extremo del puente.</p>
-
-<h4>OJO</h4>
-
-<p>Otra cosa, si tienes corriendo el <strong>NetworkManager</strong> no podrás echar a andar
-<strong>hostapd</strong>. Páralo, arranca hostapd y vuelve a hechar a andar el
-NetworkManager.</p>
-
-<p>   <blockquote><p>La técnica es la técnica y sin técnica, no hay técnica.</p><footer><strong>Teófilo Stevenson</strong> <cite><a href='https://es.wikipedia.org/wiki/Te%C3%B3filo_Stevenson'>Boxeador Cubano</a></cite></footer></blockquote></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -1041,6 +877,10 @@ NetworkManager.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/05/12/deshabilitar-historial-de-bash/">deshabilitar historial de bash</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/04/29/reparar-archivos-de-innodb/">reparar archivos de innodb</a>

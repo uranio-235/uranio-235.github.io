@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-05-12T13:25:59-04:00</updated>
+  <updated>2016-05-12T14:41:04-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,27 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[deshabilitar historial de bash]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/05/12/deshabilitar-historial-de-bash/"/>
+    <updated>2016-05-12T14:34:13-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/05/12/deshabilitar-historial-de-bash</id>
+    <content type="html"><![CDATA[<p>Alguna vez han pensado, que en algunos servidores o estaciones, en las cual
+trabajan múltiples personas remotamente via consola; el historial de comandos
+puede llegar a ser un problema???</p>
+
+<p>Pues deshabilítalo. En el fichero <strong>/etc/environment</strong> ponle</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/environment&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>   <span class="nb">export </span><span class="nv">HISTFILE</span><span class="o">=</span>/dev/null
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La próxima vez que etres, la función historial será deshabilitada. OJO!!! <strong>LA
+PRÓXIMA VEZ</strong> esta sesión aún salva historial&hellip; Sale y vuelve a entrar.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[reparar archivos de innodb]]></title>
@@ -1917,63 +1938,6 @@ Con ese comando puede hacer un montón de operaciones, por ejemplo, setear la
 hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.org/wiki/Reloj_en_tiempo_real">RTC</a> también.</p>
 
 <p>   <blockquote><p>No existe juez más justo, que el pasar del tiempo.</p></blockquote></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[palo con la wifi]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/10/16/palo-con-la-wifi/"/>
-    <updated>2015-10-16T12:40:04-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/10/16/palo-con-la-wifi</id>
-    <content type="html"><![CDATA[<p>Vale la pena hacer una entrada de esto, porque podría ser el problema de alguien
-que como yo; se cansó de alarse los pelos y buscar en google.</p>
-
-<p>Recién no se cuando me bajé una versión de algo que involucra al networkmanager
-y BUN! La wifi, cada vez que levantaba al susodicho, se bloqueaba.</p>
-
-<p>El problema parecía estar en el fichero:</p>
-
-<p><strong>/var/lib/NetworkManager/NetworkManager.state</strong></p>
-
-<p>No se porque, decía tener la wifi deshabilitada. El fichero contiene algo como
-esto:</p>
-
-<figure class='code'><figcaption><span>NetworkManager.state</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>main<span class="o">]</span>
-</span><span class='line'><span class="nv">NetworkingEnabled</span><span class="o">=</span><span class="nb">true</span>
-</span><span class='line'><span class="nv">WirelessEnabled</span><span class="o">=</span><span class="nb">true</span>
-</span><span class='line'><span class="nv">WWANEnabled</span><span class="o">=</span><span class="nb">true</span>
-</span><span class='line'><span class="nv">WimaxEnabled</span><span class="o">=</span><span class="nb">true</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>No se por qué, la clave <strong>NetworkingEnabled</strong> estaba con valor <strong>false</strong> y al
-arrancar NetworkManager, bloqueaba la wifi, al punto que al levantarla
-manualmente, me decía que tenía que desbloquearla con rfkill. Para el que no lo
-sepa, con rfkill se pueden bloquear los radios.</p>
-
-<p>Si por casualidad tienes alguno bloqueado, ejecuta:</p>
-
-<p>rfkill unblock all</p>
-
-<p>Cosa que tenía que ejecutar cada vez que arrancaba el dichóso NetworkManager</p>
-
-<p>Probé apagar la wifi y arrancar el networkmanager con la wifi apagada, para ver
-si eso cambiaba algo en el fichero antes mencionado; pero no. Lo cual me llevó a
-la conclusión de que no fue una metedura de pata mía si no, un bug.</p>
-
-<p>Ponerle atributo inmutable a ese fichero podría ser una solución, pero todo lo
-que está en /var suele ser un dato volátil que señala el estado de algo, así que
-ponerle inmutable podría causar fallos en la aplicación.</p>
-
-<p>Si ese fichero está en /var es porque el network manager dumpea ahí su estado,
-fíjese que está junto a los lease del DHCP. No tengo certeza de que modificando
-esa configuración manualmente esta persista; pero ya llevo una semana con el
-problema resuelto.</p>
 ]]></content>
   </entry>
   

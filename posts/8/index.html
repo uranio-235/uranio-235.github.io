@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Problema 21 de Mayo: La situación de los clientes ligeros en el Calixto no da más. El
-servidor DHCP del ardence dejó pinchar sin previo aviso. El &hellip;">
+  <meta name="description" content="Recién terminé el servidor de LTSP; pero aún estoy como niño con juguete nuevo,
+viendo que otra gangarrea le puedo poner. En la lista de GUTL un &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,117 @@ servidor DHCP del ardence dejó pinchar sin previo aviso. El &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/26/nic-bonding/">NIC bonding</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-26T16:32:02-04:00'><span class='date'>26/05/2015</span> <span class='time'>4:32 pm</span></time>
+        
+           | <a href="/blog/2015/05/26/nic-bonding/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/05/26/nic-bonding/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Recién terminé el servidor de LTSP; pero aún estoy como niño con juguete nuevo,
+viendo que otra gangarrea le puedo poner. En la <a href="http://gutl.jovenclub.cu/">lista de GUTL</a> un colega
+me comentó que sería bueno darle explotación a ambas tarjetas de red. Enseguida
+dijo lo primero en que piensan mis coterráneos, un proxy. Yo le comenté que le
+había hecho un bonding, operación a la cual yo denomíno &ldquo;albóndiga&rdquo; y consiste
+en levantar una interfaz de red especial que usa dos tarjetas de red como si
+fueran una.</p>
+
+<p>Esto; para un servidor de tanto tráfico como es el caso de ltsp, es un verdadero
+batazo. Otros colegas parecieron sorprendidos al ver tal cosa y me pidieron que
+escribiera un tutorial de como hacerlo; sobre todo para que llegase a aquellos
+que no tienen internet.</p>
+
+<p>Instala un paquete llamado  <strong>ifenslave</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;instalando ifenslave&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install ifenslave
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Luego declaras en &ldquo;/etc/network/interfaces&rdquo; una interfaz llamada bond0 en la
+cual declaras que interface quieres unir.</p>
+
+<p>A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/network/interfaces&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@ganker:~# cat /etc/network/interfaces
+</span><span class='line'><span class="c"># This file describes the network interfaces available on your system</span>
+</span><span class='line'><span class="c"># and how to activate them. For more information, see interfaces(5).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">source</span> /etc/network/interfaces.d/*
+</span><span class='line'>
+</span><span class='line'><span class="c"># The loopback network interface</span>
+</span><span class='line'>auto lo
+</span><span class='line'>iface lo inet loopback
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>auto bond0
+</span><span class='line'>iface bond0 inet static
+</span><span class='line'>    address 10.1.1.3
+</span><span class='line'>    netmask 255.255.255.0
+</span><span class='line'>    network 10.1.1.0
+</span><span class='line'>    gateway 10.1.1.1
+</span><span class='line'>    dns-nameservers 10.1.1.1
+</span><span class='line'>    dns-search hcg.sld.cu
+</span><span class='line'>    slaves eth0 eth1
+</span><span class='line'>    bond_mode active-backup
+</span><span class='line'>    bond_miimon 100
+</span><span class='line'>    bond_downdelay 200
+</span><span class='line'>    bond_updelay 200
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Donde eth0 y eth1 son las interfaces que se unirán. Eso es todo&hellip;</p>
+
+<p>OJO! Si tienes un cortafuegos que involucre reglas de interfaces, ya tienestarea
+pa la casa.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1398,88 +1509,6 @@ MongoMapper pinchando. Luego creas lo modelo y listo.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/06/zentyal/">Zentyal</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-02-06T17:13:50-05:00'><span class='date'>06/02/2015</span> <span class='time'>5:13 pm</span></time>
-        
-           | <a href="/blog/2015/02/06/zentyal/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/06/zentyal/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Zentyal te mantendrá encerrado en tu cuarto, con tu TV y te dará la
-comida cada 6 horas. No habrá dificultades, nada te faltará.</p>
-
-<p>Nunca verás el hermoso mundo del software libre que hay por explorar.</p>
-
-<p>Los vagos y los mentequietas, prefieren poner una cosa &ldquo;que pinche y
-ya&rdquo; para luego pasarse horas chateando en facebook; antes de ofrecer
-un producto escalable y competitivo.</p>
-
-<p>Zentyal es el sistema de los infladores, que se las dan de informáticos&hellip; y que
-antes las necesidades responden al más puro estilo windows</p>
-
-<h3>&ldquo;no, eso no se puede hacer&rdquo;</h3>
-
-<p>Si no existe, lo programo, COÑO!!!</p>
-
-<p>Y si el que hay no me gusta, hago uno mejor. En cambio el usuario de
-Zentyal, si no tiene un botón que lo haga:</p>
-
-<h3>SE JODE!!</h3>
-
-<p>A esos nunca les ha pasado por la cabeza hacer su propio negocio&hellip;</p>
-
-<p>Yo seguiré llevando la luz a las tinieblas y combatiendo la ignorancia con
-intelecto. Con el software libre como espada, cuyo filo es la dificultad.</p>
-
-<p>Porque la mente que se abre para asimilar una idea, jamás vuelve a cerrarse.</p>
-
-<p>Con ese lenguaje abrupto, cuyas palabras caen como piedras pero que
-todo el mundo comprende y asimila. Porque el software libre es como el
-RAP</p>
-
-<p>Hagan Jails de FreeBSD y prueben su sistema de ports</p>
-
-<p>Hagan un servidor de almacenamiento con OpenIndiana y prueben su ZFS</p>
-
-<p>Prueben, gentoo, arch, slackware&hellip;</p>
-
-<p>Verás que no te toma 4 horas probar una distro en una máquina virtual</p>
-
-<h3>CIERRA FACEBOOK! Y verás cuanto tiempo hay</h3>
-
-<p>Luego aprende Python, Perl, Go, C (el que más te guste o el que más
-lindo nombre tenga) y siente como el sistema dice:</p>
-
-<h3>&ldquo;órdene mi amo&rdquo;</h3>
-
-<p>Hay tantas cosas bellas por aprender, tanto por experimentar y
-desarollar&hellip;</p>
-
-<p>   <blockquote><p>Con zentyal, aprenderás zentyal, con debian, aprendrás Linux</p><footer><strong>Lázaro Armando</strong> <cite>Mi Criterio Sobre Zentyal</cite></footer></blockquote></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/9">&larr; Older</a>
@@ -1499,6 +1528,10 @@ desarollar&hellip;</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/05/12/deshabilitar-historial-de-bash/">deshabilitar historial de bash</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/04/29/reparar-archivos-de-innodb/">reparar archivos de innodb</a>

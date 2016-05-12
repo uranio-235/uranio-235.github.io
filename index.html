@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Los archivos binarios que almacenan las bases de datos de mysql (percona o
-mariadb) suelen acabar corruptos o dañados por fallos eléctricos. Al &hellip;">
+  <meta name="description" content="Alguna vez han pensado, que en algunos servidores o estaciones, en las cual
+trabajan múltiples personas remotamente via consola; el historial de &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,50 @@ mariadb) suelen acabar corruptos o dañados por fallos eléctricos. Al &hellip;"
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/05/12/deshabilitar-historial-de-bash/">deshabilitar historial de bash</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-05-12T14:34:13-04:00'><span class='date'>12/05/2016</span> <span class='time'>2:34 pm</span></time>
+        
+           | <a href="/blog/2016/05/12/deshabilitar-historial-de-bash/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/05/12/deshabilitar-historial-de-bash/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Alguna vez han pensado, que en algunos servidores o estaciones, en las cual
+trabajan múltiples personas remotamente via consola; el historial de comandos
+puede llegar a ser un problema???</p>
+
+<p>Pues deshabilítalo. En el fichero <strong>/etc/environment</strong> ponle</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/environment&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>   <span class="nb">export </span><span class="nv">HISTFILE</span><span class="o">=</span>/dev/null
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La próxima vez que etres, la función historial será deshabilitada. OJO!!! <strong>LA
+PRÓXIMA VEZ</strong> esta sesión aún salva historial&hellip; Sale y vuelve a entrar.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -555,192 +599,6 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/02/20/hooks-de-pacman/">los hooks de pacman</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-02-20T03:14:28-05:00'><span class='date'>20/02/2016</span> <span class='time'>3:14 am</span></time>
-        
-           | <a href="/blog/2016/02/20/hooks-de-pacman/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/02/20/hooks-de-pacman/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Finalmente, después de tantas plegarias, tenemos <strong>hooks</strong> en pacman. Lo cual
-nos permite, por medio de la poderosa API de alpm correr script antes o después
-de cada instalación.</p>
-
-<p>Desgraciadamente, hay poca documentación sobre el tema. Para colmo, la página de
-man de alpm-hooks, no dice como deben llamarse los archivos. Tuve que adivinar
-que la extensión <strong>.hook</strong> era necesaria.</p>
-
-<p>Primero que todo, vamos a especificar en <strong>/etc/pacman.conf</strong> que el directorio
-de hooks está en otro lado.</p>
-
-<figure class='code'><figcaption><span>&#8220;escope de</span><a href='/etc/pacman.conf"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">HookDir</span> <span class="o">=</span> /etc/pacman.d/hooks/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>¿Por qué aquí? Muy sencillo. Quiero que al hacer una salva de mi configuración
-de pacman, los hooks también se salven. Un hook sencillo, podría correr un
-comando simple, como el del ejemplo en la página de man; sin embargo, uno
-complejo, sería mejor ponerlo en un script.</p>
-
-<p>Lo más importante: El fichero con el hook <strong>debe tener la extensión .hook</strong> Si
-no pacman se limpia el culo con él.</p>
-
-<p>Creemos uno de ejemplo, llamado /etc/pacman.d/hooks/migancho<strong>.hook</strong> y
-digámosle que ejecutará el script, sito en /etc/pacman.d/hooks/migancho.sh</p>
-
-<p>Sería así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.hook&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>Trigger<span class="o">]</span>
-</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Install
-</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Upgrade
-</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Remove
-</span><span class='line'><span class="nv">Type</span> <span class="o">=</span> Package
-</span><span class='line'><span class="nv">Target</span> <span class="o">=</span> *
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Action<span class="o">]</span>
-</span><span class='line'><span class="nv">Description</span> <span class="o">=</span> sincronizando disco
-</span><span class='line'><span class="nv">Depends</span> <span class="o">=</span> coreutils
-</span><span class='line'><span class="nv">When</span> <span class="o">=</span> PostTransaction
-</span><span class='line'><span class="nv">Exec</span> <span class="o">=</span> /etc/pacman.d/hooks/migancho.sh
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ve, la cláusula <strong>Operation</strong> está repetida, con los 3 posibles momentos
-que se disparará el gancho. Podrías hacerlo en uno de ellos solamente. La
-cláusula <strong>Description</strong> se verá cuando pacman termine de instalar. En este caso
-cuando termine, ya que la cláusula <strong>When</strong> especifica <em>PreTransaction</em> o
-<em>PostTransaction</em> (antes o después de la transacción).</p>
-
-<p>Ahora creamos el script <strong>migancho.sh</strong> y le ponemos todas las aberraciones que
-queremos llevar a cabo tras una instalación, desinstalación o actualización.</p>
-
-<p>Digamos por ejemplo, en este caso uno trivial, ejecutar sync cuando termine una
-operación, lo cual evita que si falla la energía en ese momento, queden datos
-por escribirse en la cache disco (con suerte).</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>/usr/bin/sync
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Veámoslo en acción</p>
-
-<figure class='code'><figcaption><span>&#8220;el hook&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># pacman -S --noconfirm unrar</span>
-</span><span class='line'>warning: unrar-1:5.3.11-1 is up to date -- reinstalling
-</span><span class='line'>resolving dependencies...
-</span><span class='line'>looking <span class="k">for</span> conflicting packages...
-</span><span class='line'>
-</span><span class='line'>Packages <span class="o">(</span>1<span class="o">)</span> unrar-1:5.3.11-1
-</span><span class='line'>
-</span><span class='line'>Total Installed Size:  0.32 MiB
-</span><span class='line'>Net Upgrade Size:      0.00 MiB
-</span><span class='line'>
-</span><span class='line'>:: Proceed with installation? <span class="o">[</span>Y/n<span class="o">]</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking keys in keyring                                                   <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking package integrity                                                 <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> loading package files                                                      <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking <span class="k">for</span> file conflicts                                                <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking available disk space                                              <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'>:: Processing package changes...
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> reinstalling unrar                                                         <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'>:: Running post-transaction hooks...
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> sincronizando disco
-</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c">#</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Véanlo como dice <em>sincronizando discos</em> en español, corriendo la operación (1/1)
-ya que hay un solo hook.</p>
-
-<p>Sencillo!!! Como todo en ArchLinux: KISS</p>
-
-<p>Podría volverse más creativo&hellip;</p>
-
-<p>Digamos por ejemplo, que yo quiero tener la lista de paquetes que tiene mi
-sistema antes y después de una instalación, para saber que se instalo y cuando.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/listpackages.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>pacman -Qe &gt; /root/<span class="k">$(</span>date +%j%H%M%S<span class="k">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Eso creará un fichero similar a /root/051153712, el nombre, es el yday (día del
-año) y con la hora, minuto y segundo. Dentro del fichero, una lista de todos los
-paquetes instalados. Muy útil si eres tester o desarrollador, o simplemente
-quieres saber que paquetes había antes o después de instalar.</p>
-
-<p>Por cierto, otra manera de saber que si instalo hoy y ayer, es esta:</p>
-
-<figure class='code'><figcaption><span>&#8220;¿cuando fue?&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ls -ltcr --time-style +%j /var/lib/pacman/local/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Devuelve el día del año en el que se instaló un paquete. Así sabes que se
-instaló hoy. Te recuerdo, que en ArchLinux, todos los días hay algo nuevo que
-instalar :D</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -758,6 +616,10 @@ instalar :D</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/05/12/deshabilitar-historial-de-bash/">deshabilitar historial de bash</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/04/29/reparar-archivos-de-innodb/">reparar archivos de innodb</a>
