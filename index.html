@@ -113,7 +113,10 @@ log, podemos ver que, a pesar de que la base de datos funciona; por un motivo u
 otro, hay miles de warning y los ficheros binarios se vuelven cada vez más
 frágiles.</p>
 
-<p>Solución, exportar TODAS las bases de datos un fichero</p>
+<p>Solución, exportar TODAS las bases de datos un fichero &ldquo;.sql&rdquo;, reinstalar mysql
+e importar las bases de datos. Tenga en cuenta que también se crean los
+usuarios y sus debidos permisos. Por tanto, su usuario de root se configurará de
+manera automática.</p>
 
 <figure class='code'><figcaption><span>&#8220;mysqldump&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>mysqldump --all-databases &gt; dumpeo.sql
