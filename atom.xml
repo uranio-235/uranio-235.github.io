@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-05-12T14:41:04-04:00</updated>
+  <updated>2016-06-19T17:02:38-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,589 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[dkim y spf en postfix]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/06/18/dkim-y-spf-en-postfix/"/>
+    <updated>2016-06-18T13:57:51-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/06/18/dkim-y-spf-en-postfix</id>
+    <content type="html"><![CDATA[<p>Aunque no de mi agrado, reconozco que es una solución muy buena. DKIM y SPF, se
+ha vuelto hoy en día un mecanismo para mitigar el SPAM en el correo electrónico.</p>
+
+<p>Esto no quita, que un spammer puede hacerse con un buen esquema de DKIM para sus
+dominos de porquería; lo cual sería un estupendo negocio, teniendo en cuenta que
+un servidor puede tener tantos dominios como quiera. Si conoce a algún spammer
+que quiera tener DKIM y SPF en su negocio, por favor, mándele mi tarjeta.</p>
+
+<p>Me imagino que a los usuarios de nauta, les duela bajar un mensaje que
+aparentemente tiene dos lineas, pagando por uno que realmente tiene más de 20
+líneas de pura mierda que no les incumbe. Espero que etecsa se digne a retirar
+encabezados innecesarios como esos (para el cliente).</p>
+
+<p>Por otra parte, mucha gente tiene antivirus que modifican el correo o son
+fanáticos a instalar mil gangarreas (mailscanner, clamav, etc&hellip;) que modifican
+el correo y estos mecanismos <strong>se van a la mierda</strong>.</p>
+
+<p>Le diré que hice con un postfix que ya estaba instalado en un debian8 para
+ponerle DKIM y SPF.</p>
+
+<p>Instalamos los jueguetes requeridos ante todo:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>apt-get install opendkim opendkim-tools postfix-policyd-spf-python
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y establecemos los permisos adecuados, ojo con esto, ya que dkim es muy riguroso
+con el tema de los permisos</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>adduser postfix opendkim
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>SPF</h2>
+
+<p>Ahora procedemos a crear el registro DNS. Como hay muchos DNS y cada quién tiene
+sus preferencias, me reduciré a describir de manera abstracta los registros.
+Usted, aterrize la idea en su DNS.</p>
+
+<h3>Esto tiene <strong>DOS</strong> formas de hacerse:</h3>
+
+<h4>La primera:</h4>
+
+<p>Declarar que TODOS los <strong>MX</strong> del dominio, pueden mandar correo (lo cual
+inspira desconfianza) en este caso, registra un puntero del tipo <strong>TXT</strong> con el
+siguiente valor</p>
+
+<pre><code>v=spf1 mx -all
+</code></pre>
+
+<p>Por ejemplo, bind9</p>
+
+<figure class='code'><figcaption><span>&#8220;registro&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">@               IN      TXT     &quot;v</span><span class="o">=</span><span class="s">spf1 mx -all&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>La segunda:</h4>
+
+<p>Declarar que un host, que tiene un registro <strong>A</strong>, está autorizado a enviar
+correos (esta me gusta más, si tienes un solo servidor de correo) Si fueran
+varios, por ejemplo 3. Podrías declarar un A para cada uno y de manera
+individual, ellos generarían su SPF apuntándose a si mismo.</p>
+
+<pre><code>v=spf1 a:mx1.tudominio.cu -all
+</code></pre>
+
+<p><strong>Nota para los apurados:</strong> &ldquo;Si declaras ambos registros, no pincha, LEE!!&rdquo;</p>
+
+<p>Otra cosa, puedes declarar <strong>-all</strong> o <strong>~all</strong> El primero le dirá al receptor
+que si el correo no viene del dominio que dice enviarlo (el puntero A o los MX),
+lo rechace porque es falso (muy radical) y el segundo, que empieza por ~ le
+indica al receptor, que puede recibir el mensaje y si no pude verificarlo que lo
+marque como spam, pero que por favor, no lo rechaze.</p>
+
+<p>Esto nos lleva a una:</p>
+
+<h3>Situación peligrosa</h3>
+
+<p>Cuba, un descerebrado configuró verificación de DKIM, <strong>porque está de moda</strong>.
+PERO! Está detrás de un smarthost (pasarela) o simplemente, su configuración de
+DNS no vale un quilo (por culpa del proveedor)</p>
+
+<p>Metedura de pata - A:</p>
+
+<p>Ese servidor de correo, que se cree <em>Oggun con machete en mano</em>; descartará todo
+correo con <strong>-all</strong> debido a su incapacidad de realizar un lookup decente.</p>
+
+<p>Metedura de pata - B:</p>
+
+<p>Uno más descerebrado todavía, vio que DKIM estaba de moda y sin importar que no
+tiene control de su DNS, lo hizo todo, saltándose el paso del DNS. Su servidor
+le estará gritando a toda voz al mundo entero, <strong>que está falseando el dominio</strong></p>
+
+<p>Si ignorancia le costará caer de cabeza en las listas negras&hellip;</p>
+
+<p>Y es que:</p>
+
+<p>Generalmente, los servidores que entregan a través de un smarthost, carecen de
+DNS real. También hay una pila de gente que administran servidores sin tener
+control de su DNS.</p>
+
+<h4>Seguimos&hellip;</h4>
+
+<p>Ya ya que tenemos el SPF pinchando, podemos añadirle chequeo de SPF a nuestro
+postfix <strong>que tiene bien configurado el DNS y entrega de cara a internet sin
+smarthost</strong></p>
+
+<p>En el fichero <strong>/etc/postfix/master.cf</strong> le agregamos esto:</p>
+
+<figure class='code'><figcaption><span>master.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">policyd-spf</span>  <span class="err">unix</span>  <span class="err">-</span>       <span class="err">n</span>       <span class="err">n</span>       <span class="err">-</span>       <span class="err">0</span>       <span class="err">spawn</span>
+</span><span class='line'>    <span class="na">user</span><span class="o">=</span><span class="s">policyd-spf argv=/usr/bin/policyd-spf</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y a los posftfix cubanos, le decimos que sea paciente con el proceso de
+verificación, incrementando el tiempo que tiene que esperar por el policyd, ya
+que dicha verificación puede tardar (dns lookup, cpu a tope, etc..) Añadimos
+esto a <strong>/etc/postfix/main.cf</strong></p>
+
+<figure class='code'><figcaption><span>main.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">policyd-spf_time_limit</span> <span class="o">=</span> <span class="s">3600</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora viene una parte complicada, pues no hay manera de que pueda reflejarla
+como para copiar y pegar.</p>
+
+<p>Deberás modificar tus reglas de postfix, de forma que antepongas el chequeo SPF,
+como una más de tus restricciones de recibo. Para mi caso, está bien la última
+linea.</p>
+
+<figure class='code'><figcaption><span>&#8220;scpe del main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">smtpd_sender_restrictions</span> <span class="o">=</span><span class="s"></span>
+</span><span class='line'><span class="s">   reject_non_fqdn_sender,</span>
+</span><span class='line'><span class="s">   reject_non_fqdn_recipient,</span>
+</span><span class='line'><span class="s">   permit_sasl_authenticated,</span>
+</span><span class='line'><span class="s">   reject_unknown_sender_domain,</span>
+</span><span class='line'><span class="s">   reject_unknown_recipient_domain,</span>
+</span><span class='line'><span class="s">   reject_rbl_client bl.spamcop.net,</span>
+</span><span class='line'><span class="s">   reject_rbl_client sbl.spamhaus.org,</span>
+</span><span class='line'><span class="s">   reject_rbl_client xbl.spamhaus.org,</span>
+</span><span class='line'><span class="s">   defer_unauth_destination,</span>
+</span><span class='line'><span class="s">   reject_unverified_sender,</span>
+</span><span class='line'><span class="s">   check_policy_service unix:private/policyd-spf</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Reinicia postfix y chequea el <strong>/var/log/mail.log</strong> para que veas SPF pinchando.</p>
+
+<h2>DKIM</h2>
+
+<p>Me parece que la configuración de DKIM en debian está buena, pero por si las
+moscas. Copias esta que pongo aquí y métela en tu <strong>/etc/opendkim.conf</strong></p>
+
+<figure class='code'><figcaption><span>/etc/opendkim.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">Syslog</span>          <span class="err">yes</span>
+</span><span class='line'><span class="err">UMask</span>           <span class="err">002</span>
+</span><span class='line'><span class="err">UserID</span>          <span class="err">opendkim</span>
+</span><span class='line'><span class="err">KeyTable</span>        <span class="err">/etc/opendkim/key.table</span>
+</span><span class='line'><span class="err">SigningTable</span>        <span class="err">refile:/etc/opendkim/signing.table</span>
+</span><span class='line'><span class="err">ExternalIgnoreList</span>  <span class="err">/etc/opendkim/trusted.hosts</span>
+</span><span class='line'><span class="err">InternalHosts</span>       <span class="err">/etc/opendkim/trusted.hosts</span>
+</span><span class='line'><span class="err">Canonicalization</span>    <span class="err">relaxed/simple</span>
+</span><span class='line'><span class="err">Mode</span>            <span class="err">sv</span>
+</span><span class='line'><span class="err">SubDomains</span>      <span class="err">no</span>
+</span><span class='line'><span class="c1">#ADSPAction     continue</span>
+</span><span class='line'><span class="err">AutoRestart</span>     <span class="err">yes</span>
+</span><span class='line'><span class="err">AutoRestartRate</span>     <span class="err">10/1M</span>
+</span><span class='line'><span class="err">Background</span>      <span class="err">yes</span>
+</span><span class='line'><span class="err">DNSTimeout</span>      <span class="err">5</span>
+</span><span class='line'><span class="err">SignatureAlgorithm</span>  <span class="err">rsa-sha256</span>
+</span><span class='line'><span class="err">OversignHeaders</span>     <span class="err">From</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ya te dije, los permisos son sumamente importantes en este caso</p>
+
+<figure class='code'><figcaption><span>permisos</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>chmod <span class="nv">u</span><span class="o">=</span>rw,go<span class="o">=</span>r /etc/opendkim.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora creamos el directorio donde vamos a meter todo el zoológico requerido para
+que DKIM pinche. Hay quién prefiere meterlo en <strong>/var</strong>, para mi en
+<strong>/etc/opendkim</strong> es un buen lugar.</p>
+
+<figure class='code'><figcaption><span>&#8220;creando el directorio de residencia&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir /etc/opendkim
+</span><span class='line'>mkdir /etc/opendkim/keys
+</span><span class='line'>chown -R opendkim:opendkim /etc/opendkim
+</span><span class='line'>chmod go-rw /etc/opendkim/keys
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>La Firma</h3>
+
+<p>Ahora vamos a crear la <em>tabla de rúbricas</em> (se aceptan contribuciones para
+traducir). Ahí, ponemos una linea por cada dominio que tengas. Creas el fichero
+<strong>/etc/opendkim/signing.table</strong> y está recomendado que le pongas lo siguiente:</p>
+
+<figure class='code'><figcaption><span>&#8220;como dicen que debe ser&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'>   <span class="err">*@tudominio.cu</span>   <span class="err">tudominio</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Nota para los imbéciles:</strong> No olvide remplazar <em>tudominio.cu</em> por el nombre
+del dominio suyo.</p>
+
+<p>Con eso, casamos todos los correos que parezcan a tu dominio, con el DKIM que
+llamamos &ldquo;tudominio&rdquo;, si quiere atrás le puede poner &ldquo;pepe&rdquo;. Lo que debe
+quedarte claro, es que todos los correos que macheen a la expresión regular de
+alante, pasarán por el filtro llamado <em>tudominio</em> (o &ldquo;pepe&rdquo; si lo cmabiaste) ¿Se
+entendió?</p>
+
+<p>Por ejemplo, si tu dominio fuera *@cacocum.hlg.sld.cu podrías ponerle detrás
+&ldquo;midkim&rdquo; para que todos los correos de ese dominio, se firmen con la firma que
+será configurada bajo el nombre &ldquo;midkim&rdquo; Quedaría así:</p>
+
+<pre><code>  *@cacocum.hlg.sld.cu  midkim
+</code></pre>
+
+<p>Resumen:</p>
+
+<p>El primero campo, es una expresión regular que mache las direcciones de correo y
+el segundo el nombre de la firma que se usará. Para mayor confusión, se
+recomienda que se hagan nombres parecidos. Finalmente nos quedó así:</p>
+
+<figure class='code'><figcaption><span>/etc/opendkim/signing.table</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">*@tudominio.cu</span>    <span class="err">tudominio</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>La clave</h3>
+
+<p>Ahora creamos el fichero, donde le diremos a &ldquo;midkim&rdquo; donde va a encontrar su
+parafernalia cifradora. Crea el fichero <strong>/etc/opendkim/key.table</strong> y ponle
+dentro esto:</p>
+
+<figure class='code'><figcaption><span>/etc/opendkim/key.table</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">tudominio</span>     <span class="err">tudominio.cu:YYYYMM:/etc/opendkim/keys/example.private</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>IMPORTANTE</strong></p>
+
+<p>Remplaza <strong>YYYYMM</strong> por el año y el número de mes en el que estamos.</p>
+
+<p><strong>SI NO, NO PINCHA</strong></p>
+
+<p>A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>/etc/opendkim/key.table</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">tudominio</span>     <span class="err">tudominio.cu:201606:/etc/opendkim/keys/example.private</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya que estamos en el año <strong>2016</strong> y el mes el el <strong>0</strong>6 no el 6 (lleva cero
+delante).</p>
+
+<p>Ojo aquí, ya que si tienes más dominios, es complicado. No te que debes reflejar
+a localhost con sus pertinentes ip, además, tu nombre de host, tu dominio y el
+nombre del host conjuado con el dominio. Siendo entonces <strong>fulanito</strong> el nombre
+del host, quedaría así en fichero <strong>/etc/opendkim/trusted.hosts</strong></p>
+
+<figure class='code'><figcaption><span>/etc/opendkim/trusted.hosts</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">127.0.0.1</span>
+</span><span class='line'><span class="err">::1</span>
+</span><span class='line'><span class="err">localhost</span>
+</span><span class='line'><span class="err">fulanito</span>
+</span><span class='line'><span class="err">fulanito.dominio.cu</span>
+</span><span class='line'><span class="err">dominio.cu</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Los permisos, ya tu sabes:</p>
+
+<figure class='code'><figcaption><span>&#8220;seteando permisos&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>chown -R opendkim:opendkim /etc/opendkim
+</span><span class='line'>chmod -R go-rwx /etc/opendkim/keys
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>FINALMENTE! Vamos a generar la clave para el dominio:</p>
+
+<figure class='code'><figcaption><span>&#8220;generando las claves&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/opendkim/keys/
+</span><span class='line'>opendkim-genkey -b <span class="m">2048</span> -r -s 201606
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Las claves se generan en base a la fecha, pero luego se colocan en base al
+dominio. Esto se hace porque <strong>hay que renovarlos</strong> pero si configuramos
+opendkim para que apunte a un fichero cuyo nombre sea la fecha, tendríamos que
+cambiar la configuración cada vez que renovamos.</p>
+
+<figure class='code'><figcaption><span>&#8220;la clave por su nombre&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mv 201606.private tudominio.private
+</span><span class='line'>mv 201606.txt tudominio.txt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si tu clave se llamase &ldquo;pepe&rdquo; o &ldquo;midkim&rdquo;, ya sabes que esos ficheros se
+llamarían &ldquo;pepe.private&rdquo; o &ldquo;tudkim.txt&rdquo; ¿Entiendes ahora? Seguimos&hellip;</p>
+
+<p>El argumento <strong>-b</strong> indica la longitud de clave en Bit. En otros tiempo 1024 era
+la tisa, pero ahora, se recomienda usar 2048 porque las máquinas son más
+potentes. Quizás dentro de un par de años, sea 4096.</p>
+
+<p>Bueno, ya sabes, la ceremonia de los permisos:</p>
+
+<figure class='code'><figcaption><span>&#8220;seteando permisos&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>chown -R opendkim:opendkim /etc/opendkim
+</span><span class='line'>chmod -R go-rw /etc/opendkim/keys
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Arranca opendkim y asegúrate mirando los log que esté pinchando.</p>
+
+<figure class='code'><figcaption><span>&#8220;arranca opendkim&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl restart opendkim
+</span><span class='line'>systemctl status -l opendkim
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>El DNS</h2>
+
+<p>El patico feo de internet, el DNS. El remedio que se inventó pa ir tirando y
+acabó quedándose con su pésimo diseño y su horrible arquitectura que hasta el
+sol de hoy, pretende llamarse &ldquo;distribuida&rdquo;.</p>
+
+<p>Agregamos le registro TXT con la clave. Te cuento que el fichero &ldquo;.txt&rdquo; contiene
+el tabaco base64 que usualmente vemos en el encabezado DKIM-Signature, pues
+proviene de este registro TXT que estamos creando.</p>
+
+<p>Añade un registro del tipo TXT que apunte a un hostname llamado
+<strong>201606._domainkey</strong> dentro de tu domino. Pero ahora viene la parte difícil:</p>
+
+<p>Copia el texto que contiene el fichero tudominio.txt dentro de la primera
+comilla hasta la última, pero sin tomar las comillas.</p>
+
+<p>O sea, dentro del fichero tiene esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;tudominio.txt&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">201606._domainkey  IN  TXT ( &quot;**v</span><span class="o">=</span><span class="s">DKIM1; k=rsa; s=email; &quot; &quot;p=ZjiONVGXom64jANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu5oIUrFDWZK7F4thFxpZa2or6jBEX3cSL6b2TJdPkO5iNn9vHNXhNX31nOefN8FksX94YbLJ8NHcFPbaZTW8R2HthYxRaCyqodxlLHibg8aHdfa+bxKeiI/xABRuAM0WG0JEDSyakMFqIO40ghj/h7DUc/4OXNdeQhrKDTlgf2bd+FjpJ3bNAFcMYa3Oeju33b2Tp+PdtqIwXR&quot; &quot;ZksfuXh7m30kuyavp3Uaso145DRBaJZA55lNxmHWMgMjO+YjNeuR6j4oQqyGwzPaVcSdOG8Js2mXt+J3Hr+nNmJGxZUUW4Uw5ws08wT9opRgSpn+ThX2d1AgQePpGrWOamC3PdcwIDAQAB**&quot;)  ; ----- DKIM key 201606 for tudominio.cu</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al extraer la parte que nos interesa, no quedamos con esto (sin las comillas)</p>
+
+<figure class='code'><figcaption><span>&#8220;la clave sin las comillas&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">**v</span><span class="o">=</span><span class="s">DKIM1; k=rsa; s=email; p=ZJiONVGXom64zhNjwdAmo2XnMhAXeGXxB0p5PJkHxUk5XMXNaoUbMwfGOBOQYKsiQp0k9KwcYu2SNAlcFrGIugPG035Ng4r8mlBRLS5+dak90HuH+hb2d8aa+djRFn4PIS2RcAZZJgJjRgF1NbWZpBlj8IpXJ7MywrUxtj1e+TU/tCiWQxCc9uMqgWA53NeqRGEFPwCuTfDMKWbbMhZkbe+pOOtEqQBQ0HsvJ3n09ZNhh3AjbNP6JOpAyK+4hqHohDTrLhxdSFsNiaoAaJXsxDdAHIs2U3QNmrbAFEg7aPOBgaHLXv28k88EDqo4cIuOxa/c24e3F4O6TY3fpydRmekadtCW+waY3aCIIwIA7DdAABFUTR3ABI8WnFTjgDyj1/IQ53Af**</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>OJO</strong> Tiene más comillas en el medio!!!!</p>
+
+<p>Auxiliate de un editor de texto decente. Deshabilita el wrap y busca la comilla
+como cadena de texto.</p>
+
+<p>Ese texto, será el valor del puntero TXT</p>
+
+<p>A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;puntero TXT de 201606._domainkey&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">201601._domainkey    IN      TXT     &quot;**v</span><span class="o">=</span><span class="s">DKIM1; k=rsa; s=email; p=ZJiONVGXom64zhNjwdAmo2XnMhAXeGXxB0p5PJkHxUk5XMXNaoUbMwfGOBOQYKsiQp0k9KwcYu2SNAlcFrGIugPG035Ng4r8mlBRLS5+dak90HuH+hb2d8aa+djRFn4PIS2RcAZZJgJjRgF1NbWZpBlj8IpXJ7MywrUxtj1e+TU/tCiWQxCc9uMqgWA53NeqRGEFPwCuTfDMKWbbMhZkbe+pOOtEqQBQ0HsvJ3n09ZNhh3AjbNP6JOpAyK+4hqHohDTrLhxdSFsNiaoAaJXsxDdAHIs2U3QNmrbAFEg7aPOBgaHLXv28k88EDqo4cIuOxa/c24e3F4O6TY3fpydRmekadtCW+waY3aCIIwIA7DdAABFUTR3ABI8WnFTjgDyj1/IQ53Af**&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Completo! Vamos a probarlo a ver que pasa:</p>
+
+<figure class='code'><figcaption><span>&#8220;1, 2, 3, probando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>opendkim-testkey -d example.com -s 201606
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si sale silentemente sin mostrar algo. Es que todo está bien.</p>
+
+<h3>opendkim y postfix</h3>
+
+<p>Finalmente, nuestro postfix tendrá el privilegio de firmar los correos usando el
+aparataje recién configurado. Vamos a crearle un cuartico de dkim en la casa de
+postfix</p>
+
+<figure class='code'><figcaption><span>&#8220;dkim en postfix&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir /var/spool/postfix/opendkim
+</span><span class='line'>chown opendkim:postfix /var/spool/postfix/opendkim
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y habilitamos el socket de opedkim, editando el fichero <strong>/etc/default/opendkim</strong></p>
+
+<figure class='code'><figcaption><span>/etc/default/opendkim</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="c1"># Command-line options specified here will override the contents of</span>
+</span><span class='line'><span class="c1"># /etc/opendkim.conf. See opendkim(8) for a complete list of options.</span>
+</span><span class='line'><span class="c1">#DAEMON_OPTS=&quot;&quot;</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># Uncomment to specify an alternate socket</span>
+</span><span class='line'><span class="c1"># Note that setting this will override any Socket value in opendkim.conf</span>
+</span><span class='line'><span class="na">SOCKET</span><span class="o">=</span><span class="s">&quot;local:/var/spool/postfix/opendkim/opendkim.sock&quot;</span>
+</span><span class='line'><span class="c1">#SOCKET=&quot;inet:54321&quot; # listen on all interfaces on port 54321</span>
+</span><span class='line'><span class="c1">#SOCKET=&quot;inet:12345@localhost&quot; # listen on loopback on port 12345</span>
+</span><span class='line'><span class="c1">#SOCKET=&quot;inet:12345@192.0.2.1&quot; # listen on 192.0.2.1 on port 12345</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note como retiramos el comentario de la línea 7</p>
+
+<p>Ahora declaramos en postfix que debe usar a opendkim como demonio de
+preprocesamiento en el típico <strong>/etc/postfix/main.cf</strong></p>
+
+<figure class='code'><figcaption><span>/etc/postfix/main.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="c1"># Milter configuration</span>
+</span><span class='line'><span class="c1"># OpenDKIM</span>
+</span><span class='line'><span class="na">milter_default_action</span> <span class="o">=</span> <span class="s">accept</span>
+</span><span class='line'><span class="na">milter_protocol</span> <span class="o">=</span> <span class="s">2</span>
+</span><span class='line'><span class="na">smtpd_milters</span> <span class="o">=</span> <span class="s">local:/opendkim/opendkim.sock</span>
+</span><span class='line'><span class="na">non_smtpd_milters</span> <span class="o">=</span> <span class="s">local:/opendkim/opendkim.sock</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finalmente, reinicia opendkim y postfix</p>
+
+<figure class='code'><figcaption><span>&#8220;systemctl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl restart opendkim postfix
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>COMPLETO!!!</h3>
+
+<p>Con eso hemos terminado. Para probarlo, puede enviar un correo a <a href="mailto:check-auth@verifier.port25.com">check-auth@verifier.port25.com</a></p>
+
+<p>Esa dirección le hará una prueba al DKIM+SPF de tu correo.</p>
+
+<p>Si quieres ponerle la guinda al pastel, puede añadirle ADSP (Author Domain
+Signing Practices) a tu esquema. Esto indica que todos los correos que salgan de
+tu dominio deben estar firmados con DKIM, proveiendo aún más confianza al
+receptor.</p>
+
+<p>Crea un registro <strong>TXT</strong> para el hostname <strong><em>adsp.</em>domainkey</strong> y el valor del
+TXT será <strong>dkim=all</strong>. A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;registro&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">_adsp._domainkey     IN      TXT     &quot;dkim</span><span class="o">=</span><span class="s">all&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso, tus correos no caerán más en la bandeja SPAM de gmail.</p>
+
+<p>Otra cosa importante, asegúrate de tener el reverse lookup de tu MX bien puesto</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[desacelerar mouse]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/06/06/desacelerar-mouse/"/>
+    <updated>2016-06-06T23:41:44-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/06/06/desacelerar-mouse</id>
+    <content type="html"><![CDATA[<p>El reducido espacio de trabajo que tengo en la casa para colocar la laptop; me
+hace sentir como si viviera en el apartamento más pequeño de Tokio. Tanto así,
+que no tengo ni donde desplazar el mouse y los cables me la ponen aún más
+difícil. Comprar una casa más grande no es una opción; sin embargo, reducir el
+mouse es más viable. Se me ocurrió adquirir un mouse inalámbrico, ya que son
+pequeñitos.</p>
+
+<p>Pero un mouse pequeño liviano, resulta que se desplaza mucho más rápido, que mi
+antiguo <em>General Electric Pixart Inc. Optical Mouse</em>. Lo que más me molesta es;
+no solo lo rápido que se desplaza, si no el <em>picor</em> que tiene en la aceleración.</p>
+
+<p>La solución: Desacelerar el mouse</p>
+
+<figure class='code'><figcaption><span>&#8220;slowmouse.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Constant Deceleration&quot;</span> 0.5
+</span><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Velocity Scaling&quot;</span> 1
+</span><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Profile&quot;</span> -1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso, el mouse pequeñito, se desplaza tal como lo hace el grande. Ya que el
+grande, es más pesado y por ende, se desplaza un tín mas lento.</p>
+
+<p><strong>¡¡¡Tardé bastante en quedar complacido probando números!!!</strong></p>
+
+<p>Por cierto, el <strong>10</strong> es la id del dispositivo. Puedes verlo corriendo el
+comando <strong>xinput &ndash;list &ndash;short</strong> a mi se me ve así:</p>
+
+<figure class='code'><figcaption><span>&#8220;xinput &#8211;list &#8211;short&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@samsung ~&gt; xinput --list --short
+</span><span class='line'>⎡ Virtual core pointer                      <span class="nv">id</span><span class="o">=</span>2 <span class="o">[</span>master pointer  <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>⎜   ↳ Virtual core XTEST pointer                  <span class="nv">id</span><span class="o">=</span>4 <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
+</span><span class='line'>⎜   ↳ PixArt USB Optical Mouse                    <span class="nv">id</span><span class="o">=</span>10    <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
+</span><span class='line'>⎜   ↳ ETPS/2 Elantech Touchpad                    <span class="nv">id</span><span class="o">=</span>12    <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
+</span><span class='line'>⎣ Virtual core keyboard                     <span class="nv">id</span><span class="o">=</span>3 <span class="o">[</span>master keyboard <span class="o">(</span>2<span class="o">)]</span>
+</span><span class='line'>    ↳ Virtual core XTEST keyboard               <span class="nv">id</span><span class="o">=</span>5 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>    ↳ Power Button                              <span class="nv">id</span><span class="o">=</span>6 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>    ↳ Video Bus                                 <span class="nv">id</span><span class="o">=</span>7 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>    ↳ Power Button                              <span class="nv">id</span><span class="o">=</span>8 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>    ↳ Sleep Button                              <span class="nv">id</span><span class="o">=</span>9 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>    ↳ AT Translated Set <span class="m">2</span> keyboard
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ve, el <em>PixArt USB Optical Mouse</em> dice que <strong>id=10</strong></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[deshabilitar historial de bash]]></title>
@@ -1664,280 +2247,6 @@ ver con SSL, declarando esto:</p>
 <p>No olvides correr <strong>postfix reload</strong></p>
 
 <p>   <blockquote><p>Te voy a coser el culo con un alambre finito.<br/>   No te quedará bonito, pero te quedará seguro.</p><footer><strong>Décima popular</strong></footer></blockquote></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[compartir la wifi]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/10/20/compartir-la-wifi/"/>
-    <updated>2015-10-20T23:36:19-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/10/20/compartir-la-wifi</id>
-    <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/23_gente.jpg" width="300" height="500" title="" ></p>
-
-<p>Cada vez que paso por
-<a href="http://www.ecured.cu/index.php/Calle_23_%28Vedado%29">23</a>, me cuentro mil y una
-red cuyo ESSID tiene el sufijo <strong>Conectify</strong> delante. Insultado por semejante
-derroche de windows, le comentaba a un colega, que daba tristeza no ver un
-linuxero ahí conectado.</p>
-
-<p>El socio me dijo: -en linux no se puede compartir la wifi</p>
-
-<p>PA DARLE POR LA CARA!</p>
-
-<p>Dos paquetes nada más que hacen falta: <strong>iw</strong>, <strong>hostapd</strong></p>
-
-<p>La idea es:</p>
-
-<ul>
-<li>crear una interfaz wifi como estacion</li>
-<li>crear una interfaz wifi como AP</li>
-<li>crear un interfaz bridge (puente)</li>
-<li>declarar que la interfaz de salida del puente, es la estación</li>
-<li>echar a andar el AP por software</li>
-</ul>
-
-
-<h3>¿SE ENTENDIÓ?</h3>
-
-<p>Si tienes el puñetero NetworkManager corriendo, este es un buen momento para
-pararlo.</p>
-
-<p>La interfaz que usualmente vez como <strong>wlan0</strong> es en realidad <strong>phy0</strong>. ¿Quieres
-verlo? Corre esto:</p>
-
-<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw dev wlan0 del
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>¿Te fijaste que<strong> wlan0</strong> desapareció? No te preocupes, puedes volver a crearla.
-Así:</p>
-
-<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw phy phy0 interface add estacion0 <span class="nb">type </span>station
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como mismo hicimos una estación, podemos hacer un AP.</p>
-
-<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw phy phy0 interface add hotspot0 <span class="nb">type </span>__ap
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora creamos la interfaz de puente y le asignamos a <strong>wlan0</strong> como extremo de
-salida.</p>
-
-<figure class='code'><figcaption><span>br0</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip link add name br0 <span class="nb">type </span>bridge
-</span><span class='line'>iw dev estacion0 <span class="nb">set </span>4addr on
-</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 promisc on
-</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 up
-</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 master br0
-</span><span class='line'>ip link <span class="nb">set </span>up dev br0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En letra de molde:</p>
-
-<ul>
-<li>crea un bridge llamado br0</li>
-<li>dile que lleva ipv4 (requerido, no se por qué)</li>
-<li>pon la interfaz en modo promiscuo</li>
-<li>levanta el enlace de estaicon0</li>
-<li>coloca a estacion0 como interfaz de salida del túnel</li>
-<li>levanta el bridge</li>
-</ul>
-
-
-<p>Ahora viene lo más importante, el AP. El fichero <strong>/etc/hostapd/hostapd.conf</strong>
-contendrá la configuración de nuestros AP. A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>/etc/hostapd/hostapd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># el nombre de tu wifi</span>
-</span><span class='line'><span class="nv">ssid</span><span class="o">=</span>Linux
-</span><span class='line'>
-</span><span class='line'><span class="c"># la contraseña de tu wifi</span>
-</span><span class='line'><span class="nv">wpa_passphrase</span><span class="o">=</span>secretisisimo
-</span><span class='line'>
-</span><span class='line'><span class="c"># la interfaz de red que hará de AP</span>
-</span><span class='line'><span class="nv">interface</span><span class="o">=</span>hostspot0
-</span><span class='line'>
-</span><span class='line'><span class="c"># el puente al que se acoplará</span>
-</span><span class='line'><span class="nv">bridge</span><span class="o">=</span>br0
-</span><span class='line'>
-</span><span class='line'><span class="c"># el canal, lo puede seleccionar manual</span>
-</span><span class='line'><span class="c"># pero un valor de 0, hará el survey.</span>
-</span><span class='line'><span class="c"># Mejor que el ap lo seleccione, así</span>
-</span><span class='line'><span class="c"># no chocas con ningún canal de etecsa en 23</span>
-</span><span class='line'><span class="c"># y aprovechemos ahora que podemos hacer lo</span>
-</span><span class='line'><span class="c"># que nos de la gana con el espectro radioeléctrico</span>
-</span><span class='line'><span class="nv">channel</span><span class="o">=</span>0
-</span><span class='line'>
-</span><span class='line'><span class="c"># no toques más nada de aquí pa abajo</span>
-</span><span class='line'><span class="nv">auth_algs</span><span class="o">=</span>3
-</span><span class='line'><span class="nv">driver</span><span class="o">=</span>nl80211
-</span><span class='line'><span class="nv">hw_mode</span><span class="o">=</span>g
-</span><span class='line'><span class="nv">logger_stdout</span><span class="o">=</span>-1
-</span><span class='line'><span class="nv">logger_stdout_level</span><span class="o">=</span>2
-</span><span class='line'><span class="nv">max_num_sta</span><span class="o">=</span>5
-</span><span class='line'><span class="nv">rsn_pairwise</span><span class="o">=</span>CCMP
-</span><span class='line'><span class="nv">wpa</span><span class="o">=</span>2
-</span><span class='line'><span class="nv">wpa_key_mgmt</span><span class="o">=</span>WPA-PSK
-</span><span class='line'><span class="nv">wpa_pairwise</span><span class="o">=</span>TKIP CCMP
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>y arráncalo:</p>
-
-<figure class='code'><figcaption><span>systemctl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl start hostapd
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Desde entonces, lo que se conecte a tu wifi con ESSID &ldquo;Linux&rdquo; en este caso, irá
-a dar a la red que tengas conectada en tu Wifi. En este caso la red de br0, cuyo
-otro extremo sería la wifi de etecsa.</p>
-
-<p>Lo mismo puede hacer cambiando el extremo del tunel. Por ejemplo, con eth0
-saldría hacia una red cableada. Una manera de meter una WiFi en una red.</p>
-
-<h4>Además</h4>
-
-<p>De esta misma forma, si tuvieras dos tarjetas wifi, pones una como AP y le pones
-la otra como extremo del puente.</p>
-
-<h4>OJO</h4>
-
-<p>Otra cosa, si tienes corriendo el <strong>NetworkManager</strong> no podrás echar a andar
-<strong>hostapd</strong>. Páralo, arranca hostapd y vuelve a hechar a andar el
-NetworkManager.</p>
-
-<p>   <blockquote><p>La técnica es la técnica y sin técnica, no hay técnica.</p><footer><strong>Teófilo Stevenson</strong> <cite><a href='https://es.wikipedia.org/wiki/Te%C3%B3filo_Stevenson'>Boxeador Cubano</a></cite></footer></blockquote></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[systemd-timesyncd]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/10/18/systemd-timesyncd/"/>
-    <updated>2015-10-18T13:19:01-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/10/18/systemd-timesyncd</id>
-    <content type="html"><![CDATA[<p>Mantener un reloj sincronizado y en hora, siempre ha sido un dilema. Algunas
-personas no reconocen la necesidad de esto; y además son tan imbéciles, que
-luego se quejan cuando la desfasada fecha de su computadora les impide
-conectarse a un sitio SSL.</p>
-
-<p>En los servidores y en las estaciones de trabajo que se respeten; siempre ha
-sido una opción usar un cliente NTP. Pero los ntp, cuando la fecha no está en el
-día adecuado, no se toman la molestia de sincronizar. En los raspberry-pi eso
-puede llegar a ser un tremendo problema, ya que NO tienen reloj de hardware y ni
-siquiera conservan la fecha.</p>
-
-<p>El tan criticado <a href="https://es.wikipedia.org/wiki/Systemd">Systemd</a>, tiene una
-solución para este problema. Sucia y burda, pero muy eficiente. Normalmente, los
-&ldquo;clientes&rdquo; <a href="https://es.wikipedia.org/wiki/Network_Time_Protocol">NTP</a>, son
-cliente y servidor. En el caso de systemd-timsyncd, no se tomaron la molestia de
-implementar un servidor; solamente un cliente minimalista. Además, guarda las
-sincronizaciones en un fichero, para determinar si tu reloj de hardware se
-adelante o atraza y contrarrestar dicho efecto.</p>
-
-<p>Lo bueno que tiene es que agarra la fecha y hora de cualquier parte; luego, la
-setea sin chistar. La configuración es sencillísima. Localiza el fichero:</p>
-
-<p><strong>/etc/systemd/timesyncd.conf</strong></p>
-
-<p>Declárale un servidor principal y si te da la gana, uno o varios adicionales. A
-mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>/etc/systemd/timesyncd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#  This file is part of systemd.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#  systemd is free software; you can redistribute it and/or modify it</span>
-</span><span class='line'><span class="c">#  under the terms of the GNU Lesser General Public License as published by</span>
-</span><span class='line'><span class="c">#  the Free Software Foundation; either version 2.1 of the License, or</span>
-</span><span class='line'><span class="c">#  (at your option) any later version.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># You can override the directives in this file by creating files in</span>
-</span><span class='line'><span class="c"># /etc/systemd/timesyncd.conf.d/*.conf.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># See timesyncd.conf(5) for details</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Time<span class="o">]</span>
-</span><span class='line'><span class="nv">NTP</span><span class="o">=</span>time.hcg.sld.cu
-</span><span class='line'><span class="nv">FallbackNTP</span><span class="o">=</span>time.sld.cu time.microsoft.com
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Generalmente, mi laptop está en el calixto, por eso puse mi servidor local como
-primario; pero si no lo estuviera, de seguro <strong>time.sld.cu</strong> sería alcanzable. En
-el dificilísimo caso de que estuviera de cara a internet, quizás responda el de
-microsoft, que no está malo. Por cierto, los comentarios del fichero son
-bastante útiles, vale la pena leerlos.</p>
-
-<p>Por último, lo más importante, habilitar y arrancar el servicio:</p>
-
-<p>systemctl <strong>start</strong> systemd-timesyncd.service</p>
-
-<p>systemctl <strong>enable</strong> systemd-timesyncd.service</p>
-
-<p>Para saber el estado del servicio, corre:</p>
-
-<p><strong>timedatectl</strong></p>
-
-<p>Te dirá la hora local y la UTC; te dirá además si está sincronizando por NTP.
-Con ese comando puede hacer un montón de operaciones, por ejemplo, setear la
-hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.org/wiki/Reloj_en_tiempo_real">RTC</a> también.</p>
-
-<p>   <blockquote><p>No existe juez más justo, que el pasar del tiempo.</p></blockquote></p>
 ]]></content>
   </entry>
   

@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Después de que el chino se diera mil cabezasos con la papelística; Yoel le dijo
-que quería revisar el estado y organización de su papelística. De &hellip;">
+  <meta name="description" content="Verdial, el omnisapiente neurocirujano que dice haber recorrido el mundo; de
+siempre se ha quejado por no tener un software para ver las imágenes del &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,166 @@ que quería revisar el estado y organización de su papelística. De &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/24/verdial-y-el-imagis/">la pena de verdial</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-09-24T08:15:19-04:00'><span class='date'>24/09/2014</span> <span class='time'>8:15 am</span></time>
+        
+           | <a href="/blog/2014/09/24/verdial-y-el-imagis/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/09/24/verdial-y-el-imagis/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Verdial, el omnisapiente neurocirujano que dice haber recorrido el mundo; de
+siempre se ha quejado por no tener un software para ver las imágenes del somatón
+en Winwdows 7. Últimamente me tiene los cojones hinchados con eso.</p>
+
+<p>Ayer, mientras conversaba con Karman; le contaba su pena mientras yo escuchaba
+del otro lado del pladur (mi oficina). Me paré para que me explicara por
+milésima ves su problema pero esta vez; pensó con la cabeza.</p>
+
+<p>Me dijo que los ficheros DICOM, eran el producto del somatón y de los Rayos X.
+Una rápida búsqueda con apt-cache, reveló que hay mas de 20 programas macheando
+la palabra &ldquo;dicom&rdquo;.</p>
+
+<p>Tras consultar <a href="http://www.google.com.cu">el oráculo</a>, resulta que los ficheros
+del tipo DICOM, son una especia de imagen que contiene metadatos, muuuuchos
+metadatos; para cosas como por ejemplo: nombre del paciente, parte del cuerpo,
+fecha del estudio, objetivo del estudio, etc&hellip; Todo parece indicar que las
+operaciones con el somatón son llamadas &ldquo;estudios&rdquo;.</p>
+
+<p>Verdial me soltó una pila de imágenes en una memoria, los ficheros contienen la
+extensión &ldquo;.dcm&rdquo;</p>
+
+<p>En el respositorio de debian, hay un software llamado &ldquo;amide&rdquo; resulta que amide
+es capaz de renderizar las imagenes prodcuto del somatón, incluso, en colores
+con vista térmica, etc&hellip; A según verdial, el software es capaz de crear
+imagines que el somatón no crea. Conjugando la vista horizontal y vertical te
+permite tener una vista exacta en ambos planos de un punto específico.</p>
+
+<p><img src="/images/amide.png"></p>
+
+<p>El único problema que tiene esto, es recibir las imágenes provenientes del
+somatón; sin tener que traer archivos y carpetas.</p>
+
+<p>Pero adivinen que lenguaje tiene una librería para trabajar con ficheros DICOM?</p>
+
+<p>Pues el mio, Ruby, <a href="http://github.com/dicom/ruby-dicom">http://github.com/dicom/ruby-dicom</a></p>
+
+<p>Manoseando ruby-dicom, entendí que imagis y efilm, aún siendo cliente y
+servidor, funcionan al revés. Pues el cliente escucha por un puerto ye el
+servidor está configurado para empujarle las imágenes a los cliente; tipo
+torrent.</p>
+
+<p>Veamos que pasa tras el primer experimento, pues Fumero configurará el server
+para que le mande imágenes a mi máquina.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/05/palos-de-wordpress/">palos de wordpress</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-09-05T12:03:41-04:00'><span class='date'>05/09/2014</span> <span class='time'>12:03 pm</span></time>
+        
+           | <a href="/blog/2014/09/05/palos-de-wordpress/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/09/05/palos-de-wordpress/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Hay dos palos típicos de wordpress:</p>
+
+<p>El primero: Al hacer click en un post, devuelve 404</p>
+
+<p>Solución: Un htaccess file para reescribir la URL</p>
+
+<figure class='code'><figcaption><span>&#8220;/usr/share/wordpress/.htaccess&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>&lt;IfModule mod_rewrite.c&gt;
+</span><span class='line'>RewriteEngine On
+</span><span class='line'>RewriteBase /
+</span><span class='line'>RewriteCond %<span class="o">{</span>REQUEST_FILENAME<span class="o">}</span> !-f
+</span><span class='line'>RewriteCond %<span class="o">{</span>REQUEST_FILENAME<span class="o">}</span> !-d
+</span><span class='line'>RewriteRule . /index.php <span class="o">[</span>L<span class="o">]</span>
+</span><span class='line'>&lt;/IfModule&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;IfModule mod_rewrite.c&gt;
+</span><span class='line'>RewriteEngine On
+</span><span class='line'>RewriteBase /
+</span><span class='line'>RewriteRule ^index<span class="se">\.</span>php<span class="nv">$ </span>- <span class="o">[</span>L<span class="o">]</span>
+</span><span class='line'>RewriteRule ^files/<span class="o">(</span>.+<span class="o">)</span> wp-includes/ms-files.php?file<span class="o">=</span><span class="nv">$1</span> <span class="o">[</span>L<span class="o">]</span>
+</span><span class='line'>RewriteCond %<span class="o">{</span>REQUEST_FILENAME<span class="o">}</span> -f <span class="o">[</span>OR<span class="o">]</span>
+</span><span class='line'>RewriteCond %<span class="o">{</span>REQUEST_FILENAME<span class="o">}</span> -d
+</span><span class='line'>RewriteRule ^ - <span class="o">[</span>L<span class="o">]</span>
+</span><span class='line'>RewriteRule . index.php <span class="o">[</span>L<span class="o">]</span>
+</span><span class='line'>&lt;/IfModule&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El segundo, no se pueden modificar los estilos desde la interfaz web:</p>
+
+<p>Solución: Cambiar los permisos</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@leviatan:~# chown -R www-data:www-data /usr/share/wordpress/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al carajo albañiles que se acabó la mezcla. Wordpress para rato&hellip;</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -384,133 +544,6 @@ el servidor de OCS.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/08/select-en-bootstrap/">select en bootstrap</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-07-08T15:40:54-04:00'><span class='date'>08/07/2014</span> <span class='time'>3:40 pm</span></time>
-        
-           | <a href="/blog/2014/07/08/select-en-bootstrap/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/07/08/select-en-bootstrap/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>A rails le sobra magia, eso no es secreto para nadie. No obstante, si hay un
-hechizo complicado de conjurar, es el dichoso <a href="http://guides.rubyonrails.org/form_helpers.html#binding-a-form-to-an-object">form_for</a></p>
-
-<p>Es una verdadera jodienda poner un select decente en un form_for de rails,
-sobre todo para que coja el estilo de boostrap. He aquí el secreto:</p>
-
-<figure class='code'><figcaption><span>&#8220;un_scaffold.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'> <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;form-control&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="err">&lt;</span>%= f.select(:ampm, options_for_select([[&#39;AM&#39;, 1], [&#39;PM&#39;, 2]])) %&gt;
-</span><span class='line'> <span class="nt">&lt;/div&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ni en mi mejor día leyendo código fuente de RoR me hubiera imaginado que <a href="file:///home/lazaro/Documentacion/Rails/guides.rubyonrails.org/form_helpers.html#the-select-and-option-tags">options_for_select</a>
-existía. Evito a toda costa usar select, pero aveces no queda más remedio; un
-&ldquo;radio&rdquo; con 7 elementos se ve horrible.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/05/empirico/">empíricos</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-07-05T09:18:42-04:00'><span class='date'>05/07/2014</span> <span class='time'>9:18 am</span></time>
-        
-           | <a href="/blog/2014/07/05/empirico/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/07/05/empirico/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>¿Sabes tú qué es un &ldquo;empírico&rdquo;?</p>
-
-<p>Una persona que desarrolla habilidades de manera autodidacta en un oficio o
-campo de la ciencia y que llega a ser tanto o más bueno que un catedrático.</p>
-
-<p>Generalmente estamos graduados de algo que no ejercemos.</p>
-
-<p>Guardamos con devoción en nuestra casa, el libro que nos darían si llegáramos al
-tercer año de la carrera universitaria que deberíamos estudiar.</p>
-
-<p>No leemos los libros que nos obligan. Leemos los que nos interesan.</p>
-
-<p>No podemos ir a la universidad porque suspendemos las pruebas en las que nos
-preguntan cosas que hace 6 años leímos o cosas que No nos interesan.</p>
-
-<p>Cuando llegamos a preescolar sabíamos las vocales, los colores y contar del uno
-al diez. Odiábamos a la profesora por obligarnos a atender su aburrida clase.</p>
-
-<p>Somos gente que pensamos diferentes y no encajamos en el montón. Algunos nos
-llaman &ldquo;rosca izquierda&rdquo; otros nos llaman &ldquo;originales&rdquo;.</p>
-
-<p>Sabemos que colar un café es una reacción exotérmica porque dimos química en
-noveno grado.</p>
-
-<p>Sabemos que de día sopla la brisa y de noche el terral, porque dimos &ldquo;mundo en
-que vivimos&rdquo; en 5to grado.</p>
-
-<p>VAMOS A LA ESCUELA A APRENDER, no a sacar buenas notas.</p>
-
-<p>No nos expliques nada, solo déjanos ver como lo haces.</p>
-
-<p>Sabemos hacer muy pocas cosas pero no tenemos rivales en las pocas que hacemos.</p>
-
-<p>Si hay un camino a la derecha y otro a la izquierda, hacemos uno nuevo por el
-medio; con la esperanza de hacerlo mejor.</p>
-
-<p>No somos mejores ni peores que nadie porque no nos comparamos.</p>
-
-<p>Tenemos una ortografía terrible porque escribimos en cualquier idioma menos en
-el nuestro.</p>
-
-<p>Sabemos un montón de cosas y no nos acordamos cuando o porque lo aprendimos.</p>
-
-<p>Los que nos aprecian o admiran nos llaman &ldquo;geniales&rdquo; o &ldquo;inteligentes&rdquo;. Los que
-nos repudian o envidian nos llaman &ldquo;autosuficientes&rdquo; o &ldquo;excéntricos&rdquo;.</p>
-
-<p>Solo somos &ldquo;empíricos&rdquo;</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/11">&larr; Older</a>
@@ -530,6 +563,14 @@ nos repudian o envidian nos llaman &ldquo;autosuficientes&rdquo; o &ldquo;excén
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/06/18/dkim-y-spf-en-postfix/">dkim y spf en postfix</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/06/06/desacelerar-mouse/">desacelerar mouse</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/05/12/deshabilitar-historial-de-bash/">deshabilitar historial de bash</a>

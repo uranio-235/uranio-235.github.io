@@ -4,7 +4,7 @@
   <title><![CDATA[Category: destacado | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/destacado/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-05-12T14:41:04-04:00</updated>
+  <updated>2016-06-19T17:02:38-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,412 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[dkim y spf en postfix]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/06/18/dkim-y-spf-en-postfix/"/>
+    <updated>2016-06-18T13:57:51-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/06/18/dkim-y-spf-en-postfix</id>
+    <content type="html"><![CDATA[<p>Aunque no de mi agrado, reconozco que es una solución muy buena. DKIM y SPF, se
+ha vuelto hoy en día un mecanismo para mitigar el SPAM en el correo electrónico.</p>
+
+<p>Esto no quita, que un spammer puede hacerse con un buen esquema de DKIM para sus
+dominos de porquería; lo cual sería un estupendo negocio, teniendo en cuenta que
+un servidor puede tener tantos dominios como quiera. Si conoce a algún spammer
+que quiera tener DKIM y SPF en su negocio, por favor, mándele mi tarjeta.</p>
+
+<p>Me imagino que a los usuarios de nauta, les duela bajar un mensaje que
+aparentemente tiene dos lineas, pagando por uno que realmente tiene más de 20
+líneas de pura mierda que no les incumbe. Espero que etecsa se digne a retirar
+encabezados innecesarios como esos (para el cliente).</p>
+
+<p>Por otra parte, mucha gente tiene antivirus que modifican el correo o son
+fanáticos a instalar mil gangarreas (mailscanner, clamav, etc&hellip;) que modifican
+el correo y estos mecanismos <strong>se van a la mierda</strong>.</p>
+
+<p>Le diré que hice con un postfix que ya estaba instalado en un debian8 para
+ponerle DKIM y SPF.</p>
+
+<p>Instalamos los jueguetes requeridos ante todo:</p>
+
+<pre><code class="bash">apt-get install opendkim opendkim-tools postfix-policyd-spf-python
+</code></pre>
+
+<p>y establecemos los permisos adecuados, ojo con esto, ya que dkim es muy riguroso
+con el tema de los permisos</p>
+
+<pre><code class="bash">adduser postfix opendkim
+</code></pre>
+
+<h2>SPF</h2>
+
+<p>Ahora procedemos a crear el registro DNS. Como hay muchos DNS y cada quién tiene
+sus preferencias, me reduciré a describir de manera abstracta los registros.
+Usted, aterrize la idea en su DNS.</p>
+
+<h3>Esto tiene <strong>DOS</strong> formas de hacerse:</h3>
+
+<h4>La primera:</h4>
+
+<p>Declarar que TODOS los <strong>MX</strong> del dominio, pueden mandar correo (lo cual
+inspira desconfianza) en este caso, registra un puntero del tipo <strong>TXT</strong> con el
+siguiente valor</p>
+
+<pre><code>v=spf1 mx -all
+</code></pre>
+
+<p>Por ejemplo, bind9</p>
+
+<pre><code class="cfg "registro"">@               IN      TXT     "v=spf1 mx -all"
+</code></pre>
+
+<h4>La segunda:</h4>
+
+<p>Declarar que un host, que tiene un registro <strong>A</strong>, está autorizado a enviar
+correos (esta me gusta más, si tienes un solo servidor de correo) Si fueran
+varios, por ejemplo 3. Podrías declarar un A para cada uno y de manera
+individual, ellos generarían su SPF apuntándose a si mismo.</p>
+
+<pre><code>v=spf1 a:mx1.tudominio.cu -all
+</code></pre>
+
+<p><strong>Nota para los apurados:</strong> &ldquo;Si declaras ambos registros, no pincha, LEE!!&rdquo;</p>
+
+<p>Otra cosa, puedes declarar <strong>-all</strong> o <strong>~all</strong> El primero le dirá al receptor
+que si el correo no viene del dominio que dice enviarlo (el puntero A o los MX),
+lo rechace porque es falso (muy radical) y el segundo, que empieza por ~ le
+indica al receptor, que puede recibir el mensaje y si no pude verificarlo que lo
+marque como spam, pero que por favor, no lo rechaze.</p>
+
+<p>Esto nos lleva a una:</p>
+
+<h3>Situación peligrosa</h3>
+
+<p>Cuba, un descerebrado configuró verificación de DKIM, <strong>porque está de moda</strong>.
+PERO! Está detrás de un smarthost (pasarela) o simplemente, su configuración de
+DNS no vale un quilo (por culpa del proveedor)</p>
+
+<p>Metedura de pata - A:</p>
+
+<p>Ese servidor de correo, que se cree <em>Oggun con machete en mano</em>; descartará todo
+correo con <strong>-all</strong> debido a su incapacidad de realizar un lookup decente.</p>
+
+<p>Metedura de pata - B:</p>
+
+<p>Uno más descerebrado todavía, vio que DKIM estaba de moda y sin importar que no
+tiene control de su DNS, lo hizo todo, saltándose el paso del DNS. Su servidor
+le estará gritando a toda voz al mundo entero, <strong>que está falseando el dominio</strong></p>
+
+<p>Si ignorancia le costará caer de cabeza en las listas negras&hellip;</p>
+
+<p>Y es que:</p>
+
+<p>Generalmente, los servidores que entregan a través de un smarthost, carecen de
+DNS real. También hay una pila de gente que administran servidores sin tener
+control de su DNS.</p>
+
+<h4>Seguimos&hellip;</h4>
+
+<p>Ya ya que tenemos el SPF pinchando, podemos añadirle chequeo de SPF a nuestro
+postfix <strong>que tiene bien configurado el DNS y entrega de cara a internet sin
+smarthost</strong></p>
+
+<p>En el fichero <strong>/etc/postfix/master.cf</strong> le agregamos esto:</p>
+
+<pre><code class="cfg master.cf">policyd-spf  unix  -       n       n       -       0       spawn
+    user=policyd-spf argv=/usr/bin/policyd-spf
+</code></pre>
+
+<p>y a los posftfix cubanos, le decimos que sea paciente con el proceso de
+verificación, incrementando el tiempo que tiene que esperar por el policyd, ya
+que dicha verificación puede tardar (dns lookup, cpu a tope, etc..) Añadimos
+esto a <strong>/etc/postfix/main.cf</strong></p>
+
+<pre><code class="cfg main.cf">policyd-spf_time_limit = 3600
+</code></pre>
+
+<p>Ahora viene una parte complicada, pues no hay manera de que pueda reflejarla
+como para copiar y pegar.</p>
+
+<p>Deberás modificar tus reglas de postfix, de forma que antepongas el chequeo SPF,
+como una más de tus restricciones de recibo. Para mi caso, está bien la última
+linea.</p>
+
+<pre><code class="cfg "scpe del main.cf"">
+smtpd_sender_restrictions =
+   reject_non_fqdn_sender,
+   reject_non_fqdn_recipient,
+   permit_sasl_authenticated,
+   reject_unknown_sender_domain,
+   reject_unknown_recipient_domain,
+   reject_rbl_client bl.spamcop.net,
+   reject_rbl_client sbl.spamhaus.org,
+   reject_rbl_client xbl.spamhaus.org,
+   defer_unauth_destination,
+   reject_unverified_sender,
+   check_policy_service unix:private/policyd-spf
+</code></pre>
+
+<p>Reinicia postfix y chequea el <strong>/var/log/mail.log</strong> para que veas SPF pinchando.</p>
+
+<h2>DKIM</h2>
+
+<p>Me parece que la configuración de DKIM en debian está buena, pero por si las
+moscas. Copias esta que pongo aquí y métela en tu <strong>/etc/opendkim.conf</strong></p>
+
+<pre><code class="cfg /etc/opendkim.conf">Syslog          yes
+UMask           002
+UserID          opendkim
+KeyTable        /etc/opendkim/key.table
+SigningTable        refile:/etc/opendkim/signing.table
+ExternalIgnoreList  /etc/opendkim/trusted.hosts
+InternalHosts       /etc/opendkim/trusted.hosts
+Canonicalization    relaxed/simple
+Mode            sv
+SubDomains      no
+#ADSPAction     continue
+AutoRestart     yes
+AutoRestartRate     10/1M
+Background      yes
+DNSTimeout      5
+SignatureAlgorithm  rsa-sha256
+OversignHeaders     From
+</code></pre>
+
+<p>Como ya te dije, los permisos son sumamente importantes en este caso</p>
+
+<pre><code class="bash permisos">chmod u=rw,go=r /etc/opendkim.conf
+</code></pre>
+
+<p>Ahora creamos el directorio donde vamos a meter todo el zoológico requerido para
+que DKIM pinche. Hay quién prefiere meterlo en <strong>/var</strong>, para mi en
+<strong>/etc/opendkim</strong> es un buen lugar.</p>
+
+<pre><code class="bash "creando el directorio de residencia"">mkdir /etc/opendkim
+mkdir /etc/opendkim/keys
+chown -R opendkim:opendkim /etc/opendkim
+chmod go-rw /etc/opendkim/keys
+</code></pre>
+
+<h3>La Firma</h3>
+
+<p>Ahora vamos a crear la <em>tabla de rúbricas</em> (se aceptan contribuciones para
+traducir). Ahí, ponemos una linea por cada dominio que tengas. Creas el fichero
+<strong>/etc/opendkim/signing.table</strong> y está recomendado que le pongas lo siguiente:</p>
+
+<pre><code class="cfg "como dicen que debe ser"">   *@tudominio.cu   tudominio
+</code></pre>
+
+<p><strong>Nota para los imbéciles:</strong> No olvide remplazar <em>tudominio.cu</em> por el nombre
+del dominio suyo.</p>
+
+<p>Con eso, casamos todos los correos que parezcan a tu dominio, con el DKIM que
+llamamos &ldquo;tudominio&rdquo;, si quiere atrás le puede poner &ldquo;pepe&rdquo;. Lo que debe
+quedarte claro, es que todos los correos que macheen a la expresión regular de
+alante, pasarán por el filtro llamado <em>tudominio</em> (o &ldquo;pepe&rdquo; si lo cmabiaste) ¿Se
+entendió?</p>
+
+<p>Por ejemplo, si tu dominio fuera *@cacocum.hlg.sld.cu podrías ponerle detrás
+&ldquo;midkim&rdquo; para que todos los correos de ese dominio, se firmen con la firma que
+será configurada bajo el nombre &ldquo;midkim&rdquo; Quedaría así:</p>
+
+<pre><code>  *@cacocum.hlg.sld.cu  midkim
+</code></pre>
+
+<p>Resumen:</p>
+
+<p>El primero campo, es una expresión regular que mache las direcciones de correo y
+el segundo el nombre de la firma que se usará. Para mayor confusión, se
+recomienda que se hagan nombres parecidos. Finalmente nos quedó así:</p>
+
+<pre><code class="cfg /etc/opendkim/signing.table">*@tudominio.cu    tudominio
+</code></pre>
+
+<h3>La clave</h3>
+
+<p>Ahora creamos el fichero, donde le diremos a &ldquo;midkim&rdquo; donde va a encontrar su
+parafernalia cifradora. Crea el fichero <strong>/etc/opendkim/key.table</strong> y ponle
+dentro esto:</p>
+
+<pre><code class="cfg /etc/opendkim/key.table">tudominio     tudominio.cu:YYYYMM:/etc/opendkim/keys/example.private
+</code></pre>
+
+<p><strong>IMPORTANTE</strong></p>
+
+<p>Remplaza <strong>YYYYMM</strong> por el año y el número de mes en el que estamos.</p>
+
+<p><strong>SI NO, NO PINCHA</strong></p>
+
+<p>A mi me quedó así:</p>
+
+<pre><code class="cfg /etc/opendkim/key.table">tudominio     tudominio.cu:201606:/etc/opendkim/keys/example.private
+</code></pre>
+
+<p>Ya que estamos en el año <strong>2016</strong> y el mes el el <strong>0</strong>6 no el 6 (lleva cero
+delante).</p>
+
+<p>Ojo aquí, ya que si tienes más dominios, es complicado. No te que debes reflejar
+a localhost con sus pertinentes ip, además, tu nombre de host, tu dominio y el
+nombre del host conjuado con el dominio. Siendo entonces <strong>fulanito</strong> el nombre
+del host, quedaría así en fichero <strong>/etc/opendkim/trusted.hosts</strong></p>
+
+<pre><code class="cfg /etc/opendkim/trusted.hosts">127.0.0.1
+::1
+localhost
+fulanito
+fulanito.dominio.cu
+dominio.cu
+</code></pre>
+
+<p>Los permisos, ya tu sabes:</p>
+
+<pre><code class="bash "seteando permisos"">chown -R opendkim:opendkim /etc/opendkim
+chmod -R go-rwx /etc/opendkim/keys
+</code></pre>
+
+<p>FINALMENTE! Vamos a generar la clave para el dominio:</p>
+
+<pre><code class="bash "generando las claves"">cd /etc/opendkim/keys/
+opendkim-genkey -b 2048 -r -s 201606
+</code></pre>
+
+<p>Las claves se generan en base a la fecha, pero luego se colocan en base al
+dominio. Esto se hace porque <strong>hay que renovarlos</strong> pero si configuramos
+opendkim para que apunte a un fichero cuyo nombre sea la fecha, tendríamos que
+cambiar la configuración cada vez que renovamos.</p>
+
+<pre><code class="bash "la clave por su nombre"">mv 201606.private tudominio.private
+mv 201606.txt tudominio.txt
+</code></pre>
+
+<p>Si tu clave se llamase &ldquo;pepe&rdquo; o &ldquo;midkim&rdquo;, ya sabes que esos ficheros se
+llamarían &ldquo;pepe.private&rdquo; o &ldquo;tudkim.txt&rdquo; ¿Entiendes ahora? Seguimos&hellip;</p>
+
+<p>El argumento <strong>-b</strong> indica la longitud de clave en Bit. En otros tiempo 1024 era
+la tisa, pero ahora, se recomienda usar 2048 porque las máquinas son más
+potentes. Quizás dentro de un par de años, sea 4096.</p>
+
+<p>Bueno, ya sabes, la ceremonia de los permisos:</p>
+
+<pre><code class="bash "seteando permisos"">chown -R opendkim:opendkim /etc/opendkim
+chmod -R go-rw /etc/opendkim/keys
+</code></pre>
+
+<p>Arranca opendkim y asegúrate mirando los log que esté pinchando.</p>
+
+<pre><code class="bash "arranca opendkim"">systemctl restart opendkim
+systemctl status -l opendkim
+</code></pre>
+
+<h2>El DNS</h2>
+
+<p>El patico feo de internet, el DNS. El remedio que se inventó pa ir tirando y
+acabó quedándose con su pésimo diseño y su horrible arquitectura que hasta el
+sol de hoy, pretende llamarse &ldquo;distribuida&rdquo;.</p>
+
+<p>Agregamos le registro TXT con la clave. Te cuento que el fichero &ldquo;.txt&rdquo; contiene
+el tabaco base64 que usualmente vemos en el encabezado DKIM-Signature, pues
+proviene de este registro TXT que estamos creando.</p>
+
+<p>Añade un registro del tipo TXT que apunte a un hostname llamado
+<strong>201606._domainkey</strong> dentro de tu domino. Pero ahora viene la parte difícil:</p>
+
+<p>Copia el texto que contiene el fichero tudominio.txt dentro de la primera
+comilla hasta la última, pero sin tomar las comillas.</p>
+
+<p>O sea, dentro del fichero tiene esto:</p>
+
+<pre><code class="cfg "tudominio.txt"">201606._domainkey  IN  TXT ( "**v=DKIM1; k=rsa; s=email; " "p=ZjiONVGXom64jANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu5oIUrFDWZK7F4thFxpZa2or6jBEX3cSL6b2TJdPkO5iNn9vHNXhNX31nOefN8FksX94YbLJ8NHcFPbaZTW8R2HthYxRaCyqodxlLHibg8aHdfa+bxKeiI/xABRuAM0WG0JEDSyakMFqIO40ghj/h7DUc/4OXNdeQhrKDTlgf2bd+FjpJ3bNAFcMYa3Oeju33b2Tp+PdtqIwXR" "ZksfuXh7m30kuyavp3Uaso145DRBaJZA55lNxmHWMgMjO+YjNeuR6j4oQqyGwzPaVcSdOG8Js2mXt+J3Hr+nNmJGxZUUW4Uw5ws08wT9opRgSpn+ThX2d1AgQePpGrWOamC3PdcwIDAQAB**")  ; ----- DKIM key 201606 for tudominio.cu
+</code></pre>
+
+<p>Al extraer la parte que nos interesa, no quedamos con esto (sin las comillas)</p>
+
+<pre><code class="cfg "la clave sin las comillas"">**v=DKIM1; k=rsa; s=email; p=ZJiONVGXom64zhNjwdAmo2XnMhAXeGXxB0p5PJkHxUk5XMXNaoUbMwfGOBOQYKsiQp0k9KwcYu2SNAlcFrGIugPG035Ng4r8mlBRLS5+dak90HuH+hb2d8aa+djRFn4PIS2RcAZZJgJjRgF1NbWZpBlj8IpXJ7MywrUxtj1e+TU/tCiWQxCc9uMqgWA53NeqRGEFPwCuTfDMKWbbMhZkbe+pOOtEqQBQ0HsvJ3n09ZNhh3AjbNP6JOpAyK+4hqHohDTrLhxdSFsNiaoAaJXsxDdAHIs2U3QNmrbAFEg7aPOBgaHLXv28k88EDqo4cIuOxa/c24e3F4O6TY3fpydRmekadtCW+waY3aCIIwIA7DdAABFUTR3ABI8WnFTjgDyj1/IQ53Af**
+</code></pre>
+
+<p><strong>OJO</strong> Tiene más comillas en el medio!!!!</p>
+
+<p>Auxiliate de un editor de texto decente. Deshabilita el wrap y busca la comilla
+como cadena de texto.</p>
+
+<p>Ese texto, será el valor del puntero TXT</p>
+
+<p>A mi me quedó así:</p>
+
+<pre><code class="cfg "puntero TXT de 201606._domainkey"">201601._domainkey    IN      TXT     "**v=DKIM1; k=rsa; s=email; p=ZJiONVGXom64zhNjwdAmo2XnMhAXeGXxB0p5PJkHxUk5XMXNaoUbMwfGOBOQYKsiQp0k9KwcYu2SNAlcFrGIugPG035Ng4r8mlBRLS5+dak90HuH+hb2d8aa+djRFn4PIS2RcAZZJgJjRgF1NbWZpBlj8IpXJ7MywrUxtj1e+TU/tCiWQxCc9uMqgWA53NeqRGEFPwCuTfDMKWbbMhZkbe+pOOtEqQBQ0HsvJ3n09ZNhh3AjbNP6JOpAyK+4hqHohDTrLhxdSFsNiaoAaJXsxDdAHIs2U3QNmrbAFEg7aPOBgaHLXv28k88EDqo4cIuOxa/c24e3F4O6TY3fpydRmekadtCW+waY3aCIIwIA7DdAABFUTR3ABI8WnFTjgDyj1/IQ53Af**"
+</code></pre>
+
+<p>Completo! Vamos a probarlo a ver que pasa:</p>
+
+<pre><code class="bash "1, 2, 3, probando"">opendkim-testkey -d example.com -s 201606
+</code></pre>
+
+<p>Si sale silentemente sin mostrar algo. Es que todo está bien.</p>
+
+<h3>opendkim y postfix</h3>
+
+<p>Finalmente, nuestro postfix tendrá el privilegio de firmar los correos usando el
+aparataje recién configurado. Vamos a crearle un cuartico de dkim en la casa de
+postfix</p>
+
+<pre><code class="bash "dkim en postfix"">mkdir /var/spool/postfix/opendkim
+chown opendkim:postfix /var/spool/postfix/opendkim
+</code></pre>
+
+<p>y habilitamos el socket de opedkim, editando el fichero <strong>/etc/default/opendkim</strong></p>
+
+<pre><code class="cfg /etc/default/opendkim"># Command-line options specified here will override the contents of
+# /etc/opendkim.conf. See opendkim(8) for a complete list of options.
+#DAEMON_OPTS=""
+#
+# Uncomment to specify an alternate socket
+# Note that setting this will override any Socket value in opendkim.conf
+SOCKET="local:/var/spool/postfix/opendkim/opendkim.sock"
+#SOCKET="inet:54321" # listen on all interfaces on port 54321
+#SOCKET="inet:12345@localhost" # listen on loopback on port 12345
+#SOCKET="inet:12345@192.0.2.1" # listen on 192.0.2.1 on port 12345
+</code></pre>
+
+<p>Note como retiramos el comentario de la línea 7</p>
+
+<p>Ahora declaramos en postfix que debe usar a opendkim como demonio de
+preprocesamiento en el típico <strong>/etc/postfix/main.cf</strong></p>
+
+<pre><code class="cfg /etc/postfix/main.cf"># Milter configuration
+# OpenDKIM
+milter_default_action = accept
+milter_protocol = 2
+smtpd_milters = local:/opendkim/opendkim.sock
+non_smtpd_milters = local:/opendkim/opendkim.sock
+</code></pre>
+
+<p>Finalmente, reinicia opendkim y postfix</p>
+
+<pre><code class="bash "systemctl"">systemctl restart opendkim postfix
+</code></pre>
+
+<h3>COMPLETO!!!</h3>
+
+<p>Con eso hemos terminado. Para probarlo, puede enviar un correo a <a href="mailto:check-auth@verifier.port25.com">check-auth@verifier.port25.com</a></p>
+
+<p>Esa dirección le hará una prueba al DKIM+SPF de tu correo.</p>
+
+<p>Si quieres ponerle la guinda al pastel, puede añadirle ADSP (Author Domain
+Signing Practices) a tu esquema. Esto indica que todos los correos que salgan de
+tu dominio deben estar firmados con DKIM, proveiendo aún más confianza al
+receptor.</p>
+
+<p>Crea un registro <strong>TXT</strong> para el hostname <strong><em>adsp.</em>domainkey</strong> y el valor del
+TXT será <strong>dkim=all</strong>. A mi me quedó así:</p>
+
+<pre><code class="cfg "registro"">_adsp._domainkey     IN      TXT     "dkim=all"
+</code></pre>
+
+<p>Con eso, tus correos no caerán más en la bandeja SPAM de gmail.</p>
+
+<p>Otra cosa importante, asegúrate de tener el reverse lookup de tu MX bien puesto</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[tls y ssl en postfix]]></title>
@@ -396,119 +802,6 @@ determinada. O por el contrario, se afirma que la máquina a esa hora NO estaba
 encendida y el uptime dice lo contrario.</p>
 
 <p>   <blockquote><p>Saque usted, sus propias concluciones&hellip;</p><footer><strong>Taladrid</strong> <cite>Pasaje a Lo Desconocido</cite></footer></blockquote></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[OpenVAS en Archlinux]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/07/11/openvas-en-archlinux/"/>
-    <updated>2015-07-11T19:19:59-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/07/11/openvas-en-archlinux</id>
-    <content type="html"><![CDATA[<p><img class="left" src="/images/greenbone.png" title="&ldquo;Login del Greenbone&rdquo; &ldquo;Login del Greenbone&rdquo;" ></p>
-
-<p>Recientemente, un &ldquo;Webmaster&rdquo; usó en uno de los servidores que patrocino; un
-escaner de vulnerabilidades. El administrador de red del lugar, le dio acceso al
-servidor; claro está. El informe reveló un cartapaso de vulnerabilidades. Por
-ejemplo, la ausencia de una partición swap; podría dar lugar a un kernel-panic
-por falta de memoria RAM; en un servidor de correo con 4 Gigas de RAM. Además,
-advertía que la versión de bash (con sus parches puestos) era muy vieja y
-recomendaba usar una reciente. Como si instalar software reciente en debian
-fuese jamón.</p>
-
-<p>No vi nada con respecto a postfix o dovecot pero de inmediato me llamaron para
-que explicara como era posible que mi servidor tuviera semejantes
-vulnerabilidades. Claro, con acceso a root cualquiera busca vulnerabilidades.</p>
-
-<p>Soy de los que pasa HORAS, intentando penetrar mi propia seguridad; pero el caso
-llevaba un contra ataque más elaborado.</p>
-
-<p>El sosftware por excelencia para probar la seguridad: <a href="http://es.wikipedia.org/wiki/OpenVAS">OpenVAS</a></p>
-
-<h3>No solo identifica el problema, también te dice como arreglarlo.</h3>
-
-<p>Funciona de manera similar a un antivirus. Una base de datos se actualiza y ala
-las vulnerabilidades conocidas. Luego, una interfaz web, de lo más cómoda;
-permite llevar a cabo un análisis tanto ligero como exhaustivo del sistema
-seleccionado como objetivo. Además, se pueden programar análisis de manera
-automatizada.</p>
-
-<p>Su interfaz web, el llamado &ldquo;Greenbone Security Assistant&rdquo;, nos hará la vida muy
-fácil una vez instalado.</p>
-
-<p>En archlinux todo es un rollo, así que empezemos:</p>
-
-<pre><code class="bash "instalando openvas"">pacman -S openvas
-</code></pre>
-
-<p>La interfaz web de openvas (el greenbone) debe ser contactada por SSL (obligao).
-Como siempre, crear los certificados es todo una ceremonia.</p>
-
-<pre><code class="bash "creando certificados"">openvas-mkcert
-openvas-mkcert-client -n -i
-</code></pre>
-
-<p>Ahora lo más importante. Descargarnos la base de datos con las amenazas, o sea,
-con las vulnerabilidades.</p>
-
-<pre><code class="bash "actualizando las bases"">openvas-nvt-sync
-openvas-scapdata-sync
-openvas-certdata-sync
-</code></pre>
-
-<p>El escaner, es un servicio, que en producción, está supuestamente corriendo y
-realizando escaneos bajo demanda. Lo echamos a andar:</p>
-
-<pre><code class="bash "el servicio"">systemctl start openvas-scanner
-</code></pre>
-
-<p>Una vez que tenemos las bases de datos descargadas, las instalamos en openvas</p>
-
-<pre><code class="bash "instalando las bases"">openvasmd --rebuild --progress
-</code></pre>
-
-<p>Y hasta aquí es donde la wiki de arch está bien. Pues para crear el usuario de
-openvas y echar a andar el greenbone, se forma la moña.</p>
-
-<p>Primero debemos crear el usuario de openvas. En este caso de ejemplo, el
-usuario será <strong>admin</strong> con password <strong>admin</strong>.</p>
-
-<pre><code class="bash "creando usuarios"">openvasmd --create-user=admin --role=Admin
-openvasmd --user=admin --new-password=admin
-</code></pre>
-
-<p>Por último, echamos a andar la interfaz web:</p>
-
-<pre><code class="bash "iniciando gsad"">gsad --http-only --listen=127.0.0.1 -p 9392
-openvasmd -p 9390 -a 127.0.0.1
-</code></pre>
-
-<p>Abre un navegador y apunta para <a href="http://127.0.0.1:9392">http://127.0.0.1:9392</a></p>
-
-<p>Una vez dentro, verás la página donde se almacenan los escaneos. Ahí localiza un
-botón morado con una barita mágica. Vea la imagen de abajo</p>
-
-<p><img class="center" src="/images/openvas_wiz.png" title="&ldquo;Botón del Wizard&rdquo; &ldquo;Botón del Wizard&rdquo;" ></p>
-
-<p>En la pantalla que le sigue, especificamos el host al que queremos escanear.</p>
-
-<p><img class="center" src="/images/openvas_scan.png" title="&ldquo;Seleccionar Objetivo&rdquo; &ldquo;Seleccionar objetivo&rdquo;" ></p>
-
-<p>Apto seguido, comenzará el escaneo. Es posible que el servidor deje de prestar
-servicios; pues openvas le da con todo.</p>
-
-<p>Finalmente, cuando el escaneo esté terminado, en vez de un tanto por ciento,
-verás; como en la primera imagen, un letrero que dice &ldquo;<strong>done</strong>&rdquo; sobre la barra
-azul.</p>
-
-<p><img class="center" src="/images/openvas_result.png" title="&ldquo;resultado del escaneo&rdquo; &ldquo;resultado de escaneo&rdquo;" ></p>
-
-<p>La imagen muestra, el resultado del webmaster que le tiró piedras al tejado del
-vecino con el suyo de vidrio. Al hacer click en la vulnerabilidad, nos muestra
-la solución, como es el ejemplo de esta:</p>
-
-<p><img class="center" src="/images/openvas_sol.png" title="&ldquo;solución&rdquo; &ldquo;solución&rdquo;" ></p>
-
-<p>Hermosa pareja; el problema y la solución junticos&hellip;</p>
 ]]></content>
   </entry>
   
