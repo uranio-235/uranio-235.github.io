@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://uranio-235.github.io/blog/2016/06/20/correos-del-cron/</loc>
+<lastmod>2016-06-20T14:14:06-04:00</lastmod>
+</url>
+<url>
 <loc>http://uranio-235.github.io/blog/2016/06/18/dkim-y-spf-en-postfix/</loc>
 <lastmod>2016-06-18T13:57:51-04:00</lastmod>
 </url>

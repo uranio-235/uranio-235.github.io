@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="A rails le sobra magia, eso no es secreto para nadie. No obstante, si hay un
-hechizo complicado de conjurar, es el dichoso form_for Es una verdadera &hellip;">
+  <meta name="description" content="Parece que ahora se ha vuelto una costumbre meterle las manos al parque informático del Calixto
+García. Por lo que dicen los jefes, la cosa está que &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,76 @@ hechizo complicado de conjurar, es el dichoso form_for Es una verdadera &hellip;
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/11/ocs-inventory/">ocs-inventory</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-08-11T11:06:28-04:00'><span class='date'>11/08/2014</span> <span class='time'>11:06 am</span></time>
+        
+           | <a href="/blog/2014/08/11/ocs-inventory/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/08/11/ocs-inventory/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Parece que ahora se ha vuelto una costumbre <a href="http://es.wikipedia.org/wiki/Hurto">meterle las manos</a> al parque informático del Calixto
+García. Por lo que dicen los jefes, la cosa está que llueve sobre lo mojado. Yo
+desde que llegué, estoy con la cháchara de implementar OCS inventory para
+controlar el parque informático, pero me dan por loco. Una buena razón para
+darle de lado al asunto, es el echo de que más del 50% de las máquinas, carecen
+de red.</p>
+
+<p>Pero OCS inventory tiene una solución, existe un modo offline para situaciones
+como esta, <a href="http://wiki.ocsinventory-ng.org/index.php/Howtos:OCS_Inventory_Mass_Import_from_local">véalo en este link</a></p>
+
+<p><img src="/images/ocsinventory.png"></p>
+
+<p>En windows corre el instalador en modo inventario local. Al llevar a cabo la
+instalación, parecerá no haber sucedido nada. Se creará el archivo con el
+inventario en el la raíz del disco &ldquo;C:&rdquo; cuya extensión será &ldquo;.ocs&rdquo; y su nombre
+se deriva del nombre de la máquina.</p>
+
+<p>FELICIDADES! Ya casi terminó el inventario local. Copia el fichero para tu
+memoria y llévalo pal servidor.</p>
+
+<p>En linux, hay una herramienta que colegia los ficheros .ocs con el sistema
+principal.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ln -s /usr/share/ocsinventory-server/binutils/ocsinventory-injector.pl /usr/local/bin/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora que la tenemos cerca:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ocsinventory-injector.pl -f /ruta/al/fichero.ocs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso colegiamos lo cambio en el servidor y VUALÁ! La máquina offline va para
+el servidor de OCS.</p>
+
+<p>Ah! Por cierto, el agente de windows, lo puede <a href="http://www.ocsinventory-ng.org/en/download/register-download-ocs-inventory-ng-agent-for-windows.html">descargar de aqui</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -505,163 +575,6 @@ cantaría.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-06-09T08:56:43-04:00'><span class='date'>09/06/2014</span> <span class='time'>8:56 am</span></time>
-        
-           | <a href="/blog/2014/06/09/dovecot-entra-en-el-baile/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/06/09/dovecot-entra-en-el-baile/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Otra escupía que me cae en la frente. Desde que conozco linux, estoy oyendo
-hablar de postfix con ldap, postfix con mysql y siempre mi criterio era el peor.</p>
-
-<p>Por lo general, veía a mis paisanos copiar guías y pasar mil trabajos creando la
-base de datos sin tener una finalidad útil. Ahora me doy cuenta que en un
-esquema monstruosamente grande; MySQL resulta útil.</p>
-
-<p>Por ejemplo, aquí tengo planificado un gran despliegue de tecnología
-estrafalaria y voy a necesitar un esquema como el de google:</p>
-
-<h3>&ldquo;una cuenta para todos los servicios&rdquo;</h3>
-
-<p>Por el momento le va tocando el turno al correo, que aunque aún no tenemos
-operando el dominio; esta pronto a cumplirse.</p>
-
-<p>Primero y principioso, instalar todo:</p>
-
-<figure class='code'><figcaption><span>&#8220;instalar todo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@blackjack:~# aptitude install postfix-mysql dovecot-mysql
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Seguidamente crearemos los usaurios del sistema. El esquema vmail corre como un
-usaurio aparte por una cuestión de seguridad.</p>
-
-<figure class='code'><figcaption><span>&#8220;crear los usaurios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@blackjack:~# groupadd -g <span class="m">5000</span> vmail
-</span><span class='line'>root@blackjack:~# useradd -g vmail -u <span class="m">5000</span> vmail -d /var/vmail
-</span><span class='line'>root@blackjack:~# mkdir /var/vmail
-</span><span class='line'>root@blackjack:~# chown vmail:vmail /var/vmail
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>La base de datos, tienes más o menos esta estructura:</p>
-
-<figure class='code'><figcaption><span>&#8220;estructura de las base de datos&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/ejemplo<span class="nv">$ </span>rails console
-</span><span class='line'>Loading development environment <span class="o">(</span>Rails 4.1.1<span class="o">)</span>
-</span><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:001:0&gt; User.column_names
-</span><span class='line'><span class="o">=</span>&gt; <span class="o">[</span><span class="s2">&quot;id&quot;</span>, <span class="s2">&quot;username&quot;</span>, <span class="s2">&quot;realname&quot;</span>, <span class="s2">&quot;password&quot;</span>, <span class="s2">&quot;created_at&quot;</span>, <span class="s2">&quot;updated_at&quot;</span>, <span class="s2">&quot;telefono&quot;</span>, <span class="s2">&quot;correo&quot;</span>, <span class="s2">&quot;quota&quot;</span><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lo que más nos interesa de aquí es username y password, sobre todo teniendo en
-cuenta que que se almacena cifrado, osea, un chorro de mierda hexagesimal.</p>
-
-<p>Ahora vamos al fichero &ldquo;/etc/dovecot/conf.d/10-auth.conf&rdquo;. al fondo, le
-descomentamos el autenticador sql y le comentamos el de pam. Nos quedaría así</p>
-
-<figure class='code'><figcaption><span>&#8220;fondo de 10-auth.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="c1">#!include auth-system.conf.ext</span>
-</span><span class='line'><span class="err">!include</span> <span class="err">auth-sql.conf.ext</span>
-</span><span class='line'><span class="c1">#!include auth-ldap.conf.ext</span>
-</span><span class='line'><span class="c1">#!include auth-passwdfile.conf.ext</span>
-</span><span class='line'><span class="c1">#!include auth-checkpassword.conf.ext</span>
-</span><span class='line'><span class="c1">#!include auth-vpopmail.conf.ext</span>
-</span><span class='line'><span class="c1">#!include auth-static.conf.ext</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora le diremos al autenticador como conectarse a la base de datos. El irá
-solito a buscar la table &ldquo;users&rdquo;. Especificamos las conexión. También le diremos
-las linea sql que debe tirar para buscar el username y el password.</p>
-
-<p>También modificaremos el mecanismo de cifrado, le diremos que use SHA256 que es
-el generado por Ruby en mi esquema.</p>
-
-<figure class='code'><figcaption><span>/etc/dovecot/dovecot-sql.conf.ext</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="na">connect</span> <span class="o">=</span> <span class="s">host=10.1.1.14 dbname=labasededatos user=usuario password=notelodiré</span>
-</span><span class='line'><span class="na">default_pass_scheme</span> <span class="o">=</span> <span class="s">SHA256</span>
-</span><span class='line'><span class="na">password_query</span> <span class="o">=</span> <span class="s">\</span>
-</span><span class='line'><span class="s">  SELECT username, password \</span>
-</span><span class='line'><span class="s">  FROM users WHERE username = &#39;%n&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Por último y antes de pasar a postfix. En el fichero conf.d/auth-sql.conf.ext
-declaramos como se gestionará la base datos.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/dovecot/conf.d/auth-sql.conf.ext&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">passdb</span> <span class="err">{</span>
-</span><span class='line'>  <span class="na">driver</span> <span class="o">=</span> <span class="s">sql</span>
-</span><span class='line'><span class="s">  args = /etc/dovecot/dovecot-sql.conf.ext</span>
-</span><span class='line'><span class="err">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">userdb</span> <span class="err">{</span>
-</span><span class='line'>  <span class="na">driver</span> <span class="o">=</span> <span class="s">static</span>
-</span><span class='line'><span class="s">  args = uid=vmail gid=vmail home=/var/vmail/%n</span>
-</span><span class='line'><span class="err">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Osea que el correo se almacene en /var/vmail/fulano y con usuario vmail. De
-hecho TODO el correo se almacenará con el usuario vmail; poniendo fin al
-perpetuo temor de escalada de permisos que descansa en el típico esquema
-/var/mail/fulano</p>
-
-<p>En este caso, se chequeará el password contra SQL pero el almacenamiento se
-hará en /var/vmail, con eso no vamos contra el princpio del cual siempre me
-agarro y es que las Bases de datos, NO son sistemas de archivos.</p>
-
-<p>Veremos en la próxima entrada, como se hace a postfix jugar con todo esto&hellip;</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/12">&larr; Older</a>
@@ -681,6 +594,10 @@ agarro y es que las Bases de datos, NO son sistemas de archivos.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/06/20/correos-del-cron/">correos del cron</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/06/18/dkim-y-spf-en-postfix/">dkim y spf en postfix</a>

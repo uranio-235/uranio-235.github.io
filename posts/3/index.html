@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Síiiii, por loco que suene&hellip; Una compañía llamada Source Fire, desarrolló un producto llamado &ldquo;immunet&rdquo;, Por
-lo que vi, es una &hellip;">
+  <meta name="description" content="ClamAV, el antivirus más subestimado en mi opinión. De siempre, lo he usado por
+compromiso; aunque nunca he sentido la necesidad de hacerlo. Infomed &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,87 @@ lo que vi, es una &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/19/espejos-de-clamav/">espejos de clamav y salud</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-01-19T13:32:53-05:00'><span class='date'>19/01/2016</span> <span class='time'>1:32 pm</span></time>
+        
+           | <a href="/blog/2016/01/19/espejos-de-clamav/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/01/19/espejos-de-clamav/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>ClamAV, el antivirus más subestimado en mi opinión. De siempre, lo he usado por
+compromiso; aunque nunca he sentido la necesidad de hacerlo.</p>
+
+<p>Infomed, mantiene un espejo de ClamAV bien al día pero no un mirror como tal.</p>
+
+<p>Decidí bajarlos para mi máquina y usar la misma como espejo. Después de todo, la
+misma tiene lo que necesita para correr un mirror. Es algo tan sencillo como
+crear un virtualhost y poner en su raíz las actualziaciones.</p>
+
+<p>Más fácil aún, es usar /var/lib/clamav/ como raíz y así TU actualización se
+convierte en el mirror.</p>
+
+<p>En mi caso, el virtualhost de nginx me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/nginx/sites-enabled/clamav&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>server <span class="o">{</span>
+</span><span class='line'>   listen   10.1.1.14:80<span class="p">;</span>
+</span><span class='line'>   listen   10.1.1.14:443 ssl<span class="p">;</span>
+</span><span class='line'>   server_name clamav.hcg.sld.cu<span class="p">;</span>
+</span><span class='line'>   location / <span class="o">{</span>
+</span><span class='line'>      root /var/lib/clamav/<span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El resto del truco está en el lado del cliente, ya que hay que hacerle una
+burumba a freshclam. Decirle que no busque scripts, así me quedó el freshclam.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/clamav/freshclam.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>UpdateLogFile /var/log/clamav/freshclam.log
+</span><span class='line'>DatabaseMirror clamav.hcg.sld.cu
+</span><span class='line'>NotifyClamd /etc/clamav/clamd.conf
+</span><span class='line'>ScriptedUpdates no
+</span><span class='line'>PrivateMirror clamav.hcg.sld.cu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No olvides el puntero a <strong>clamav.tudominio.cu</strong></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -629,83 +710,6 @@ hackers por ahí.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-12T09:49:30-05:00'><span class='date'>12/11/2015</span> <span class='time'>9:49 am</span></time>
-        
-           | <a href="/blog/2015/11/12/rc-dot-local-en-systemd/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/12/rc-dot-local-en-systemd/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Déjame decirte, que es un gran mojón de parte de systemd; el hecho de que no
-halla una puñetera compatibilidad con el <strong>rc.local</strong>. Si buscas en google, como
-correr un comando al butear, verás que complicado se vuelve.</p>
-
-<p>Para palear este desmesurado inconveniente. Me he creado una unit del tipo
-oneshot, que cargue el /etc/rc.local</p>
-
-<p>Crea el fichero <strong>/etc/systemd/system/rclocal.service</strong> y métele esto:</p>
-
-<figure class='code'><figcaption><span>/etc/systemd/system/rclocal.service</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>Unit<span class="o">]</span>
-</span><span class='line'><span class="nv">Description</span><span class="o">=</span>El viejo /etc/rc.local
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Service<span class="o">]</span>
-</span><span class='line'><span class="nv">Type</span><span class="o">=</span>oneshot
-</span><span class='line'><span class="nv">ExecStart</span><span class="o">=</span>/bin/bash /etc/rc.local
-</span><span class='line'><span class="nv">TimeoutSec</span><span class="o">=</span>0
-</span><span class='line'><span class="nv">StandardOutput</span><span class="o">=</span>tty
-</span><span class='line'><span class="nv">RemainAfterExit</span><span class="o">=</span>yes
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Install<span class="o">]</span>
-</span><span class='line'><span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lo habilitamos:</p>
-
-<figure class='code'><figcaption><span>&#8220;systemctl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl daemon-reload
-</span><span class='line'>systemctl <span class="nb">enable </span>rclocal
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A singar por tuberías, esto es todo&hellip;</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -725,6 +729,10 @@ oneshot, que cargue el /etc/rc.local</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/06/20/correos-del-cron/">correos del cron</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/06/18/dkim-y-spf-en-postfix/">dkim y spf en postfix</a>

@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>data confirm en un boton - El SysAdmin del 3er Mundo</title>
+  <title>correos del cron - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Usualmente, tenemos un botón en un formulario y nos gustaría que al pulsar este,
-nos preguntara algo para confirmar. He aquí un buen ejemplo: " &hellip;">
+  <meta name="description" content="Conflictivísima tarea, lograr que el cron mande correos adecuadamente&hellip; En este
+caso, cronie, da la solución al problema. Aunque me imagino que &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo: " &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2016/02/22/data-confirm-en-un-boton/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2016/06/20/correos-del-cron/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -83,7 +83,7 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo: " &hellip;">
   
   <header>
     
-      <h1 class="entry-title">data confirm en un boton</h1>
+      <h1 class="entry-title">correos del cron</h1>
     
     
       <p class="meta">
@@ -92,7 +92,7 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo: " &hellip;">
 
 
 
-<time class='entry-date' datetime='2016-02-22T14:20:33-05:00'><span class='date'>22/02/2016</span> <span class='time'>2:20 pm</span></time>
+<time class='entry-date' datetime='2016-06-20T14:14:06-04:00'><span class='date'>20/06/2016</span> <span class='time'>2:14 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -102,10 +102,14 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo: " &hellip;">
   </header>
 
 
-<div class="entry-content"><p>Usualmente, tenemos un botón en un formulario y nos gustaría que al pulsar este,
-nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
+<div class="entry-content"><p>Conflictivísima tarea, lograr que el cron mande correos adecuadamente&hellip; En este
+caso, cronie, da la solución al problema. Aunque me imagino que dicha
+configuración sea estándar para el cron.</p>
 
-<figure class='code'><figcaption><span>&#8221;_navbar.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>Así es la cosa, declaramos <strong>MAILTO</strong> y <strong>MAILFROM</strong> como unas variables en el
+fichero crontab.</p>
+
+<figure class='code'><figcaption><span>crontab</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -113,16 +117,43 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='rhtml'><span class='line'>  <span class="cp">&lt;%=</span> <span class="n">form_tag</span> <span class="n">manager_email_path</span><span class="p">,</span><span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;navbar-form navbar-left&#39;</span><span class="p">,</span><span class="ss">role</span><span class="p">:</span> <span class="s1">&#39;search&#39;</span><span class="p">,</span><span class="nb">method</span><span class="p">:</span> <span class="ss">:post</span> <span class="k">do</span> <span class="cp">%&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;form-group&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">name=</span><span class="s">&quot;email&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">class=</span><span class="s">&quot;form-control&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;fulanito@infomed.sld.cu&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>     <span class="cp">&lt;%=</span> <span class="n">button_tag</span><span class="p">(</span><span class="ss">:class</span> <span class="o">=&gt;</span> <span class="s2">&quot;btn btn-default&quot;</span><span class="p">,</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span><span class="ss">:confirm</span> <span class="o">=&gt;</span> <span class="s1">&#39;Seguro?&#39;</span><span class="p">}</span> <span class="p">)</span> <span class="k">do</span> <span class="cp">%&gt;</span>
-</span><span class='line'>        Enviar
-</span><span class='line'>     <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
-</span><span class='line'>  <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="c1"># DO NOT EDIT THIS FILE - edit the master and reinstall.</span>
+</span><span class='line'><span class="c1"># (/tmp/crontab.f36hiB/crontab installed on Tue May  5 08:48:38 2015)</span>
+</span><span class='line'><span class="c1"># (Cron version -- $Id: crontab.c,v 2.13 1994/01/17 03:20:37 vixie Exp $)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># añadimos las variables</span>
+</span><span class='line'><span class="na">MAILTO</span><span class="o">=</span><span class="s">root@tudominio.cu</span>
+</span><span class='line'><span class="na">MAILFROM</span><span class="o">=</span><span class="s">cron@tudominio.cu</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># m h  dom mon dow   command</span>
+</span><span class='line'><span class="err">00</span> <span class="err">00</span> <span class="err">*</span> <span class="err">*</span> <span class="err">*</span> <span class="err">/bin/bash</span> <span class="err">/home/fulanito/script.sh</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p>Ahora faltaría un MTA. Pues la solución más sensilla es <strong>esmtp</strong> y su
+configuración sería más o menos así en el fichero <strong>/etc/esmtprc</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/esmtprc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">identity</span> <span class="err">micuenta</span>
+</span><span class='line'>   <span class="err">hostname</span> <span class="err">smtp.tudominio.cu</span>
+</span><span class='line'>   <span class="err">username</span> <span class="err">&quot;cron&quot;</span>
+</span><span class='line'>   <span class="err">password</span> <span class="err">&quot;pinpanpun&quot;</span>
+</span><span class='line'>   <span class="err">starttls</span> <span class="err">enabled</span>
+</span><span class='line'>   <span class="err">default</span>
+</span><span class='line'><span class="err">mda</span> <span class="err">&quot;/usr/bin/procmail</span> <span class="err">-d</span> <span class="err">%T&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Listo! El correo <a href="&#x6d;&#97;&#105;&#108;&#x74;&#111;&#x3a;&#x72;&#x6f;&#111;&#116;&#64;&#x74;&#x75;&#x64;&#111;&#x6d;&#105;&#110;&#105;&#111;&#46;&#x63;&#x75;">&#x72;&#111;&#x6f;&#x74;&#64;&#x74;&#x75;&#x64;&#x6f;&#x6d;&#105;&#x6e;&#105;&#x6f;&#46;&#x63;&#x75;</a> recibirá correos de <a href="&#109;&#97;&#105;&#x6c;&#x74;&#111;&#58;&#99;&#114;&#111;&#110;&#x40;&#x74;&#x75;&#100;&#x6f;&#109;&#x69;&#x6e;&#x69;&#111;&#x2e;&#x63;&#x75;">&#x63;&#114;&#x6f;&#110;&#64;&#x74;&#x75;&#100;&#x6f;&#x6d;&#x69;&#110;&#105;&#x6f;&#46;&#99;&#117;</a> con la
+salida del cron&hellip;</p>
 </div>
 
 
@@ -138,21 +169,15 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
 
 
 
-<time class='entry-date' datetime='2016-02-22T14:20:33-05:00'><span class='date'>22/02/2016</span> <span class='time'>2:20 pm</span></time>
+<time class='entry-date' datetime='2016-06-20T14:14:06-04:00'><span class='date'>20/06/2016</span> <span class='time'>2:14 pm</span></time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/rails/'>rails</a>
-  
-</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2016/02/22/data-confirm-en-un-boton/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2016/02/22/data-confirm-en-un-boton/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2016/06/20/correos-del-cron/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2016/06/20/correos-del-cron/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -165,10 +190,8 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2016/02/20/hooks-de-pacman/" title="Previous Post: los hooks de pacman">&laquo; los hooks de pacman</a>
+        <a class="basic-alignment left" href="/blog/2016/06/18/dkim-y-spf-en-postfix/" title="Previous Post: dkim y spf en postfix">&laquo; dkim y spf en postfix</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2016/03/07/cargar-rvm/" title="Next Post: cargar rvm">cargar rvm &raquo;</a>
       
     </p>
   </footer>
@@ -541,8 +564,8 @@ if (location.pathname!='/') {
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2016/02/22/data-confirm-en-un-boton/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2016/02/22/data-confirm-en-un-boton/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2016/06/20/correos-del-cron/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2016/06/20/correos-del-cron/';
         var disqus_script = 'embed.js';
       
     (function () {
