@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Mantener un reloj sincronizado y en hora, siempre ha sido un dilema. Algunas
-personas no reconocen la necesidad de esto; y además son tan imbéciles, &hellip;">
+  <meta name="description" content="systemd-timesyncd 18/10/2015 1:19 pm | Comments Mantener un reloj sincronizado y en hora, siempre ha sido un dilema. Algunas
+personas no reconocen &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -44,6 +44,10 @@ personas no reconocen la necesidad de esto; y además son tan imbéciles, &helli
     })();
   </script>
 
+
+  
+  
+  <script src="/javascripts/gineteo.js"></script>
 
 </head>
 
@@ -185,6 +189,8 @@ hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.or
 <p>   <blockquote><p>No existe juez más justo, que el pasar del tiempo.</p></blockquote></p>
 </div>
 
+
+<p>Si este art&iacute;culo te result&oacute; interesante, consider donar <span id="cantidadbtc"></span> BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -538,8 +544,8 @@ if (location.pathname!='/') {
 
 	// calcula un monto de bitcoins al azaar
    var btc=0;
-   while (btc<0.0010 || btc>0.0080 ) {
-      var btc=(Math.random()/100).toString().slice(0,6);
+   while (btc<0.010 || btc>0.019 ) {
+      var btc=(Math.random()/10).toString().slice(0,5);
    }
 
 	// coge el span

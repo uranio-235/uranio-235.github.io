@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="A rails le sobra magia, eso no es secreto para nadie. No obstante, si hay un
-hechizo complicado de conjurar, es el dichoso form_for Es una verdadera &hellip;">
+  <meta name="description" content="select en bootstrap 08/07/2014 3:40 pm | Comments A rails le sobra magia, eso no es secreto para nadie. No obstante, si hay un
+hechizo complicado de &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -44,6 +44,10 @@ hechizo complicado de conjurar, es el dichoso form_for Es una verdadera &hellip;
     })();
   </script>
 
+
+  
+  
+  <script src="/javascripts/gineteo.js"></script>
 
 </head>
 
@@ -122,6 +126,8 @@ existía. Evito a toda costa usar select, pero aveces no queda más remedio; un
 &ldquo;radio&rdquo; con 7 elementos se ve horrible.</p>
 </div>
 
+
+<p>Si este art&iacute;culo te result&oacute; interesante, consider donar <span id="cantidadbtc"></span> BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -481,8 +487,8 @@ if (location.pathname!='/') {
 
 	// calcula un monto de bitcoins al azaar
    var btc=0;
-   while (btc<0.0010 || btc>0.0080 ) {
-      var btc=(Math.random()/100).toString().slice(0,6);
+   while (btc<0.010 || btc>0.019 ) {
+      var btc=(Math.random()/10).toString().slice(0,5);
    }
 
 	// coge el span

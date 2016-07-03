@@ -9,10 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Con este script, se toman los datos de /opt/samba/ocs y se inyectan en la base
-de datos central de manera automatizada. "/usr/local/bin/ocs.sh"1
-2
-3 &hellip;">
+  <meta name="description" content="más de OCS 25/08/2014 10:01 am | Comments Con este script, se toman los datos de /opt/samba/ocs y se inyectan en la base
+de datos central de manera &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -46,6 +44,10 @@ de datos central de manera automatizada. "/usr/local/bin/ocs.sh"1
     })();
   </script>
 
+
+  
+  
+  <script src="/javascripts/gineteo.js"></script>
 
 </head>
 
@@ -133,6 +135,8 @@ de datos central de manera automatizada.</p>
 
 </div>
 
+
+<p>Si este art&iacute;culo te result&oacute; interesante, consider donar <span id="cantidadbtc"></span> BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -486,8 +490,8 @@ if (location.pathname!='/') {
 
 	// calcula un monto de bitcoins al azaar
    var btc=0;
-   while (btc<0.0010 || btc>0.0080 ) {
-      var btc=(Math.random()/100).toString().slice(0,6);
+   while (btc<0.010 || btc>0.019 ) {
+      var btc=(Math.random()/10).toString().slice(0,5);
    }
 
 	// coge el span

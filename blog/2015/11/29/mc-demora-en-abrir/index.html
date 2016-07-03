@@ -9,8 +9,7 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Esta es una nota bien rápida pa que no se me olvide&hellip; Alguna vez han notado que los midnight commander con soporte para operaciones de
-red ( &hellip;">
+  <meta name="description" content="mc demora en abrir 29/11/2015 7:37 pm | Comments Esta es una nota bien rápida pa que no se me olvide&hellip; Alguna vez han notado que los midnight &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -44,6 +43,10 @@ red ( &hellip;">
     })();
   </script>
 
+
+  
+  
+  <script src="/javascripts/gineteo.js"></script>
 
 </head>
 
@@ -117,6 +120,8 @@ se pone más feo todavía.</p>
 <p>Solución. Pon tu propio hostname en <strong>/etc/hosts</strong> junto a localhost</p>
 </div>
 
+
+<p>Si este art&iacute;culo te result&oacute; interesante, consider donar <span id="cantidadbtc"></span> BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -470,8 +475,8 @@ if (location.pathname!='/') {
 
 	// calcula un monto de bitcoins al azaar
    var btc=0;
-   while (btc<0.0010 || btc>0.0080 ) {
-      var btc=(Math.random()/100).toString().slice(0,6);
+   while (btc<0.010 || btc>0.019 ) {
+      var btc=(Math.random()/10).toString().slice(0,5);
    }
 
 	// coge el span

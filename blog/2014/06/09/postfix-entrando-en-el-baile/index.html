@@ -9,8 +9,7 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="En el episodio anterior, vimos como dovecot se sumaba al esquema mysql. Faltaría
-solamente postfix, para tener entonces un &ldquo;completo servidor &hellip;">
+  <meta name="description" content="postfix entrando en el baile 09/06/2014 3:19 pm | Comments En el episodio anterior, vimos como dovecot se sumaba al esquema mysql. Faltaría &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -44,6 +43,10 @@ solamente postfix, para tener entonces un &ldquo;completo servidor &hellip;">
     })();
   </script>
 
+
+  
+  
+  <script src="/javascripts/gineteo.js"></script>
 
 </head>
 
@@ -170,6 +173,8 @@ cantaría.</p>
 <p>No olvidemos &ldquo;postfix reload&rdquo;</p>
 </div>
 
+
+<p>Si este art&iacute;culo te result&oacute; interesante, consider donar <span id="cantidadbtc"></span> BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -523,8 +528,8 @@ if (location.pathname!='/') {
 
 	// calcula un monto de bitcoins al azaar
    var btc=0;
-   while (btc<0.0010 || btc>0.0080 ) {
-      var btc=(Math.random()/100).toString().slice(0,6);
+   while (btc<0.010 || btc>0.019 ) {
+      var btc=(Math.random()/10).toString().slice(0,5);
    }
 
 	// coge el span

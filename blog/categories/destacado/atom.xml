@@ -4,7 +4,7 @@
   <title><![CDATA[Category: destacado | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/destacado/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-06-21T15:44:29-04:00</updated>
+  <updated>2016-07-03T16:02:34-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -32,8 +32,8 @@ líneas de pura mierda que no les incumbe. Espero que etecsa se digne a retirar
 encabezados innecesarios como esos (para el cliente).</p>
 
 <p>Por otra parte, mucha gente tiene antivirus que modifican el correo o son
-fanáticos a instalar mil gangarreas (mailscanner, clamav, etc&hellip;) que modifican
-el correo y estos mecanismos <strong>se van a la mierda</strong>.</p>
+fanáticos a instalar mil gangarreas (mailscanner, clamav, etc&hellip;) que también
+modifican el correo. Con esto, DKIM y SPF <strong>se van a la mierda</strong>.</p>
 
 <p>Le diré que hice con un postfix que ya estaba instalado en un debian8 para
 ponerle DKIM y SPF.</p>
@@ -81,6 +81,9 @@ individual, ellos generarían su SPF apuntándose a si mismo.</p>
 <pre><code>v=spf1 a:mx1.tudominio.cu -all
 </code></pre>
 
+<p>Como ya sabemos, un puntero MX siempre deberá apuntar a un rgistro A, ya que no
+se recomienda apuntar a un CNAME&hellip;</p>
+
 <p><strong>Nota para los apurados:</strong> &ldquo;Si declaras ambos registros, no pincha, LEE!!&rdquo;</p>
 
 <p>Otra cosa, puedes declarar <strong>-all</strong> o <strong>~all</strong> El primero le dirá al receptor
@@ -108,7 +111,7 @@ correo con <strong>-all</strong> debido a su incapacidad de realizar un lookup d
 tiene control de su DNS, lo hizo todo, saltándose el paso del DNS. Su servidor
 le estará gritando a toda voz al mundo entero, <strong>que está falseando el dominio</strong></p>
 
-<p>Si ignorancia le costará caer de cabeza en las listas negras&hellip;</p>
+<p>Su ignorancia le costará caer de cabeza en las listas negras&hellip;</p>
 
 <p>Y es que:</p>
 
@@ -118,7 +121,7 @@ control de su DNS.</p>
 
 <h4>Seguimos&hellip;</h4>
 
-<p>Ya ya que tenemos el SPF pinchando, podemos añadirle chequeo de SPF a nuestro
+<p>Ya que tenemos el SPF pinchando, podemos añadirle chequeo de SPF a nuestro
 postfix <strong>que tiene bien configurado el DNS y entrega de cara a internet sin
 smarthost</strong></p>
 
@@ -184,6 +187,9 @@ SignatureAlgorithm  rsa-sha256
 OversignHeaders     From
 </code></pre>
 
+<p>De ahí puede que quizás te interese la variables <strong>SubDomains</strong>, sobre todo si
+eres proveedor de correo.</p>
+
 <p>Como ya te dije, los permisos son sumamente importantes en este caso</p>
 
 <pre><code class="bash permisos">chmod u=rw,go=r /etc/opendkim.conf
@@ -214,7 +220,7 @@ del dominio suyo.</p>
 <p>Con eso, casamos todos los correos que parezcan a tu dominio, con el DKIM que
 llamamos &ldquo;tudominio&rdquo;, si quiere atrás le puede poner &ldquo;pepe&rdquo;. Lo que debe
 quedarte claro, es que todos los correos que macheen a la expresión regular de
-alante, pasarán por el filtro llamado <em>tudominio</em> (o &ldquo;pepe&rdquo; si lo cmabiaste) ¿Se
+alante, pasarán por el filtro llamado <em>tudominio</em> (o &ldquo;pepe&rdquo; si lo cambiaste) ¿Se
 entendió?</p>
 
 <p>Por ejemplo, si tu dominio fuera *@cacocum.hlg.sld.cu podrías ponerle detrás
@@ -256,10 +262,10 @@ dentro esto:</p>
 <p>Ya que estamos en el año <strong>2016</strong> y el mes el el <strong>0</strong>6 no el 6 (lleva cero
 delante).</p>
 
-<p>Ojo aquí, ya que si tienes más dominios, es complicado. No te que debes reflejar
+<p>Ojo aquí, ya que si tienes más dominios, es complicado. Nota que debes reflejar
 a localhost con sus pertinentes ip, además, tu nombre de host, tu dominio y el
-nombre del host conjuado con el dominio. Siendo entonces <strong>fulanito</strong> el nombre
-del host, quedaría así en fichero <strong>/etc/opendkim/trusted.hosts</strong></p>
+nombre del host conjugado con el dominio. Siendo entonces <strong>fulanito</strong> el nombre
+del host, quedaría así en el fichero <strong>/etc/opendkim/trusted.hosts</strong></p>
 
 <pre><code class="cfg /etc/opendkim/trusted.hosts">127.0.0.1
 ::1
@@ -303,7 +309,7 @@ potentes. Quizás dentro de un par de años, sea 4096.</p>
 chmod -R go-rw /etc/opendkim/keys
 </code></pre>
 
-<p>Arranca opendkim y asegúrate mirando los log que esté pinchando.</p>
+<p>Arranca opendkim y asegúrate mirando los; log que esté pinchando.</p>
 
 <pre><code class="bash "arranca opendkim"">systemctl restart opendkim
 systemctl status -l opendkim
@@ -322,8 +328,10 @@ proviene de este registro TXT que estamos creando.</p>
 <p>Añade un registro del tipo TXT que apunte a un hostname llamado
 <strong>201606._domainkey</strong> dentro de tu domino. Pero ahora viene la parte difícil:</p>
 
-<p>Copia el texto que contiene el fichero tudominio.txt dentro de la primera
+<p>Copia <strong>el texto</strong> que contiene el fichero tudominio.txt dentro de la primera
 comilla hasta la última, pero sin tomar las comillas.</p>
+
+<p><strong>¿Se entendió?</strong></p>
 
 <p>O sea, dentro del fichero tiene esto:</p>
 
@@ -337,7 +345,7 @@ comilla hasta la última, pero sin tomar las comillas.</p>
 
 <p><strong>OJO</strong> Tiene más comillas en el medio!!!!</p>
 
-<p>Auxiliate de un editor de texto decente. Deshabilita el wrap y busca la comilla
+<p>Auxíliate de un editor de texto decente. Deshabilita el wrap y busca la comilla
 como cadena de texto.</p>
 
 <p>Ese texto, será el valor del puntero TXT</p>
@@ -364,7 +372,7 @@ postfix</p>
 chown opendkim:postfix /var/spool/postfix/opendkim
 </code></pre>
 
-<p>y habilitamos el socket de opedkim, editando el fichero <strong>/etc/default/opendkim</strong></p>
+<p>y habilitamos el socket de opendkim, editando el fichero <strong>/etc/default/opendkim</strong></p>
 
 <pre><code class="cfg /etc/default/opendkim"># Command-line options specified here will override the contents of
 # /etc/opendkim.conf. See opendkim(8) for a complete list of options.
@@ -400,7 +408,8 @@ non_smtpd_milters = local:/opendkim/opendkim.sock
 
 <p>Con eso hemos terminado. Para probarlo, puede enviar un correo a <a href="mailto:check-auth@verifier.port25.com">check-auth@verifier.port25.com</a></p>
 
-<p>Esa dirección le hará una prueba al DKIM+SPF de tu correo.</p>
+<p>Esa dirección le hará una prueba al DKIM+SPF de tu correo. No solo eso, le hará
+una prueba del Pi al Pa a tu correo y te dirá todo lo que necesitas.</p>
 
 <p>Si quieres ponerle la guinda al pastel, puede añadirle ADSP (Author Domain
 Signing Practices) a tu esquema. Esto indica que todos los correos que salgan de
@@ -415,7 +424,7 @@ TXT será <strong>dkim=all</strong>. A mi me quedó así:</p>
 
 <p>Con eso, tus correos no caerán más en la bandeja SPAM de gmail.</p>
 
-<p>Otra cosa importante, asegúrate de tener el reverse lookup de tu MX bien puesto</p>
+<p>Otra cosa importante, asegúrate de tener el reverse lookup de tu MX bien puesto.</p>
 ]]></content>
   </entry>
   

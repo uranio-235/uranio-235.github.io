@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="Los delay pool de squid, son una herramienta que permite determinar cuanto ancho
-de vianda le corresponde a ciertas conexiones. A mi en lo personal &hellip;">
+  <meta name="description" content="delay pools de squid 19/02/2015 12:03 pm | Comments Los delay pool de squid, son una herramienta que permite determinar cuanto ancho
+de vianda le &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -44,6 +44,10 @@ de vianda le corresponde a ciertas conexiones. A mi en lo personal &hellip;">
     })();
   </script>
 
+
+  
+  
+  <script src="/javascripts/gineteo.js"></script>
 
 </head>
 
@@ -249,6 +253,8 @@ navegar. A ese punto te buscarás un lío, no reserves para ti solo más del 80%
 del canal y navega con cordura.</p>
 </div>
 
+
+<p>Si este art&iacute;culo te result&oacute; interesante, consider donar <span id="cantidadbtc"></span> BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -602,8 +608,8 @@ if (location.pathname!='/') {
 
 	// calcula un monto de bitcoins al azaar
    var btc=0;
-   while (btc<0.0010 || btc>0.0080 ) {
-      var btc=(Math.random()/100).toString().slice(0,6);
+   while (btc<0.010 || btc>0.019 ) {
+      var btc=(Math.random()/10).toString().slice(0,5);
    }
 
 	// coge el span
