@@ -4,7 +4,7 @@
   <title><![CDATA[Category: destacado | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/destacado/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-07-03T16:02:34-04:00</updated>
+  <updated>2016-07-11T16:53:17-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -259,8 +259,7 @@ dentro esto:</p>
 <pre><code class="cfg /etc/opendkim/key.table">tudominio     tudominio.cu:201606:/etc/opendkim/keys/example.private
 </code></pre>
 
-<p>Ya que estamos en el año <strong>2016</strong> y el mes el el <strong>0</strong>6 no el 6 (lleva cero
-delante).</p>
+<p>Ya que estamos en el año <strong>2016</strong> y el mes <strong>0</strong>6 no el 6 (lleva cero delante).</p>
 
 <p>Ojo aquí, ya que si tienes más dominios, es complicado. Nota que debes reflejar
 a localhost con sus pertinentes ip, además, tu nombre de host, tu dominio y el
