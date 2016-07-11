@@ -46,9 +46,6 @@ caso, cronie, &hellip;">
 
 
   
-  
-  <script src="/javascripts/gineteo.js"></script>
-
 </head>
 
 <body   >
@@ -156,12 +153,12 @@ configuración sería más o menos así en el fichero <strong>/etc/esmtprc</stro
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Listo! El correo <a href="&#109;&#97;&#x69;&#x6c;&#x74;&#x6f;&#58;&#x72;&#x6f;&#x6f;&#116;&#x40;&#x74;&#x75;&#x64;&#111;&#109;&#105;&#x6e;&#105;&#x6f;&#46;&#x63;&#117;">&#x72;&#111;&#111;&#x74;&#64;&#116;&#x75;&#100;&#111;&#109;&#105;&#x6e;&#105;&#111;&#46;&#x63;&#117;</a> recibirá correos de <a href="&#x6d;&#97;&#x69;&#108;&#x74;&#x6f;&#x3a;&#x63;&#114;&#x6f;&#x6e;&#64;&#x74;&#x75;&#x64;&#x6f;&#x6d;&#105;&#x6e;&#x69;&#x6f;&#46;&#99;&#x75;">&#99;&#x72;&#x6f;&#110;&#64;&#x74;&#117;&#x64;&#x6f;&#x6d;&#x69;&#x6e;&#105;&#111;&#46;&#99;&#117;</a> con la
+<p>Listo! El correo <a href="&#x6d;&#x61;&#105;&#x6c;&#x74;&#111;&#58;&#114;&#111;&#x6f;&#x74;&#x40;&#x74;&#x75;&#100;&#x6f;&#109;&#105;&#x6e;&#x69;&#x6f;&#46;&#99;&#117;">&#114;&#x6f;&#x6f;&#x74;&#x40;&#x74;&#x75;&#100;&#111;&#x6d;&#x69;&#x6e;&#105;&#111;&#x2e;&#99;&#x75;</a> recibirá correos de <a href="&#x6d;&#x61;&#105;&#108;&#116;&#111;&#58;&#99;&#x72;&#x6f;&#x6e;&#x40;&#x74;&#117;&#x64;&#111;&#x6d;&#x69;&#110;&#x69;&#111;&#46;&#x63;&#117;">&#99;&#x72;&#111;&#110;&#64;&#116;&#x75;&#x64;&#x6f;&#109;&#105;&#x6e;&#105;&#111;&#x2e;&#x63;&#117;</a> con la
 salida del cron&hellip;</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, consider donar <span id="cantidadbtc"></span> BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -214,8 +211,6 @@ salida del cron&hellip;</p>
 <aside class="sidebar">
   
     <section>
-
-	<span id="qrcode"></span>
 
 	<h1>Lo m&aacute;s reciente</h1>
 
@@ -503,36 +498,7 @@ salida del cron&hellip;</p>
 		
 	</ul>
 	
-	<span id="qrcode_bajo"></span>
-
 </section>
-
-<!-- muestra el qrcode si no estámos en la raiz -->
-<script type="text/javascript">
-if (location.pathname!='/') {
-
-	// calcula un monto de bitcoins al azaar
-   var btc=0;
-   while (btc<0.010 || btc>0.019 ) {
-      var btc=(Math.random()/10).toString().slice(0,5);
-   }
-
-	// coge el span
-	var elspan=document.getElementById("qrcode");
-
-	// métele la imágen
-	elspan.innerHTML='<img class="right" src="/images/direccion.png" width="300" height="500" title="" >';
-
-	// y ponlo en el enlace
-   elspan.innerHTML='<p>Me contento con <strong>'+btc+' BTC</strong></p>'+elspan.innerHTML;
-
-	// ponlo abajo también
-   document.getElementById("qrcode_bajo").innerHTML='<br>'+elspan.innerHTML;
-
-
-}
-</script>
-
 
 
 

@@ -46,9 +46,6 @@ sepa como &hellip;">
 
 
   
-  
-  <script src="/javascripts/gineteo.js"></script>
-
 </head>
 
 <body   >
@@ -186,7 +183,7 @@ usuario.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, consider donar <span id="cantidadbtc"></span> BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -262,7 +259,7 @@ enlaces a las assets.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, consider donar <span id="cantidadbtc"></span> BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -449,7 +446,7 @@ declarando los componentes en los controladores.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, consider donar <span id="cantidadbtc"></span> BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -580,7 +577,7 @@ el cliente está mandándole, no le cuadra.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, consider donar <span id="cantidadbtc"></span> BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -652,7 +649,7 @@ monta con las opciones que le de la gana a el; te guste o no.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, consider donar <span id="cantidadbtc"></span> BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1178,7 +1175,7 @@ entiendas.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, consider donar <span id="cantidadbtc"></span> BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1195,8 +1192,6 @@ entiendas.</p>
 <aside class="sidebar">
   
     <section>
-
-	<span id="qrcode"></span>
 
 	<h1>Lo m&aacute;s reciente</h1>
 
@@ -1484,36 +1479,7 @@ entiendas.</p>
 		
 	</ul>
 	
-	<span id="qrcode_bajo"></span>
-
 </section>
-
-<!-- muestra el qrcode si no estámos en la raiz -->
-<script type="text/javascript">
-if (location.pathname!='/') {
-
-	// calcula un monto de bitcoins al azaar
-   var btc=0;
-   while (btc<0.010 || btc>0.019 ) {
-      var btc=(Math.random()/10).toString().slice(0,5);
-   }
-
-	// coge el span
-	var elspan=document.getElementById("qrcode");
-
-	// métele la imágen
-	elspan.innerHTML='<img class="right" src="/images/direccion.png" width="300" height="500" title="" >';
-
-	// y ponlo en el enlace
-   elspan.innerHTML='<p>Me contento con <strong>'+btc+' BTC</strong></p>'+elspan.innerHTML;
-
-	// ponlo abajo también
-   document.getElementById("qrcode_bajo").innerHTML='<br>'+elspan.innerHTML;
-
-
-}
-</script>
-
 
 
 

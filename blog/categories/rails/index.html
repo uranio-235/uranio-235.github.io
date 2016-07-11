@@ -45,9 +45,6 @@
 
 
   
-  
-  <script src="/javascripts/gineteo.js"></script>
-
 </head>
 
 <body   >
@@ -278,8 +275,6 @@
 <aside class="sidebar">
   
     <section>
-
-	<span id="qrcode"></span>
 
 	<h1>Lo m&aacute;s reciente</h1>
 
@@ -567,36 +562,7 @@
 		
 	</ul>
 	
-	<span id="qrcode_bajo"></span>
-
 </section>
-
-<!-- muestra el qrcode si no estámos en la raiz -->
-<script type="text/javascript">
-if (location.pathname!='/') {
-
-	// calcula un monto de bitcoins al azaar
-   var btc=0;
-   while (btc<0.010 || btc>0.019 ) {
-      var btc=(Math.random()/10).toString().slice(0,5);
-   }
-
-	// coge el span
-	var elspan=document.getElementById("qrcode");
-
-	// métele la imágen
-	elspan.innerHTML='<img class="right" src="/images/direccion.png" width="300" height="500" title="" >';
-
-	// y ponlo en el enlace
-   elspan.innerHTML='<p>Me contento con <strong>'+btc+' BTC</strong></p>'+elspan.innerHTML;
-
-	// ponlo abajo también
-   document.getElementById("qrcode_bajo").innerHTML='<br>'+elspan.innerHTML;
-
-
-}
-</script>
-
 
 
 
