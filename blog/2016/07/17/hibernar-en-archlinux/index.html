@@ -173,7 +173,66 @@ olvides de regnerar el initramfs:</p>
 deshabilitar el swapiness. Crea un fichero <strong>/etc/sysctl.d/00-noswap.conf</strong>
 y ponle adentro el siguiete valor: <strong>vm.swappiness=0</strong></p>
 
-<p>Y hibernan como los osos</p>
+<p>Y hibernan como los osos :D</p>
+
+<p>Seguro te preguntarás como hacer que se ejecute algo al hibernar o despertar.
+Pues puedes crear una unit llamadas <strong>root-resume</strong> y <strong>root-suspend</strong>.</p>
+
+<p>Por
+ejemplo, a mi en lo personal, me interesa parar el puto networkmanager cuando
+hiberno, ya que es poco probable que cuando despierte, esté en otro lugar y
+probablemente sin red. En mi caso yo habilito el networkmanager solo cuando lo
+necesito. En este caso, asumiré que para al hibernar y enciende al despertar.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/systemd/system/root-suspend.service&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Unit]</span>
+</span><span class='line'><span class="na">Description</span><span class="o">=</span><span class="s">Local system suspend actions</span>
+</span><span class='line'><span class="na">Before</span><span class="o">=</span><span class="s">sleep.target</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Service]</span>
+</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
+</span><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/bin/systemctl stop NetworkManager</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Install]</span>
+</span><span class='line'><span class="na">WantedBy</span><span class="o">=</span><span class="s">sleep.target</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al despertar arranca:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/systemd/system/root-resume.service&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Unit]</span>
+</span><span class='line'><span class="na">Description</span><span class="o">=</span><span class="s">Local system suspend actions</span>
+</span><span class='line'><span class="na">Before</span><span class="o">=</span><span class="s">sleep.target</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Service]</span>
+</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
+</span><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/bin/systemctl start NetworkManager</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Install]</span>
+</span><span class='line'><span class="na">WantedBy</span><span class="o">=</span><span class="s">sleep.target</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Todo lo que necesitas está en el artículo de la wiki de archlinux: <a href="https://wiki.archlinux.org/index.php/Power_management">Power Management</a></p>
 </div>
 
 
