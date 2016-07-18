@@ -103,7 +103,9 @@ hay que hacer una &hellip;">
   </header>
 
 
-<div class="entry-content"><p>Hablando de cosas olvidables. Siempre que instalo archlinux, se me olvida que
+<div class="entry-content"><p><img class="right" src="/images/Hibernacion_by_Zetabox.jpg" width="250"></p>
+
+<p>Hablando de cosas olvidables. Siempre que instalo archlinux, se me olvida que
 hay que hacer una ceremonia para que la hibernación pinche.</p>
 
 <p>De más está que te diga que necesitarás una <strong>particion</strong> swap, con al menos el
@@ -166,6 +168,10 @@ olvides de regnerar el initramfs:</p>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>mkinitcpio -p linux
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p>Si te molesta que la swap haga su pincha de swap (como en mi caso) puede
+deshabilitar el swapiness. Crea un fichero <strong>/etc/sysctl.d/00-noswap.conf</strong>
+y ponle adentro el siguiete valor: <strong>vm.swappiness=0</strong></p>
 
 <p>Y hibernan como los osos</p>
 </div>
