@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="hibernar en archlinux 17/07/2016 11:17 pm | Comments Hablando de cosas olvidables. Siempre que instalo archlinux, se me olvida que
-hay que hacer una &hellip;">
+  <meta name="description" content="kiwix como servicio 31/07/2016 5:40 pm | Comments Dos pájaros de un tiro. Como crear unit de usuario y como usar kiwix como
+servicio: La idea es &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +81,136 @@ hay que hacer una &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/31/kiwix-como-servicio/">kiwix como servicio</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-07-31T17:40:02-04:00'><span class='date'>31/07/2016</span> <span class='time'>5:40 pm</span></time>
+        
+           | <a href="/blog/2016/07/31/kiwix-como-servicio/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/07/31/kiwix-como-servicio/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Dos pájaros de un tiro. Como crear unit de usuario y como usar kiwix como
+servicio:</p>
+
+<p>La idea es correr un kiwix en segundo plano, como mi usuario sin que el root
+lance dicha unit, ya que ésto me huele a la posibilidad de escaladas de
+permisos.</p>
+
+<p>Ante todo, vamos a crear el zoológico de systemd en el directorio de usuario.
+Si mal no recuerdo, esto fue lo que hice.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -p /home/lazaro/.config/systemd/user
+</span><span class='line'><span class="nb">cd</span>  /home/lazaro/.config/systemd/user
+</span><span class='line'>loginctl <span class="nb">enable</span>-linger <span class="nv">$USER</span>
+</span><span class='line'>systemctl --user daemon-reload
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Claro, el daemon-reload ahí no es necesario, pero para que te quede claro, que
+todas las operaciones de systemd, relacionadas con el usuario, se deben preceder
+del argumento &ndash;user</p>
+
+<p>Crea el la unit, en mi caso se llama <strong>kiwix.service</strong> pero tu la puedes nombrar
+<strong>comotedelagana.service</strong> Trata de usar minúsculas y debes terminar con la
+extensión <strong>.service</strong> A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;kiwix.service&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Unit]</span>
+</span><span class='line'><span class="na">Description</span><span class="o">=</span><span class="s">el kiwix como daemon en http://localhost:9091</span>
+</span><span class='line'><span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Service]</span>
+</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">forking</span>
+</span><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/opt/kiwix/bin/kiwix-serve --daemon --port=9091 --library /home/lazaro/.www.kiwix.org/kiwix/c2oklrcd.default/data/library/library.xml </span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Install]</span>
+</span><span class='line'><span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora si mete un <strong>daemon-reload</strong></p>
+
+<p>Ahora vamos pal kiwix. Abre la aplicación <strong>una vez</strong> para que se cree la
+biblioteca. O sea, en abrir archivos, añadimos a nuestra librería, todos los
+.zim que queramos.</p>
+
+<p><img class="center" src="/images/kiwix-open.png" width="500"></p>
+
+<p>Llegado a este punto, se habrá creado el perfil de kiwix en nuestro $HOME y
+contendrá el importantísimo <strong>library.xml</strong>. Si ya añadiste a tu biblioteca
+todos los .zim que quieres, terminamos con el kiwix. Ciérralo.</p>
+
+<p>En el home, debes tener el perfil con nombre aleatorio.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>file .www.kiwix.org/kiwix/*.default
+</span><span class='line'>.www.kiwix.org/kiwix/c2oklrcd.default: directory
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Usamos el comando <strong>file</strong> para determinar cual fue. En mi caso se llama
+<strong>~/.www.kiwix.org/kiwix/c2oklrcd.default</strong></p>
+
+<p>Al argumento <strong>ExecStart</strong> de la unit, debes darle la ruta absoluta de la
+librería, así que nada de ~/, le pones /home/fulanito.</p>
+
+<p>Bueno, volviendo a la unit, veamos más de cerca el <strong>ExecStart</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;scope de kiwix.service&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/opt/kiwix/bin/kiwix-serve --daemon --port=9091 --library /home/lazaro/.www.kiwix.org/kiwix/c2oklrcd.default/data/library/library.xml </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La ruta el binario de <strong>kiwix-serve</strong> en modo daemon <strong>&ndash;daemon</strong> por el puerto
+9091 <strong>&ndash;port 9091</strong> y siendo la librería <strong>&ndash;library (ruta absoluta)</strong></p>
+
+<p>Salva y ejecuta un daemon-reload. Luego, lánzalo:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl --user start kiwix.service
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Abre un navegador y apunta para <a href="http://localhost:9091">http://localhost:9091</a></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -241,7 +371,7 @@ necesito. En este caso, asumiré que para al hibernar y enciende al despertar.</
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -320,7 +450,7 @@ solamente los fichero <strong>.gz</strong></p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -398,14 +528,14 @@ configuración sería más o menos así en el fichero <strong>/etc/esmtprc</stro
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Listo! El correo <a href="&#x6d;&#x61;&#105;&#108;&#x74;&#111;&#x3a;&#114;&#x6f;&#111;&#116;&#x40;&#116;&#117;&#100;&#x6f;&#x6d;&#x69;&#x6e;&#105;&#x6f;&#x2e;&#x63;&#x75;">&#114;&#111;&#x6f;&#x74;&#64;&#x74;&#x75;&#x64;&#111;&#x6d;&#105;&#110;&#x69;&#x6f;&#46;&#99;&#x75;</a> recibirá correos de <a href="&#109;&#x61;&#105;&#108;&#116;&#x6f;&#x3a;&#x63;&#114;&#x6f;&#110;&#64;&#x74;&#x75;&#100;&#x6f;&#x6d;&#x69;&#x6e;&#105;&#111;&#x2e;&#99;&#x75;">&#x63;&#114;&#x6f;&#110;&#64;&#x74;&#117;&#x64;&#x6f;&#109;&#x69;&#x6e;&#x69;&#x6f;&#46;&#99;&#117;</a> con la
+<p>Listo! El correo <a href="&#109;&#x61;&#x69;&#x6c;&#x74;&#x6f;&#58;&#x72;&#111;&#111;&#116;&#64;&#116;&#x75;&#x64;&#x6f;&#109;&#x69;&#x6e;&#105;&#111;&#x2e;&#99;&#117;">&#114;&#x6f;&#x6f;&#x74;&#64;&#x74;&#117;&#100;&#111;&#x6d;&#x69;&#x6e;&#105;&#x6f;&#46;&#99;&#x75;</a> recibirá correos de <a href="&#x6d;&#97;&#105;&#108;&#116;&#x6f;&#x3a;&#x63;&#114;&#x6f;&#x6e;&#x40;&#x74;&#x75;&#x64;&#x6f;&#x6d;&#105;&#x6e;&#105;&#111;&#x2e;&#99;&#x75;">&#99;&#x72;&#x6f;&#110;&#64;&#x74;&#x75;&#x64;&#x6f;&#x6d;&#x69;&#x6e;&#105;&#111;&#46;&#99;&#x75;</a> con la
 salida del cron&hellip;</p>
 </div>
   
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -955,7 +1085,7 @@ TXT será <strong>dkim=all</strong>. A mi me quedó así:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1046,52 +1176,6 @@ comando <strong>xinput &ndash;list &ndash;short</strong> a mi se me ve así:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/05/12/deshabilitar-historial-de-bash/">deshabilitar historial de bash</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-05-12T14:34:13-04:00'><span class='date'>12/05/2016</span> <span class='time'>2:34 pm</span></time>
-        
-           | <a href="/blog/2016/05/12/deshabilitar-historial-de-bash/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/05/12/deshabilitar-historial-de-bash/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Alguna vez han pensado, que en algunos servidores o estaciones, en las cual
-trabajan múltiples personas remotamente via consola; el historial de comandos
-puede llegar a ser un problema???</p>
-
-<p>Pues deshabilítalo. En el fichero <strong>/etc/environment</strong> ponle</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/environment&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>   <span class="nb">export </span><span class="nv">HISTFILE</span><span class="o">=</span>/dev/null
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>La próxima vez que etres, la función historial será deshabilitada. OJO!!! <strong>LA
-PRÓXIMA VEZ</strong> esta sesión aún salva historial&hellip; Sale y vuelve a entrar.</p>
-</div>
-  
-  
-
-
 <p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
@@ -1111,6 +1195,10 @@ PRÓXIMA VEZ</strong> esta sesión aún salva historial&hellip; Sale y vuelve a 
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/07/31/kiwix-como-servicio/">kiwix como servicio</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/07/17/hibernar-en-archlinux/">hibernar en archlinux</a>

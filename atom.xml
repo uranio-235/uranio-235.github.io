@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-07-18T13:03:25-04:00</updated>
+  <updated>2016-08-01T08:43:43-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,111 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[kiwix como servicio]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/07/31/kiwix-como-servicio/"/>
+    <updated>2016-07-31T17:40:02-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/07/31/kiwix-como-servicio</id>
+    <content type="html"><![CDATA[<p>Dos pájaros de un tiro. Como crear unit de usuario y como usar kiwix como
+servicio:</p>
+
+<p>La idea es correr un kiwix en segundo plano, como mi usuario sin que el root
+lance dicha unit, ya que ésto me huele a la posibilidad de escaladas de
+permisos.</p>
+
+<p>Ante todo, vamos a crear el zoológico de systemd en el directorio de usuario.
+Si mal no recuerdo, esto fue lo que hice.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -p /home/lazaro/.config/systemd/user
+</span><span class='line'><span class="nb">cd</span>  /home/lazaro/.config/systemd/user
+</span><span class='line'>loginctl <span class="nb">enable</span>-linger <span class="nv">$USER</span>
+</span><span class='line'>systemctl --user daemon-reload
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Claro, el daemon-reload ahí no es necesario, pero para que te quede claro, que
+todas las operaciones de systemd, relacionadas con el usuario, se deben preceder
+del argumento &ndash;user</p>
+
+<p>Crea el la unit, en mi caso se llama <strong>kiwix.service</strong> pero tu la puedes nombrar
+<strong>comotedelagana.service</strong> Trata de usar minúsculas y debes terminar con la
+extensión <strong>.service</strong> A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;kiwix.service&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Unit]</span>
+</span><span class='line'><span class="na">Description</span><span class="o">=</span><span class="s">el kiwix como daemon en http://localhost:9091</span>
+</span><span class='line'><span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Service]</span>
+</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">forking</span>
+</span><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/opt/kiwix/bin/kiwix-serve --daemon --port=9091 --library /home/lazaro/.www.kiwix.org/kiwix/c2oklrcd.default/data/library/library.xml </span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Install]</span>
+</span><span class='line'><span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora si mete un <strong>daemon-reload</strong></p>
+
+<p>Ahora vamos pal kiwix. Abre la aplicación <strong>una vez</strong> para que se cree la
+biblioteca. O sea, en abrir archivos, añadimos a nuestra librería, todos los
+.zim que queramos.</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/kiwix-open.png" width="500"></p>
+
+<p>Llegado a este punto, se habrá creado el perfil de kiwix en nuestro $HOME y
+contendrá el importantísimo <strong>library.xml</strong>. Si ya añadiste a tu biblioteca
+todos los .zim que quieres, terminamos con el kiwix. Ciérralo.</p>
+
+<p>En el home, debes tener el perfil con nombre aleatorio.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>file .www.kiwix.org/kiwix/*.default
+</span><span class='line'>.www.kiwix.org/kiwix/c2oklrcd.default: directory
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Usamos el comando <strong>file</strong> para determinar cual fue. En mi caso se llama
+<strong>~/.www.kiwix.org/kiwix/c2oklrcd.default</strong></p>
+
+<p>Al argumento <strong>ExecStart</strong> de la unit, debes darle la ruta absoluta de la
+librería, así que nada de ~/, le pones /home/fulanito.</p>
+
+<p>Bueno, volviendo a la unit, veamos más de cerca el <strong>ExecStart</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;scope de kiwix.service&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/opt/kiwix/bin/kiwix-serve --daemon --port=9091 --library /home/lazaro/.www.kiwix.org/kiwix/c2oklrcd.default/data/library/library.xml </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La ruta el binario de <strong>kiwix-serve</strong> en modo daemon <strong>&ndash;daemon</strong> por el puerto
+9091 <strong>&ndash;port 9091</strong> y siendo la librería <strong>&ndash;library (ruta absoluta)</strong></p>
+
+<p>Salva y ejecuta un daemon-reload. Luego, lánzalo:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl --user start kiwix.service
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Abre un navegador y apunta para <a href="http://localhost:9091">http://localhost:9091</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[hibernar en archlinux]]></title>
@@ -260,7 +365,7 @@ configuración sería más o menos así en el fichero <strong>/etc/esmtprc</stro
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Listo! El correo <a href="&#x6d;&#x61;&#105;&#108;&#x74;&#111;&#x3a;&#114;&#x6f;&#111;&#116;&#x40;&#116;&#117;&#100;&#x6f;&#x6d;&#x69;&#x6e;&#105;&#x6f;&#x2e;&#x63;&#x75;">&#114;&#111;&#x6f;&#x74;&#64;&#x74;&#x75;&#x64;&#111;&#x6d;&#105;&#110;&#x69;&#x6f;&#46;&#99;&#x75;</a> recibirá correos de <a href="&#109;&#x61;&#105;&#108;&#116;&#x6f;&#x3a;&#x63;&#114;&#x6f;&#110;&#64;&#x74;&#x75;&#100;&#x6f;&#x6d;&#x69;&#x6e;&#105;&#111;&#x2e;&#99;&#x75;">&#x63;&#114;&#x6f;&#110;&#64;&#x74;&#117;&#x64;&#x6f;&#109;&#x69;&#x6e;&#x69;&#x6f;&#46;&#99;&#117;</a> con la
+<p>Listo! El correo <a href="&#109;&#x61;&#x69;&#x6c;&#x74;&#x6f;&#58;&#x72;&#111;&#111;&#116;&#64;&#116;&#x75;&#x64;&#x6f;&#109;&#x69;&#x6e;&#105;&#111;&#x2e;&#99;&#117;">&#114;&#x6f;&#x6f;&#x74;&#64;&#x74;&#117;&#100;&#111;&#x6d;&#x69;&#x6e;&#105;&#x6f;&#46;&#99;&#x75;</a> recibirá correos de <a href="&#x6d;&#97;&#105;&#108;&#116;&#x6f;&#x3a;&#x63;&#114;&#x6f;&#x6e;&#x40;&#x74;&#x75;&#x64;&#x6f;&#x6d;&#105;&#x6e;&#105;&#111;&#x2e;&#99;&#x75;">&#99;&#x72;&#x6f;&#110;&#64;&#x74;&#x75;&#x64;&#x6f;&#x6d;&#x69;&#x6e;&#105;&#111;&#46;&#99;&#x75;</a> con la
 salida del cron&hellip;</p>
 ]]></content>
   </entry>
@@ -1923,161 +2028,6 @@ emuladores es un dolor.</p>
 
 <p>Por suerte el DS solo puede renderizar 3D en una sola pantalla a la vez. Ah!
 OpenGL es por gusto, desmume pincha arriba del micro.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[certificado autofirmado]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/11/22/certificado-autofirmado/"/>
-    <updated>2015-11-22T19:33:54-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/11/22/certificado-autofirmado</id>
-    <content type="html"><![CDATA[<p>Ya hemos visto en varios post, que para hacer un servicio con SSL, requerimos un
-certificado autofirmado. De ahora en lo adelante, no pienso repetir ese proceso,
-por el contrario, pondré un link a este post.</p>
-
-<p>Una vez creado tu propio certificado, no tendrás que volver a crear uno para
-cada servicio, simplemente uno para cada host. Por tanto, vamos a crear y
-almacenar nuestro certificado en <strong>/etc/ssl/private/</strong> para usarlo con todos los
-servicios.</p>
-
-<p>De facto, asumo que tienes el paquete <strong>openssl</strong> instalado.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/ssl/private&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/ssl/private/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Primeros debemo generar una <a href="https://es.wikipedia.org/wiki/RSA">Clave RSA Privada</a>. La clave RSA es la que genera los
-certificados autofrimados como tal.</p>
-
-<figure class='code'><figcaption><span>&#8220;generando la RSA&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl genrsa -des3 -out privado.key 1024
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Te pide un password. Debes ver algo como esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;salida&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>.++++++
-</span><span class='line'>..............................++++++
-</span><span class='line'>e is <span class="m">65537</span> <span class="o">(</span>0x10001<span class="o">)</span>
-</span><span class='line'>Enter pass phrase <span class="k">for</span> privado.key:
-</span><span class='line'>Verifying - Enter pass phrase <span class="k">for</span> privado.key:
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ah! El password no se ve mientras los escribes&hellip;</p>
-
-<p>Bueno, ahora generamos el CSR (Certificate Signing Request). Esto se usa para
-dos cosas: El CSR, es lo que se le envía a una autoridad certificadora (CA) para
-identificarnos con ella o como es el caso para simplemente, generar certificados
-autofirmados.</p>
-
-<p>En este proceso, que ya lo hemos visto repetidamente, te preguntarán por
-aquellos datos que identifican a tu servicio de manera fideligna.</p>
-
-<p><strong>OJO</strong> El servidor que especifiques en el FQDN debe machear al hostname que se
-pida en las peticiones DNS.</p>
-
-<figure class='code'><figcaption><span>&#8220;generando el CSR&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl req -new -key privado.key -out privado.csr
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Debes ver algo como esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;salida&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Enter pass phrase <span class="k">for</span> privado.key:
-</span><span class='line'>You are about to be asked to enter information that will be incorporated
-</span><span class='line'>into your certificate request.
-</span><span class='line'>What you are about to enter is what is called a Distinguished Name or a DN.
-</span><span class='line'>There are quite a few fields but you can leave some blank
-</span><span class='line'>For some fields there will be a default value,
-</span><span class='line'>If you enter <span class="s1">&#39;.&#39;</span>, the field will be left blank.
-</span><span class='line'>-----
-</span><span class='line'>Country Name <span class="o">(</span><span class="m">2</span> letter code<span class="o">)</span> <span class="o">[</span>AU<span class="o">]</span>:CU
-</span><span class='line'>State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>Some-State<span class="o">]</span>:Havana
-</span><span class='line'>Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[]</span>:Plaza
-</span><span class='line'>Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>Internet Widgits Pty Ltd<span class="o">]</span>:
-</span><span class='line'>Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[]</span>:
-</span><span class='line'>Common Name <span class="o">(</span>e.g. server FQDN or YOUR name<span class="o">)</span> <span class="o">[]</span>:tuservidor.cu
-</span><span class='line'>Email Address <span class="o">[]</span>:
-</span><span class='line'>
-</span><span class='line'>Please enter the following <span class="s1">&#39;extra&#39;</span> attributes
-</span><span class='line'>to be sent with your certificate request
-</span><span class='line'>A challenge password <span class="o">[]</span>:
-</span><span class='line'>An optional company name <span class="o">[]</span>:Calixto Garcia
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>REPITO</strong> Donde dice: &ldquo;Common Name (eg, your name or your server&rsquo;s hostname)&rdquo;
-Debes poner el hostname por el que será llamado tu server. Por esta razón, los
-pop3 y los SMTP, suelen generar certificados aparte.</p>
-
-<p>Otra jodedera de los certificados autofirmados, es que siempre piden un password
-cuando van a ser usados. Para evitar este fenómeno, debemos hacer una burumba y
-quitarle el password.</p>
-
-<figure class='code'><figcaption><span>&#8220;quitando el password&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp privado.key privado.key.org
-</span><span class='line'>openssl rsa -in privado.key.org -out privado.key
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ya puedes borrar el fichero &ldquo;privado.key.org&rdquo; tranquilamente, pero bueno, si lo
-guardas, nadie se pondrá bravo.</p>
-
-<p>Ahora por fin vamos a generar el dichoso certificado autofirmado. Para
-generarlo, necesitaremos usar una CA, en este caso, nosotros mismos.</p>
-
-<figure class='code'><figcaption><span>&#8220;generando el certificados&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl x509 -req -days <span class="m">365</span> -in privado.csr -signkey privado.key -out privado.crt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Debes ver algo como esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;salida&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Signature ok
-</span><span class='line'><span class="nv">subject</span><span class="o">=</span>/C<span class="o">=</span>CU/ST<span class="o">=</span>Havana/L<span class="o">=</span>Plaza/O<span class="o">=</span>Internet Widgits Pty Ltd/CN<span class="o">=</span>tuservidor.cu
-</span><span class='line'>Getting Private key
-</span><span class='line'>Enter pass phrase <span class="k">for</span> privado.key:
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El parámetros <strong>-days</strong> puede saltarse si no quiere que el certificado caduque.
-Pero en ambientes muy hostiles, donde de verdad se quiere cifrado, es necesario
-que el ceritificado caduque. Uno nunca sabe que mariconá están planificando los
-hackers por ahí.</p>
-
-<p>Ahí tienes tu certificado autofirmado ;)</p>
 ]]></content>
   </entry>
   
