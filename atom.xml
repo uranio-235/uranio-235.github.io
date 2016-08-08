@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-08-01T08:43:43-04:00</updated>
+  <updated>2016-08-08T19:13:40-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -152,7 +152,7 @@ donde debe tomar la imagen y resumirla. Localiza el fichero <strong>/etc/default
 y en una de las primeras lineas, modifica la cláusula <strong>GRUB_CMDLINE_LINUX_DEFAULT</strong>
 inclúyele <strong>resume=UUID=LaUUiDeTuDisCoSwap</strong>. A mi me quedó así:</p>
 
-<figure class='code'><figcaption><span>&#8220;la parte de arriba de</span><a href='http://uranio-235.github.io/etc/default/grub"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>&#8220;la parte de arriba de</span><a href='http://uranio-235.github.io/etc/default/grub'>&#8221;</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -170,7 +170,7 @@ la imagen que crea el proceso de hibernación.</p>
 hibernar. Localiza el fichero <strong>/etc/mkinitcpio.conf</strong> y añadele el <strong>hook</strong> de
 resume, a mi me quedó así:</p>
 
-<figure class='code'><figcaption><span>&#8220;fragmento de</span><a href='http://uranio-235.github.io/etc/mkinitcpio.conf"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>&#8220;fragmento de mkinitcpio.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -229,7 +229,7 @@ necesito. En este caso, asumiré que para al hibernar y enciende al despertar.</
 
 <p>Al despertar arranca:</p>
 
-<figure class='code'><figcaption><span>&#8220;/etc/systemd/system/root-resume.service&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>&#8220;/etc/systemd/system/root-resume.service &#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -365,7 +365,7 @@ configuración sería más o menos así en el fichero <strong>/etc/esmtprc</stro
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Listo! El correo <a href="&#109;&#x61;&#x69;&#x6c;&#x74;&#x6f;&#58;&#x72;&#111;&#111;&#116;&#64;&#116;&#x75;&#x64;&#x6f;&#109;&#x69;&#x6e;&#105;&#111;&#x2e;&#99;&#117;">&#114;&#x6f;&#x6f;&#x74;&#64;&#x74;&#117;&#100;&#111;&#x6d;&#x69;&#x6e;&#105;&#x6f;&#46;&#99;&#x75;</a> recibirá correos de <a href="&#x6d;&#97;&#105;&#108;&#116;&#x6f;&#x3a;&#x63;&#114;&#x6f;&#x6e;&#x40;&#x74;&#x75;&#x64;&#x6f;&#x6d;&#105;&#x6e;&#105;&#111;&#x2e;&#99;&#x75;">&#99;&#x72;&#x6f;&#110;&#64;&#x74;&#x75;&#x64;&#x6f;&#x6d;&#x69;&#x6e;&#105;&#111;&#46;&#99;&#x75;</a> con la
+<p>Listo! El correo <a href="&#109;&#97;&#x69;&#x6c;&#x74;&#x6f;&#x3a;&#114;&#111;&#111;&#x74;&#64;&#116;&#117;&#100;&#111;&#109;&#105;&#110;&#105;&#111;&#46;&#x63;&#117;">&#x72;&#111;&#x6f;&#x74;&#64;&#x74;&#117;&#x64;&#x6f;&#x6d;&#105;&#110;&#105;&#x6f;&#46;&#99;&#x75;</a> recibirá correos de <a href="&#x6d;&#97;&#x69;&#x6c;&#116;&#x6f;&#58;&#99;&#114;&#111;&#x6e;&#64;&#116;&#x75;&#x64;&#111;&#109;&#105;&#x6e;&#x69;&#111;&#46;&#99;&#x75;">&#99;&#x72;&#x6f;&#110;&#x40;&#x74;&#x75;&#x64;&#111;&#x6d;&#105;&#110;&#105;&#111;&#x2e;&#99;&#x75;</a> con la
 salida del cron&hellip;</p>
 ]]></content>
   </entry>
