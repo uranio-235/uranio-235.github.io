@@ -129,6 +129,34 @@ emuladores es un dolor.</p>
 
 <p>Por suerte el DS solo puede renderizar 3D en una sola pantalla a la vez. Ah!
 OpenGL es por gusto, desmume pincha arriba del micro.</p>
+
+<p>Para mayor comodida, puedes crear un .desktop en tu home, el cual se lanze con
+los parámetros. A mi me quedó así</p>
+
+<figure class='code'><figcaption><span>&#8221;~/.local/share/applications/desmume.desktop&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Desktop Entry]</span>
+</span><span class='line'><span class="na">Version</span><span class="o">=</span><span class="s">1.0</span>
+</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">Application</span>
+</span><span class='line'><span class="na">Name</span><span class="o">=</span><span class="s">DeSmuME (Gtk)</span>
+</span><span class='line'><span class="na">Comment</span><span class="o">=</span><span class="s">Nintento DS emulator</span>
+</span><span class='line'><span class="na">TryExec</span><span class="o">=</span><span class="s">desmume --fwlang=5 --jit-size=90 --cpu-mode=1</span>
+</span><span class='line'><span class="na">Exec</span><span class="o">=</span><span class="s">desmume --fwlang=5 --jit-size=90 --cpu-mode=1</span>
+</span><span class='line'><span class="na">Icon</span><span class="o">=</span><span class="s">DeSmuME</span>
+</span><span class='line'><span class="na">Categories</span><span class="o">=</span><span class="s">GNOME;GTK;Game;Emulator;</span>
+</span><span class='line'><span class="na">MimeType</span><span class="o">=</span><span class="s">application/x-nintendo-ds-rom;</span>
+</span><span class='line'><span class="na">X-Desktop-File-Install-Version</span><span class="o">=</span><span class="s">0.22</span>
+</span></code></pre></td></tr></table></div></figure>
+
 </div>
 
 
@@ -191,6 +219,10 @@ OpenGL es por gusto, desmume pincha arriba del micro.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/08/16/password-de-windows/">password de windows</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/07/31/kiwix-como-servicio/">kiwix como servicio</a>
