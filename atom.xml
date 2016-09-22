@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-09-16T11:18:55-04:00</updated>
+  <updated>2016-09-22T17:54:23-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,60 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[audífonos blutú]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/09/22/audifonos-blutu/"/>
+    <updated>2016-09-22T17:39:04-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/09/22/audifonos-blutu</id>
+    <content type="html"><![CDATA[<p><img class="left" src="http://uranio-235.github.io/images/audifonos_blutu.png" width="400"></p>
+
+<p>Más por embullo que por necesidad, me he comprado uno de esos audífonos
+Bluetooth que se usan ahora. Estoy pasando un trabajo tremendo para adaptarme a
+tener la morronga esa en el cuello. Como si fuera poco, archlinux no me perdonó
+y me hizo de las suyas.</p>
+
+<p>Al conectarlos se escuchaban horrible y se desaparecía el bluetooth.</p>
+
+<p>Según me dijeron en el #archlinux de freenode. Se debe a que los audífonos se
+conecta como micrófonos/audífonos y no como audífonos solamente. Para ellos
+había que cambiarlos al modo A2DP.</p>
+
+<p>El comando <strong>pacmd set-card-profile 2 a2dp_sink</strong> resuelve el problema. Pero
+tener que correr el comando cada vez que los conecte, no me parece; no me da tan
+fuerte todavía&hellip;</p>
+
+<p>El gestor de audio de gnome supuestamente cambia el modo. Pero resulta que el
+puto <strong>pulse-audio</strong>, si arranca con GDM, forma una cagazón con los permisos ahí
+y no cambia de modo.</p>
+
+<p>Para evitar eso, creas un fichero llamado
+<strong>/var/lib/gdm/.config/pulse/client.conf</strong> donde le declaras que no arrancará
+pulse-audio con gnome:</p>
+
+<figure class='code'><figcaption><span>&#8220;/var/lib/gdm/.config/pulse/client.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">utospawn</span> <span class="o">=</span> no
+</span><span class='line'>daemon-binary <span class="o">=</span> /bin/true
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero eso no lo es todo. Si pulseaudio arranca con socket, se joden los
+audifonitos. Supuestamente creando una configuración, se deshabilita el socket,
+pero no pincha. Hay que deshabilitarlo con systemd. Ejecuta esto <strong>como root</strong>:</p>
+
+<figure class='code'><figcaption><span>&#8220;sin socket plis&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># mkdir -p /var/lib/gdm/.config/systemd/user</span>
+</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># ln -s /dev/null /var/lib/gdm/.config/systemd/user/pulseaudio.socket</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Reinicia y al conectar los audífonos, el al hacerle click al dipositivo, debe
+darte una opción que conduce a la configuración de audio. Ahí mismo cambias el
+modo y seleccionas el dispositivo de salida de audio por defecto.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[dispatcher script]]></title>
@@ -476,7 +530,7 @@ configuración sería más o menos así en el fichero <strong>/etc/esmtprc</stro
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Listo! El correo <a href="&#109;&#97;&#x69;&#x6c;&#116;&#x6f;&#58;&#x72;&#111;&#111;&#x74;&#x40;&#116;&#117;&#100;&#111;&#x6d;&#105;&#x6e;&#105;&#111;&#x2e;&#99;&#117;">&#x72;&#x6f;&#111;&#116;&#x40;&#116;&#x75;&#x64;&#111;&#109;&#105;&#x6e;&#x69;&#x6f;&#46;&#99;&#x75;</a> recibirá correos de <a href="&#109;&#x61;&#x69;&#108;&#x74;&#x6f;&#x3a;&#x63;&#114;&#111;&#x6e;&#x40;&#116;&#x75;&#x64;&#111;&#x6d;&#x69;&#x6e;&#105;&#111;&#46;&#99;&#x75;">&#x63;&#x72;&#111;&#110;&#64;&#116;&#x75;&#100;&#x6f;&#109;&#105;&#110;&#x69;&#x6f;&#46;&#x63;&#x75;</a> con la
+<p>Listo! El correo <a href="&#109;&#x61;&#105;&#x6c;&#x74;&#111;&#58;&#114;&#x6f;&#111;&#x74;&#64;&#x74;&#x75;&#100;&#x6f;&#109;&#105;&#x6e;&#x69;&#x6f;&#x2e;&#99;&#x75;">&#114;&#x6f;&#111;&#x74;&#64;&#116;&#117;&#100;&#x6f;&#109;&#x69;&#x6e;&#105;&#x6f;&#x2e;&#x63;&#117;</a> recibirá correos de <a href="&#109;&#x61;&#x69;&#x6c;&#x74;&#111;&#x3a;&#99;&#x72;&#111;&#x6e;&#x40;&#116;&#x75;&#x64;&#x6f;&#x6d;&#105;&#110;&#105;&#111;&#46;&#x63;&#x75;">&#99;&#114;&#x6f;&#x6e;&#x40;&#x74;&#x75;&#x64;&#111;&#109;&#x69;&#110;&#x69;&#111;&#46;&#99;&#x75;</a> con la
 salida del cron&hellip;</p>
 ]]></content>
   </entry>
@@ -1941,149 +1995,6 @@ necesario la descarga y reinstalación del antivirus. Pero un compañero me
 planteaba que eso significaría un buen negocio.</p>
 
 <p>Suerte&hellip;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[servidor jabber con prosody]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/12/14/servidor-jabber-con-prosody/"/>
-    <updated>2015-12-14T18:22:29-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/12/14/servidor-jabber-con-prosody</id>
-    <content type="html"><![CDATA[<p>Lua, es uno de los tantos lenguajes interpretados que hay. Lo curioso de este es
-que es Made in Brasil&hellip;</p>
-
-<p>Aunque no les quedó mal, lo de ellos definitivamente es la samba y el futboll.
-Lo digo porque ese fue uno de los primeros lenguajes que estuve manoseando y No
-creo que halla un buen motivo para escribir algo con él.</p>
-
-<p>¡Pero <a href="https://prosody.im/">Proŝody</a>, demuestra que me equivoco!</p>
-
-<p>La robusteza, simplicidad y el rendimiento de este servidor, quizás sean
-superiores a la de ejabberd (que está escrito en Erlang, un lenguaje aún más
-exótico que Lua). Por otra parte, su todo en uno, lo hace más versátil que otros
-cuantos. No tiene nada que envidiarle al cochino OpenFire y toda su parafernaria
-de Java.</p>
-
-<p>En su estado natural, prosody solo viene con lo básico. Ampliarlo, es solo
-cuestión de modificar la configuración. No piense en una extraña interfaz web
-como la de ejabber, hablamos de un fichero de configuración &ldquo;.lua&rdquo; con todo
-comentado. Lua, que es bien rarito, usa para comentario es &ldquo;&ndash;&rdquo; en vez de &ldquo;#&rdquo;</p>
-
-<p>Comenzamos. En debian todo es muy fácil:</p>
-
-<figure class='code'><figcaption><span>&#8220;aptitude&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install prosody
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Esto dará lugar un fichero de configuracion en: <strong>/etc/prosody/prosody.cfg.lua</strong></p>
-
-<p>De ahí modificaremos lo que necesitamos. Primero, poner la JID del admin, eso
-lo haremos aunque nuestro dominio no halla sido declarado.</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">admins</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;</span><span class="s">tu_usaurio@tudominio.cu&#39;</span> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora vamos a la sesión modules_enabled. Todo bien comentadito. Yo lo habilito
-todo menos el servidor http y el telnet, como que no me da buena espina.</p>
-
-<p>Si habilitamos el módulo &ldquo;motd&rdquo; nuestro servidor contará con un MOTD,
-pero debemos especificarlo. De esta forma cada módulo es una función que puede
-o no llevar parámetros de configuración. Para argumentar la configuración
-de motd, escribimos FUERA de las sesión de módulos.</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">motd_text</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="s">este es el motd de mi server&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Pero <strong>motd_text</strong> no estaba escrito en ninguna parte. Para ver si un
-módulo tiene o no configuración, sus detalles, que hace y hasta un ejemplo,
-podemos verlo en la lista de módulos.</p>
-
-<p><a href="http://prosody.im/doc/modules">http://prosody.im/doc/modules</a></p>
-
-<p>Pero volvamos a la configuración. La siguiente linea de interés es la
-que permite el registro de usuarios.</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">allow_registration</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>OJO! se requiere un &ldquo;;&rdquo; al final de la configuración (razón por la cual abandoné
-Lua en aquel entonce). Si no quieres que los usuarios se registren déjalo en
-false. Puedes usar la aplicación de control para crear usuarios. Ejecuta
-<strong>prosodyctl</strong> sin parámetros y veras una pantalla aprueba de imbéciles que te
-dice como crear los usuarios y otras opciones interesantes.</p>
-
-<p>Por ejemplo, para crear un usuario</p>
-
-<figure class='code'><figcaption><span>&#8220;prosodyctl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>prosodyctl adduser fulanito@dominio.cu
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lo siguiente es el SSL, no es bueno desabilitarlo porque muchos cliente jabbers
-traen por definición usar ssl. Mejor seguir a las que dice:</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">c2s_require_encryption</span> <span class="o">=</span> <span class="kc">false</span>
-</span><span class='line'><span class="n">s2s_require_encryption</span> <span class="o">=</span> <span class="kc">false</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Poniéndolas en false, el servidor usara lo mismo SSL que plana.</p>
-
-<p>Pero aún no hemos declarado el dominio. Resulta que como te dije todo es
-modular. Los dominios son VirtualHost. Al igual que en apache, incluso el
-dominio por defecto, es un virtual host. Podemos declarar varios dominios y
-dejarlos deshabilitados.</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">VirtualHost</span> <span class="s2">&quot;</span><span class="s">tudominio.cu&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ya tenemos un dominio, podríamos tener más con solo agregarlos pero con eso ya
-tenemos un servidor con lo indispensable. Vamos a extenderlo un poco, una sala
-de conferencia:</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">Component</span> <span class="s2">&quot;</span><span class="s">conference.tudominio.cu&quot;</span> <span class="s2">&quot;</span><span class="s">muc&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora solo falta crear un puntero DNS que apunte a <strong>conference.tudominio.cu</strong></p>
-
-<p>Pero hablando de punteros DNS. Para que jabber pinche, necesita un puntero DNS
-especial.</p>
-
-<p>Para <strong>dnsmasq</strong>, supongamos que el servidor que correo el jabber se llama
-<strong>chat.tudominio.cu</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;dnsmasq.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">address</span><span class="o">=</span>/chat.tudominio.cu/10.1.1.1
-</span><span class='line'>srv-host<span class="o">=</span>_xmpp-client._tcp.chat.tudominio.cu,chat.tudominio.cu,5222
-</span><span class='line'>srv-host<span class="o">=</span>_xmpp-server._tcp.chat.tudominio.cu,chat.tudominio.cu,5269
-</span><span class='line'>txt-record<span class="o">=</span>_xmppconnect.chat.tudominio.cu,<span class="s2">&quot;_xmpp-client-xbosh=http://chat.tudominio.cu:5280/http-bind&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Por cierto, eso último, es el puntero al servidor bosh.</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'> <span class="n">bosh_ports</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">5280</span> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>y a cotorrear se ha dicho&hellip;</p>
 ]]></content>
   </entry>
   

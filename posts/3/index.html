@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="cargar rvm 07/03/2016 9:25 pm | Comments De siempre, desplegar Ruby con RVM, ha sido un método
-catalogado de &ldquo;burdo&rdquo; o &ldquo;sucio& &hellip;">
+  <meta name="description" content="misterio con ethernet foxconn 14/03/2016 2:52 pm | Comments Para nadie es un secreto que foxconn, no le descarga a Linux. Hacen mil mierdas
+para &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +81,53 @@ catalogado de &ldquo;burdo&rdquo; o &ldquo;sucio& &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/03/14/misterio-con-ethernet-foxconn/">misterio con ethernet foxconn</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-03-14T14:52:46-04:00'><span class='date'>14/03/2016</span> <span class='time'>2:52 pm</span></time>
+        
+           | <a href="/blog/2016/03/14/misterio-con-ethernet-foxconn/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/03/14/misterio-con-ethernet-foxconn/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Para nadie es un secreto que foxconn, no le descarga a Linux. Hacen mil mierdas
+para entorpecerlo cuando corre sobre su hardware.</p>
+
+<p>Uno de los misterios, es cuando las tajetas de red permiten conexiones, pues dan
+ping sin problema. Pero al intentar transferir grandes bloques de red, da
+timeout.</p>
+
+<p>Problema, el tamaño del MTU por defecto en sus putas tarjetas</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ip l set dev eth0 mtu 1492</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Veremos con que se bajan la próxima vez</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -194,7 +241,7 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -382,7 +429,7 @@ instalar :D</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -520,7 +567,7 @@ una source como esta:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -627,89 +674,6 @@ tiempo.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/01/19/espejos-de-clamav/">espejos de clamav y salud</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-01-19T13:32:53-05:00'><span class='date'>19/01/2016</span> <span class='time'>1:32 pm</span></time>
-        
-           | <a href="/blog/2016/01/19/espejos-de-clamav/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/01/19/espejos-de-clamav/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>ClamAV, el antivirus más subestimado en mi opinión. De siempre, lo he usado por
-compromiso; aunque nunca he sentido la necesidad de hacerlo.</p>
-
-<p>Infomed, mantiene un espejo de ClamAV bien al día pero no un mirror como tal.</p>
-
-<p>Decidí bajarlos para mi máquina y usar la misma como espejo. Después de todo, la
-misma tiene lo que necesita para correr un mirror. Es algo tan sencillo como
-crear un virtualhost y poner en su raíz las actualziaciones.</p>
-
-<p>Más fácil aún, es usar /var/lib/clamav/ como raíz y así TU actualización se
-convierte en el mirror.</p>
-
-<p>En mi caso, el virtualhost de nginx me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/nginx/sites-enabled/clamav&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>server <span class="o">{</span>
-</span><span class='line'>   listen   10.1.1.14:80<span class="p">;</span>
-</span><span class='line'>   listen   10.1.1.14:443 ssl<span class="p">;</span>
-</span><span class='line'>   server_name clamav.hcg.sld.cu<span class="p">;</span>
-</span><span class='line'>   location / <span class="o">{</span>
-</span><span class='line'>      root /var/lib/clamav/<span class="p">;</span>
-</span><span class='line'>   <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El resto del truco está en el lado del cliente, ya que hay que hacerle una
-burumba a freshclam. Decirle que no busque scripts, así me quedó el freshclam.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/clamav/freshclam.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>UpdateLogFile /var/log/clamav/freshclam.log
-</span><span class='line'>DatabaseMirror clamav.hcg.sld.cu
-</span><span class='line'>NotifyClamd /etc/clamav/clamd.conf
-</span><span class='line'>ScriptedUpdates no
-</span><span class='line'>PrivateMirror clamav.hcg.sld.cu
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>No olvides el puntero a <strong>clamav.tudominio.cu</strong></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -727,6 +691,10 @@ burumba a freshclam. Decirle que no busque scripts, así me quedó el freshclam.
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/09/22/audifonos-blutu/">audífonos blutú</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/09/16/dispatcher-script/">dispatcher script</a>

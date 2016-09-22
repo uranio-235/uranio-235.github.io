@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="dispatcher script 16/09/2016 10:53 am | Comments El network-manager, el sistema de 2 clicasos para configurar la interfaz de red.
-Resulta que cuando &hellip;">
+  <meta name="description" content="audífonos blutú 22/09/2016 5:39 pm | Comments Más por embullo que por necesidad, me he comprado uno de esos audífonos
+Bluetooth que se usan ahora. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -87,6 +87,85 @@ Resulta que cuando &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/09/22/audifonos-blutu/">audífonos blutú</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-22T17:39:04-04:00'><span class='date'>22/09/2016</span> <span class='time'>5:39 pm</span></time>
+        
+           | <a href="/blog/2016/09/22/audifonos-blutu/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/09/22/audifonos-blutu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="left" src="/images/audifonos_blutu.png" width="400"></p>
+
+<p>Más por embullo que por necesidad, me he comprado uno de esos audífonos
+Bluetooth que se usan ahora. Estoy pasando un trabajo tremendo para adaptarme a
+tener la morronga esa en el cuello. Como si fuera poco, archlinux no me perdonó
+y me hizo de las suyas.</p>
+
+<p>Al conectarlos se escuchaban horrible y se desaparecía el bluetooth.</p>
+
+<p>Según me dijeron en el #archlinux de freenode. Se debe a que los audífonos se
+conecta como micrófonos/audífonos y no como audífonos solamente. Para ellos
+había que cambiarlos al modo A2DP.</p>
+
+<p>El comando <strong>pacmd set-card-profile 2 a2dp_sink</strong> resuelve el problema. Pero
+tener que correr el comando cada vez que los conecte, no me parece; no me da tan
+fuerte todavía&hellip;</p>
+
+<p>El gestor de audio de gnome supuestamente cambia el modo. Pero resulta que el
+puto <strong>pulse-audio</strong>, si arranca con GDM, forma una cagazón con los permisos ahí
+y no cambia de modo.</p>
+
+<p>Para evitar eso, creas un fichero llamado
+<strong>/var/lib/gdm/.config/pulse/client.conf</strong> donde le declaras que no arrancará
+pulse-audio con gnome:</p>
+
+<figure class='code'><figcaption><span>&#8220;/var/lib/gdm/.config/pulse/client.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">utospawn</span> <span class="o">=</span> no
+</span><span class='line'>daemon-binary <span class="o">=</span> /bin/true
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero eso no lo es todo. Si pulseaudio arranca con socket, se joden los
+audifonitos. Supuestamente creando una configuración, se deshabilita el socket,
+pero no pincha. Hay que deshabilitarlo con systemd. Ejecuta esto <strong>como root</strong>:</p>
+
+<figure class='code'><figcaption><span>&#8220;sin socket plis&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># mkdir -p /var/lib/gdm/.config/systemd/user</span>
+</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># ln -s /dev/null /var/lib/gdm/.config/systemd/user/pulseaudio.socket</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Reinicia y al conectar los audífonos, el al hacerle click al dipositivo, debe
+darte una opción que conduce a la configuración de audio. Ahí mismo cambias el
+modo y seleccionas el dispositivo de salida de audio por defecto.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2016/09/16/dispatcher-script/">dispatcher script</a></h1>
     
     
@@ -146,7 +225,7 @@ por dbus (con suerte).</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -218,7 +297,7 @@ es bastante simple.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -369,7 +448,7 @@ librería, así que nada de ~/, le pones /home/fulanito.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -532,7 +611,7 @@ necesito. En este caso, asumiré que para al hibernar y enciende al despertar.</
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -611,92 +690,7 @@ solamente los fichero <strong>.gz</strong></p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/20/correos-del-cron/">correos del cron</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-06-20T14:14:06-04:00'><span class='date'>20/06/2016</span> <span class='time'>2:14 pm</span></time>
-        
-           | <a href="/blog/2016/06/20/correos-del-cron/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/06/20/correos-del-cron/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Conflictivísima tarea, lograr que el cron mande correos adecuadamente&hellip; En este
-caso, cronie, da la solución al problema. Aunque me imagino que dicha
-configuración sea estándar para el cron.</p>
-
-<p>Así es la cosa, declaramos <strong>MAILTO</strong> y <strong>MAILFROM</strong> como unas variables en el
-fichero crontab.</p>
-
-<figure class='code'><figcaption><span>crontab</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="c1"># DO NOT EDIT THIS FILE - edit the master and reinstall.</span>
-</span><span class='line'><span class="c1"># (/tmp/crontab.f36hiB/crontab installed on Tue May  5 08:48:38 2015)</span>
-</span><span class='line'><span class="c1"># (Cron version -- $Id: crontab.c,v 2.13 1994/01/17 03:20:37 vixie Exp $)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># añadimos las variables</span>
-</span><span class='line'><span class="na">MAILTO</span><span class="o">=</span><span class="s">root@tudominio.cu</span>
-</span><span class='line'><span class="na">MAILFROM</span><span class="o">=</span><span class="s">cron@tudominio.cu</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># m h  dom mon dow   command</span>
-</span><span class='line'><span class="err">00</span> <span class="err">00</span> <span class="err">*</span> <span class="err">*</span> <span class="err">*</span> <span class="err">/bin/bash</span> <span class="err">/home/fulanito/script.sh</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora faltaría un MTA. Pues la solución más sensilla es <strong>esmtp</strong> y su
-configuración sería más o menos así en el fichero <strong>/etc/esmtprc</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/esmtprc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">identity</span> <span class="err">micuenta</span>
-</span><span class='line'>   <span class="err">hostname</span> <span class="err">smtp.tudominio.cu</span>
-</span><span class='line'>   <span class="err">username</span> <span class="err">&quot;cron&quot;</span>
-</span><span class='line'>   <span class="err">password</span> <span class="err">&quot;pinpanpun&quot;</span>
-</span><span class='line'>   <span class="err">starttls</span> <span class="err">enabled</span>
-</span><span class='line'>   <span class="err">default</span>
-</span><span class='line'><span class="err">mda</span> <span class="err">&quot;/usr/bin/procmail</span> <span class="err">-d</span> <span class="err">%T&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Listo! El correo <a href="&#109;&#97;&#x69;&#x6c;&#116;&#x6f;&#58;&#x72;&#111;&#111;&#x74;&#x40;&#116;&#117;&#100;&#111;&#x6d;&#105;&#x6e;&#105;&#111;&#x2e;&#99;&#117;">&#x72;&#x6f;&#111;&#116;&#x40;&#116;&#x75;&#x64;&#111;&#109;&#105;&#x6e;&#x69;&#x6f;&#46;&#99;&#x75;</a> recibirá correos de <a href="&#109;&#x61;&#x69;&#108;&#x74;&#x6f;&#x3a;&#x63;&#114;&#111;&#x6e;&#x40;&#116;&#x75;&#x64;&#111;&#x6d;&#x69;&#x6e;&#105;&#111;&#46;&#99;&#x75;">&#x63;&#x72;&#111;&#110;&#64;&#116;&#x75;&#100;&#x6f;&#109;&#105;&#110;&#x69;&#x6f;&#46;&#x63;&#x75;</a> con la
-salida del cron&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -715,6 +709,10 @@ salida del cron&hellip;</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/09/22/audifonos-blutu/">audífonos blutú</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/09/16/dispatcher-script/">dispatcher script</a>

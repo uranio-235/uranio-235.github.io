@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>systemd-timesyncd - El SysAdmin del 3er Mundo</title>
+  <title>audífonos blutú - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="systemd-timesyncd 18/10/2015 1:19 pm | Comments Mantener un reloj sincronizado y en hora, siempre ha sido un dilema. Algunas
-personas no reconocen &hellip;">
+  <meta name="description" content="audífonos blutú 22/09/2016 5:39 pm | Comments Más por embullo que por necesidad, me he comprado uno de esos audífonos
+Bluetooth que se usan ahora. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ personas no reconocen &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/10/18/systemd-timesyncd/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2016/09/22/audifonos-blutu/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -84,7 +84,7 @@ personas no reconocen &hellip;">
   
   <header>
     
-      <h1 class="entry-title">systemd-timesyncd</h1>
+      <h1 class="entry-title">audífonos blutú</h1>
     
     
       <p class="meta">
@@ -93,7 +93,7 @@ personas no reconocen &hellip;">
 
 
 
-<time class='entry-date' datetime='2015-10-18T13:19:01-04:00'><span class='date'>18/10/2015</span> <span class='time'>1:19 pm</span></time>
+<time class='entry-date' datetime='2016-09-22T17:39:04-04:00'><span class='date'>22/09/2016</span> <span class='time'>5:39 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -103,87 +103,52 @@ personas no reconocen &hellip;">
   </header>
 
 
-<div class="entry-content"><p>Mantener un reloj sincronizado y en hora, siempre ha sido un dilema. Algunas
-personas no reconocen la necesidad de esto; y además son tan imbéciles, que
-luego se quejan cuando la desfasada fecha de su computadora les impide
-conectarse a un sitio SSL.</p>
+<div class="entry-content"><p><img class="left" src="/images/audifonos_blutu.png" width="400"></p>
 
-<p>En los servidores y en las estaciones de trabajo que se respeten; siempre ha
-sido una opción usar un cliente NTP. Pero los ntp, cuando la fecha no está en el
-día adecuado, no se toman la molestia de sincronizar. En los raspberry-pi eso
-puede llegar a ser un tremendo problema, ya que NO tienen reloj de hardware y ni
-siquiera conservan la fecha.</p>
+<p>Más por embullo que por necesidad, me he comprado uno de esos audífonos
+Bluetooth que se usan ahora. Estoy pasando un trabajo tremendo para adaptarme a
+tener la morronga esa en el cuello. Como si fuera poco, archlinux no me perdonó
+y me hizo de las suyas.</p>
 
-<p>El tan criticado <a href="https://es.wikipedia.org/wiki/Systemd">Systemd</a>, tiene una
-solución para este problema. Sucia y burda, pero muy eficiente. Normalmente, los
-&ldquo;clientes&rdquo; <a href="https://es.wikipedia.org/wiki/Network_Time_Protocol">NTP</a>, son
-cliente y servidor. En el caso de systemd-timsyncd, no se tomaron la molestia de
-implementar un servidor; solamente un cliente minimalista. Además, guarda las
-sincronizaciones en un fichero, para determinar si tu reloj de hardware se
-adelante o atraza y contrarrestar dicho efecto.</p>
+<p>Al conectarlos se escuchaban horrible y se desaparecía el bluetooth.</p>
 
-<p>Lo bueno que tiene es que agarra la fecha y hora de cualquier parte; luego, la
-setea sin chistar. La configuración es sencillísima. Localiza el fichero:</p>
+<p>Según me dijeron en el #archlinux de freenode. Se debe a que los audífonos se
+conecta como micrófonos/audífonos y no como audífonos solamente. Para ellos
+había que cambiarlos al modo A2DP.</p>
 
-<p><strong>/etc/systemd/timesyncd.conf</strong></p>
+<p>El comando <strong>pacmd set-card-profile 2 a2dp_sink</strong> resuelve el problema. Pero
+tener que correr el comando cada vez que los conecte, no me parece; no me da tan
+fuerte todavía&hellip;</p>
 
-<p>Declárale un servidor principal y si te da la gana, uno o varios adicionales. A
-mi me quedó así:</p>
+<p>El gestor de audio de gnome supuestamente cambia el modo. Pero resulta que el
+puto <strong>pulse-audio</strong>, si arranca con GDM, forma una cagazón con los permisos ahí
+y no cambia de modo.</p>
 
-<figure class='code'><figcaption><span>/etc/systemd/timesyncd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>Para evitar eso, creas un fichero llamado
+<strong>/var/lib/gdm/.config/pulse/client.conf</strong> donde le declaras que no arrancará
+pulse-audio con gnome:</p>
+
+<figure class='code'><figcaption><span>&#8220;/var/lib/gdm/.config/pulse/client.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#  This file is part of systemd.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#  systemd is free software; you can redistribute it and/or modify it</span>
-</span><span class='line'><span class="c">#  under the terms of the GNU Lesser General Public License as published by</span>
-</span><span class='line'><span class="c">#  the Free Software Foundation; either version 2.1 of the License, or</span>
-</span><span class='line'><span class="c">#  (at your option) any later version.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># You can override the directives in this file by creating files in</span>
-</span><span class='line'><span class="c"># /etc/systemd/timesyncd.conf.d/*.conf.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># See timesyncd.conf(5) for details</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Time<span class="o">]</span>
-</span><span class='line'><span class="nv">NTP</span><span class="o">=</span>time.hcg.sld.cu
-</span><span class='line'><span class="nv">FallbackNTP</span><span class="o">=</span>time.sld.cu time.microsoft.com
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">utospawn</span> <span class="o">=</span> no
+</span><span class='line'>daemon-binary <span class="o">=</span> /bin/true
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Generalmente, mi laptop está en el calixto, por eso puse mi servidor local como
-primario; pero si no lo estuviera, de seguro <strong>time.sld.cu</strong> sería alcanzable. En
-el dificilísimo caso de que estuviera de cara a internet, quizás responda el de
-microsoft, que no está malo. Por cierto, los comentarios del fichero son
-bastante útiles, vale la pena leerlos.</p>
+<p>Pero eso no lo es todo. Si pulseaudio arranca con socket, se joden los
+audifonitos. Supuestamente creando una configuración, se deshabilita el socket,
+pero no pincha. Hay que deshabilitarlo con systemd. Ejecuta esto <strong>como root</strong>:</p>
 
-<p>Por último, lo más importante, habilitar y arrancar el servicio:</p>
+<figure class='code'><figcaption><span>&#8220;sin socket plis&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># mkdir -p /var/lib/gdm/.config/systemd/user</span>
+</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># ln -s /dev/null /var/lib/gdm/.config/systemd/user/pulseaudio.socket</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>systemctl <strong>start</strong> systemd-timesyncd.service</p>
 
-<p>systemctl <strong>enable</strong> systemd-timesyncd.service</p>
-
-<p>Para saber el estado del servicio, corre:</p>
-
-<p><strong>timedatectl</strong></p>
-
-<p>Te dirá la hora local y la UTC; te dirá además si está sincronizando por NTP.
-Con ese comando puede hacer un montón de operaciones, por ejemplo, setear la
-hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.org/wiki/Reloj_en_tiempo_real">RTC</a> también.</p>
-
-<p>   <blockquote><p>No existe juez más justo, que el pasar del tiempo.</p></blockquote></p>
+<p>Reinicia y al conectar los audífonos, el al hacerle click al dipositivo, debe
+darte una opción que conduce a la configuración de audio. Ahí mismo cambias el
+modo y seleccionas el dispositivo de salida de audio por defecto.</p>
 </div>
 
 
@@ -201,7 +166,7 @@ hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.or
 
 
 
-<time class='entry-date' datetime='2015-10-18T13:19:01-04:00'><span class='date'>18/10/2015</span> <span class='time'>1:19 pm</span></time>
+<time class='entry-date' datetime='2016-09-22T17:39:04-04:00'><span class='date'>22/09/2016</span> <span class='time'>5:39 pm</span></time>
       
 
 
@@ -209,7 +174,7 @@ hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.or
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/10/18/systemd-timesyncd/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/10/18/systemd-timesyncd/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2016/09/22/audifonos-blutu/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2016/09/22/audifonos-blutu/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -222,10 +187,8 @@ hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.or
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/10/16/palo-con-la-wifi/" title="Previous Post: palo con la wifi">&laquo; palo con la wifi</a>
+        <a class="basic-alignment left" href="/blog/2016/09/16/dispatcher-script/" title="Previous Post: dispatcher script">&laquo; dispatcher script</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2015/10/20/compartir-la-wifi/" title="Next Post: compartir la wifi">compartir la wifi &raquo;</a>
       
     </p>
   </footer>
@@ -591,8 +554,8 @@ hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.or
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2015/10/18/systemd-timesyncd/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2015/10/18/systemd-timesyncd/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2016/09/22/audifonos-blutu/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2016/09/22/audifonos-blutu/';
         var disqus_script = 'embed.js';
       
     (function () {
