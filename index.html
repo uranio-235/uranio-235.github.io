@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="audífonos blutú 22/09/2016 5:39 pm | Comments Más por embullo que por necesidad, me he comprado uno de esos audífonos
-Bluetooth que se usan ahora. &hellip;">
+  <meta name="description" content="driver broadcom 04/10/2016 2:53 pm | Comments Cuando tienes un dispositivo inalámbrico de Broadcom, por lo general tienes un
+bluetooth y una wifi. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +81,76 @@ Bluetooth que se usan ahora. &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/10/04/dirver-broadcom/">driver broadcom</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-10-04T14:53:41-04:00'><span class='date'>04/10/2016</span> <span class='time'>2:53 pm</span></time>
+        
+           | <a href="/blog/2016/10/04/dirver-broadcom/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/10/04/dirver-broadcom/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Cuando tienes un dispositivo inalámbrico de Broadcom, por lo general tienes un
+bluetooth y una wifi. Me imagino que los broadcom modernos, tengan además dual
+band (wifi de 5Ghz).</p>
+
+<p>En la entrada anterior, mencioné que había adquirido unos audífonos bluetooth.
+Pues el driver opensource <strong>brcm80211</strong> no pinchaba bien del todo con el
+bluetooth. Al punto que no podía alejarme ni un metro del dispositivo, además,
+que el mero echo de moverme, hacía que el audio se cortara.</p>
+
+<p>Usar el blob (driver propietario) parecía una variante atractiva, pero el existe
+el driver <strong>b43</strong> (QUE TAMBIÉN es opensource) y se jacta de ser creado con
+ingeniería inversa. De un principio esto no me pareció algo atractivo; pero ya
+lo había dicho el célebre comunistón Chino:</p>
+
+<p>   <blockquote><p>Todo conocimiento auténtico nace de la experiencia directa</p><footer><strong>Mao Zedong</strong></footer></blockquote></p>
+
+<p>Al parecer el, el driver ya viene con el sistema, sin embargo, necesita un
+firmware para poder levantar el hardware. Parece que le hicieron ingenería
+inversa al controlador.</p>
+
+<p>Por suerte hay un paquete en aur que hace toda la pincha, se llama
+<strong>b43-firmware</strong></p>
+
+<p>Tras instalarlo, hay que poner en la lista negra, el driver anterior, si no se
+forma un reguero tremendo a la hora de cargar los driver y seleccionará el
+opensource por defecto.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/modprobe.d/broadcom.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/modprobe.d/broadcom.conf
+</span><span class='line'>blacklist brcmsmac
+</span><span class='line'>b43
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y reinicia&hellip;</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -225,7 +295,7 @@ por dbus (con suerte).</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -297,7 +367,7 @@ es bastante simple.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -448,7 +518,7 @@ librería, así que nada de ~/, le pones /home/fulanito.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -615,85 +685,6 @@ necesito. En este caso, asumiré que para al hibernar y enciende al despertar.</
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/07/17/rsync-basico/">rsync básico</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-07-17T16:49:25-04:00'><span class='date'>17/07/2016</span> <span class='time'>4:49 pm</span></time>
-        
-           | <a href="/blog/2016/07/17/rsync-basico/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/07/17/rsync-basico/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Este es el tipo de cosas que uno hace cada 120 días y claro, cuando lo vas hacer
-ya se te olvidó; así que para el blog:</p>
-
-<p>Como compartir un directorio vía rsyncd. En el siguiente ejemplo, usaré mi
-directorio de Downloads, donde tengo cosas que copiar por SSH requiere mucha
-entropía y la copia se vuelve lenta, por ejemplo, los ficheros con la wikipedia
-(kiwix)</p>
-
-<p>La configuración de <strong>rsyncd</strong> radica en un lugar bastante obvio:
-<strong>/etc/rsyncd.conf</strong> a mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/rsyncd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">max connections</span> <span class="o">=</span> <span class="s">2</span>
-</span><span class='line'><span class="na">log file</span> <span class="o">=</span> <span class="s">/var/log/rsync.log</span>
-</span><span class='line'><span class="na">timeout</span> <span class="o">=</span> <span class="s">300</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">[descargas]</span>
-</span><span class='line'>   <span class="na">comment</span> <span class="o">=</span> <span class="s">las cosas que descargué</span>
-</span><span class='line'><span class="s">   path = /home/lazaro/Download/</span>
-</span><span class='line'><span class="s">   read only = yes</span>
-</span><span class='line'><span class="s">   list = yes </span>
-</span><span class='line'><span class="s">   uid = lazaro</span>
-</span><span class='line'><span class="s">   gid = nobody</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahí tenemos el directorio <strong>descargas</strong> servido por rsyncd. Vamos a efectuar una
-copia:</p>
-
-<figure class='code'><figcaption><span>&#8220;rsync&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rsync --include<span class="o">=</span><span class="s1">&#39;*.gz&#39;</span> --exclude<span class="o">=</span><span class="s1">&#39;*&#39;</span>  -aPv rsync://pub@10.1.1.187/descargas/ ./
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En ese ejemplo, usamos los parámetros <strong>&ndash;include</strong> y <strong>&ndash;exclude</strong>, para copiar
-solamente los fichero <strong>.gz</strong></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -709,6 +700,10 @@ solamente los fichero <strong>.gz</strong></p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/10/04/dirver-broadcom/">driver broadcom</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/09/22/audifonos-blutu/">audífonos blutú</a>

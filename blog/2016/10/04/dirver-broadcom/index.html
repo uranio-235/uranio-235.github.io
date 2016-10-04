@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>delay pools de squid - El SysAdmin del 3er Mundo</title>
+  <title>driver broadcom - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="delay pools de squid 19/02/2015 12:03 pm | Comments Los delay pool de squid, son una herramienta que permite determinar cuanto ancho
-de vianda le &hellip;">
+  <meta name="description" content="driver broadcom 04/10/2016 2:53 pm | Comments Cuando tienes un dispositivo inalámbrico de Broadcom, por lo general tienes un
+bluetooth y una wifi. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ de vianda le &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/02/19/delay-pools-de-squid/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2016/10/04/dirver-broadcom/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -84,7 +84,7 @@ de vianda le &hellip;">
   
   <header>
     
-      <h1 class="entry-title">delay pools de squid</h1>
+      <h1 class="entry-title">driver broadcom</h1>
     
     
       <p class="meta">
@@ -93,7 +93,7 @@ de vianda le &hellip;">
 
 
 
-<time class='entry-date' datetime='2015-02-19T12:03:48-05:00'><span class='date'>19/02/2015</span> <span class='time'>12:03 pm</span></time>
+<time class='entry-date' datetime='2016-10-04T14:53:41-04:00'><span class='date'>04/10/2016</span> <span class='time'>2:53 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -103,155 +103,47 @@ de vianda le &hellip;">
   </header>
 
 
-<div class="entry-content"><p>Los delay pool de squid, son una herramienta que permite determinar cuanto ancho
-de vianda le corresponde a ciertas conexiones. A mi en lo personal su uso me
-disgusta bastante; por el mero hecho de que pone a squid leeeeento. Cuando los
-delay pools están pinchando, las peticiones se demoran más al ser respondidas y
-el proto cache manager empieza a hacer cosas raras.</p>
+<div class="entry-content"><p>Cuando tienes un dispositivo inalámbrico de Broadcom, por lo general tienes un
+bluetooth y una wifi. Me imagino que los broadcom modernos, tengan además dual
+band (wifi de 5Ghz).</p>
 
-<p>En fin, cierra el chat, apriétate el cinto y abre las entendederas que esto es
-complicado&hellip;</p>
+<p>En la entrada anterior, mencioné que había adquirido unos audífonos bluetooth.
+Pues el driver opensource <strong>brcm80211</strong> no pinchaba bien del todo con el
+bluetooth. Al punto que no podía alejarme ni un metro del dispositivo, además,
+que el mero echo de moverme, hacía que el audio se cortara.</p>
 
-<p>Supón que tienes 128Kbit y queremos repartir el ancho de vianda de manera
-&ldquo;equitativa&rdquo;</p>
+<p>Usar el blob (driver propietario) parecía una variante atractiva, pero el existe
+el driver <strong>b43</strong> (QUE TAMBIÉN es opensource) y se jacta de ser creado con
+ingeniería inversa. De un principio esto no me pareció algo atractivo; pero ya
+lo había dicho el célebre comunistón Chino:</p>
 
-<p>El ancho de vianda se vende en KBit pero squid entiende de K Bytes.</p>
+<p>   <blockquote><p>Todo conocimiento auténtico nace de la experiencia directa</p><footer><strong>Mao Zedong</strong></footer></blockquote></p>
 
-<figure class='code'><figcaption><span>&#8216;conversion de Kbit/s a KBytes/s&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:611:0&gt; 128/8
-</span><span class='line'><span class="o">=</span>&gt; 16
-</span></code></pre></td></tr></table></div></figure>
+<p>Al parecer el, el driver ya viene con el sistema, sin embargo, necesita un
+firmware para poder levantar el hardware. Parece que le hicieron ingenería
+inversa al controlador.</p>
 
+<p>Por suerte hay un paquete en aur que hace toda la pincha, se llama
+<strong>b43-firmware</strong></p>
 
-<p>O sea, que tú canal llega a los 16 Kylo Bytes por segundos&hellip;</p>
+<p>Tras instalarlo, hay que poner en la lista negra, el driver anterior, si no se
+forma un reguero tremendo a la hora de cargar los driver y seleccionará el
+opensource por defecto.</p>
 
-<p>Nuestro discriminante sistema de castas, tendrá 2 clases</p>
-
-<p>&ldquo;lo dioses&rdquo; y &ldquo;los mortales&rdquo;</p>
-
-<p>Los dioses cuentan con el 60% del ancho de vianda disponible, mientras que los
-mortales solo cuentan con el 20%.</p>
-
-<p>OJO: No des a nadie el 100%, ya que podría acaparar todo el canal y dejar a todo
-el mundo sin navegación.</p>
-
-<p>Los delay pool de clase 2, son los que reparten &ldquo;ancho de banda por cabeza&rdquo;
-Osease, &ldquo;esto es lo que le toca a esa persona&rdquo;. Los parámetros de los delay pool
-de la clase dos son sucesivamente: ancho de banda y ráfaga</p>
-
-<p>El ancho de banda, no puede ser una cosa rígida, porque los datos no
-se transmiten de manera rígida. Aveces se requiere mucho ancho de banda
-durante 2 milisegundos para establecer una conexión SSL.</p>
-
-<p>Ahí es donde viene a jugar la ráfaga. Osea: &ldquo;cuanto ancho de banda
-máximo tendrá durante los picos&rdquo;</p>
-
-<p>Digamos que el delay pool será un 20% del canal</p>
-
-<figure class='code'><figcaption><span>&#8220;el 20%&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">612</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">16</span><span class="o">*</span><span class="mi">20</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="mi">1024</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">3072</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A la ráfaga le das un Kylo más</p>
-
-<figure class='code'><figcaption><span>&#8220;un kylo más&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">613</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">3072</span><span class="o">+</span><span class="mi">1024</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">4096</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El delay_pool te viene quedando así:</p>
-
-<figure class='code'><figcaption><span>&#8220;delay_pool #1&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>delay_parameters <span class="m">1</span> 3072/3072 4096/4096
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora creamos un delay_pool que tiene el 80% del ancho de banda</p>
-
-<figure class='code'><figcaption><span>&#8220;el 80%&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">614</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">16</span><span class="o">*</span><span class="mi">80</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="mi">1024</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">12288</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Sea entonces el delay_pool 2 así:</p>
-
-<figure class='code'><figcaption><span>&#8220;delay_pool #2&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>delay_parameters <span class="m">2</span> 12288/12288 13312/13312
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Al final el squid.con</p>
-
-<figure class='code'><figcaption><span>&#8216;squid.conf&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>&#8220;/etc/modprobe.d/broadcom.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># tendremos 2 delai puls</span>
-</span><span class='line'>delay_pools 2
-</span><span class='line'>
-</span><span class='line'><span class="c"># ambos de la clase 2</span>
-</span><span class='line'>delay_class <span class="m">1</span> 2
-</span><span class='line'>delay_class <span class="m">2</span> 2
-</span><span class='line'>
-</span><span class='line'><span class="c"># los mortales van al 20%</span>
-</span><span class='line'>delay_parameters <span class="m">1</span> 3072/3072 4096/4096
-</span><span class='line'>
-</span><span class='line'><span class="c"># y los dioses van al 80%</span>
-</span><span class='line'>delay_parameters <span class="m">2</span> 12288/12288 13312/13312
-</span><span class='line'>
-</span><span class='line'><span class="c"># los dioses, aquellos cuyo nombre de usuario machee esta lista</span>
-</span><span class='line'>acl dioses proxy_auth tuusuario eljefe eldirector lajevita lasecretaria
-</span><span class='line'>
-</span><span class='line'><span class="c"># en el 1 metemos a los dioses</span>
-</span><span class='line'>delay_access <span class="m">1</span> allow dioses
-</span><span class='line'>delay_access <span class="m">1</span> deny all
-</span><span class='line'>
-</span><span class='line'><span class="c"># el resto, pal 2</span>
-</span><span class='line'>delay_access <span class="m">2</span> allow all
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/modprobe.d/broadcom.conf
+</span><span class='line'>blacklist brcmsmac
+</span><span class='line'>b43
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Ah otra cosa! MUY IMPORTANTE</p>
-
-<h4>NADIE debe quedar fuera de delay pool una vez que creas el primero.</h4>
-
-<p>Si quieres TÚ (el informático que es tremendo decarao) quires navegar más rápido
-que nadie, create un delay pool con el 100% del ancho de banda, pero no te
-quedes fuera de ningún delaypool.</p>
-
-<p>Desde ese momento empezarás a acaparar todo el canal al punto de que NO se podrá
-navegar. A ese punto te buscarás un lío, no reserves para ti solo más del 80%
-del canal y navega con cordura.</p>
+<p>y reinicia&hellip;</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -265,7 +157,7 @@ del canal y navega con cordura.</p>
 
 
 
-<time class='entry-date' datetime='2015-02-19T12:03:48-05:00'><span class='date'>19/02/2015</span> <span class='time'>12:03 pm</span></time>
+<time class='entry-date' datetime='2016-10-04T14:53:41-04:00'><span class='date'>04/10/2016</span> <span class='time'>2:53 pm</span></time>
       
 
 
@@ -273,7 +165,7 @@ del canal y navega con cordura.</p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/02/19/delay-pools-de-squid/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/02/19/delay-pools-de-squid/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2016/10/04/dirver-broadcom/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2016/10/04/dirver-broadcom/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -286,10 +178,8 @@ del canal y navega con cordura.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/02/12/rails-con-mongodb/" title="Previous Post: rails con mongodb">&laquo; rails con mongodb</a>
+        <a class="basic-alignment left" href="/blog/2016/09/22/audifonos-blutu/" title="Previous Post: audífonos blutú">&laquo; audífonos blutú</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2015/02/21/sasl-homeclub-only/" title="Next Post: SASL homeclub only">SASL homeclub only &raquo;</a>
       
     </p>
   </footer>
@@ -659,8 +549,8 @@ del canal y navega con cordura.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2015/02/19/delay-pools-de-squid/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2015/02/19/delay-pools-de-squid/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2016/10/04/dirver-broadcom/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2016/10/04/dirver-broadcom/';
         var disqus_script = 'embed.js';
       
     (function () {

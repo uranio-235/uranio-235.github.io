@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="repo de fdroid 15/10/2015 2:38 pm | Comments &ldquo;La que se avecina&rdquo;, sería una buena manera para describir la revolución de
-aparatos con &hellip;">
+  <meta name="description" content="palo con la wifi 16/10/2015 12:40 pm | Comments Vale la pena hacer una entrada de esto, porque podría ser el problema de alguien
+que como yo; se &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +81,88 @@ aparatos con &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/16/palo-con-la-wifi/">palo con la wifi</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-10-16T12:40:04-04:00'><span class='date'>16/10/2015</span> <span class='time'>12:40 pm</span></time>
+        
+           | <a href="/blog/2015/10/16/palo-con-la-wifi/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/16/palo-con-la-wifi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Vale la pena hacer una entrada de esto, porque podría ser el problema de alguien
+que como yo; se cansó de alarse los pelos y buscar en google.</p>
+
+<p>Recién no se cuando me bajé una versión de algo que involucra al networkmanager
+y BUN! La wifi, cada vez que levantaba al susodicho, se bloqueaba.</p>
+
+<p>El problema parecía estar en el fichero:</p>
+
+<p><strong>/var/lib/NetworkManager/NetworkManager.state</strong></p>
+
+<p>No se porque, decía tener la wifi deshabilitada. El fichero contiene algo como
+esto:</p>
+
+<figure class='code'><figcaption><span>NetworkManager.state</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>main<span class="o">]</span>
+</span><span class='line'><span class="nv">NetworkingEnabled</span><span class="o">=</span><span class="nb">true</span>
+</span><span class='line'><span class="nv">WirelessEnabled</span><span class="o">=</span><span class="nb">true</span>
+</span><span class='line'><span class="nv">WWANEnabled</span><span class="o">=</span><span class="nb">true</span>
+</span><span class='line'><span class="nv">WimaxEnabled</span><span class="o">=</span><span class="nb">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No se por qué, la clave <strong>NetworkingEnabled</strong> estaba con valor <strong>false</strong> y al
+arrancar NetworkManager, bloqueaba la wifi, al punto que al levantarla
+manualmente, me decía que tenía que desbloquearla con rfkill. Para el que no lo
+sepa, con rfkill se pueden bloquear los radios.</p>
+
+<p>Si por casualidad tienes alguno bloqueado, ejecuta:</p>
+
+<p>rfkill unblock all</p>
+
+<p>Cosa que tenía que ejecutar cada vez que arrancaba el dichóso NetworkManager</p>
+
+<p>Probé apagar la wifi y arrancar el networkmanager con la wifi apagada, para ver
+si eso cambiaba algo en el fichero antes mencionado; pero no. Lo cual me llevó a
+la conclusión de que no fue una metedura de pata mía si no, un bug.</p>
+
+<p>Ponerle atributo inmutable a ese fichero podría ser una solución, pero todo lo
+que está en /var suele ser un dato volátil que señala el estado de algo, así que
+ponerle inmutable podría causar fallos en la aplicación.</p>
+
+<p>Si ese fichero está en /var es porque el network manager dumpea ahí su estado,
+fíjese que está junto a los lease del DHCP. No tengo certeza de que modificando
+esa configuración manualmente esta persista; pero ya llevo una semana con el
+problema resuelto.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -238,7 +320,7 @@ como lo estoy haciendo yo ahora.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -435,7 +517,7 @@ crudo. Podrías también tirarlo pa un fichero así:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -618,7 +700,7 @@ con ambos. Veamos que trae rails 5 con esto, porque la mejora urge&hellip;</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -836,7 +918,7 @@ porque servidor bootear.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1050,60 +1132,7 @@ por detrás de plymouth, presiona &ldquo;home&rdquo; mientras butea.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/07/git-clone-rapido/">git clone rápido</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-09-07T22:36:56-04:00'><span class='date'>07/09/2015</span> <span class='time'>10:36 pm</span></time>
-        
-           | <a href="/blog/2015/09/07/git-clone-rapido/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/09/07/git-clone-rapido/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>En paises con internet lento (adivina a cual me refiero) el mero hecho de clonar
-un repositorio de git; puede llegar a ser un verdadero problema.</p>
-
-<figure class='code'><figcaption><span>&#8220;git&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone --depth<span class="o">=</span><span class="m">1</span> http://repositorio.tld/fulanito/aplicacion.git
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>¿Rápido verdad? Es que solo cogió el HEAD, no el historial de commits completo.</p>
-
-<p>Si lo quieres pa siempre, pon en tu gitconfig esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;.gitconfig&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>clone<span class="o">]</span>
-</span><span class='line'>   <span class="nv">depth</span> <span class="o">=</span> 1
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1124,6 +1153,10 @@ un repositorio de git; puede llegar a ser un verdadero problema.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/10/04/dirver-broadcom/">driver broadcom</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/09/22/audifonos-blutu/">audífonos blutú</a>
