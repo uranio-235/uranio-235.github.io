@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="rails sin turbolinks 22/02/2015 2:48 am | Comments Una de las cosas que más me gusta de Rails 4.2 es que al fin se pueden crear
-aplicaciones SIN &hellip;">
+  <meta name="description" content="transando a ext4 03/06/2015 11:08 pm | Comments Una de mis grandes testarudeces (profesionales) siempre ha sido la negativa a
+usar ext4. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +81,948 @@ aplicaciones SIN &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-03T23:08:27-04:00'><span class='date'>03/06/2015</span> <span class='time'>11:08 pm</span></time>
+        
+           | <a href="/blog/2015/06/03/transando-a-ext4/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/03/transando-a-ext4/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Una de mis grandes testarudeces (profesionales) siempre ha sido la negativa a
+usar ext4. Acostumbrado a los discos IDE, siempre me pareció que el journal
+escribía demasiado en el disco. Además, solía verse ext4dev y eso me sonaba a
+que se usaría mi sistema como ratón de laboratorio.</p>
+
+<p>Tanta fue mi fobia, que hoy en día aún uso discos montados en ext2. Por ejemplo,
+mi laptop estaba montada en ext2 hasta ahora mismo; también la partición /home
+del servidor LTSP.</p>
+
+<p>Un fallo eléctrico reciente, me demostró que el journal es un mal necesario. En
+discos de tanta escritura, como es el caso del /home de los clientes ligeros, la
+integridad de los datos es definitivamente una clave para el sistema. Además,
+todo el que usó ext4dev no se quejó nunca.</p>
+
+<figure class='code'><figcaption><span>&#8220;tune2fs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>tune2fs -O extents,uninit_bg,dir_index /dev/sda2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso, le pones a tu ext2 todas las gangarreas del 4. A este punto, reza
+porque no se valla luz! Hay que dar otro paso y es pasar un fsck.</p>
+
+<figure class='code'><figcaption><span>&#8220;tune2fs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>tune2fs -c <span class="m">0</span> /dev/sda <span class="o">&amp;&amp;</span> reboot
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Marca el disco para chequear y reinicia. Cuando levante, verás que da unos palos
+raros ahí pero tú tranquilo.</p>
+
+<p>Las memorias si las dejo con ext2. Pues no necesitan un journal escribiendo
+tanto y acortando su vida útil.</p>
+
+<p>Lo próximo que instale, lo haré con BtrFS que está <em>más mejoL en todavía</em>. Dice
+tener un soporte especial para discos SSD con lo cual me imagino que para las
+memorias flash sea más óptimo.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/01/pacman-bajo-el-microscopio/">pacman bajo el microscopio</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-01T21:13:05-04:00'><span class='date'>01/06/2015</span> <span class='time'>9:13 pm</span></time>
+        
+           | <a href="/blog/2015/06/01/pacman-bajo-el-microscopio/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/01/pacman-bajo-el-microscopio/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>En este post, me propongo mostrarle algunas de las bondades de pacman. Cualquier
+que conozca Arch Linux, sabe de lo que estoy hablando.</p>
+
+<p>Veremos bien de cerca el engranaje de está compleja maquinaria.</p>
+
+<p>Pacman, es una herramienta lo suficientemente versátil como para llevar el
+nombre de &ldquo;administrador de paquetes&rdquo;. Su nombre es un juego de palabras que
+proviene de juntar las palabras &ldquo;PACkage MANager&rdquo;.</p>
+
+<p>A diferencia de ciertas y determinadas distribuciones (entiéndase debian); que
+requieren más de 3 softwares para esa pincha. Pacman solo es autosuficiente para
+gestionar la paquetería. La herramienta repo-add, está incluída dentro del
+paquete de pacman y se usa para crear repositorios personalizados.</p>
+
+<figure class='code'><figcaption><span>&#8220;huevo de pascua de pacman&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>repo-elephant
+</span><span class='line'>     __
+</span><span class='line'>    <span class="s1">&#39;. \</span>
+</span><span class='line'><span class="s1">     &#39;</span>- <span class="se">\</span>
+</span><span class='line'>      / /_         .---.
+</span><span class='line'>     / <span class="p">|</span> <span class="se">\\</span>,.<span class="se">\/</span>--.//    <span class="o">)</span>
+</span><span class='line'>     <span class="p">|</span>  <span class="se">\/</span>/        <span class="o">)</span>/  /
+</span><span class='line'>      <span class="se">\ </span> <span class="s1">&#39; ^ ^    /    )____.----..  6</span>
+</span><span class='line'><span class="s1">       &#39;</span>.____.    .___/            <span class="se">\.</span>_<span class="o">)</span>
+</span><span class='line'>          .<span class="se">\/</span>.                      <span class="o">)</span>
+</span><span class='line'>           <span class="s1">&#39;\                       /</span>
+</span><span class='line'><span class="s1">           _/ \/    ).        )    (</span>
+</span><span class='line'><span class="s1">          /#  .!    |        /\    /</span>
+</span><span class='line'><span class="s1">          \  C// #  /&#39;</span>-----<span class="s1">&#39;&#39;</span>/ <span class="c">#  /</span>
+</span><span class='line'>       .   <span class="s1">&#39;C/ |    |    |   |    |mrf  ,</span>
+</span><span class='line'><span class="s1">       \), .. .&#39;</span>OOO-<span class="s1">&#39;. ..&#39;</span>OOO<span class="s1">&#39;OOO-&#39;</span>. ..<span class="se">\(</span>,
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ya sabrán (o se darán por enterado) Arch Linux no es por release, si no que
+un canal en constante desarrollo, hace como upstream, donde se depositan los
+paquetes consideraros estables. Esto es lo que en distribuciones estáticas se
+llamara &ldquo;repo&rdquo;. Pacman lleva la ardua tarea de mantener el sistema debidamente
+actualizado. Nuestro sistema no tendrá &ldquo;actualizaciones&rdquo; si no que evolucionará
+constantemente desde el &ldquo;core&rdquo;, escalando horizontalmente el sistema completo.</p>
+
+<p>De esta manera se logra el mítico equilibrio entre estabilidad y novedad.</p>
+
+<p>Para ello, pacman debe tener constancia local de la lista de paquetes que hay en
+el upstream. Estas listas son ficheros de textos, comprimidos con gzip, que
+contienen información acerca de lo que hay arriba. Por ejemplo, contiene la URL
+de como descargarlos.</p>
+
+<p>Para pacman, instalar un paquete o alar está lista, es casi la misma operación.
+Se llama &ldquo;sync&rdquo; (sincronizar)</p>
+
+<figure class='code'><figcaption><span>&#8220;-Sy&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -Sy
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero puedes de un solo viaje, sincronizar y actualizar todo el sistema.</p>
+
+<figure class='code'><figcaption><span>&#8220;lo úlitmo que trajo el barco </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -Syu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Buscar un paquete también es una operación de sincronización.</p>
+
+<figure class='code'><figcaption><span>&#8220;buscar fulanito&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -Ss fulanito
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>También puedes, bajar la lista, actualizar el sistema e instalar algo de un solo
+golpe.</p>
+
+<figure class='code'><figcaption><span>&#8220;todo junto&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -Syu fulanito
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pacman irá a los sitios que tiene declarado en el fichero: <strong>/etc/pacman.d/mirrorlist</strong>
+y bajará esos ficheros. Seguidamente los depositará en el directorio /var/lib/pacman/sync/</p>
+
+<figure class='code'><figcaption><span>&#8220;bases de datos&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>file /var/lib/pacman/sync/*.db
+</span><span class='line'>/var/lib/pacman/sync/archlinuxfr.db: gzip compressed data, last modified: Thu May <span class="m">21</span> 04:31:59 2015, from Unix
+</span><span class='line'>/var/lib/pacman/sync/community.db:   gzip compressed data, last modified: Fri May <span class="m">29</span> 08:47:01 2015, from Unix
+</span><span class='line'>/var/lib/pacman/sync/core.db:        gzip compressed data, last modified: Wed May <span class="m">27</span> 19:02:40 2015, from Unix
+</span><span class='line'>/var/lib/pacman/sync/extra.db:       gzip compressed data, last modified: Fri May <span class="m">29</span> 04:27:15 2015, from Unix
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora nuestro sistema sabe lo que hay &ldquo;arriba&rdquo; (en el repo) y está listo para
+compararlo con lo que está &ldquo;abajo&rdquo; (instalado). La información sobre todo los
+paquetes que el sistema tiene instalado, se almacena en el directorio
+<strong>/var/lib/pacman/local/</strong></p>
+
+<p>La lista es muy grande para mostrarla. Pero dentro hay directorios con la
+versión de cada programa instalado. Dentro de ese subdirectorio, hay 4 ficheros
+que contiene la información del paquete instalado.</p>
+
+<p>Por ejemplo, el paquete <strong>ruby</strong>, en su versión <strong>2.2.2-1</strong> responde al
+directorio <strong>/var/lib/pacman/local/ruby-2.2.2-1</strong></p>
+
+<p>Cada directorio, contiene 4 ficheros:</p>
+
+<figure class='code'><figcaption><span>&#8220;metainfo de un paquete instalado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>ls /var/lib/pacman/local/ruby-2.2.2-1/
+</span><span class='line'>desc  files  install  mtree
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El fichero <strong>desc</strong> contiene la información que describe al paquete, versión,
+nombre, etc..</p>
+
+<p>El fichero <strong>files</strong> contiene la lista de ficheros que instala dicho paquete.</p>
+
+<p>El fichero <strong>install</strong> contiene una serie de comando disparadores, como
+post_install. Dentro de install, se declaró una función llamada post_install()
+que será llamada cuando el paquete termine de ser instalado.</p>
+
+<p>Por último, <strong>mtree</strong> (que está comprimido con gz) contiene lo mismo que files,
+pero con la suma MD5 de cada fichero. Esto es usado por pacman para verificar la
+integridad de los archivos instalados.</p>
+
+<p>Por ejemplo, si quisiéramos ver que ficheros contiene el paquete ruby, podríamos
+ver el contenido del fichero <strong>files</strong> pero sería más fácil usar el comando
+<strong>Query</strong> con el argumento <strong>list</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;pacman -Ql fulano&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>pacman -Ql ruby<span class="p">|</span>grep <span class="s1">&#39;/usr/bin/&#39;</span>
+</span><span class='line'>ruby /usr/bin/
+</span><span class='line'>ruby /usr/bin/erb
+</span><span class='line'>ruby /usr/bin/gem
+</span><span class='line'>ruby /usr/bin/irb
+</span><span class='line'>ruby /usr/bin/rake
+</span><span class='line'>ruby /usr/bin/rdoc
+</span><span class='line'>ruby /usr/bin/ri
+</span><span class='line'>ruby /usr/bin/ruby
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El principal fichero de pacman, es <strong>/etc/pacman.conf</strong> y a diferencia de otros
+package managers, este es bien sencillo. Además, es MUY personalizable.</p>
+
+<p>Por ejemplo, la cláusala XferCommand, permite especificar que comando usar para
+bajar los paquetes. Las variables, %u y %o serán enviadas como URL del paquetes
+y fichero en disco.</p>
+
+<figure class='code'><figcaption><span>&#8216;scope de</span><a href='/etc/pacman.conf''>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/pacman.conf<span class="p">|</span>grep Xfer
+</span><span class='line'><span class="c">#XferCommand = /usr/bin/curl --retry-delay 5 --progress-bar -C - -f %u &gt; %o</span>
+</span><span class='line'><span class="nv">XferCommand</span> <span class="o">=</span> /usr/bin/wget --no-cache -t <span class="m">0</span> -T <span class="m">10</span> --max-redirect<span class="o">=</span><span class="m">0</span> -w <span class="m">5</span> --passive-ftp -c -O %o %u
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ese es un buen ejemplo de una configuración para wget en conexiones &ldquo;hostiles&rdquo;.
+Para que tengas una idea de cuan personalizable puede llegar a ser:</p>
+
+<figure class='code'><figcaption><span>&#8220;NoExtract&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/pacman.conf<span class="p">|</span>grep NoEx
+</span><span class='line'><span class="nv">NoExtract</span> <span class="o">=</span> *.mo
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En este caso, los ficheros <strong>.mo</strong> no serán extraídos de los paquetes durante el
+proceso de instalación. Como yo uso el sistema en inglés, no me interesa tener
+las traducciones de sepetecientos idiomas.</p>
+
+<p>Los paquetes que instales, irán al directorio <strong>/var/cache/pacman/pkg/</strong> y
+podrías usar dicho directorio como repo para compartirlo con aquellos que no
+tiene acceso a internet; o bien, llevártelo para tu casa, lugar donde te
+integras al grupo antes mencionado.</p>
+
+<p>Quizás te interese crear tu propio repo. La idea de crear un repo a partir de la
+cache, le ha tirado un cabo a una pila de gente. En un viaje reciente que hice
+por el oriente de la isla, cargué mi laptop con todo el software necesario he
+instalé 3 servidores con arch <strong>sin conectarme a internet</strong> (vergonzosa hazaña).</p>
+
+<p>Con esta opción:</p>
+
+<figure class='code'><figcaption><span>&#8220;mantener paquetes&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/pacman.conf<span class="p">|</span>grep Clea
+</span><span class='line'><span class="nv">CleanMethod</span> <span class="o">=</span> KeepCurrent
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Aquellos paquetes que una vez fuero instalados se mantienen. Por tanto, supón
+que quieres tener en la otra máquina (la de tu casa) &ldquo;geary&rdquo; el cliente de
+correo. Simplemente lo instalas y lo desinstalas en la máquina privilegiada.</p>
+
+<figure class='code'><figcaption><span>&#8220;cacheando paquetes&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S geary <span class="o">&amp;&amp;</span> pacman -R geary
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora el paquete está en la cache, y aunque ya no está en el sistema, se
+conservará en la cache hasta que no lo borres. Claro, esto tiene como desventaja
+que no se bajarán actualizaciones para ese paquete.</p>
+
+<p>En mi caso, yo tengo este escripcito al que llamo <strong>mkrepo.sh</strong></p>
+
+<figure class='code'><figcaption><span>mkrepo.sh</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># elimina esa base de datos</span>
+</span><span class='line'>rm /var/cache/pacman/pkg/custom.db.tar.gz
+</span><span class='line'>
+</span><span class='line'><span class="c"># crea una nueva</span>
+</span><span class='line'>repo-add /var/cache/pacman/pkg/custom.db.tar.gz /var/cache/pacman/pkg/*.pkg.tar.xz
+</span><span class='line'>
+</span><span class='line'><span class="c"># dime que tengo que poner</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s1">&#39;&#39;&#39;</span>
+</span><span class='line'><span class="s1">[mirepo]</span>
+</span><span class='line'><span class="s1">SigLevel = Optional TrustAll</span>
+</span><span class='line'><span class="s1">Server = http://localhost:8080</span>
+</span><span class='line'><span class="s1">&#39;&#39;&#39;</span>
+</span><span class='line'><span class="c"># sírvelo con darkhttpd</span>
+</span><span class='line'>darkhttpd /var/cache/pacman/pkg/ --chroot --port 8080
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al correrlo, la cache se indexa; lista para ser usada como repo. El script hace
+un <strong>echo</strong>, para recordarte como sería la configuración que debes poner en
+/etc/pacman.conf para usar ese repo.</p>
+
+<p>Finalmente, darkhttpd (un servidor web que viene con el Live de arch) sirve ese
+repo.</p>
+
+<p>Quizás tengas una memoria flash donde creas el repo. En ese caso, bastaría con
+especificar una linea Server con la dirección file:///</p>
+
+<p>Server = file:///media/MEMORIA/repo/</p>
+
+<p>Simple verdad?</p>
+
+<p>Pensé hacer esta entrada más larga, pero sería aburrir al lector. En cambio,
+ahora ya sabes una parte, te dejo que investigues el resto.</p>
+
+<h4>Happy Hacking!</h4>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/28/cambiar-user-agent-en-squid/">cambiar user agent con squid</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-28T18:46:04-04:00'><span class='date'>28/05/2015</span> <span class='time'>6:46 pm</span></time>
+        
+           | <a href="/blog/2015/05/28/cambiar-user-agent-en-squid/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/05/28/cambiar-user-agent-en-squid/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>En esta sofocante tarde de verano cubano y en un lugar que no diré, me encontré
+detrás de un proxy administrador por la
+<a href="http://es.wikipedia.org/wiki/Schutzstaffel">Schutzstaffel</a>. Lo que no se
+parezca a un navegador, NO PASA. Por tanto, Ruby, Wget y demás, NO pinchan.</p>
+
+<p>Por suerte, tengo la costumbre de usar un squid local, para no tener que estar
+configurando el navegador. En ese squid declaro como padre el squid del momento
+(ya sea salud u otro) y ahí pongo el nombre de usuario con la contraseña una
+sola vez. Si estás en cuba y tienes una laptop con linux, te aconsejo que acates
+esa costumbre.</p>
+
+<p>Solución:</p>
+
+<p>Reescribir el encabezado User-Agent de las peticiones en el squid local. Así
+todas salen de un supuesto firefox.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/squid/squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>request_header_access User-Agent deny all
+</span><span class='line'>request_header_replace User-Agent Mozilla/5.0 <span class="o">(</span>X11<span class="p">;</span> U<span class="p">;</span> Linux i686<span class="p">;</span> en-US<span class="p">;</span> rv:1.8.1.4<span class="o">)</span> Gecko/20070515 Firefox/2.0.0.4
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>   <blockquote><p>Al carajo albañiles que se acabó la mezcla.</p></blockquote></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/26/nic-bonding/">NIC bonding</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-26T16:32:02-04:00'><span class='date'>26/05/2015</span> <span class='time'>4:32 pm</span></time>
+        
+           | <a href="/blog/2015/05/26/nic-bonding/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/05/26/nic-bonding/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Recién terminé el servidor de LTSP; pero aún estoy como niño con juguete nuevo,
+viendo que otra gangarrea le puedo poner. En la <a href="http://gutl.jovenclub.cu/">lista de GUTL</a> un colega
+me comentó que sería bueno darle explotación a ambas tarjetas de red. Enseguida
+dijo lo primero en que piensan mis coterráneos, un proxy. Yo le comenté que le
+había hecho un bonding, operación a la cual yo denomíno &ldquo;albóndiga&rdquo; y consiste
+en levantar una interfaz de red especial que usa dos tarjetas de red como si
+fueran una.</p>
+
+<p>Esto; para un servidor de tanto tráfico como es el caso de ltsp, es un verdadero
+batazo. Otros colegas parecieron sorprendidos al ver tal cosa y me pidieron que
+escribiera un tutorial de como hacerlo; sobre todo para que llegase a aquellos
+que no tienen internet.</p>
+
+<p>Instala un paquete llamado  <strong>ifenslave</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;instalando ifenslave&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install ifenslave
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Luego declaras en &ldquo;/etc/network/interfaces&rdquo; una interfaz llamada bond0 en la
+cual declaras que interface quieres unir.</p>
+
+<p>A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/network/interfaces&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@ganker:~# cat /etc/network/interfaces
+</span><span class='line'><span class="c"># This file describes the network interfaces available on your system</span>
+</span><span class='line'><span class="c"># and how to activate them. For more information, see interfaces(5).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">source</span> /etc/network/interfaces.d/*
+</span><span class='line'>
+</span><span class='line'><span class="c"># The loopback network interface</span>
+</span><span class='line'>auto lo
+</span><span class='line'>iface lo inet loopback
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>auto bond0
+</span><span class='line'>iface bond0 inet static
+</span><span class='line'>    address 10.1.1.3
+</span><span class='line'>    netmask 255.255.255.0
+</span><span class='line'>    network 10.1.1.0
+</span><span class='line'>    gateway 10.1.1.1
+</span><span class='line'>    dns-nameservers 10.1.1.1
+</span><span class='line'>    dns-search hcg.sld.cu
+</span><span class='line'>    slaves eth0 eth1
+</span><span class='line'>    bond_mode active-backup
+</span><span class='line'>    bond_miimon 100
+</span><span class='line'>    bond_downdelay 200
+</span><span class='line'>    bond_updelay 200
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Donde eth0 y eth1 son las interfaces que se unirán. Eso es todo&hellip;</p>
+
+<p>OJO! Si tienes un cortafuegos que involucre reglas de interfaces, ya tienestarea
+pa la casa.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/23/ltsp-en-debian8-y-salud/">ltsp en debian8 y salud</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-23T01:46:08-04:00'><span class='date'>23/05/2015</span> <span class='time'>1:46 am</span></time>
+        
+           | <a href="/blog/2015/05/23/ltsp-en-debian8-y-salud/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/05/23/ltsp-en-debian8-y-salud/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Problema</h3>
+
+<p>21 de Mayo: La situación de los clientes ligeros en el Calixto no da más. El
+servidor DHCP del ardence dejó pinchar sin previo aviso. El encargado de los
+clientes ligeros, reinstaló todo y siguió sin pinchar. Luego determinó que era
+culpa de un virus. El incha-cojones de Windows vuelve a hacer de la suya.
+Mientras tanto, el caos se ríe de todos y se frota las manos.</p>
+
+<p>A la novena llamada preguntando &ldquo;cuando se arreglan los clientes ligeros&rdquo;
+determiné que la situación llevaba medidas drásticas, siendo hora de pasar el
+servidor al lado oscuro de la fuerza.</p>
+
+<p>Plan de migración: El miembro sobre la mesa.</p>
+
+<p>Tiempo estimado: Menos del que te imaginas.</p>
+
+<p>Por un lado, 6 clientes ligeros con un windows XP que se arrastra en los 128
+megas de RAM y un servidor dongan de manufactura vietnamita. Por el otro, más de
+6 usuarios quejándose porque su sistema funciona lento, cuando le da la gana y
+además deben reiniciar más de 10 veces al día. Eso sin contar que deben tener la
+información en memorias flash, porque no se guardan los cambios en las imágenes.</p>
+
+<h3>Solución</h3>
+
+<p>Linux Terminal Server Project, más conocido como &ldquo;LTSP&rdquo;.</p>
+
+<p>Instalar ltsp es un proceso relativamente fácil, sobre todo cuando tienes un
+tubo de internet a full.</p>
+
+<p>Pero detrás del proxy satánico de infomed; la cosa se vuelve un tanto compleja.</p>
+
+<p>Por suerte, el repo de debian en infomed está bien afinadito y ahora con el tubo
+de 2 megas, la cosa mejora considerablemente.</p>
+
+<p>Hay dos maneras de hacer esto, la fácil y novel; o la difícil y tediosa. En caso
+de la fácil, bastará con instalar el paquete &ldquo;ltsp-server-standalone&rdquo;; el cual
+instalará y configurará todo la orquesta de software requerido para pinchar lo
+que se conoce como ltsp. Entre ellos, el servidor dhcp de ics, el servidor
+tftp-hpa, la maritrónica que sirve la SWAP por nfs y todo el rebortillo de cosas
+que requiere NFS.</p>
+
+<p>Corre esto y ponte cómodo, que va pa largo&hellip;</p>
+
+<figure class='code'><figcaption><span>&#8220;ltsp-build-client&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> ltsp-build-client --http-proxy http://127.0.0.1:3128 <span class="se">\</span>
+</span><span class='line'> --mirror http://ftp.sld.cu/debian <span class="se">\</span>
+</span><span class='line'> --security-mirror http://ftp.sld.cu/debian-security <span class="se">\</span>
+</span><span class='line'> --copy-sourceslist --copy-package-cache --accept-unsigned-packages
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El comando que corriste, generó un fichero de configuración para el servidor
+dhcp de isc. Te sugiero que lo uses como DHCP.</p>
+
+<figure class='code'><figcaption><span>&#8220;ltsp-build-client&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp /etc/ltsp/dhcpd.conf /etc/dhcp/dhcpd.conf
+</span><span class='line'>systemctl restart isc-dhcp-server
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Muy importante NFS. En el fichero <strong>/etc/exports</strong> ponemos esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;contenido de</span><a href='/etc/exports"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/opt/ltsp *<span class="o">(</span>ro,no_root_squash,async,no_subtree_check<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y reiniciamos el servicio de NFS</p>
+
+<figure class='code'><figcaption><span>&#8220;reiniciando nfs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl restart nfs-kernel-server
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Cuando butees una máquina, el login no te pinchará. Deberás correr esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;crear el squash&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ltsp-update-sshkeys
+</span><span class='line'>ltsp-update-image --config-nbd
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La imagen que se instaló en /opt no es más que la matriz para crear un squashfs
+que se le sirve a los clientes. Con ese comando, reflejamos los cambios
+volviendo a crear la imagen &ldquo;squashada&rdquo;.</p>
+
+<p>Con eso te digo que si haces un cambio en la imagen, deberás correr ese comando.</p>
+
+<p>Ahora bien. Para que no queden lagunas mentales:</p>
+
+<h3>Todo lo que tendrán los usuarios, ESTÁ EN EL SERVIDOR</h3>
+
+<p>Por tanto, hay que instalar una interfaz visual EN EL SERVIDOR. Será lo que los
+clientes pinchen. Por supuesto, no necesariamente el servidor tiene que correr
+dicha interfaz. En mi caso yo instalé solo sistema base y luego corrí esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;instalar lxde completo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install task-lxde-desktop
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora el servidor está equipado con una interfaz visual, pero no la pincha, ya
+que no le instalamos ningún &ldquo;display manager&rdquo;; por tanto, las X no arrancan. El
+display manager lo tiene la imagen que levantan los clientes; nada menos que
+LDM.</p>
+
+<p>Los clientes levantan un LDM e inician sesión remota en el servidor.</p>
+
+<h2>¿se entendió?</h2>
+
+<p>Toas las instrucciones que cargará esta interfaz gráfica minimalista (el LDM de
+los clientes ligeros), se declaran en el fichero /opt/ltsp/i386/etc/lts.conf a
+mi me quedó así la primera versión de este fichero.</p>
+
+<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>default<span class="o">]</span>
+</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Dice que está configurado, que tiene sonido, que use dispositivos locales, que
+configure las X dinámicamente y que arranque lxde como sesión por defecto.</p>
+
+<p>Y ahí empezaron mis problemas. En mi caso, las canchanfletas que usé como
+clientes ligeros, tenían una tarjeta de video unichrome más extraña que un
+calsoncillo con tirantes. La pantalla se veía con una capa verde delante. Nunca
+había visto cosa igual.</p>
+
+<p>Solución. Levanta un cliente ligero, entra en la consola (con
+Ctrl+Alt+F1) y ejecuta:</p>
+
+<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>X -configure
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Eso te creará el fichero xorg.conf.new EN EL CLIENTE. A ese punto, se habrá
+generado una configuración de X decente. Pero ese fichero hay que ponerlo EN EL
+SERVIDOR:</p>
+
+<figure class='code'><figcaption><span>&#8220;monta que te queda&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>scp xorg.conf root@servidor:/opt/ltsp/i386/etc/X11/xorg.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora además, al servidor hay que especificarle que las X NO se auto-configuren
+y que en cambio, usen el fichero dado. Todo eso lo haremos en /opt/ltsp/i386/etc/lts.conf</p>
+
+<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>default<span class="o">]</span>
+</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
+</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>False
+</span><span class='line'>    <span class="nv">X_CONF</span><span class="o">=</span>/etc/X11/xorg.conf
+</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
+</span><span class='line'>    <span class="nv">MODULE_01</span> <span class="o">=</span> <span class="s2">&quot;usb-storage&quot;</span>
+</span><span class='line'>    <span class="nv">MODULE_02</span> <span class="o">=</span> <span class="s2">&quot;sd_mod&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Dice ahora que: Está configurado, tiene sonido, dispositivos locales (pa que
+pinchen las memorias flash), que levante lxde, que NO configure las X, que use
+el fichero dado, que la resolución de su pantalla 0 (la única) es de 1024x768 y
+además que meta ese par de módulos, pa que pinchen los puertos USB.</p>
+
+<p>Por supuesto, en el chroot que levanta el cliente, la ruta absoluta
+/etc/X11/xorg.conf es completamente válida.</p>
+
+<p>¡¡Ah, y no olvides volver a crear la imagen!!</p>
+
+<h3>pero de vuelta al servidor</h3>
+
+<p>Entre los palos más comunes, vemos uno que al iniciar la sesión dice que el
+usuario &ldquo;fulano&rdquo; no pertenece a netdev y que por tanto, el puñetero data-bus no
+arranca.</p>
+
+<figure class='code'><figcaption><span>&#8220;agregando a netdev&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>adduser fulano netdev
+</span><span class='line'>systemctl restart dbus
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En el fichero <strong>/etc/adduser.conf</strong> puedes especificar los parámetros de los
+nuevos usuarios creados, ahí puedes declarar que se creen con sus pertinentes
+grupos.</p>
+
+<figure class='code'><figcaption><span>&#8220;adduser.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Set this if you want the --add_extra_groups option to adduser to add</span>
+</span><span class='line'><span class="c"># new users to other groups.</span>
+</span><span class='line'><span class="c"># This is the list of groups that new non-system users will be added to</span>
+</span><span class='line'><span class="c"># Default:</span>
+</span><span class='line'><span class="nv">EXTRA_GROUPS</span><span class="o">=</span><span class="s2">&quot;dialout cdrom audio video plugdev users netdev netdev messagebus pulse lpadmin&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El directorio <strong>/etc/skel/</strong> contiene la plantilla para crear el nuevo usuario.
+Crea un usuario, has la configuración que desees y cópialo pa /etc/skel.</p>
+
+<p>Otro palo común es que las memorias NTFS se montan como solo lectura. Solución,
+instala ntfs-3g EN EL CHROOT que está en /opt y vuelve a crear la imagen.</p>
+
+<h3>Nota para los mentequieta:</h3>
+
+<p>Los usuarios se crean EN EL SERVIDOR no en la imagen.</p>
+
+<h3>Sugerencias</h3>
+
+<p>Cada cosa que los clientes ejecuten, lo harán en el servidor, y puedes ponerte a
+mirar con htop que proceso se está metiendo la RAM o el CPU, detener dicho
+proceso y requerir al usuario. Porque verás los procesos y el usuario que lo
+ejecuta. Déjame recordarte que Linux, es un sistema multitarea y multiusuarios
+de verdad.</p>
+
+<p>En mi caso, el servidor (los &ldquo;dongan&rdquo; vietnamitas) tiene dos discos duros. Monté
+uno para el sistema y la swap, el otro lo dejé para el /home.</p>
+
+<p>Mi servidor tiene 512 de RAM y aún con 4 clientes ligeros no ha llenado la mitad
+de la memoria. ¿Dime tu con 1 Giga de RAM?</p>
+
+<p>Por defecto, los homes de los usuarios se crean con permisos que los hace
+visibles entre si. Ejecuta: &ldquo;chmod 770 /home/fulano&rdquo; cada vez que crees un
+usuario. Si no, el home de este usuario será visible por los demás usuarios.</p>
+
+<p>¿Has pensando que ahora es más fácil hacerle salvas a las cosas? Todo está en el
+/home.</p>
+
+<p>No olvides decirle al usuario que ahora pueden hacer y guardar cambios en su
+&ldquo;perfil&rdquo; (como ellos le llaman) pues algunos están acostumbrados a que el
+cliente ligero No guarda cambios.</p>
+
+<p>Puedes decirle a tus usuarios que su perfil puede ser abierto desde cualquier
+cliente ligero de la flota. Lo cual les da cierta &ldquo;movilidad&rdquo;.</p>
+
+<p>Puedes decirle que si su cliente ligero se rompe no se preocupe, que su
+información está a salvo. Incluso, le recuerdas además que puede abrir su perfil
+desde otro cliente ligero que esté en la misma flota.</p>
+
+<p>Puedes hacer configuraciones individuales de cada máquina en el fichero
+<strong>/opt/ltsp/i386/etc/lts.conf</strong></p>
+
+<p>En donde dice <strong>[default]</strong> puedes poner la MAC del
+cliente.</p>
+
+<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># configuración genérica</span>
+</span><span class='line'><span class="o">[</span>default<span class="o">]</span>
+</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
+</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>False
+</span><span class='line'>    <span class="nv">X_CONF</span><span class="o">=</span>/etc/X11/xorg.conf
+</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
+</span><span class='line'>    <span class="nv">MODULE_01</span> <span class="o">=</span> <span class="s2">&quot;usb-storage&quot;</span>
+</span><span class='line'>    <span class="nv">MODULE_02</span> <span class="o">=</span> <span class="s2">&quot;sd_mod&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># configuración de un cliente individual el</span>
+</span><span class='line'><span class="c"># jefe no quiere que oiga música ni use</span>
+</span><span class='line'><span class="c"># memorias flash</span>
+</span><span class='line'><span class="o">[</span>00:90:4b:a2:55:05<span class="o">]</span>
+</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>False
+</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>False
+</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
+</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>True
+</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
+</span><span class='line'>
+</span><span class='line'><span class="c"># EOF</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Una buena idea, es usar un dhcp con las MAC e ip fijas para cada usuario, sería
+una mejor manera de cortar el bacalao. Así el servidor solo le respondería a sus
+clientes. Además, en caso de tener múltiples servidores de clientes ligeros, no
+tendrás otra opción, pues si no, cada cliente ligero buteará por donde mejor la
+parezca y seguro no querrás eso.</p>
+
+<p>En el servidor DHCP central, rechaza las MAC de los clientes si se dirigen al
+puerto 67, para que no reciban dicho servicio, así lo obligas a bootear por el
+servidor de clientes ligeros.</p>
+
+<figure class='code'><figcaption><span>&#8220;iptables&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>iptables -A INPUT -p tcp --dport <span class="m">67</span> -m mac --mac-source 00:90:4b:a2:55:05 -j DROP
+</span><span class='line'>iptables -A INPUT -p udp --dport <span class="m">67</span> -m mac --mac-source 00:90:4b:a2:55:05 -j DROP
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lo ideal sería que el DHCP central tuviera las direcciones MAC de los clientes y
+le diera los parámetros de buteo a cada cual, pero eso aún no lo he logrado.
+Hay algo que tiene que ver con el parámetro &ldquo;next server&rdquo;. He logrado que estos
+den con el tftp adecuado, pero luego tratan de contactar al propio servidor DHCP
+como servidor NFS.</p>
+
+<p>También podrías tener un firewall en el servidor de clientes ligeros. Que
+permite el DHCP solo a las MAC de los clientes. Así no le das DHCP a cualquiera.
+Además, podrías decirle también a ese servidor, que solo permite el tráfico de
+las MAC de los clientes ligeros. No me parece que un servidor como ese tenga que
+ser alcanzado por otra máquina.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -467,852 +1409,7 @@ carece de nodejs. Por ejemplo, algunos de mis clientes usan Ubuntu del año 4.</
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-02-21T14:16:49-05:00'><span class='date'>21/02/2015</span> <span class='time'>2:16 pm</span></time>
-        
-           | <a href="/blog/2015/02/21/sasl-homeclub-only/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/21/sasl-homeclub-only/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>De siempre, me ha molestado que los hacker de hipatia.net, hagan ataquitos para
-autenticarse por fuerza bruta.</p>
-
-<p>Mis paisanos suelen resolver ese problema poniendo una pasarela de correo
-&ldquo;relay-only&rdquo; delante de su servidor principal o simplemente con fail2ban.</p>
-
-<p>fail2ban tiene sus ventajas, pues bloqueas a un atacante que podría hacer eso y
-otras muchas cosas que no imaginamos.</p>
-
-<p>Pero por suerte, <a href="http://www.postfix.org/postconf.5.html#smtpd_sasl_exceptions_networks">postfix tiene su método para deshacerse del problema&hellip;</a></p>
-
-<p>Como no tengo nada en mynetworks, a mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;scope del main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># sasl solo para nuestra red local</span>
-</span><span class='line'><span class="nv">smtpd_sasl_exceptions_networks</span> <span class="o">=</span> !10.1.1.0/24
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Osea: &ldquo;a lo que NO este en esa red, no se le ofrece autenticación&rdquo;</p>
-
-<h4>Se acabó la autenticación pa afuera</h4>
-
-<p>   <blockquote><p>Te das cuenta que NO todo se resuelve con violencia,<br/>   cuando se te pusa un mosquito en los testículos.</p></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/19/delay-pools-de-squid/">delay pools de squid</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-02-19T12:03:48-05:00'><span class='date'>19/02/2015</span> <span class='time'>12:03 pm</span></time>
-        
-           | <a href="/blog/2015/02/19/delay-pools-de-squid/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/19/delay-pools-de-squid/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Los delay pool de squid, son una herramienta que permite determinar cuanto ancho
-de vianda le corresponde a ciertas conexiones. A mi en lo personal su uso me
-disgusta bastante; por el mero hecho de que pone a squid leeeeento. Cuando los
-delay pools están pinchando, las peticiones se demoran más al ser respondidas y
-el proto cache manager empieza a hacer cosas raras.</p>
-
-<p>En fin, cierra el chat, apriétate el cinto y abre las entendederas que esto es
-complicado&hellip;</p>
-
-<p>Supón que tienes 128Kbit y queremos repartir el ancho de vianda de manera
-&ldquo;equitativa&rdquo;</p>
-
-<p>El ancho de vianda se vende en KBit pero squid entiende de K Bytes.</p>
-
-<figure class='code'><figcaption><span>&#8216;conversion de Kbit/s a KBytes/s&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:611:0&gt; 128/8
-</span><span class='line'><span class="o">=</span>&gt; 16
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>O sea, que tú canal llega a los 16 Kylo Bytes por segundos&hellip;</p>
-
-<p>Nuestro discriminante sistema de castas, tendrá 2 clases</p>
-
-<p>&ldquo;lo dioses&rdquo; y &ldquo;los mortales&rdquo;</p>
-
-<p>Los dioses cuentan con el 60% del ancho de vianda disponible, mientras que los
-mortales solo cuentan con el 20%.</p>
-
-<p>OJO: No des a nadie el 100%, ya que podría acaparar todo el canal y dejar a todo
-el mundo sin navegación.</p>
-
-<p>Los delay pool de clase 2, son los que reparten &ldquo;ancho de banda por cabeza&rdquo;
-Osease, &ldquo;esto es lo que le toca a esa persona&rdquo;. Los parámetros de los delay pool
-de la clase dos son sucesivamente: ancho de banda y ráfaga</p>
-
-<p>El ancho de banda, no puede ser una cosa rígida, porque los datos no
-se transmiten de manera rígida. Aveces se requiere mucho ancho de banda
-durante 2 milisegundos para establecer una conexión SSL.</p>
-
-<p>Ahí es donde viene a jugar la ráfaga. Osea: &ldquo;cuanto ancho de banda
-máximo tendrá durante los picos&rdquo;</p>
-
-<p>Digamos que el delay pool será un 20% del canal</p>
-
-<figure class='code'><figcaption><span>&#8220;el 20%&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">612</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">16</span><span class="o">*</span><span class="mi">20</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="mi">1024</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">3072</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A la ráfaga le das un Kylo más</p>
-
-<figure class='code'><figcaption><span>&#8220;un kylo más&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">613</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">3072</span><span class="o">+</span><span class="mi">1024</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">4096</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El delay_pool te viene quedando así:</p>
-
-<figure class='code'><figcaption><span>&#8220;delay_pool #1&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>delay_parameters <span class="m">1</span> 3072/3072 4096/4096
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora creamos un delay_pool que tiene el 80% del ancho de banda</p>
-
-<figure class='code'><figcaption><span>&#8220;el 80%&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">614</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">16</span><span class="o">*</span><span class="mi">80</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="mi">1024</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">12288</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Sea entonces el delay_pool 2 así:</p>
-
-<figure class='code'><figcaption><span>&#8220;delay_pool #2&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>delay_parameters <span class="m">2</span> 12288/12288 13312/13312
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Al final el squid.con</p>
-
-<figure class='code'><figcaption><span>&#8216;squid.conf&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># tendremos 2 delai puls</span>
-</span><span class='line'>delay_pools 2
-</span><span class='line'>
-</span><span class='line'><span class="c"># ambos de la clase 2</span>
-</span><span class='line'>delay_class <span class="m">1</span> 2
-</span><span class='line'>delay_class <span class="m">2</span> 2
-</span><span class='line'>
-</span><span class='line'><span class="c"># los mortales van al 20%</span>
-</span><span class='line'>delay_parameters <span class="m">1</span> 3072/3072 4096/4096
-</span><span class='line'>
-</span><span class='line'><span class="c"># y los dioses van al 80%</span>
-</span><span class='line'>delay_parameters <span class="m">2</span> 12288/12288 13312/13312
-</span><span class='line'>
-</span><span class='line'><span class="c"># los dioses, aquellos cuyo nombre de usuario machee esta lista</span>
-</span><span class='line'>acl dioses proxy_auth tuusuario eljefe eldirector lajevita lasecretaria
-</span><span class='line'>
-</span><span class='line'><span class="c"># en el 1 metemos a los dioses</span>
-</span><span class='line'>delay_access <span class="m">1</span> allow dioses
-</span><span class='line'>delay_access <span class="m">1</span> deny all
-</span><span class='line'>
-</span><span class='line'><span class="c"># el resto, pal 2</span>
-</span><span class='line'>delay_access <span class="m">2</span> allow all
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ah otra cosa! MUY IMPORTANTE</p>
-
-<h4>NADIE debe quedar fuera de delay pool una vez que creas el primero.</h4>
-
-<p>Si quieres TÚ (el informático que es tremendo decarao) quires navegar más rápido
-que nadie, create un delay pool con el 100% del ancho de banda, pero no te
-quedes fuera de ningún delaypool.</p>
-
-<p>Desde ese momento empezarás a acaparar todo el canal al punto de que NO se podrá
-navegar. A ese punto te buscarás un lío, no reserves para ti solo más del 80%
-del canal y navega con cordura.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/12/rails-con-mongodb/">rails con mongodb</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-02-12T09:07:51-05:00'><span class='date'>12/02/2015</span> <span class='time'>9:07 am</span></time>
-        
-           | <a href="/blog/2015/02/12/rails-con-mongodb/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/12/rails-con-mongodb/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Dicen que &ldquo;en el mundo&rdquo;, las <a href="http://es.wikipedia.org/wiki/NoSQL">bases de datos NoSQL</a> están muy de moda&hellip;</p>
-
-<p>Recién estuve pinchando ArangoDB y la experiencia fue traumática. Hay que
-reconocer que tiene potencial; pero aún no está listo. Finalmente, después de
-mucho rodar (Casandra y Redis) di con MongoDB. La instalación de MongoDB es tan
-sencilla como mandarlo a instalar con tu manejador de paquetes, así que no
-cubriré dichos detalles en este post.</p>
-
-<p><img class="right" src="http://mongomapper.com/stylesheets/images/logo.png" width="150" height="250"></p>
-
-<p>El rollo viene con Rails&hellip; Resulta que al probar tal cual dice la documentación
-MongoMapper (la ORM de mongodb) a pesar de guiarte por los ejemplos al pie de la
-letra; NO PINCHA.</p>
-
-<p>Al principio pensé que era corte con ActiveRecord, pues al quitarlo; por lo
-general a Rails le da una pataleta. Por suerte, este no es el caso.</p>
-
-<h3>MongoMapper está BIEN escrito pero MAL documentado</h3>
-
-<p>Todo parece indicar que a la documentación le faltan algunos detallitos. Bueno
-comenzamos. Creamos un proyecto SIN ActiveRecord (que dolor).</p>
-
-<h3>rails new fulanito -O -T</h3>
-
-<p>El Gemfile me quedó así:</p>
-
-<figure class='code'><figcaption><span>Gemfile</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;file:///media/sdb1/ruby/repo/&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Bundle edge Rails instead: gem &#39;rails&#39;, github: &#39;rails/rails&#39;</span>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;rails&#39;</span><span class="p">,</span> <span class="s1">&#39;4.1.8&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Use jquery as the JavaScript library</span>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;jquery-rails&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;bson_ext&#39;</span>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;mongo_mapper&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora creamos un fichero que garantiza la conexión a la base de datos. Creamos
-un initializer de pacotilla y le declaramos la base de datos. Miren que
-facilito.</p>
-
-<h3>config/initializers/database.rb</h3>
-
-<figure class='code'><figcaption><span>config/initializers/database.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">MongoMapper</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="s2">&quot;fulanito-</span><span class="si">#{</span><span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="si">}</span><span class="s2">&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note que &ldquo;fulanito&rdquo; es el nombre de la aplicación, usted póngale a su base de
-datos el nombre que desee.</p>
-
-<p>Ahora viene un paso muy curioso. El fichero &ldquo;config/database.yml&rdquo; NO puede dejar
-de existir; pero sus valores deben estar vacíos. Solución, le metemos un yaml
-vacío.</p>
-
-<figure class='code'><figcaption><span>config/database.yml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s2">&quot;---&quot;</span> &gt; config/database.yml
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora bien, la documentación dice que debes poner</p>
-
-<pre><code>  config.gem 'mongo_mapper'
-</code></pre>
-
-<p>En el fichero config/environment.rb</p>
-
-<h3>¡LO CUAL NO ES VÁLIDO!</h3>
-
-<p>Eso va en config/application.rb</p>
-
-<figure class='code'><figcaption><span>config/application.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="no">File</span><span class="o">.</span><span class="n">expand_path</span><span class="p">(</span><span class="s1">&#39;../boot&#39;</span><span class="p">,</span> <span class="bp">__FILE__</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Pick the frameworks you want:</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;active_model/railtie&quot;</span>
-</span><span class='line'><span class="c1"># require &quot;active_record/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_controller/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_mailer/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_view/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;sprockets/railtie&quot;</span>
-</span><span class='line'><span class="c1"># require &quot;rails/test_unit/railtie&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Require the gems listed in Gemfile, including any gems</span>
-</span><span class='line'><span class="c1"># you&#39;ve limited to :test, :development, or :production.</span>
-</span><span class='line'><span class="no">Bundler</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="o">*</span><span class="no">Rails</span><span class="o">.</span><span class="n">groups</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">module</span> <span class="nn">Fulanito</span>
-</span><span class='line'>  <span class="k">class</span> <span class="nc">Application</span> <span class="o">&lt;</span> <span class="no">Rails</span><span class="o">::</span><span class="no">Application</span>
-</span><span class='line'>    <span class="c1"># Settings in config/environments/* take precedence over those specified here.</span>
-</span><span class='line'>    <span class="c1"># Application configuration should go into files in config/initializers</span>
-</span><span class='line'>    <span class="c1"># -- all .rb files in that directory are automatically loaded.</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.</span>
-</span><span class='line'>    <span class="c1"># Run &quot;rake -D time&quot; for a list of tasks for finding time zone names. Default is UTC.</span>
-</span><span class='line'>    <span class="c1"># config.time_zone = &#39;Central Time (US &amp; Canada)&#39;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.</span>
-</span><span class='line'>    <span class="c1"># config.i18n.load_path += Dir[Rails.root.join(&#39;my&#39;, &#39;locales&#39;, &#39;*.{rb,yml}&#39;).to_s]</span>
-</span><span class='line'>    <span class="c1">#config.i18n.default_locale = :es</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># AQUI ES DONDE VA ESO</span>
-</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">gem</span> <span class="s1">&#39;mongo_mapper&#39;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A este punto PINCHA, pero hay que escribir los modelos A MANO, ya que el
-scaffold te crea todo menos el modelo. Para que eso pinche, debemos activar el
-generador de códigos declarándole su nueva ORM en el fichero.</p>
-
-<h3>config/application.rb</h3>
-
-<figure class='code'><figcaption><span>config/application.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="no">File</span><span class="o">.</span><span class="n">expand_path</span><span class="p">(</span><span class="s1">&#39;../boot&#39;</span><span class="p">,</span> <span class="bp">__FILE__</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Pick the frameworks you want:</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;active_model/railtie&quot;</span>
-</span><span class='line'><span class="c1"># require &quot;active_record/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_controller/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_mailer/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_view/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;sprockets/railtie&quot;</span>
-</span><span class='line'><span class="c1"># require &quot;rails/test_unit/railtie&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Require the gems listed in Gemfile, including any gems</span>
-</span><span class='line'><span class="c1"># you&#39;ve limited to :test, :development, or :production.</span>
-</span><span class='line'><span class="no">Bundler</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="o">*</span><span class="no">Rails</span><span class="o">.</span><span class="n">groups</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">module</span> <span class="nn">Fulanito</span>
-</span><span class='line'>  <span class="k">class</span> <span class="nc">Application</span> <span class="o">&lt;</span> <span class="no">Rails</span><span class="o">::</span><span class="no">Application</span>
-</span><span class='line'>    <span class="c1"># Settings in config/environments/* take precedence over those specified here.</span>
-</span><span class='line'>    <span class="c1"># Application configuration should go into files in config/initializers</span>
-</span><span class='line'>    <span class="c1"># -- all .rb files in that directory are automatically loaded.</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.</span>
-</span><span class='line'>    <span class="c1"># Run &quot;rake -D time&quot; for a list of tasks for finding time zone names. Default is UTC.</span>
-</span><span class='line'>    <span class="c1"># config.time_zone = &#39;Central Time (US &amp; Canada)&#39;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.</span>
-</span><span class='line'>    <span class="c1"># config.i18n.load_path += Dir[Rails.root.join(&#39;my&#39;, &#39;locales&#39;, &#39;*.{rb,yml}&#39;).to_s]</span>
-</span><span class='line'>    <span class="c1"># config.i18n.default_locale = :de</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># AQUI ES DONDE VA ESO</span>
-</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">gem</span> <span class="s1">&#39;mongo_mapper&#39;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># AQUI DECLARAMOS LA ORM</span>
-</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">generators</span> <span class="k">do</span> <span class="o">|</span><span class="n">g</span><span class="o">|</span>
-</span><span class='line'>         <span class="n">g</span><span class="o">.</span><span class="n">orm</span> <span class="ss">:mongo_mapper</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora hay otro palo con el update de los scaffold, y eso si, no tiene remiendo.
-Por ejemplo</p>
-
-<figure class='code'><figcaption><span>scaffold</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># PATCH/PUT /users/1</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">update</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># el update, es borra y crea</span>
-</span><span class='line'>  <span class="vi">@user</span><span class="o">.</span><span class="n">destroy</span>
-</span><span class='line'>  <span class="vi">@user</span><span class="o">=</span><span class="no">User</span><span class="o">.</span><span class="n">create</span> <span class="n">user_params</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">if</span> <span class="vi">@user</span><span class="o">.</span><span class="n">save</span>
-</span><span class='line'>    <span class="n">redirect_to</span> <span class="vi">@user</span><span class="p">,</span> <span class="ss">notice</span><span class="p">:</span> <span class="s1">&#39;User was successfully updated.&#39;</span>
-</span><span class='line'>  <span class="k">else</span>
-</span><span class='line'>    <span class="n">render</span> <span class="ss">:edit</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A cada update le arreglas eso. SI, ya sé, está feo. Yo lo borro y lo vuelvo a
-crear, pero quizás a ti se te ocurra algo mejor.</p>
-
-<p>Bueno ahora si, con eso todo se vuelve NoSQL y nuestro cerebro sigue siendo
-Rails&hellip;</p>
-
-<p>Además, MongoMapper puede usarse fuera de Rails tranquilamente. Las dos simples
-lineas que componen nuestro initializer son más que suficiente para dejar a
-MongoMapper pinchando. Luego creas lo modelo y listo.</p>
-
-<p>Happy coding!</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/06/zentyal/">Zentyal</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-02-06T17:13:50-05:00'><span class='date'>06/02/2015</span> <span class='time'>5:13 pm</span></time>
-        
-           | <a href="/blog/2015/02/06/zentyal/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/06/zentyal/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Zentyal te mantendrá encerrado en tu cuarto, con tu TV y te dará la
-comida cada 6 horas. No habrá dificultades, nada te faltará.</p>
-
-<p>Nunca verás el hermoso mundo del software libre que hay por explorar.</p>
-
-<p>Los vagos y los mentequietas, prefieren poner una cosa &ldquo;que pinche y
-ya&rdquo; para luego pasarse horas chateando en facebook; antes de ofrecer
-un producto escalable y competitivo.</p>
-
-<p>Zentyal es el sistema de los infladores, que se las dan de informáticos&hellip; y que
-antes las necesidades responden al más puro estilo windows</p>
-
-<h3>&ldquo;no, eso no se puede hacer&rdquo;</h3>
-
-<p>Si no existe, lo programo, COÑO!!!</p>
-
-<p>Y si el que hay no me gusta, hago uno mejor. En cambio el usuario de
-Zentyal, si no tiene un botón que lo haga:</p>
-
-<h3>SE JODE!!</h3>
-
-<p>A esos nunca les ha pasado por la cabeza hacer su propio negocio&hellip;</p>
-
-<p>Yo seguiré llevando la luz a las tinieblas y combatiendo la ignorancia con
-intelecto. Con el software libre como espada, cuyo filo es la dificultad.</p>
-
-<p>Porque la mente que se abre para asimilar una idea, jamás vuelve a cerrarse.</p>
-
-<p>Con ese lenguaje abrupto, cuyas palabras caen como piedras pero que
-todo el mundo comprende y asimila. Porque el software libre es como el
-RAP</p>
-
-<p>Hagan Jails de FreeBSD y prueben su sistema de ports</p>
-
-<p>Hagan un servidor de almacenamiento con OpenIndiana y prueben su ZFS</p>
-
-<p>Prueben, gentoo, arch, slackware&hellip;</p>
-
-<p>Verás que no te toma 4 horas probar una distro en una máquina virtual</p>
-
-<h3>CIERRA FACEBOOK! Y verás cuanto tiempo hay</h3>
-
-<p>Luego aprende Python, Perl, Go, C (el que más te guste o el que más
-lindo nombre tenga) y siente como el sistema dice:</p>
-
-<h3>&ldquo;órdene mi amo&rdquo;</h3>
-
-<p>Hay tantas cosas bellas por aprender, tanto por experimentar y
-desarollar&hellip;</p>
-
-<p>   <blockquote><p>Con zentyal, aprenderás zentyal, con debian, aprendrás Linux</p><footer><strong>Lázaro Armando</strong> <cite>Mi Criterio Sobre Zentyal</cite></footer></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/01/bundle/">bundle</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-02-01T11:40:20-05:00'><span class='date'>01/02/2015</span> <span class='time'>11:40 am</span></time>
-        
-           | <a href="/blog/2015/02/01/bundle/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/01/bundle/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Parece que a mi paisanos, la portabilidad les resulta un problemón.</p>
-
-<p>Sienten una imperiosa necesidad de desarollar aplicaciones que corran en
-cualquier máquina. (yo prefiero una aplicación web que corra en la mia).
-Recién varios me han comentado que con ruby, la dependencias de gemas es un
-problema, a la hora de mover una aplicación.</p>
-
-<h3><a href="http://bundler.io/">PARECE QUE NO CONOCEN BUNDLER!!!</a></h3>
-
-<p>Bundler se describe a si mismo como:</p>
-
-<p><img class="center" src="/images/gembundler.png"></p>
-
-<p>Que además, es usado por muchísimas aplicaciones de Ruby.</p>
-
-<p>Bueno, veamos un ejemplo sencillo. Supongamos que tenemos la aplicacion y
-queremos que esta se distribuya en una o varias maquinas que solo cuentan con
-Ruby instalado.</p>
-
-<p>Bundler usa los llamados <a href="http://bundler.io/gemfile.html">Gemfiles</a> para manejar
-las dependencias de tu gema. Entonces. Empacaremos una aplicación con sinatra
-(un framework web sencillo).</p>
-
-<p>Creamos el directorio con la aplicacion:</p>
-
-<figure class='code'><figcaption><span>&#8220;nueva app&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~<span class="nv">$ </span>mkdir proyecto
-</span><span class='line'>lazaro@leviatan:~<span class="nv">$ </span><span class="nb">cd </span>proyecto/
-</span><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span>touch Gemfile
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Si no, haces el procedimiento normal en TU máquina</p>
-
-<figure class='code'><figcaption><span>&#8220;instalar bundler&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~<span class="nv">$ </span>gem in bundler
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En el gemfile, declaramos dos cosas básicas. El source (donde están las gemas) y
-las gemas. Supongamos que tiene acceso a internet (como es lógico pero poco usual).
-Su suorce sería así:</p>
-
-<figure class='code'><figcaption><span>&#8216;source&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;https://rubygems.org&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Pero si no tiene, supongamos que tiene el repo de gemas en una memoria, montada
-en /media/memoria/</p>
-
-<figure class='code'><figcaption><span>&#8216;source&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;file:///media/memoria/ruby/repo/&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Bueno, el gemfile de este ejemplo, usara las gemas de mi repo en la memoria. A
-mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>Gemfile </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;file:///media/sdb1/ruby/repo/&#39;</span>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;sinatra&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Si nada de eso te juega, puede usar &ndash;local y usara tu cache de gemas :D</h3>
-
-<p>Obviamente, también empaquetaremos bunlder, porque allá puede que no esté.</p>
-
-<figure class='code'><figcaption><span>&#8220;bundler install&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span>bundler ins --standalone
-</span><span class='line'>Fetching <span class="nb">source </span>index from file:/media/sdb1/ruby/repo/
-</span><span class='line'>Resolving dependencies...
-</span><span class='line'>Using bundler 1.7.2
-</span><span class='line'>Installing rack 1.5.2
-</span><span class='line'>Installing rack-protection 1.5.3
-</span><span class='line'>Installing tilt 1.4.1
-</span><span class='line'>Installing sinatra 1.4.5
-</span><span class='line'>Your bundle is <span class="nb">complete</span>!
-</span><span class='line'>It was installed into ./bundle
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>AY que lindo!!! Todo se empaquetó! Por si no lo notaste, el logo de bundler es
-un rollo de makingtype, lo que usa pa sellar las cajas, solo le falta la
-etiqueta que diga: &ldquo;listo para exportar&rdquo;</p>
-
-<p>Bueno, creamos una aplicación estupidamente simple con sinatra.</p>
-
-<figure class='code'><figcaption><span>aplicacion.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># he aquí el toque mágico</span>
-</span><span class='line'><span class="n">require_relative</span> <span class="s1">&#39;../bundle/bundler/setup&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;sinatra&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">get</span> <span class="s1">&#39;/&#39;</span> <span class="k">do</span>
-</span><span class='line'>   <span class="s1">&#39;Tírame la musiquita Frank!&#39;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Debes tener algo como esto en el directorio</p>
-
-<figure class='code'><figcaption><span>&#8221;~/proyecto&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span>ls
-</span><span class='line'>aplicacion.rb Gemfile  Gemfile.lock bundle
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Y listo, distruibuimos nuestra aplicaion en la computadora tercermundista sin
-acceso a internet.</p>
-
-<p>DIN DON DEN DIN! pasajeros con destino a donde el diablo dio las 7 voces y
-nadie lo escuchó; por favor, abordar el tren por el andén número 4. NO olviden
-llevar la memoria flash con la aplicacion.</p>
-
-<figure class='code'><figcaption><span>&#8220;empacando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span><span class="nb">cd</span> ..
-</span><span class='line'>lazaro@leviatan:~<span class="nv">$ </span>cp -ruv proyecto/ /media/sdb1/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Al fin, voy a estrenar mi juguete nuevo, un Raspberry Pi :D</p>
-
-<p>Llegamos al destino, montamos la memoria y ejecutamos la aplicacion DESDE
-BUNLDER.</p>
-
-<figure class='code'><figcaption><span>&#8220;empacando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>pi@raspberry:~/proyecto<span class="nv">$ </span>ruby aplicacion.rb
-</span><span class='line'><span class="o">[</span>2015-02-01 12:43:34<span class="o">]</span> INFO  WEBrick 1.3.1
-</span><span class='line'><span class="o">[</span>2015-02-01 12:43:34<span class="o">]</span> INFO  ruby 2.2.0 <span class="o">(</span>2014-12-25<span class="o">)</span> <span class="o">[</span>i686-linux<span class="o">]</span>
-</span><span class='line'><span class="o">==</span> Sinatra/1.4.5 has taken the stage on <span class="m">4567</span> <span class="k">for</span> development with backup from
-</span><span class='line'>WEBrick
-</span><span class='line'><span class="o">[</span>2015-02-01 12:43:34<span class="o">]</span> INFO  WEBrick::HTTPServer#start: <span class="nv">pid</span><span class="o">=</span><span class="m">4741</span> <span class="nv">port</span><span class="o">=</span>4567
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A ver&hellip;</p>
-
-<figure class='code'><figcaption><span>&#8220;1, 2, 3, Probando&#8230;&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>pi@raspberry:~<span class="nv">$ </span>w3m -dump http://localhost:4567
-</span><span class='line'>Tírame la musiquita Frank!
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Opensource y Cross Plataform</h3>
-
-<p>Señores, el código compilado APESTA!!!!</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1333,6 +1430,26 @@ BUNLDER.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/el-domain-pop/">recolección domain pop</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/tunel-6in4/">túnel 6in4</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/cortafuegos-ipv6-sencillo/">cortafuegos ipv6 sencillo</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/poniendo-direcciones-ipv6/">las reglas del juego ipv6</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/ipv6/">la resolución 185/2016</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/10/04/dirver-broadcom/">driver broadcom</a>
@@ -1640,6 +1757,10 @@ BUNLDER.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2013/11/12/domainpop-con-postfix/">domainpop con postfix</a>
 		</li>
 		
 	</ul>

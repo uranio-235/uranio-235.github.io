@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="welcome aboard 02/12/2014 9:12 am | Comments De siempre, me ha gustado la paginita que pone ruby on rails en &ldquo;/&rdquo;. Pero
-sucede que en &hellip;">
+  <meta name="description" content="SASL homeclub only 21/02/2015 2:16 pm | Comments De siempre, me ha molestado que los hacker de hipatia.net, hagan ataquitos para
+autenticarse por &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +81,851 @@ sucede que en &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-21T14:16:49-05:00'><span class='date'>21/02/2015</span> <span class='time'>2:16 pm</span></time>
+        
+           | <a href="/blog/2015/02/21/sasl-homeclub-only/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/21/sasl-homeclub-only/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>De siempre, me ha molestado que los hacker de hipatia.net, hagan ataquitos para
+autenticarse por fuerza bruta.</p>
+
+<p>Mis paisanos suelen resolver ese problema poniendo una pasarela de correo
+&ldquo;relay-only&rdquo; delante de su servidor principal o simplemente con fail2ban.</p>
+
+<p>fail2ban tiene sus ventajas, pues bloqueas a un atacante que podría hacer eso y
+otras muchas cosas que no imaginamos.</p>
+
+<p>Pero por suerte, <a href="http://www.postfix.org/postconf.5.html#smtpd_sasl_exceptions_networks">postfix tiene su método para deshacerse del problema&hellip;</a></p>
+
+<p>Como no tengo nada en mynetworks, a mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;scope del main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># sasl solo para nuestra red local</span>
+</span><span class='line'><span class="nv">smtpd_sasl_exceptions_networks</span> <span class="o">=</span> !10.1.1.0/24
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Osea: &ldquo;a lo que NO este en esa red, no se le ofrece autenticación&rdquo;</p>
+
+<h4>Se acabó la autenticación pa afuera</h4>
+
+<p>   <blockquote><p>Te das cuenta que NO todo se resuelve con violencia,<br/>   cuando se te pusa un mosquito en los testículos.</p></blockquote></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/19/delay-pools-de-squid/">delay pools de squid</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-19T12:03:48-05:00'><span class='date'>19/02/2015</span> <span class='time'>12:03 pm</span></time>
+        
+           | <a href="/blog/2015/02/19/delay-pools-de-squid/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/19/delay-pools-de-squid/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Los delay pool de squid, son una herramienta que permite determinar cuanto ancho
+de vianda le corresponde a ciertas conexiones. A mi en lo personal su uso me
+disgusta bastante; por el mero hecho de que pone a squid leeeeento. Cuando los
+delay pools están pinchando, las peticiones se demoran más al ser respondidas y
+el proto cache manager empieza a hacer cosas raras.</p>
+
+<p>En fin, cierra el chat, apriétate el cinto y abre las entendederas que esto es
+complicado&hellip;</p>
+
+<p>Supón que tienes 128Kbit y queremos repartir el ancho de vianda de manera
+&ldquo;equitativa&rdquo;</p>
+
+<p>El ancho de vianda se vende en KBit pero squid entiende de K Bytes.</p>
+
+<figure class='code'><figcaption><span>&#8216;conversion de Kbit/s a KBytes/s&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:611:0&gt; 128/8
+</span><span class='line'><span class="o">=</span>&gt; 16
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>O sea, que tú canal llega a los 16 Kylo Bytes por segundos&hellip;</p>
+
+<p>Nuestro discriminante sistema de castas, tendrá 2 clases</p>
+
+<p>&ldquo;lo dioses&rdquo; y &ldquo;los mortales&rdquo;</p>
+
+<p>Los dioses cuentan con el 60% del ancho de vianda disponible, mientras que los
+mortales solo cuentan con el 20%.</p>
+
+<p>OJO: No des a nadie el 100%, ya que podría acaparar todo el canal y dejar a todo
+el mundo sin navegación.</p>
+
+<p>Los delay pool de clase 2, son los que reparten &ldquo;ancho de banda por cabeza&rdquo;
+Osease, &ldquo;esto es lo que le toca a esa persona&rdquo;. Los parámetros de los delay pool
+de la clase dos son sucesivamente: ancho de banda y ráfaga</p>
+
+<p>El ancho de banda, no puede ser una cosa rígida, porque los datos no
+se transmiten de manera rígida. Aveces se requiere mucho ancho de banda
+durante 2 milisegundos para establecer una conexión SSL.</p>
+
+<p>Ahí es donde viene a jugar la ráfaga. Osea: &ldquo;cuanto ancho de banda
+máximo tendrá durante los picos&rdquo;</p>
+
+<p>Digamos que el delay pool será un 20% del canal</p>
+
+<figure class='code'><figcaption><span>&#8220;el 20%&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">612</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">16</span><span class="o">*</span><span class="mi">20</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="mi">1024</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">3072</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A la ráfaga le das un Kylo más</p>
+
+<figure class='code'><figcaption><span>&#8220;un kylo más&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">613</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">3072</span><span class="o">+</span><span class="mi">1024</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">4096</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El delay_pool te viene quedando así:</p>
+
+<figure class='code'><figcaption><span>&#8220;delay_pool #1&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>delay_parameters <span class="m">1</span> 3072/3072 4096/4096
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora creamos un delay_pool que tiene el 80% del ancho de banda</p>
+
+<figure class='code'><figcaption><span>&#8220;el 80%&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">614</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">16</span><span class="o">*</span><span class="mi">80</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="mi">1024</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">12288</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Sea entonces el delay_pool 2 así:</p>
+
+<figure class='code'><figcaption><span>&#8220;delay_pool #2&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>delay_parameters <span class="m">2</span> 12288/12288 13312/13312
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al final el squid.con</p>
+
+<figure class='code'><figcaption><span>&#8216;squid.conf&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># tendremos 2 delai puls</span>
+</span><span class='line'>delay_pools 2
+</span><span class='line'>
+</span><span class='line'><span class="c"># ambos de la clase 2</span>
+</span><span class='line'>delay_class <span class="m">1</span> 2
+</span><span class='line'>delay_class <span class="m">2</span> 2
+</span><span class='line'>
+</span><span class='line'><span class="c"># los mortales van al 20%</span>
+</span><span class='line'>delay_parameters <span class="m">1</span> 3072/3072 4096/4096
+</span><span class='line'>
+</span><span class='line'><span class="c"># y los dioses van al 80%</span>
+</span><span class='line'>delay_parameters <span class="m">2</span> 12288/12288 13312/13312
+</span><span class='line'>
+</span><span class='line'><span class="c"># los dioses, aquellos cuyo nombre de usuario machee esta lista</span>
+</span><span class='line'>acl dioses proxy_auth tuusuario eljefe eldirector lajevita lasecretaria
+</span><span class='line'>
+</span><span class='line'><span class="c"># en el 1 metemos a los dioses</span>
+</span><span class='line'>delay_access <span class="m">1</span> allow dioses
+</span><span class='line'>delay_access <span class="m">1</span> deny all
+</span><span class='line'>
+</span><span class='line'><span class="c"># el resto, pal 2</span>
+</span><span class='line'>delay_access <span class="m">2</span> allow all
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ah otra cosa! MUY IMPORTANTE</p>
+
+<h4>NADIE debe quedar fuera de delay pool una vez que creas el primero.</h4>
+
+<p>Si quieres TÚ (el informático que es tremendo decarao) quires navegar más rápido
+que nadie, create un delay pool con el 100% del ancho de banda, pero no te
+quedes fuera de ningún delaypool.</p>
+
+<p>Desde ese momento empezarás a acaparar todo el canal al punto de que NO se podrá
+navegar. A ese punto te buscarás un lío, no reserves para ti solo más del 80%
+del canal y navega con cordura.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/12/rails-con-mongodb/">rails con mongodb</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-12T09:07:51-05:00'><span class='date'>12/02/2015</span> <span class='time'>9:07 am</span></time>
+        
+           | <a href="/blog/2015/02/12/rails-con-mongodb/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/12/rails-con-mongodb/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Dicen que &ldquo;en el mundo&rdquo;, las <a href="http://es.wikipedia.org/wiki/NoSQL">bases de datos NoSQL</a> están muy de moda&hellip;</p>
+
+<p>Recién estuve pinchando ArangoDB y la experiencia fue traumática. Hay que
+reconocer que tiene potencial; pero aún no está listo. Finalmente, después de
+mucho rodar (Casandra y Redis) di con MongoDB. La instalación de MongoDB es tan
+sencilla como mandarlo a instalar con tu manejador de paquetes, así que no
+cubriré dichos detalles en este post.</p>
+
+<p><img class="right" src="http://mongomapper.com/stylesheets/images/logo.png" width="150" height="250"></p>
+
+<p>El rollo viene con Rails&hellip; Resulta que al probar tal cual dice la documentación
+MongoMapper (la ORM de mongodb) a pesar de guiarte por los ejemplos al pie de la
+letra; NO PINCHA.</p>
+
+<p>Al principio pensé que era corte con ActiveRecord, pues al quitarlo; por lo
+general a Rails le da una pataleta. Por suerte, este no es el caso.</p>
+
+<h3>MongoMapper está BIEN escrito pero MAL documentado</h3>
+
+<p>Todo parece indicar que a la documentación le faltan algunos detallitos. Bueno
+comenzamos. Creamos un proyecto SIN ActiveRecord (que dolor).</p>
+
+<h3>rails new fulanito -O -T</h3>
+
+<p>El Gemfile me quedó así:</p>
+
+<figure class='code'><figcaption><span>Gemfile</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;file:///media/sdb1/ruby/repo/&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Bundle edge Rails instead: gem &#39;rails&#39;, github: &#39;rails/rails&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;rails&#39;</span><span class="p">,</span> <span class="s1">&#39;4.1.8&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Use jquery as the JavaScript library</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;jquery-rails&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;bson_ext&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;mongo_mapper&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora creamos un fichero que garantiza la conexión a la base de datos. Creamos
+un initializer de pacotilla y le declaramos la base de datos. Miren que
+facilito.</p>
+
+<h3>config/initializers/database.rb</h3>
+
+<figure class='code'><figcaption><span>config/initializers/database.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">MongoMapper</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="s2">&quot;fulanito-</span><span class="si">#{</span><span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="si">}</span><span class="s2">&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note que &ldquo;fulanito&rdquo; es el nombre de la aplicación, usted póngale a su base de
+datos el nombre que desee.</p>
+
+<p>Ahora viene un paso muy curioso. El fichero &ldquo;config/database.yml&rdquo; NO puede dejar
+de existir; pero sus valores deben estar vacíos. Solución, le metemos un yaml
+vacío.</p>
+
+<figure class='code'><figcaption><span>config/database.yml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s2">&quot;---&quot;</span> &gt; config/database.yml
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora bien, la documentación dice que debes poner</p>
+
+<pre><code>  config.gem 'mongo_mapper'
+</code></pre>
+
+<p>En el fichero config/environment.rb</p>
+
+<h3>¡LO CUAL NO ES VÁLIDO!</h3>
+
+<p>Eso va en config/application.rb</p>
+
+<figure class='code'><figcaption><span>config/application.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="no">File</span><span class="o">.</span><span class="n">expand_path</span><span class="p">(</span><span class="s1">&#39;../boot&#39;</span><span class="p">,</span> <span class="bp">__FILE__</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Pick the frameworks you want:</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;active_model/railtie&quot;</span>
+</span><span class='line'><span class="c1"># require &quot;active_record/railtie&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_controller/railtie&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_mailer/railtie&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_view/railtie&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;sprockets/railtie&quot;</span>
+</span><span class='line'><span class="c1"># require &quot;rails/test_unit/railtie&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Require the gems listed in Gemfile, including any gems</span>
+</span><span class='line'><span class="c1"># you&#39;ve limited to :test, :development, or :production.</span>
+</span><span class='line'><span class="no">Bundler</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="o">*</span><span class="no">Rails</span><span class="o">.</span><span class="n">groups</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">Fulanito</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">Application</span> <span class="o">&lt;</span> <span class="no">Rails</span><span class="o">::</span><span class="no">Application</span>
+</span><span class='line'>    <span class="c1"># Settings in config/environments/* take precedence over those specified here.</span>
+</span><span class='line'>    <span class="c1"># Application configuration should go into files in config/initializers</span>
+</span><span class='line'>    <span class="c1"># -- all .rb files in that directory are automatically loaded.</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.</span>
+</span><span class='line'>    <span class="c1"># Run &quot;rake -D time&quot; for a list of tasks for finding time zone names. Default is UTC.</span>
+</span><span class='line'>    <span class="c1"># config.time_zone = &#39;Central Time (US &amp; Canada)&#39;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.</span>
+</span><span class='line'>    <span class="c1"># config.i18n.load_path += Dir[Rails.root.join(&#39;my&#39;, &#39;locales&#39;, &#39;*.{rb,yml}&#39;).to_s]</span>
+</span><span class='line'>    <span class="c1">#config.i18n.default_locale = :es</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># AQUI ES DONDE VA ESO</span>
+</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">gem</span> <span class="s1">&#39;mongo_mapper&#39;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A este punto PINCHA, pero hay que escribir los modelos A MANO, ya que el
+scaffold te crea todo menos el modelo. Para que eso pinche, debemos activar el
+generador de códigos declarándole su nueva ORM en el fichero.</p>
+
+<h3>config/application.rb</h3>
+
+<figure class='code'><figcaption><span>config/application.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="no">File</span><span class="o">.</span><span class="n">expand_path</span><span class="p">(</span><span class="s1">&#39;../boot&#39;</span><span class="p">,</span> <span class="bp">__FILE__</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Pick the frameworks you want:</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;active_model/railtie&quot;</span>
+</span><span class='line'><span class="c1"># require &quot;active_record/railtie&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_controller/railtie&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_mailer/railtie&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_view/railtie&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;sprockets/railtie&quot;</span>
+</span><span class='line'><span class="c1"># require &quot;rails/test_unit/railtie&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Require the gems listed in Gemfile, including any gems</span>
+</span><span class='line'><span class="c1"># you&#39;ve limited to :test, :development, or :production.</span>
+</span><span class='line'><span class="no">Bundler</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="o">*</span><span class="no">Rails</span><span class="o">.</span><span class="n">groups</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">Fulanito</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">Application</span> <span class="o">&lt;</span> <span class="no">Rails</span><span class="o">::</span><span class="no">Application</span>
+</span><span class='line'>    <span class="c1"># Settings in config/environments/* take precedence over those specified here.</span>
+</span><span class='line'>    <span class="c1"># Application configuration should go into files in config/initializers</span>
+</span><span class='line'>    <span class="c1"># -- all .rb files in that directory are automatically loaded.</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.</span>
+</span><span class='line'>    <span class="c1"># Run &quot;rake -D time&quot; for a list of tasks for finding time zone names. Default is UTC.</span>
+</span><span class='line'>    <span class="c1"># config.time_zone = &#39;Central Time (US &amp; Canada)&#39;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.</span>
+</span><span class='line'>    <span class="c1"># config.i18n.load_path += Dir[Rails.root.join(&#39;my&#39;, &#39;locales&#39;, &#39;*.{rb,yml}&#39;).to_s]</span>
+</span><span class='line'>    <span class="c1"># config.i18n.default_locale = :de</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># AQUI ES DONDE VA ESO</span>
+</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">gem</span> <span class="s1">&#39;mongo_mapper&#39;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># AQUI DECLARAMOS LA ORM</span>
+</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">generators</span> <span class="k">do</span> <span class="o">|</span><span class="n">g</span><span class="o">|</span>
+</span><span class='line'>         <span class="n">g</span><span class="o">.</span><span class="n">orm</span> <span class="ss">:mongo_mapper</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora hay otro palo con el update de los scaffold, y eso si, no tiene remiendo.
+Por ejemplo</p>
+
+<figure class='code'><figcaption><span>scaffold</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># PATCH/PUT /users/1</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">update</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># el update, es borra y crea</span>
+</span><span class='line'>  <span class="vi">@user</span><span class="o">.</span><span class="n">destroy</span>
+</span><span class='line'>  <span class="vi">@user</span><span class="o">=</span><span class="no">User</span><span class="o">.</span><span class="n">create</span> <span class="n">user_params</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="vi">@user</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>    <span class="n">redirect_to</span> <span class="vi">@user</span><span class="p">,</span> <span class="ss">notice</span><span class="p">:</span> <span class="s1">&#39;User was successfully updated.&#39;</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="n">render</span> <span class="ss">:edit</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A cada update le arreglas eso. SI, ya sé, está feo. Yo lo borro y lo vuelvo a
+crear, pero quizás a ti se te ocurra algo mejor.</p>
+
+<p>Bueno ahora si, con eso todo se vuelve NoSQL y nuestro cerebro sigue siendo
+Rails&hellip;</p>
+
+<p>Además, MongoMapper puede usarse fuera de Rails tranquilamente. Las dos simples
+lineas que componen nuestro initializer son más que suficiente para dejar a
+MongoMapper pinchando. Luego creas lo modelo y listo.</p>
+
+<p>Happy coding!</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/06/zentyal/">Zentyal</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-06T17:13:50-05:00'><span class='date'>06/02/2015</span> <span class='time'>5:13 pm</span></time>
+        
+           | <a href="/blog/2015/02/06/zentyal/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/06/zentyal/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Zentyal te mantendrá encerrado en tu cuarto, con tu TV y te dará la
+comida cada 6 horas. No habrá dificultades, nada te faltará.</p>
+
+<p>Nunca verás el hermoso mundo del software libre que hay por explorar.</p>
+
+<p>Los vagos y los mentequietas, prefieren poner una cosa &ldquo;que pinche y
+ya&rdquo; para luego pasarse horas chateando en facebook; antes de ofrecer
+un producto escalable y competitivo.</p>
+
+<p>Zentyal es el sistema de los infladores, que se las dan de informáticos&hellip; y que
+antes las necesidades responden al más puro estilo windows</p>
+
+<h3>&ldquo;no, eso no se puede hacer&rdquo;</h3>
+
+<p>Si no existe, lo programo, COÑO!!!</p>
+
+<p>Y si el que hay no me gusta, hago uno mejor. En cambio el usuario de
+Zentyal, si no tiene un botón que lo haga:</p>
+
+<h3>SE JODE!!</h3>
+
+<p>A esos nunca les ha pasado por la cabeza hacer su propio negocio&hellip;</p>
+
+<p>Yo seguiré llevando la luz a las tinieblas y combatiendo la ignorancia con
+intelecto. Con el software libre como espada, cuyo filo es la dificultad.</p>
+
+<p>Porque la mente que se abre para asimilar una idea, jamás vuelve a cerrarse.</p>
+
+<p>Con ese lenguaje abrupto, cuyas palabras caen como piedras pero que
+todo el mundo comprende y asimila. Porque el software libre es como el
+RAP</p>
+
+<p>Hagan Jails de FreeBSD y prueben su sistema de ports</p>
+
+<p>Hagan un servidor de almacenamiento con OpenIndiana y prueben su ZFS</p>
+
+<p>Prueben, gentoo, arch, slackware&hellip;</p>
+
+<p>Verás que no te toma 4 horas probar una distro en una máquina virtual</p>
+
+<h3>CIERRA FACEBOOK! Y verás cuanto tiempo hay</h3>
+
+<p>Luego aprende Python, Perl, Go, C (el que más te guste o el que más
+lindo nombre tenga) y siente como el sistema dice:</p>
+
+<h3>&ldquo;órdene mi amo&rdquo;</h3>
+
+<p>Hay tantas cosas bellas por aprender, tanto por experimentar y
+desarollar&hellip;</p>
+
+<p>   <blockquote><p>Con zentyal, aprenderás zentyal, con debian, aprendrás Linux</p><footer><strong>Lázaro Armando</strong> <cite>Mi Criterio Sobre Zentyal</cite></footer></blockquote></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/01/bundle/">bundle</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-01T11:40:20-05:00'><span class='date'>01/02/2015</span> <span class='time'>11:40 am</span></time>
+        
+           | <a href="/blog/2015/02/01/bundle/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/01/bundle/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Parece que a mi paisanos, la portabilidad les resulta un problemón.</p>
+
+<p>Sienten una imperiosa necesidad de desarollar aplicaciones que corran en
+cualquier máquina. (yo prefiero una aplicación web que corra en la mia).
+Recién varios me han comentado que con ruby, la dependencias de gemas es un
+problema, a la hora de mover una aplicación.</p>
+
+<h3><a href="http://bundler.io/">PARECE QUE NO CONOCEN BUNDLER!!!</a></h3>
+
+<p>Bundler se describe a si mismo como:</p>
+
+<p><img class="center" src="/images/gembundler.png"></p>
+
+<p>Que además, es usado por muchísimas aplicaciones de Ruby.</p>
+
+<p>Bueno, veamos un ejemplo sencillo. Supongamos que tenemos la aplicacion y
+queremos que esta se distribuya en una o varias maquinas que solo cuentan con
+Ruby instalado.</p>
+
+<p>Bundler usa los llamados <a href="http://bundler.io/gemfile.html">Gemfiles</a> para manejar
+las dependencias de tu gema. Entonces. Empacaremos una aplicación con sinatra
+(un framework web sencillo).</p>
+
+<p>Creamos el directorio con la aplicacion:</p>
+
+<figure class='code'><figcaption><span>&#8220;nueva app&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~<span class="nv">$ </span>mkdir proyecto
+</span><span class='line'>lazaro@leviatan:~<span class="nv">$ </span><span class="nb">cd </span>proyecto/
+</span><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span>touch Gemfile
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si no, haces el procedimiento normal en TU máquina</p>
+
+<figure class='code'><figcaption><span>&#8220;instalar bundler&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~<span class="nv">$ </span>gem in bundler
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En el gemfile, declaramos dos cosas básicas. El source (donde están las gemas) y
+las gemas. Supongamos que tiene acceso a internet (como es lógico pero poco usual).
+Su suorce sería así:</p>
+
+<figure class='code'><figcaption><span>&#8216;source&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;https://rubygems.org&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero si no tiene, supongamos que tiene el repo de gemas en una memoria, montada
+en /media/memoria/</p>
+
+<figure class='code'><figcaption><span>&#8216;source&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;file:///media/memoria/ruby/repo/&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Bueno, el gemfile de este ejemplo, usara las gemas de mi repo en la memoria. A
+mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>Gemfile </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;file:///media/sdb1/ruby/repo/&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;sinatra&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Si nada de eso te juega, puede usar &ndash;local y usara tu cache de gemas :D</h3>
+
+<p>Obviamente, también empaquetaremos bunlder, porque allá puede que no esté.</p>
+
+<figure class='code'><figcaption><span>&#8220;bundler install&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span>bundler ins --standalone
+</span><span class='line'>Fetching <span class="nb">source </span>index from file:/media/sdb1/ruby/repo/
+</span><span class='line'>Resolving dependencies...
+</span><span class='line'>Using bundler 1.7.2
+</span><span class='line'>Installing rack 1.5.2
+</span><span class='line'>Installing rack-protection 1.5.3
+</span><span class='line'>Installing tilt 1.4.1
+</span><span class='line'>Installing sinatra 1.4.5
+</span><span class='line'>Your bundle is <span class="nb">complete</span>!
+</span><span class='line'>It was installed into ./bundle
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>AY que lindo!!! Todo se empaquetó! Por si no lo notaste, el logo de bundler es
+un rollo de makingtype, lo que usa pa sellar las cajas, solo le falta la
+etiqueta que diga: &ldquo;listo para exportar&rdquo;</p>
+
+<p>Bueno, creamos una aplicación estupidamente simple con sinatra.</p>
+
+<figure class='code'><figcaption><span>aplicacion.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># he aquí el toque mágico</span>
+</span><span class='line'><span class="n">require_relative</span> <span class="s1">&#39;../bundle/bundler/setup&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;sinatra&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">get</span> <span class="s1">&#39;/&#39;</span> <span class="k">do</span>
+</span><span class='line'>   <span class="s1">&#39;Tírame la musiquita Frank!&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Debes tener algo como esto en el directorio</p>
+
+<figure class='code'><figcaption><span>&#8221;~/proyecto&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span>ls
+</span><span class='line'>aplicacion.rb Gemfile  Gemfile.lock bundle
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y listo, distruibuimos nuestra aplicaion en la computadora tercermundista sin
+acceso a internet.</p>
+
+<p>DIN DON DEN DIN! pasajeros con destino a donde el diablo dio las 7 voces y
+nadie lo escuchó; por favor, abordar el tren por el andén número 4. NO olviden
+llevar la memoria flash con la aplicacion.</p>
+
+<figure class='code'><figcaption><span>&#8220;empacando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span><span class="nb">cd</span> ..
+</span><span class='line'>lazaro@leviatan:~<span class="nv">$ </span>cp -ruv proyecto/ /media/sdb1/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al fin, voy a estrenar mi juguete nuevo, un Raspberry Pi :D</p>
+
+<p>Llegamos al destino, montamos la memoria y ejecutamos la aplicacion DESDE
+BUNLDER.</p>
+
+<figure class='code'><figcaption><span>&#8220;empacando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pi@raspberry:~/proyecto<span class="nv">$ </span>ruby aplicacion.rb
+</span><span class='line'><span class="o">[</span>2015-02-01 12:43:34<span class="o">]</span> INFO  WEBrick 1.3.1
+</span><span class='line'><span class="o">[</span>2015-02-01 12:43:34<span class="o">]</span> INFO  ruby 2.2.0 <span class="o">(</span>2014-12-25<span class="o">)</span> <span class="o">[</span>i686-linux<span class="o">]</span>
+</span><span class='line'><span class="o">==</span> Sinatra/1.4.5 has taken the stage on <span class="m">4567</span> <span class="k">for</span> development with backup from
+</span><span class='line'>WEBrick
+</span><span class='line'><span class="o">[</span>2015-02-01 12:43:34<span class="o">]</span> INFO  WEBrick::HTTPServer#start: <span class="nv">pid</span><span class="o">=</span><span class="m">4741</span> <span class="nv">port</span><span class="o">=</span>4567
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A ver&hellip;</p>
+
+<figure class='code'><figcaption><span>&#8220;1, 2, 3, Probando&#8230;&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pi@raspberry:~<span class="nv">$ </span>w3m -dump http://localhost:4567
+</span><span class='line'>Tírame la musiquita Frank!
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Opensource y Cross Plataform</h3>
+
+<p>Señores, el código compilado APESTA!!!!</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -175,528 +1020,7 @@ seteeas &ldquo;application#welcome&rdquo; como root, en vez de hacer esa chapuse
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-10-28T22:37:20-04:00'><span class='date'>28/10/2014</span> <span class='time'>10:37 pm</span></time>
-        
-           | <a href="/blog/2014/10/28/proxy-automatico/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/10/28/proxy-automatico/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Todo el que halla configurado un navegador con proxy; o sea, todo cubano que
-halla configurado un navegador, quizás halla visto que una de las tantas
-opciones dice &ldquo;configuración automática&rdquo;. Seguro se preguntarán que carajo es
-eso.</p>
-
-<p>Pues es un javascript que le dice al navegador como debe ser la configuración
-del proxy; obviamente.</p>
-
-<p>Resulta que hay dos maneras de hacerlo, vía DHCP o vía DNS. Algunos navegadores
-lo cogen por DHCP mientras que otros lo hacen por DNS.</p>
-
-<h3>Para evitar problemas, configuramos las dos&hellip;</h3>
-
-<p>Primero y principioso. Creamos el fichero wpad.dat, el nombre debe respetarse.
-Dicho fichero los servimos, así que por definición los podremos en /var/www.
-Este fichero contendrá las instrucciones que un navegador necesita para pinchar.</p>
-
-<figure class='code'><figcaption><span>&#8220;/var/www/wpad.dat&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">FindProxyForURL</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">host</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// los host locales NO pasan a través del proxy</span>
-</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">shExpMatch</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span><span class="s2">&quot;*.hcg.sld.cu:*&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;DIRECT&quot;</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">shExpMatch</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span><span class="s2">&quot;*.hcg.sld.cu:*/*&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;DIRECT&quot;</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// la red local, tampoco</span>
-</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">isInNet</span><span class="p">(</span><span class="nx">host</span><span class="p">,</span> <span class="s2">&quot;10.1.1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;255.255.255.0&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;DIRECT&quot;</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// lo demás sale por el proxy</span>
-</span><span class='line'>        <span class="k">return</span> <span class="s2">&quot;PROXY 10.1.1.1:3128&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ve, es javascript puro, osea que las opciones se podrían hacer más
-creativas. Por ejemplo, si la ip de la máquina es tal, configuralo así o asao.</p>
-
-<p>Los criticones de código diran que se pudo usar un swith en vez de 4 &ldquo;if&rdquo;. Pero
-eso correrá en un momento y entorno casi imposible de debugar. Lo intenté con
-swith y no me pinchó.</p>
-
-<p>Ahora el problema es que hay que declarar un nuevo contenido mime para este
-dato. En mi caso uso nginx y en el fichero de configuración de mime, le
-aclaramos el nuevo; a mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>mime.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='lighttpd'><span class='line'><span class="k">types</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">application</span><span class="n">/x-ns-proxy-autoconfig</span>     <span class="k">dat</span><span class="err">;</span>
-</span><span class='line'>    <span class="k">text</span><span class="n">/html</span>                             <span class="k">html</span> <span class="k">htm</span> <span class="k">shtml</span><span class="err">;</span>
-</span><span class='line'>    <span class="k">text</span><span class="n">/css</span>                              <span class="k">css</span><span class="err">;</span>
-</span><span class='line'>    <span class="p">(</span><span class="k">muchas</span> <span class="k">lineas</span> <span class="k">m</span><span class="err">á</span><span class="k">s</span> <span class="k">aqui</span><span class="p">)</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Bueno ahora, vamos pal DHCP. Por supuesto, nada menos que el mismísimo dnsmasq:</p>
-
-<p>Primero el método DHCP, declaramos una option cuyo código sea 252</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/dnsmasq.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">option</span><span class="o">=</span>252,http://10.1.1.1/wpad.dat
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>También declaramos un puntero DNS, que apunte a wpad.hcg.sld.cu y que sea el
-servidor donde está el wpad. Le recuerdo que &ldquo;hcg.sld.cu&rdquo; es el nombre del
-dominio.</p>
-
-<p>Al reiniciar nginx y dnsmasq, todo debe estar listo&hellip;</p>
-
-<p>En caso de que <strong>no</strong> uses dnsmasq, asumiré que usas bind e ICS dhcpd&hellip;</p>
-
-<p>Para ICS dhcpd, la cosa es un tin más compleja, ya que hay que declarar
-globalmente el tipo de opción, pero darle el valor en cada subnet o en le única
-que uses. A mi me pinchó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;dhcpd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='squidconf'><span class='line'><span class="c"># vim:filetype=config</span><span class="w"></span>
-</span><span class='line'>authoritative;<span class="w"></span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># declaramos lo del proxy automático</span><span class="w"></span>
-</span><span class='line'>option<span class="w"> </span>local-proxy-config<span class="w"> </span>code<span class="w"> </span><span class="m">252</span><span class="w"> </span>=<span class="w"> </span>text;<span class="w"></span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># la red</span><span class="w"></span>
-</span><span class='line'>subnet<span class="w"> </span><span class="mf">10.1.1.0</span><span class="w"> </span>netmask<span class="w"> </span><span class="mf">255.255.255.0</span><span class="w"> </span>{<span class="w"></span>
-</span><span class='line'>
-</span><span class='line'><span class="w">    </span><span class="c"># los parámetros del rango</span><span class="w"></span>
-</span><span class='line'><span class="w">    </span>range<span class="w"> </span><span class="mf">10.1.1.100</span><span class="w"> </span><span class="mf">10.1.1.254</span>;<span class="w"></span>
-</span><span class='line'><span class="w">    </span>option<span class="w"> </span>domain-name<span class="w"> </span>&quot;hcg.sld.cu&quot;;<span class="w"></span>
-</span><span class='line'><span class="w">    </span>option<span class="w"> </span>domain-name-servers<span class="w"> </span><span class="mf">10.1.1.1</span>;<span class="w"></span>
-</span><span class='line'><span class="w">    </span>option<span class="w"> </span>broadcast-address<span class="w"> </span><span class="mf">10.1.1.255</span>;<span class="w"></span>
-</span><span class='line'><span class="w">    </span>option<span class="w"> </span>subnet-mask<span class="w"> </span><span class="mf">255.255.255.0</span>;<span class="w"></span>
-</span><span class='line'><span class="w">    </span>option<span class="w"> </span>routers<span class="w"> </span><span class="mf">10.1.1.1</span>;<span class="w"></span>
-</span><span class='line'>
-</span><span class='line'><span class="w">    </span><span class="c"># envía el proxy automático</span><span class="w"></span>
-</span><span class='line'><span class="w">    </span>option<span class="w"> </span>local-proxy-config<span class="w"> </span>&quot;http://10.1.1.1/wpad.dat&quot;;<span class="w"></span>
-</span><span class='line'>
-</span><span class='line'>}<span class="w"> </span><span class="c"># subnet</span><span class="w"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En el caso de bind9, declaras un CNAME con el nombre wpad que apunte al servidor
-donde descansa el <strong>wpad.dat</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/bind/ejemplo/dominio.cu.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>servidor1    IN A     10.1.1.1
-</span><span class='line'>servidor2    IN A     10.1.1.2
-</span><span class='line'>mail         IN CNAME servidor2.dominio.cu.
-</span><span class='line'>pop          IN CNAME servidor2.dominio.cu.
-</span><span class='line'>pop3         IN CNAME servidor2.dominio.cu.
-</span><span class='line'>smtp         IN CNAME servidor2.dominio.cu.
-</span><span class='line'>proxy        IN CNAME servidor1.dominio.cu.
-</span><span class='line'>gateway      IN CNAME servidor1.dominio.cu.
-</span><span class='line'><span class="p">;</span> envía el proxy automático
-</span><span class='line'>wpad         IN CNAME servidor1.dominio.cu.
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Firefox pincha al palo, los demás no se&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/24/verdial-y-el-imagis/">la pena de verdial</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-09-24T08:15:19-04:00'><span class='date'>24/09/2014</span> <span class='time'>8:15 am</span></time>
-        
-           | <a href="/blog/2014/09/24/verdial-y-el-imagis/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/09/24/verdial-y-el-imagis/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Verdial, el omnisapiente neurocirujano que dice haber recorrido el mundo; de
-siempre se ha quejado por no tener un software para ver las imágenes del somatón
-en Winwdows 7. Últimamente me tiene los cojones hinchados con eso.</p>
-
-<p>Ayer, mientras conversaba con Karman; le contaba su pena mientras yo escuchaba
-del otro lado del pladur (mi oficina). Me paré para que me explicara por
-milésima ves su problema pero esta vez; pensó con la cabeza.</p>
-
-<p>Me dijo que los ficheros DICOM, eran el producto del somatón y de los Rayos X.
-Una rápida búsqueda con apt-cache, reveló que hay mas de 20 programas macheando
-la palabra &ldquo;dicom&rdquo;.</p>
-
-<p>Tras consultar <a href="http://www.google.com.cu">el oráculo</a>, resulta que los ficheros
-del tipo DICOM, son una especia de imagen que contiene metadatos, muuuuchos
-metadatos; para cosas como por ejemplo: nombre del paciente, parte del cuerpo,
-fecha del estudio, objetivo del estudio, etc&hellip; Todo parece indicar que las
-operaciones con el somatón son llamadas &ldquo;estudios&rdquo;.</p>
-
-<p>Verdial me soltó una pila de imágenes en una memoria, los ficheros contienen la
-extensión &ldquo;.dcm&rdquo;</p>
-
-<p>En el respositorio de debian, hay un software llamado &ldquo;amide&rdquo; resulta que amide
-es capaz de renderizar las imagenes prodcuto del somatón, incluso, en colores
-con vista térmica, etc&hellip; A según verdial, el software es capaz de crear
-imagines que el somatón no crea. Conjugando la vista horizontal y vertical te
-permite tener una vista exacta en ambos planos de un punto específico.</p>
-
-<p><img src="/images/amide.png"></p>
-
-<p>El único problema que tiene esto, es recibir las imágenes provenientes del
-somatón; sin tener que traer archivos y carpetas.</p>
-
-<p>Pero adivinen que lenguaje tiene una librería para trabajar con ficheros DICOM?</p>
-
-<p>Pues el mio, Ruby, <a href="http://github.com/dicom/ruby-dicom">http://github.com/dicom/ruby-dicom</a></p>
-
-<p>Manoseando ruby-dicom, entendí que imagis y efilm, aún siendo cliente y
-servidor, funcionan al revés. Pues el cliente escucha por un puerto ye el
-servidor está configurado para empujarle las imágenes a los cliente; tipo
-torrent.</p>
-
-<p>Veamos que pasa tras el primer experimento, pues Fumero configurará el server
-para que le mande imágenes a mi máquina.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/05/palos-de-wordpress/">palos de wordpress</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-09-05T12:03:41-04:00'><span class='date'>05/09/2014</span> <span class='time'>12:03 pm</span></time>
-        
-           | <a href="/blog/2014/09/05/palos-de-wordpress/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/09/05/palos-de-wordpress/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Hay dos palos típicos de wordpress:</p>
-
-<p>El primero: Al hacer click en un post, devuelve 404</p>
-
-<p>Solución: Un htaccess file para reescribir la URL</p>
-
-<figure class='code'><figcaption><span>&#8220;/usr/share/wordpress/.htaccess&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>&lt;IfModule mod_rewrite.c&gt;
-</span><span class='line'>RewriteEngine On
-</span><span class='line'>RewriteBase /
-</span><span class='line'>RewriteCond %<span class="o">{</span>REQUEST_FILENAME<span class="o">}</span> !-f
-</span><span class='line'>RewriteCond %<span class="o">{</span>REQUEST_FILENAME<span class="o">}</span> !-d
-</span><span class='line'>RewriteRule . /index.php <span class="o">[</span>L<span class="o">]</span>
-</span><span class='line'>&lt;/IfModule&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;IfModule mod_rewrite.c&gt;
-</span><span class='line'>RewriteEngine On
-</span><span class='line'>RewriteBase /
-</span><span class='line'>RewriteRule ^index<span class="se">\.</span>php<span class="nv">$ </span>- <span class="o">[</span>L<span class="o">]</span>
-</span><span class='line'>RewriteRule ^files/<span class="o">(</span>.+<span class="o">)</span> wp-includes/ms-files.php?file<span class="o">=</span><span class="nv">$1</span> <span class="o">[</span>L<span class="o">]</span>
-</span><span class='line'>RewriteCond %<span class="o">{</span>REQUEST_FILENAME<span class="o">}</span> -f <span class="o">[</span>OR<span class="o">]</span>
-</span><span class='line'>RewriteCond %<span class="o">{</span>REQUEST_FILENAME<span class="o">}</span> -d
-</span><span class='line'>RewriteRule ^ - <span class="o">[</span>L<span class="o">]</span>
-</span><span class='line'>RewriteRule . index.php <span class="o">[</span>L<span class="o">]</span>
-</span><span class='line'>&lt;/IfModule&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El segundo, no se pueden modificar los estilos desde la interfaz web:</p>
-
-<p>Solución: Cambiar los permisos</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@leviatan:~# chown -R www-data:www-data /usr/share/wordpress/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Al carajo albañiles que se acabó la mezcla. Wordpress para rato&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-08-25T20:19:27-04:00'><span class='date'>25/08/2014</span> <span class='time'>8:19 pm</span></time>
-        
-           | <a href="/blog/2014/08/25/el-server-de-correo/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/08/25/el-server-de-correo/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Después de que el chino se diera mil cabezasos con la papelística; Yoel le dijo
-que quería revisar el estado y organización de su papelística. De facto
-&ldquo;apareció&rdquo; la contraseña del MultiPOP. El que no puede ser nombrado se la sabía
-de memoria, minutos más tarde, apareció la papelística.</p>
-
-<p>El mismo, responde a la dirección &ldquo;multipop.sld.cu&rdquo;. El usuario y contraseña
-están escritos en el fetchmailrc. Si tienes acceso al servidor de correo, los
-puedes ver la susodicha en el fichero. En este caso te pondré unos &ldquo;??&rdquo; donde
-debería ir la contraseña.</p>
-
-<figure class='code'><figcaption><span>&#8220;/root/.fetchmailrc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">set </span>daemon 60
-</span><span class='line'><span class="nb">set </span>postmaster <span class="s2">&quot;root&quot;</span>
-</span><span class='line'><span class="nb">set </span>no bouncemail
-</span><span class='line'><span class="nb">set </span>no spambounce
-</span><span class='line'><span class="nb">set </span>logfile /var/log/fetchmail/fetchmail.log
-</span><span class='line'><span class="nb">set </span>no syslog
-</span><span class='line'>
-</span><span class='line'>defaults
-</span><span class='line'>    timeout 10
-</span><span class='line'>    no keep
-</span><span class='line'>    fetchall
-</span><span class='line'>    expunge 5
-</span><span class='line'>    dropstatus
-</span><span class='line'>
-</span><span class='line'>poll multipop.sld.cu port <span class="m">110</span> protocol pop3 localdomains hcg.sld.cu
-</span><span class='line'>    envelope <span class="m">1</span> <span class="s2">&quot;Delivered-To&quot;</span>
-</span><span class='line'>    no dns
-</span><span class='line'>    username ????
-</span><span class='line'>    password ?????????
-</span><span class='line'>    to * here
-</span><span class='line'>    limitflush
-</span><span class='line'>    smtphost localhost
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Aún me queda pendiente a verificar que encabezado genera Exim para entergar el
-correo, si no, fetchmail lo manda todo amablemente para el postmaster. Cuando
-arranque probaré si es ese; si no, debe ser &ldquo;X-Delivered-To:&rdquo;</p>
-
-<p>Ahora el problema está en que NO hay un puntero MX para el dominio <em>hcg.sld.cu</em>
-porque el contrato no está renovado (problemas papelísticos). En el nodo de
-infomed me dijeron que fuera al &ldquo;GAU&rdquo; para renovar el contrato.</p>
-
-<p>Solo falta poner en orden la parte burocrática&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/25/mas-de-ocs/">más de OCS</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-08-25T10:01:09-04:00'><span class='date'>25/08/2014</span> <span class='time'>10:01 am</span></time>
-        
-           | <a href="/blog/2014/08/25/mas-de-ocs/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/08/25/mas-de-ocs/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Con este script, se toman los datos de /opt/samba/ocs y se inyectan en la base
-de datos central de manera automatizada.</p>
-
-<figure class='code'><figcaption><span>&#8220;/usr/local/bin/ocs.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># posicionate en el directorio</span>
-</span><span class='line'>mkdir -p /opt/samba/ocs
-</span><span class='line'><span class="nb">cd</span> /opt/samba/ocs
-</span><span class='line'>
-</span><span class='line'><span class="c"># itera en los ficheros .ocs y cárgalos</span>
-</span><span class='line'><span class="k">for</span> ocs in /opt/samba/ocs/*.ocs<span class="p">;</span> <span class="k">do</span>
-</span><span class='line'>   <span class="nb">echo</span> <span class="k">$(</span><span class="nb">echo</span> <span class="nv">$ocs</span><span class="p">|</span>cut -d / -f 5<span class="k">)</span>
-</span><span class='line'>   ocsinventory-injector.pl -r -f <span class="s2">&quot;$ocs&quot;</span>
-</span><span class='line'><span class="k">done</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -717,6 +1041,26 @@ de datos central de manera automatizada.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/el-domain-pop/">recolección domain pop</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/tunel-6in4/">túnel 6in4</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/cortafuegos-ipv6-sencillo/">cortafuegos ipv6 sencillo</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/poniendo-direcciones-ipv6/">las reglas del juego ipv6</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/ipv6/">la resolución 185/2016</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/10/04/dirver-broadcom/">driver broadcom</a>
@@ -1024,6 +1368,10 @@ de datos central de manera automatizada.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2013/11/12/domainpop-con-postfix/">domainpop con postfix</a>
 		</li>
 		
 	</ul>

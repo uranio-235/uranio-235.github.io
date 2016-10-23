@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="rsync básico 17/07/2016 4:49 pm | Comments Este es el tipo de cosas que uno hace cada 120 días y claro, cuando lo vas hacer
-ya se te olvidó; así que &hellip;">
+  <meta name="description" content="audífonos blutú 22/09/2016 5:39 pm | Comments Más por embullo que por necesidad, me he comprado uno de esos audífonos
+Bluetooth que se usan ahora. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -87,6 +87,567 @@ ya se te olvidó; así que &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/09/22/audifonos-blutu/">audífonos blutú</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-22T17:39:04-04:00'><span class='date'>22/09/2016</span> <span class='time'>5:39 pm</span></time>
+        
+           | <a href="/blog/2016/09/22/audifonos-blutu/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/09/22/audifonos-blutu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="left" src="/images/audifonos_blutu.png" width="400"></p>
+
+<p>Más por embullo que por necesidad, me he comprado uno de esos audífonos
+Bluetooth que se usan ahora. Estoy pasando un trabajo tremendo para adaptarme a
+tener la morronga esa en el cuello. Como si fuera poco, archlinux no me perdonó
+y me hizo de las suyas.</p>
+
+<p>Al conectarlos se escuchaban horrible y se desaparecía el bluetooth.</p>
+
+<p>Según me dijeron en el #archlinux de freenode. Se debe a que los audífonos se
+conecta como micrófonos/audífonos y no como audífonos solamente. Para ellos
+había que cambiarlos al modo A2DP.</p>
+
+<p>El comando <strong>pacmd set-card-profile 2 a2dp_sink</strong> resuelve el problema. Pero
+tener que correr el comando cada vez que los conecte, no me parece; no me da tan
+fuerte todavía&hellip;</p>
+
+<p>El gestor de audio de gnome supuestamente cambia el modo. Pero resulta que el
+puto <strong>pulse-audio</strong>, si arranca con GDM, forma una cagazón con los permisos ahí
+y no cambia de modo.</p>
+
+<p>Para evitar eso, creas un fichero llamado
+<strong>/var/lib/gdm/.config/pulse/client.conf</strong> donde le declaras que no arrancará
+pulse-audio con gnome:</p>
+
+<figure class='code'><figcaption><span>&#8220;/var/lib/gdm/.config/pulse/client.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">autospawn</span> <span class="o">=</span> no
+</span><span class='line'>daemon-binary <span class="o">=</span> /bin/true
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero eso no lo es todo. Si pulseaudio arranca con socket, se joden los
+audifonitos. Supuestamente creando una configuración, se deshabilita el socket,
+pero no pincha. Hay que deshabilitarlo con systemd. Ejecuta esto <strong>como root</strong>:</p>
+
+<figure class='code'><figcaption><span>&#8220;sin socket plis&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span> mkdir -p /var/lib/gdm/.config/systemd/user
+</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span> ln -s /dev/null /var/lib/gdm/.config/systemd/user/pulseaudio.socket
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Reinicia y al conectar los audífonos, el al hacerle click al dipositivo, debe
+darte una opción que conduce a la configuración de audio. Ahí mismo cambias el
+modo y seleccionas el dispositivo de salida de audio por defecto.</p>
+
+<p>Otra cuestión es que pulseaudio use los audífonos como salida de audio por
+defecto al conectarlos. Finalmente decidí pasar mis configuraciones de
+pulseaudio al directorio de usuario:</p>
+
+<figure class='code'><figcaption><span>&#8220;pulseudio en el home&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir ~/.config/pulse/
+</span><span class='line'>cp -ruv /etc/pulse/ ~/.config/pulse/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Localiza el fichero <strong>~/.config/pulse/default.pa</strong> y al final añadele esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;default.pa&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema pulse<span class="o">]</span><span class="nv">$ </span>tail -4 ~/.config/pulse/default.pa
+</span><span class='line'>
+</span><span class='line'><span class="c"># file:///usr/share/doc/arch-wiki/html/en/PulseAudio/Troubleshooting.html#Bluetooth</span>
+</span><span class='line'><span class="c"># automatically switch to newly-connected devices</span>
+</span><span class='line'>load-module module-switch-on-connect
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/09/16/dispatcher-script/">dispatcher script</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-16T10:53:51-04:00'><span class='date'>16/09/2016</span> <span class='time'>10:53 am</span></time>
+        
+           | <a href="/blog/2016/09/16/dispatcher-script/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/09/16/dispatcher-script/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>El network-manager, el sistema de 2 clicasos para configurar la interfaz de red.
+Resulta que cuando levanta la red, no se por qué, telepathy-salut se queda
+mariado y el chat &ldquo;gente cerca&rdquo; no ve a los usuarios. Al reiniciar avahi se le
+quita el mareo. Entonces la talla sería que el avahi se reiniciara solo.</p>
+
+<p>Resulta que NetworkManger, tiene los llamados dispatcher. Puedes ver
+<a href="https://developer.gnome.org/NetworkManager/stable/NetworkManager.html">la documentación aquí</a></p>
+
+<p>Conclusión, el directorio /etc/NetworkManager/dispatcher.d/ creas los
+directorios <strong>up</strong> y <strong>down</strong>, dentro le pones los script que quieres que se
+ejecuten. En el caso de &ldquo;up&rdquo; se ejecutará después de que suba la red.</p>
+
+<p>Realmente tiene otros más extrafalarios como pre-up (antes de que le inaterfaz
+se levante) e incluso connectivity-change para cuando cambie cualquier cosa en
+la conectividad, etc&hellip; Puedes ver los detalles en el link anterior.</p>
+
+<p>A mi me quedó así mi script:</p>
+
+<figure class='code'><figcaption><span>&#8220;dispatcher&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema up<span class="o">]</span><span class="c"># cat /etc/NetworkManager/dispatcher.d/up/reiniciaavahi </span>
+</span><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'>pkill -9 empathy
+</span><span class='line'>pkill -9 telepathy
+</span><span class='line'>systemctl restart avahi-daemon
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No hay problema con detener empathy, ya que el framework telepathy, será
+reiniciado por dbus o por avahi (con suerte).</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/08/16/password-de-windows/">password de windows</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-16T00:13:36-04:00'><span class='date'>16/08/2016</span> <span class='time'>12:13 am</span></time>
+        
+           | <a href="/blog/2016/08/16/password-de-windows/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/08/16/password-de-windows/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Resulta que en el puesto de mando, uno de los tantos que se sientan ahí; le
+cambió el password a la canchanfleta que tienen por computadora y entonces
+NAADIEEE vio nada. Conclusión no apareció el autor de la contraseña y los
+técnicos no sabían que hacer (para variar).</p>
+
+<p>&ldquo;lázaro, tú que usas linux: ¿Podrías &#8220;hackear&rdquo; la contraseña?&#8221;</p>
+
+<p>Pregunta uno de los usuarios, con cara de: <em>Cambié el password y no me acuerdo
+cual puse</em>. Véase la definición del termino <a href="https://es.wikipedia.org/wiki/Hacker">hacker</a> y note lo mal empleado que está.</p>
+
+<p>Metí un archlinux en la memoria flash de la pornografía, lo levanté en caliente
+e instalé <strong>chntpw</strong>.</p>
+
+<p>Monté el disco de windows, primera partición (alias &ldquo;C:&rdquo;) en /mnt. Con el
+comando <strong>find</strong> y abusando de mi memoria, sobre un artículo que leí acerca de
+las contraseñas de Windows; localicé el fichero <strong>C:/Windows/System32/config/SAM</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>   pacman -S chntpw
+</span><span class='line'>   mount /dev/sdb1 /mnt
+</span><span class='line'>   <span class="nb">cd</span> /mnt/Windows/System32/config/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como lo hice en un sistema en caliente, no pude copiar la salida, pero esto fue
+lo que hice.</p>
+
+<p>Paso 1: Lista los usuarios de Güindos: <strong>chntpw -l SAM</strong></p>
+
+<p>Paso 2: Modifica el usuario &ldquo;Administrador&rdquo;: <strong>chntpw -u &ldquo;Administrador&rdquo; SAM</strong></p>
+
+<p>Verás un pequeño asistente en modo texto que te pregunta que hacer. Lo mejor es
+vaciar el password, luego desbloquearlo. Sale con <strong>quit</strong> y te preguntará si
+quieres guardar los cambios. No te preocupes, se entiende mejor cuando lo ves,
+es bastante simple.</p>
+
+<p>Gracias a dios que a <a href="https://es.wikipedia.org/wiki/Bill_Gates">Rico McPato</a> no se le ocurrió meter la contraseña en el registro de windows.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/31/kiwix-como-servicio/">kiwix como servicio</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-07-31T17:40:02-04:00'><span class='date'>31/07/2016</span> <span class='time'>5:40 pm</span></time>
+        
+           | <a href="/blog/2016/07/31/kiwix-como-servicio/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/07/31/kiwix-como-servicio/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Dos pájaros de un tiro. Como crear unit de usuario y como usar kiwix como
+servicio:</p>
+
+<p>La idea es correr un kiwix en segundo plano, como mi usuario sin que el root
+lance dicha unit, ya que ésto me huele a la posibilidad de escaladas de
+permisos.</p>
+
+<p>Ante todo, vamos a crear el zoológico de systemd en el directorio de usuario.
+Si mal no recuerdo, esto fue lo que hice.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -p /home/lazaro/.config/systemd/user
+</span><span class='line'><span class="nb">cd</span>  /home/lazaro/.config/systemd/user
+</span><span class='line'>loginctl <span class="nb">enable</span>-linger <span class="nv">$USER</span>
+</span><span class='line'>systemctl --user daemon-reload
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Claro, el daemon-reload ahí no es necesario, pero para que te quede claro, que
+todas las operaciones de systemd, relacionadas con el usuario, se deben preceder
+del argumento &ndash;user</p>
+
+<p>Crea el la unit, en mi caso se llama <strong>kiwix.service</strong> pero tu la puedes nombrar
+<strong>comotedelagana.service</strong> Trata de usar minúsculas y debes terminar con la
+extensión <strong>.service</strong> A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;kiwix.service&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Unit]</span>
+</span><span class='line'><span class="na">Description</span><span class="o">=</span><span class="s">el kiwix como daemon en http://localhost:9091</span>
+</span><span class='line'><span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Service]</span>
+</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">forking</span>
+</span><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/opt/kiwix/bin/kiwix-serve --daemon --port=9091 --library /home/lazaro/.www.kiwix.org/kiwix/c2oklrcd.default/data/library/library.xml </span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Install]</span>
+</span><span class='line'><span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora si mete un <strong>daemon-reload</strong></p>
+
+<p>Por cierto, fíjate bien en la linea <strong>ExecStart</strong> que es bien larga, nota que el
+parámetro <strong>&ndash;library</strong> se le envía como argumento el <strong>.xml</strong> que se genera al
+añadir fichero zim a tu librería. O sea, una vez abierto en la aplicación
+visual. Por tanto, Si vas a hacer un servidor, mejor será que le eches un
+vistazo a <strong>library.xml</strong>; el cual contiene los metadatos que apuntan a los
+&ldquo;ficheros.zim&rdquo;</p>
+
+<p>Más o menos así luce un <strong>library.xml</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;library.xml&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;library</span> <span class="na">current=</span><span class="s">&quot;b0e8b25e-1c6e-c354-21da-ceff3607de21&quot;</span> <span class="na">version=</span><span class="s">&quot;20110515&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;3b448cdb-6b20-73ed-421f-fdef87f80167&quot;</span> <span class="na">path=</span><span class="s">&quot;/opt/kiwix/data/wikipedia_es_all.zim&quot;</span> <span class="na">last=</span><span class="s">&quot;1470535686&quot;</span> <span class="na">title=</span><span class="s">&quot;Wikipedia ESP&quot;</span> <span class="na">description=</span><span class="s">&quot;Wikipedia en Español&quot;</span> <span class="na">language=</span><span class="s">&quot;spa&quot;</span> <span class="na">creator=</span><span class="s">&quot;Wikipedia&quot;</span> <span class="na">publisher=</span><span class="s">&quot;Kiwix&quot;</span> <span class="na">favicon=</span><span class="s">&quot;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&quot;</span> <span class="na">faviconMimeType=</span><span class="s">&quot;image/png&quot;</span> <span class="na">date=</span><span class="s">&quot;2015-10-12&quot;</span> <span class="na">articleCount=</span><span class="s">&quot;1206089&quot;</span> <span class="na">mediaCount=</span><span class="s">&quot;1111559&quot;</span> <span class="na">size=</span><span class="s">&quot;12988257&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;b0e8b25e-1c6e-c354-21da-ceff3607de21&quot;</span> <span class="na">path=</span><span class="s">&quot;/opt/kiwix/data/wikipedia_en_all_nopic.zim&quot;</span> <span class="na">last=</span><span class="s">&quot;1470535759&quot;</span> <span class="na">title=</span><span class="s">&quot;Wikipedia ENG&quot;</span> <span class="na">description=</span><span class="s">&quot;Wikipedia en Inglés (sin imágenes)&quot;</span> <span class="na">language=</span><span class="s">&quot;eng&quot;</span> <span class="na">creator=</span><span class="s">&quot;Wikipedia&quot;</span> <span class="na">publisher=</span><span class="s">&quot;Kiwix&quot;</span> <span class="na">favicon=</span><span class="s">&quot;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&quot;</span> <span class="na">faviconMimeType=</span><span class="s">&quot;image/png&quot;</span> <span class="na">date=</span><span class="s">&quot;2015-05-17&quot;</span> <span class="na">articleCount=</span><span class="s">&quot;4858372&quot;</span> <span class="na">mediaCount=</span><span class="s">&quot;325904&quot;</span> <span class="na">size=</span><span class="s">&quot;16024312&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/library&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por ejemplo, a mi el valor de las etiquetas <em>title</em> y <em>description</em>, me gusta cambiarlo.</p>
+
+<p>Para que se gener ese XML, abre la aplicación <strong>una vez</strong> para que se cree la biblioteca. O sea, en abrir
+archivos, añadimos a nuestra librería, todos los .zim que queramos.</p>
+
+<p><img class="center" src="/images/kiwix-open.png" width="500"></p>
+
+<p>Llegado a este punto, se habrá creado el perfil de kiwix en nuestro $HOME y
+contendrá el importantísimo <strong>library.xml</strong>. Si ya añadiste a tu biblioteca
+todos los <strong>.zim</strong> que quieres, terminamos con el kiwix. Ciérralo.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>file .www.kiwix.org/kiwix/*.default
+</span><span class='line'>.www.kiwix.org/kiwix/c2oklrcd.default: directory
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Usamos el comando <strong>file</strong> para determinar cual fue. En mi caso se llama
+<strong>~/.www.kiwix.org/kiwix/c2oklrcd.default</strong></p>
+
+<p>Al argumento <strong>ExecStart</strong> de la unit, debes darle la ruta absoluta de la
+librería, así que nada de ~/, le pones /home/fulanito.</p>
+
+<p>Bueno, volviendo a la unit, veamos más de cerca el <strong>ExecStart</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;scope de kiwix.service&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/opt/kiwix/bin/kiwix-serve --daemon --port=9091 --library /home/lazaro/.www.kiwix.org/kiwix/c2oklrcd.default/data/library/library.xml </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La ruta el binario de <strong>kiwix-serve</strong> en modo daemon <strong>&ndash;daemon</strong> por el puerto
+9091 <strong>&ndash;port 9091</strong> y siendo la librería <strong>&ndash;library (ruta absoluta)</strong></p>
+
+<p>Salva y ejecuta un daemon-reload. Luego, lánzalo:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl --user start kiwix.service
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Abre un navegador y apunta para <a href="http://localhost:9091">http://localhost:9091</a></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/17/hibernar-en-archlinux/">hibernar en archlinux</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-07-17T23:17:17-04:00'><span class='date'>17/07/2016</span> <span class='time'>11:17 pm</span></time>
+        
+           | <a href="/blog/2016/07/17/hibernar-en-archlinux/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/07/17/hibernar-en-archlinux/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="right" src="/images/Hibernacion_by_Zetabox.jpg" width="250"></p>
+
+<p>Hablando de cosas olvidables. Siempre que instalo archlinux, se me olvida que
+hay que hacer una ceremonia para que la hibernación pinche.</p>
+
+<p>De más está que te diga que necesitarás una <strong>particion</strong> swap, con al menos el
+mismo tamaño de la RAM que tienes. No pincha con swapfiles.</p>
+
+<p>En mi caso, yo hice una swap del tamaño de la RAM, lo cual me jode a la hora de
+hibernar, ya que se demora mucho descartando los datos que hay en la swap (si
+hay) en el momento de hibernar.</p>
+
+<p>Bueno entrando en materia:</p>
+
+<p>En el GRUB, le daremos el parámetros <strong>resume</strong> y usaremos como argumento, el
+disco de donde se resume, o sea <strong>la swap</strong>. Veamos cual es el UUID de la swap:</p>
+
+<figure class='code'><figcaption><span>fstab</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cat /etc/fstab <span class="p">|</span>grep swap
+</span><span class='line'><span class="nv">UUID</span><span class="o">=</span>2b3ed70d-5746-4a94-bd07-77eacd99f03c  none swap defaults,discard<span class="o">=</span>pages <span class="m">0</span> 0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Vamos al cargador de arranque (grub en mi caso) y le decimos cual es el disco de
+donde debe tomar la imagen y resumirla. Localiza el fichero <strong>/etc/default/grub</strong>
+y en una de las primeras lineas, modifica la cláusula <strong>GRUB_CMDLINE_LINUX_DEFAULT</strong>
+inclúyele <strong>resume=UUID=LaUUiDeTuDisCoSwap</strong>. A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;la parte de arriba de</span><a href='/etc/default/grub'>&#8221;</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">GRUB_DEFAULT</span><span class="o">=</span><span class="s">0</span>
+</span><span class='line'><span class="na">GRUB_TIMEOUT</span><span class="o">=</span><span class="s">5</span>
+</span><span class='line'><span class="na">GRUB_DISTRIBUTOR</span><span class="o">=</span><span class="s">&quot;Arch&quot;</span>
+</span><span class='line'><span class="na">GRUB_CMDLINE_LINUX_DEFAULT</span><span class="o">=</span><span class="s">&quot;ipv6.disable=1 resume=UUID=2b3ed70d-5746-4a94-bd07-77eacd99f03c&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ven, ahí declaramos (EL UUID DE <strong>LA SWAP</strong>) la partición donde se almacena
+la imagen que crea el proceso de hibernación.</p>
+
+<p>Pero no todo está listo, aún initramfs no se ha dado por enterado que vamos a
+hibernar. Localiza el fichero <strong>/etc/mkinitcpio.conf</strong> y añadele el <strong>hook</strong> de
+resume, a mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;fragmento de mkinitcpio.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1">##   NOTE: If you have /usr on a separate partition, you MUST include the</span>
+</span><span class='line'><span class="c1">#    usr, fsck and shutdown hooks.</span>
+</span><span class='line'><span class="na">HOOKS</span><span class="o">=</span><span class="s">&quot;base udev resume autodetect modconf block filesystems keyboard fsck&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Generalmente debes ponerlo después de <strong>udev</strong> y antes de <strong>autodetect</strong>. No te
+olvides de regnerar el initramfs:</p>
+
+<figure class='code'><figcaption><span>initramfs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkinitcpio -p linux
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si te molesta que la swap haga su pincha de swap (como en mi caso) puede
+deshabilitar el swapiness. Crea un fichero <strong>/etc/sysctl.d/00-noswap.conf</strong>
+y ponle adentro el siguiete valor: <strong>vm.swappiness=0</strong></p>
+
+<p>Y hibernan como los osos :D</p>
+
+<p>Seguro te preguntarás como hacer que se ejecute algo al hibernar o despertar.
+Pues puedes crear una unit llamadas <strong>root-resume</strong> y <strong>root-suspend</strong>.</p>
+
+<p>Por
+ejemplo, a mi en lo personal, me interesa parar el puto networkmanager cuando
+hiberno, ya que es poco probable que cuando despierte, esté en otro lugar y
+probablemente sin red. En mi caso yo habilito el networkmanager solo cuando lo
+necesito. En este caso, asumiré que para al hibernar y enciende al despertar.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/systemd/system/root-suspend.service&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Unit]</span>
+</span><span class='line'><span class="na">Description</span><span class="o">=</span><span class="s">Local system suspend actions</span>
+</span><span class='line'><span class="na">Before</span><span class="o">=</span><span class="s">sleep.target</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Service]</span>
+</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
+</span><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/bin/systemctl stop NetworkManager</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Install]</span>
+</span><span class='line'><span class="na">WantedBy</span><span class="o">=</span><span class="s">sleep.target</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al despertar arranca:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/systemd/system/root-resume.service &#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Unit]</span>
+</span><span class='line'><span class="na">Description</span><span class="o">=</span><span class="s">Local system suspend actions</span>
+</span><span class='line'><span class="na">Before</span><span class="o">=</span><span class="s">sleep.target</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Service]</span>
+</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
+</span><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/bin/systemctl start NetworkManager</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Install]</span>
+</span><span class='line'><span class="na">WantedBy</span><span class="o">=</span><span class="s">sleep.target</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Todo lo que necesitas está en el artículo de la wiki de archlinux: <a href="https://wiki.archlinux.org/index.php/Power_management">Power Management</a></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2016/07/17/rsync-basico/">rsync básico</a></h1>
     
     
@@ -157,837 +718,7 @@ solamente los fichero <strong>.gz</strong></p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/20/correos-del-cron/">correos del cron</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-06-20T14:14:06-04:00'><span class='date'>20/06/2016</span> <span class='time'>2:14 pm</span></time>
-        
-           | <a href="/blog/2016/06/20/correos-del-cron/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/06/20/correos-del-cron/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Conflictivísima tarea, lograr que el cron mande correos adecuadamente&hellip; En este
-caso, cronie, da la solución al problema. Aunque me imagino que dicha
-configuración sea estándar para el cron.</p>
-
-<p>Así es la cosa, declaramos <strong>MAILTO</strong> y <strong>MAILFROM</strong> como unas variables en el
-fichero crontab.</p>
-
-<figure class='code'><figcaption><span>crontab</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="c1"># DO NOT EDIT THIS FILE - edit the master and reinstall.</span>
-</span><span class='line'><span class="c1"># (/tmp/crontab.f36hiB/crontab installed on Tue May  5 08:48:38 2015)</span>
-</span><span class='line'><span class="c1"># (Cron version -- $Id: crontab.c,v 2.13 1994/01/17 03:20:37 vixie Exp $)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># añadimos las variables</span>
-</span><span class='line'><span class="na">MAILTO</span><span class="o">=</span><span class="s">root@tudominio.cu</span>
-</span><span class='line'><span class="na">MAILFROM</span><span class="o">=</span><span class="s">cron@tudominio.cu</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># m h  dom mon dow   command</span>
-</span><span class='line'><span class="err">00</span> <span class="err">00</span> <span class="err">*</span> <span class="err">*</span> <span class="err">*</span> <span class="err">/bin/bash</span> <span class="err">/home/fulanito/script.sh</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora faltaría un MTA. Pues la solución más sensilla es <strong>esmtp</strong> y su
-configuración sería más o menos así en el fichero <strong>/etc/esmtprc</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/esmtprc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">identity</span> <span class="err">micuenta</span>
-</span><span class='line'>   <span class="err">hostname</span> <span class="err">smtp.tudominio.cu</span>
-</span><span class='line'>   <span class="err">username</span> <span class="err">&quot;cron&quot;</span>
-</span><span class='line'>   <span class="err">password</span> <span class="err">&quot;pinpanpun&quot;</span>
-</span><span class='line'>   <span class="err">starttls</span> <span class="err">enabled</span>
-</span><span class='line'>   <span class="err">default</span>
-</span><span class='line'><span class="err">mda</span> <span class="err">&quot;/usr/bin/procmail</span> <span class="err">-d</span> <span class="err">%T&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Listo! El correo <a href="&#109;&#x61;&#105;&#108;&#116;&#x6f;&#58;&#x72;&#x6f;&#111;&#x74;&#64;&#116;&#x75;&#x64;&#x6f;&#109;&#x69;&#x6e;&#105;&#x6f;&#x2e;&#x63;&#117;">&#114;&#111;&#x6f;&#x74;&#x40;&#116;&#x75;&#x64;&#111;&#x6d;&#x69;&#110;&#x69;&#x6f;&#x2e;&#99;&#x75;</a> recibirá correos de <a href="&#109;&#97;&#x69;&#x6c;&#x74;&#x6f;&#x3a;&#99;&#114;&#111;&#x6e;&#x40;&#x74;&#x75;&#x64;&#111;&#109;&#x69;&#x6e;&#x69;&#111;&#46;&#x63;&#x75;">&#x63;&#x72;&#111;&#110;&#x40;&#116;&#117;&#x64;&#111;&#x6d;&#x69;&#x6e;&#105;&#111;&#x2e;&#99;&#117;</a> con la
-salida del cron&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/18/dkim-y-spf-en-postfix/">dkim y spf en postfix</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-06-18T13:57:51-04:00'><span class='date'>18/06/2016</span> <span class='time'>1:57 pm</span></time>
-        
-           | <a href="/blog/2016/06/18/dkim-y-spf-en-postfix/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/06/18/dkim-y-spf-en-postfix/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Aunque no de mi agrado, reconozco que es una solución muy buena. DKIM y SPF, se
-ha vuelto hoy en día un mecanismo para mitigar el SPAM en el correo electrónico.</p>
-
-<p>Esto no quita, que un spammer puede hacerse con un buen esquema de DKIM para sus
-dominos de porquería; lo cual sería un estupendo negocio, teniendo en cuenta que
-un servidor puede tener tantos dominios como quiera. Si conoce a algún spammer
-que quiera tener DKIM y SPF en su negocio, por favor, mándele mi tarjeta.</p>
-
-<p>Me imagino que a los usuarios de nauta, les duela bajar un mensaje que
-aparentemente tiene dos lineas, pagando por uno que realmente tiene más de 20
-líneas de pura mierda que no les incumbe. Espero que etecsa se digne a retirar
-encabezados innecesarios como esos (para el cliente).</p>
-
-<p>Por otra parte, mucha gente tiene antivirus que modifican el correo o son
-fanáticos a instalar mil gangarreas (mailscanner, clamav, etc&hellip;) que también
-modifican el correo. Con esto, DKIM y SPF <strong>se van a la mierda</strong>.</p>
-
-<p>Le diré que hice con un postfix que ya estaba instalado en un debian8 para
-ponerle DKIM y SPF.</p>
-
-<p>Instalamos los jueguetes requeridos ante todo:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>apt-get install opendkim opendkim-tools postfix-policyd-spf-python
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>y establecemos los permisos adecuados, ojo con esto, ya que dkim es muy riguroso
-con el tema de los permisos</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>adduser postfix opendkim
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>SPF</h2>
-
-<p>Ahora procedemos a crear el registro DNS. Como hay muchos DNS y cada quién tiene
-sus preferencias, me reduciré a describir de manera abstracta los registros.
-Usted, aterrize la idea en su DNS.</p>
-
-<h3>Esto tiene <strong>DOS</strong> formas de hacerse:</h3>
-
-<h4>La primera:</h4>
-
-<p>Declarar que TODOS los <strong>MX</strong> del dominio, pueden mandar correo (lo cual
-inspira desconfianza) en este caso, registra un puntero del tipo <strong>TXT</strong> con el
-siguiente valor</p>
-
-<pre><code>v=spf1 mx -all
-</code></pre>
-
-<p>Por ejemplo, bind9</p>
-
-<figure class='code'><figcaption><span>&#8220;registro&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">@               IN      TXT     &quot;v</span><span class="o">=</span><span class="s">spf1 mx -all&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>La segunda:</h4>
-
-<p>Declarar que un host, que tiene un registro <strong>A</strong>, está autorizado a enviar
-correos (esta me gusta más, si tienes un solo servidor de correo) Si fueran
-varios, por ejemplo 3. Podrías declarar un A para cada uno y de manera
-individual, ellos generarían su SPF apuntándose a si mismo.</p>
-
-<pre><code>v=spf1 a:mx1.tudominio.cu -all
-</code></pre>
-
-<p>Como ya sabemos, un puntero MX siempre deberá apuntar a un rgistro A, ya que no
-se recomienda apuntar a un CNAME&hellip;</p>
-
-<p><strong>Nota para los apurados:</strong> &ldquo;Si declaras ambos registros, no pincha, LEE!!&rdquo;</p>
-
-<p>Otra cosa, puedes declarar <strong>-all</strong> o <strong>~all</strong> El primero le dirá al receptor
-que si el correo no viene del dominio que dice enviarlo (el puntero A o los MX),
-lo rechace porque es falso (muy radical) y el segundo, que empieza por ~ le
-indica al receptor, que puede recibir el mensaje y si no pude verificarlo que lo
-marque como spam, pero que por favor, no lo rechaze.</p>
-
-<p>Esto nos lleva a una:</p>
-
-<h3>Situación peligrosa</h3>
-
-<p>Cuba, un descerebrado configuró verificación de DKIM, <strong>porque está de moda</strong>.
-PERO! Está detrás de un smarthost (pasarela) o simplemente, su configuración de
-DNS no vale un quilo (por culpa del proveedor)</p>
-
-<p>Metedura de pata - A:</p>
-
-<p>Ese servidor de correo, que se cree <em>Oggun con machete en mano</em>; descartará todo
-correo con <strong>-all</strong> debido a su incapacidad de realizar un lookup decente.</p>
-
-<p>Metedura de pata - B:</p>
-
-<p>Uno más descerebrado todavía, vio que DKIM estaba de moda y sin importar que no
-tiene control de su DNS, lo hizo todo, saltándose el paso del DNS. Su servidor
-le estará gritando a toda voz al mundo entero, <strong>que está falseando el dominio</strong></p>
-
-<p>Su ignorancia le costará caer de cabeza en las listas negras&hellip;</p>
-
-<p>Y es que:</p>
-
-<p>Generalmente, los servidores que entregan a través de un smarthost, carecen de
-DNS real. También hay una pila de gente que administran servidores sin tener
-control de su DNS.</p>
-
-<h4>Seguimos&hellip;</h4>
-
-<p>Ya que tenemos el SPF pinchando, podemos añadirle chequeo de SPF a nuestro
-postfix <strong>que tiene bien configurado el DNS y entrega de cara a internet sin
-smarthost</strong></p>
-
-<p>En el fichero <strong>/etc/postfix/master.cf</strong> le agregamos esto:</p>
-
-<figure class='code'><figcaption><span>master.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">policyd-spf</span>  <span class="err">unix</span>  <span class="err">-</span>       <span class="err">n</span>       <span class="err">n</span>       <span class="err">-</span>       <span class="err">0</span>       <span class="err">spawn</span>
-</span><span class='line'>    <span class="na">user</span><span class="o">=</span><span class="s">policyd-spf argv=/usr/bin/policyd-spf</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>y a los posftfix cubanos, le decimos que sea paciente con el proceso de
-verificación, incrementando el tiempo que tiene que esperar por el policyd, ya
-que dicha verificación puede tardar (dns lookup, cpu a tope, etc..) Añadimos
-esto a <strong>/etc/postfix/main.cf</strong></p>
-
-<figure class='code'><figcaption><span>main.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">policyd-spf_time_limit</span> <span class="o">=</span> <span class="s">3600</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora viene una parte complicada, pues no hay manera de que pueda reflejarla
-como para copiar y pegar.</p>
-
-<p>Deberás modificar tus reglas de postfix, de forma que antepongas el chequeo SPF,
-como una más de tus restricciones de recibo. Para mi caso, está bien la última
-linea.</p>
-
-<figure class='code'><figcaption><span>&#8220;scpe del main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">smtpd_sender_restrictions</span> <span class="o">=</span><span class="s"></span>
-</span><span class='line'><span class="s">   reject_non_fqdn_sender,</span>
-</span><span class='line'><span class="s">   reject_non_fqdn_recipient,</span>
-</span><span class='line'><span class="s">   permit_sasl_authenticated,</span>
-</span><span class='line'><span class="s">   reject_unknown_sender_domain,</span>
-</span><span class='line'><span class="s">   reject_unknown_recipient_domain,</span>
-</span><span class='line'><span class="s">   reject_rbl_client bl.spamcop.net,</span>
-</span><span class='line'><span class="s">   reject_rbl_client sbl.spamhaus.org,</span>
-</span><span class='line'><span class="s">   reject_rbl_client xbl.spamhaus.org,</span>
-</span><span class='line'><span class="s">   defer_unauth_destination,</span>
-</span><span class='line'><span class="s">   reject_unverified_sender,</span>
-</span><span class='line'><span class="s">   check_policy_service unix:private/policyd-spf</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Reinicia postfix y chequea el <strong>/var/log/mail.log</strong> para que veas SPF pinchando.</p>
-
-<h2>DKIM</h2>
-
-<p>Me parece que la configuración de DKIM en debian está buena, pero por si las
-moscas. Copias esta que pongo aquí y métela en tu <strong>/etc/opendkim.conf</strong></p>
-
-<figure class='code'><figcaption><span>/etc/opendkim.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">Syslog</span>          <span class="err">yes</span>
-</span><span class='line'><span class="err">UMask</span>           <span class="err">002</span>
-</span><span class='line'><span class="err">UserID</span>          <span class="err">opendkim</span>
-</span><span class='line'><span class="err">KeyTable</span>        <span class="err">/etc/opendkim/key.table</span>
-</span><span class='line'><span class="err">SigningTable</span>        <span class="err">refile:/etc/opendkim/signing.table</span>
-</span><span class='line'><span class="err">ExternalIgnoreList</span>  <span class="err">/etc/opendkim/trusted.hosts</span>
-</span><span class='line'><span class="err">InternalHosts</span>       <span class="err">/etc/opendkim/trusted.hosts</span>
-</span><span class='line'><span class="err">Canonicalization</span>    <span class="err">relaxed/simple</span>
-</span><span class='line'><span class="err">Mode</span>            <span class="err">sv</span>
-</span><span class='line'><span class="err">SubDomains</span>      <span class="err">no</span>
-</span><span class='line'><span class="c1">#ADSPAction     continue</span>
-</span><span class='line'><span class="err">AutoRestart</span>     <span class="err">yes</span>
-</span><span class='line'><span class="err">AutoRestartRate</span>     <span class="err">10/1M</span>
-</span><span class='line'><span class="err">Background</span>      <span class="err">yes</span>
-</span><span class='line'><span class="err">DNSTimeout</span>      <span class="err">5</span>
-</span><span class='line'><span class="err">SignatureAlgorithm</span>  <span class="err">rsa-sha256</span>
-</span><span class='line'><span class="err">OversignHeaders</span>     <span class="err">From</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>De ahí puede que quizás te interese la variables <strong>SubDomains</strong>, sobre todo si
-eres proveedor de correo.</p>
-
-<p>Como ya te dije, los permisos son sumamente importantes en este caso</p>
-
-<figure class='code'><figcaption><span>permisos</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>chmod <span class="nv">u</span><span class="o">=</span>rw,go<span class="o">=</span>r /etc/opendkim.conf
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora creamos el directorio donde vamos a meter todo el zoológico requerido para
-que DKIM pinche. Hay quién prefiere meterlo en <strong>/var</strong>, para mi en
-<strong>/etc/opendkim</strong> es un buen lugar.</p>
-
-<figure class='code'><figcaption><span>&#8220;creando el directorio de residencia&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir /etc/opendkim
-</span><span class='line'>mkdir /etc/opendkim/keys
-</span><span class='line'>chown -R opendkim:opendkim /etc/opendkim
-</span><span class='line'>chmod go-rw /etc/opendkim/keys
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>La Firma</h3>
-
-<p>Ahora vamos a crear la <em>tabla de rúbricas</em> (se aceptan contribuciones para
-traducir). Ahí, ponemos una linea por cada dominio que tengas. Creas el fichero
-<strong>/etc/opendkim/signing.table</strong> y está recomendado que le pongas lo siguiente:</p>
-
-<figure class='code'><figcaption><span>&#8220;como dicen que debe ser&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'>   <span class="err">*@tudominio.cu</span>   <span class="err">tudominio</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>Nota para los imbéciles:</strong> No olvide remplazar <em>tudominio.cu</em> por el nombre
-del dominio suyo.</p>
-
-<p>Con eso, casamos todos los correos que parezcan a tu dominio, con el DKIM que
-llamamos &ldquo;tudominio&rdquo;, si quiere atrás le puede poner &ldquo;pepe&rdquo;. Lo que debe
-quedarte claro, es que todos los correos que macheen a la expresión regular de
-alante, pasarán por el filtro llamado <em>tudominio</em> (o &ldquo;pepe&rdquo; si lo cambiaste) ¿Se
-entendió?</p>
-
-<p>Por ejemplo, si tu dominio fuera *@cacocum.hlg.sld.cu podrías ponerle detrás
-&ldquo;midkim&rdquo; para que todos los correos de ese dominio, se firmen con la firma que
-será configurada bajo el nombre &ldquo;midkim&rdquo; Quedaría así:</p>
-
-<pre><code>  *@cacocum.hlg.sld.cu  midkim
-</code></pre>
-
-<p>Resumen:</p>
-
-<p>El primero campo, es una expresión regular que mache las direcciones de correo y
-el segundo el nombre de la firma que se usará. Para mayor confusión, se
-recomienda que se hagan nombres parecidos. Finalmente nos quedó así:</p>
-
-<figure class='code'><figcaption><span>/etc/opendkim/signing.table</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">*@tudominio.cu</span>    <span class="err">tudominio</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>La clave</h3>
-
-<p>Ahora creamos el fichero, donde le diremos a &ldquo;midkim&rdquo; donde va a encontrar su
-parafernalia cifradora. Crea el fichero <strong>/etc/opendkim/key.table</strong> y ponle
-dentro esto:</p>
-
-<figure class='code'><figcaption><span>/etc/opendkim/key.table</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">tudominio</span>     <span class="err">tudominio.cu:YYYYMM:/etc/opendkim/keys/example.private</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>IMPORTANTE</strong></p>
-
-<p>Remplaza <strong>YYYYMM</strong> por el año y el número de mes en el que estamos.</p>
-
-<p><strong>SI NO, NO PINCHA</strong></p>
-
-<p>A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>/etc/opendkim/key.table</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">tudominio</span>     <span class="err">tudominio.cu:201606:/etc/opendkim/keys/example.private</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ya que estamos en el año <strong>2016</strong> y el mes <strong>0</strong>6 no el 6 (lleva cero delante).</p>
-
-<p>Ojo aquí, ya que si tienes más dominios, es complicado. Nota que debes reflejar
-a localhost con sus pertinentes ip, además, tu nombre de host, tu dominio y el
-nombre del host conjugado con el dominio. Siendo entonces <strong>fulanito</strong> el nombre
-del host, quedaría así en el fichero <strong>/etc/opendkim/trusted.hosts</strong></p>
-
-<figure class='code'><figcaption><span>/etc/opendkim/trusted.hosts</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">127.0.0.1</span>
-</span><span class='line'><span class="err">::1</span>
-</span><span class='line'><span class="err">localhost</span>
-</span><span class='line'><span class="err">fulanito</span>
-</span><span class='line'><span class="err">fulanito.dominio.cu</span>
-</span><span class='line'><span class="err">dominio.cu</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Los permisos, ya tu sabes:</p>
-
-<figure class='code'><figcaption><span>&#8220;seteando permisos&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>chown -R opendkim:opendkim /etc/opendkim
-</span><span class='line'>chmod -R go-rwx /etc/opendkim/keys
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>FINALMENTE! Vamos a generar la clave para el dominio:</p>
-
-<figure class='code'><figcaption><span>&#8220;generando las claves&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/opendkim/keys/
-</span><span class='line'>opendkim-genkey -b <span class="m">2048</span> -r -s 201606
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Las claves se generan en base a la fecha, pero luego se colocan en base al
-dominio. Esto se hace porque <strong>hay que renovarlos</strong> pero si configuramos
-opendkim para que apunte a un fichero cuyo nombre sea la fecha, tendríamos que
-cambiar la configuración cada vez que renovamos.</p>
-
-<figure class='code'><figcaption><span>&#8220;la clave por su nombre&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mv 201606.private tudominio.private
-</span><span class='line'>mv 201606.txt tudominio.txt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Si tu clave se llamase &ldquo;pepe&rdquo; o &ldquo;midkim&rdquo;, ya sabes que esos ficheros se
-llamarían &ldquo;pepe.private&rdquo; o &ldquo;tudkim.txt&rdquo; ¿Entiendes ahora? Seguimos&hellip;</p>
-
-<p>El argumento <strong>-b</strong> indica la longitud de clave en Bit. En otros tiempo 1024 era
-la tisa, pero ahora, se recomienda usar 2048 porque las máquinas son más
-potentes. Quizás dentro de un par de años, sea 4096.</p>
-
-<p>Bueno, ya sabes, la ceremonia de los permisos:</p>
-
-<figure class='code'><figcaption><span>&#8220;seteando permisos&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>chown -R opendkim:opendkim /etc/opendkim
-</span><span class='line'>chmod -R go-rw /etc/opendkim/keys
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Arranca opendkim y asegúrate mirando los; log que esté pinchando.</p>
-
-<figure class='code'><figcaption><span>&#8220;arranca opendkim&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl restart opendkim
-</span><span class='line'>systemctl status -l opendkim
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>El DNS</h2>
-
-<p>El patico feo de internet, el DNS. El remedio que se inventó pa ir tirando y
-acabó quedándose con su pésimo diseño y su horrible arquitectura que hasta el
-sol de hoy, pretende llamarse &ldquo;distribuida&rdquo;.</p>
-
-<p>Agregamos le registro TXT con la clave. Te cuento que el fichero &ldquo;.txt&rdquo; contiene
-el tabaco base64 que usualmente vemos en el encabezado DKIM-Signature, pues
-proviene de este registro TXT que estamos creando.</p>
-
-<p>Añade un registro del tipo TXT que apunte a un hostname llamado
-<strong>201606._domainkey</strong> dentro de tu domino. Pero ahora viene la parte difícil:</p>
-
-<p>Copia <strong>el texto</strong> que contiene el fichero tudominio.txt dentro de la primera
-comilla hasta la última, pero sin tomar las comillas.</p>
-
-<p><strong>¿Se entendió?</strong></p>
-
-<p>O sea, dentro del fichero tiene esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;tudominio.txt&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">201606._domainkey  IN  TXT ( &quot;**v</span><span class="o">=</span><span class="s">DKIM1; k=rsa; s=email; &quot; &quot;p=ZjiONVGXom64jANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu5oIUrFDWZK7F4thFxpZa2or6jBEX3cSL6b2TJdPkO5iNn9vHNXhNX31nOefN8FksX94YbLJ8NHcFPbaZTW8R2HthYxRaCyqodxlLHibg8aHdfa+bxKeiI/xABRuAM0WG0JEDSyakMFqIO40ghj/h7DUc/4OXNdeQhrKDTlgf2bd+FjpJ3bNAFcMYa3Oeju33b2Tp+PdtqIwXR&quot; &quot;ZksfuXh7m30kuyavp3Uaso145DRBaJZA55lNxmHWMgMjO+YjNeuR6j4oQqyGwzPaVcSdOG8Js2mXt+J3Hr+nNmJGxZUUW4Uw5ws08wT9opRgSpn+ThX2d1AgQePpGrWOamC3PdcwIDAQAB**&quot;)  ; ----- DKIM key 201606 for tudominio.cu</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Al extraer la parte que nos interesa, no quedamos con esto (sin las comillas)</p>
-
-<figure class='code'><figcaption><span>&#8220;la clave sin las comillas&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">**v</span><span class="o">=</span><span class="s">DKIM1; k=rsa; s=email; p=ZJiONVGXom64zhNjwdAmo2XnMhAXeGXxB0p5PJkHxUk5XMXNaoUbMwfGOBOQYKsiQp0k9KwcYu2SNAlcFrGIugPG035Ng4r8mlBRLS5+dak90HuH+hb2d8aa+djRFn4PIS2RcAZZJgJjRgF1NbWZpBlj8IpXJ7MywrUxtj1e+TU/tCiWQxCc9uMqgWA53NeqRGEFPwCuTfDMKWbbMhZkbe+pOOtEqQBQ0HsvJ3n09ZNhh3AjbNP6JOpAyK+4hqHohDTrLhxdSFsNiaoAaJXsxDdAHIs2U3QNmrbAFEg7aPOBgaHLXv28k88EDqo4cIuOxa/c24e3F4O6TY3fpydRmekadtCW+waY3aCIIwIA7DdAABFUTR3ABI8WnFTjgDyj1/IQ53Af**</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>OJO</strong> Tiene más comillas en el medio!!!!</p>
-
-<p>Auxíliate de un editor de texto decente. Deshabilita el wrap y busca la comilla
-como cadena de texto.</p>
-
-<p>Ese texto, será el valor del puntero TXT</p>
-
-<p>A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;puntero TXT de 201606._domainkey&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">201601._domainkey    IN      TXT     &quot;**v</span><span class="o">=</span><span class="s">DKIM1; k=rsa; s=email; p=ZJiONVGXom64zhNjwdAmo2XnMhAXeGXxB0p5PJkHxUk5XMXNaoUbMwfGOBOQYKsiQp0k9KwcYu2SNAlcFrGIugPG035Ng4r8mlBRLS5+dak90HuH+hb2d8aa+djRFn4PIS2RcAZZJgJjRgF1NbWZpBlj8IpXJ7MywrUxtj1e+TU/tCiWQxCc9uMqgWA53NeqRGEFPwCuTfDMKWbbMhZkbe+pOOtEqQBQ0HsvJ3n09ZNhh3AjbNP6JOpAyK+4hqHohDTrLhxdSFsNiaoAaJXsxDdAHIs2U3QNmrbAFEg7aPOBgaHLXv28k88EDqo4cIuOxa/c24e3F4O6TY3fpydRmekadtCW+waY3aCIIwIA7DdAABFUTR3ABI8WnFTjgDyj1/IQ53Af**&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Completo! Vamos a probarlo a ver que pasa:</p>
-
-<figure class='code'><figcaption><span>&#8220;1, 2, 3, probando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>opendkim-testkey -d example.com -s 201606
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Si sale silentemente sin mostrar algo. Es que todo está bien.</p>
-
-<h3>opendkim y postfix</h3>
-
-<p>Finalmente, nuestro postfix tendrá el privilegio de firmar los correos usando el
-aparataje recién configurado. Vamos a crearle un cuartico de dkim en la casa de
-postfix</p>
-
-<figure class='code'><figcaption><span>&#8220;dkim en postfix&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir /var/spool/postfix/opendkim
-</span><span class='line'>chown opendkim:postfix /var/spool/postfix/opendkim
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>y habilitamos el socket de opendkim, editando el fichero <strong>/etc/default/opendkim</strong></p>
-
-<figure class='code'><figcaption><span>/etc/default/opendkim</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="c1"># Command-line options specified here will override the contents of</span>
-</span><span class='line'><span class="c1"># /etc/opendkim.conf. See opendkim(8) for a complete list of options.</span>
-</span><span class='line'><span class="c1">#DAEMON_OPTS=&quot;&quot;</span>
-</span><span class='line'><span class="c1">#</span>
-</span><span class='line'><span class="c1"># Uncomment to specify an alternate socket</span>
-</span><span class='line'><span class="c1"># Note that setting this will override any Socket value in opendkim.conf</span>
-</span><span class='line'><span class="na">SOCKET</span><span class="o">=</span><span class="s">&quot;local:/var/spool/postfix/opendkim/opendkim.sock&quot;</span>
-</span><span class='line'><span class="c1">#SOCKET=&quot;inet:54321&quot; # listen on all interfaces on port 54321</span>
-</span><span class='line'><span class="c1">#SOCKET=&quot;inet:12345@localhost&quot; # listen on loopback on port 12345</span>
-</span><span class='line'><span class="c1">#SOCKET=&quot;inet:12345@192.0.2.1&quot; # listen on 192.0.2.1 on port 12345</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note como retiramos el comentario de la línea 7</p>
-
-<p>Ahora declaramos en postfix que debe usar a opendkim como demonio de
-preprocesamiento en el típico <strong>/etc/postfix/main.cf</strong></p>
-
-<figure class='code'><figcaption><span>/etc/postfix/main.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="c1"># Milter configuration</span>
-</span><span class='line'><span class="c1"># OpenDKIM</span>
-</span><span class='line'><span class="na">milter_default_action</span> <span class="o">=</span> <span class="s">accept</span>
-</span><span class='line'><span class="na">milter_protocol</span> <span class="o">=</span> <span class="s">2</span>
-</span><span class='line'><span class="na">smtpd_milters</span> <span class="o">=</span> <span class="s">local:/opendkim/opendkim.sock</span>
-</span><span class='line'><span class="na">non_smtpd_milters</span> <span class="o">=</span> <span class="s">local:/opendkim/opendkim.sock</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finalmente, reinicia opendkim y postfix</p>
-
-<figure class='code'><figcaption><span>&#8220;systemctl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl restart opendkim postfix
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>COMPLETO!!!</h3>
-
-<p>Con eso hemos terminado. Para probarlo, puede enviar un correo a <a href="mailto:check-auth@verifier.port25.com">check-auth@verifier.port25.com</a></p>
-
-<p>Esa dirección le hará una prueba al DKIM+SPF de tu correo. No solo eso, le hará
-una prueba del Pi al Pa a tu correo y te dirá todo lo que necesitas.</p>
-
-<p>Si quieres ponerle la guinda al pastel, puede añadirle ADSP (Author Domain
-Signing Practices) a tu esquema. Esto indica que todos los correos que salgan de
-tu dominio deben estar firmados con DKIM, proveiendo aún más confianza al
-receptor.</p>
-
-<p>Crea un registro <strong>TXT</strong> para el hostname <strong><em>adsp.</em>domainkey</strong> y el valor del
-TXT será <strong>dkim=all</strong>. A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;registro&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">_adsp._domainkey     IN      TXT     &quot;dkim</span><span class="o">=</span><span class="s">all&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con eso, tus correos no caerán más en la bandeja SPAM de gmail.</p>
-
-<p>Otra cosa importante, asegúrate de tener el reverse lookup de tu MX bien puesto.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/06/desacelerar-mouse/">desacelerar mouse</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-06-06T23:41:44-04:00'><span class='date'>06/06/2016</span> <span class='time'>11:41 pm</span></time>
-        
-           | <a href="/blog/2016/06/06/desacelerar-mouse/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/06/06/desacelerar-mouse/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>El reducido espacio de trabajo que tengo en la casa para colocar la laptop; me
-hace sentir como si viviera en el apartamento más pequeño de Tokio. Tanto así,
-que no tengo ni donde desplazar el mouse y los cables me la ponen aún más
-difícil. Comprar una casa más grande no es una opción; sin embargo, reducir el
-mouse es más viable. Se me ocurrió adquirir un mouse inalámbrico, ya que son
-pequeñitos.</p>
-
-<p>Pero un mouse pequeño liviano, resulta que se desplaza mucho más rápido, que mi
-antiguo <em>General Electric Pixart Inc. Optical Mouse</em>. Lo que más me molesta es;
-no solo lo rápido que se desplaza, si no el <em>picor</em> que tiene en la aceleración.</p>
-
-<p>La solución: Desacelerar el mouse</p>
-
-<figure class='code'><figcaption><span>&#8220;slowmouse.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Constant Deceleration&quot;</span> 0.5
-</span><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Velocity Scaling&quot;</span> 1
-</span><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Profile&quot;</span> -1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con eso, el mouse pequeñito, se desplaza tal como lo hace el grande. Ya que el
-grande, es más pesado y por ende, se desplaza un tín mas lento.</p>
-
-<p><strong>¡¡¡Tardé bastante en quedar complacido probando números!!!</strong></p>
-
-<p>Por cierto, el <strong>10</strong> es la id del dispositivo. Puedes verlo corriendo el
-comando <strong>xinput &ndash;list &ndash;short</strong> a mi se me ve así:</p>
-
-<figure class='code'><figcaption><span>&#8220;xinput &#8211;list &#8211;short&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@samsung ~&gt; xinput --list --short
-</span><span class='line'>⎡ Virtual core pointer                      <span class="nv">id</span><span class="o">=</span>2 <span class="o">[</span>master pointer  <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>⎜   ↳ Virtual core XTEST pointer                  <span class="nv">id</span><span class="o">=</span>4 <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
-</span><span class='line'>⎜   ↳ PixArt USB Optical Mouse                    <span class="nv">id</span><span class="o">=</span>10    <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
-</span><span class='line'>⎜   ↳ ETPS/2 Elantech Touchpad                    <span class="nv">id</span><span class="o">=</span>12    <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
-</span><span class='line'>⎣ Virtual core keyboard                     <span class="nv">id</span><span class="o">=</span>3 <span class="o">[</span>master keyboard <span class="o">(</span>2<span class="o">)]</span>
-</span><span class='line'>    ↳ Virtual core XTEST keyboard               <span class="nv">id</span><span class="o">=</span>5 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>    ↳ Power Button                              <span class="nv">id</span><span class="o">=</span>6 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>    ↳ Video Bus                                 <span class="nv">id</span><span class="o">=</span>7 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>    ↳ Power Button                              <span class="nv">id</span><span class="o">=</span>8 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>    ↳ Sleep Button                              <span class="nv">id</span><span class="o">=</span>9 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>    ↳ AT Translated Set <span class="m">2</span> keyboard
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ve, el <em>PixArt USB Optical Mouse</em> dice que <strong>id=10</strong></p>
-</div>
-  
-  
-
-
 <p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/05/12/deshabilitar-historial-de-bash/">deshabilitar historial de bash</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-05-12T14:34:13-04:00'><span class='date'>12/05/2016</span> <span class='time'>2:34 pm</span></time>
-        
-           | <a href="/blog/2016/05/12/deshabilitar-historial-de-bash/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/05/12/deshabilitar-historial-de-bash/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Alguna vez han pensado, que en algunos servidores o estaciones, en las cual
-trabajan múltiples personas remotamente via consola; el historial de comandos
-puede llegar a ser un problema???</p>
-
-<p>Pues deshabilítalo. En el fichero <strong>/etc/environment</strong> ponle</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/environment&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>   <span class="nb">export </span><span class="nv">HISTFILE</span><span class="o">=</span>/dev/null
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>La próxima vez que etres, la función historial será deshabilitada. OJO!!! <strong>LA
-PRÓXIMA VEZ</strong> esta sesión aún salva historial&hellip; Sale y vuelve a entrar.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/04/29/reparar-archivos-de-innodb/">reparar archivos de innodb</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-04-29T23:22:33-04:00'><span class='date'>29/04/2016</span> <span class='time'>11:22 pm</span></time>
-        
-           | <a href="/blog/2016/04/29/reparar-archivos-de-innodb/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/04/29/reparar-archivos-de-innodb/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="right" src="/images/hypno.png"></p>
-
-<p>Los archivos binarios que almacenan las bases de datos de mysql (percona o
-mariadb) suelen acabar corruptos o dañados por fallos eléctricos. Al mirar el
-log, podemos ver que, a pesar de que la base de datos funciona; por un motivo u
-otro, hay miles de warning y los ficheros binarios se vuelven cada vez más
-frágiles.</p>
-
-<p>Solución, exportar TODAS las bases de datos un fichero &ldquo;.sql&rdquo;, reinstalar mysql
-e importar las bases de datos. Tenga en cuenta que también se crean los
-usuarios y sus debidos permisos. Por tanto, su usuario de root se configurará de
-manera automática.</p>
-
-<figure class='code'><figcaption><span>&#8220;mysqldump&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mysqldump --all-databases &gt; dumpeo.sql
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Desinstalar mySQL y eliminar los ficheros binarios, generalmente están en
-/var/lib/mysql Por último, instala mySQL y restaura las bases de datos.</p>
-
-<figure class='code'><figcaption><span>&#8220;mysqldump&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mysql &lt; dumpeo.sql
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1008,6 +739,26 @@ manera automática.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/el-domain-pop/">recolección domain pop</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/tunel-6in4/">túnel 6in4</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/cortafuegos-ipv6-sencillo/">cortafuegos ipv6 sencillo</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/poniendo-direcciones-ipv6/">las reglas del juego ipv6</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/ipv6/">la resolución 185/2016</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/10/04/dirver-broadcom/">driver broadcom</a>
@@ -1315,6 +1066,10 @@ manera automática.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2013/11/12/domainpop-con-postfix/">domainpop con postfix</a>
 		</li>
 		
 	</ul>

@@ -107,8 +107,9 @@ bluetooth y una wifi. &hellip;">
 bluetooth y una wifi. Me imagino que los broadcom modernos, tengan además dual
 band (wifi de 5Ghz).</p>
 
-<p>En la entrada anterior, mencioné que había adquirido unos audífonos bluetooth.
-Pues el driver opensource <strong>brcm80211</strong> no pinchaba bien del todo con el
+<p>En la entrada anterior, mencioné que había adquirido unos audífonos bluetooth;
+junto con él, un montón de nuevas resinguetas (como todo en archlinux). Resulta
+que el driver opensource <strong>brcm80211</strong> no pinchaba bien del todo con el
 bluetooth. Al punto que no podía alejarme ni un metro del dispositivo, además,
 que el mero echo de moverme, hacía que el audio se cortara.</p>
 
@@ -119,12 +120,9 @@ lo había dicho el célebre comunistón Chino:</p>
 
 <p>   <blockquote><p>Todo conocimiento auténtico nace de la experiencia directa</p><footer><strong>Mao Zedong</strong></footer></blockquote></p>
 
-<p>Al parecer el, el driver ya viene con el sistema, sin embargo, necesita un
-firmware para poder levantar el hardware. Parece que le hicieron ingenería
-inversa al controlador.</p>
-
-<p>Por suerte hay un paquete en aur que hace toda la pincha, se llama
-<strong>b43-firmware</strong></p>
+<p>Al parecer, el driver ya viene con el sistema, sin embargo, necesita un firmware
+para poder levantar el hardware. Por suerte hay un paquete en <strong>AUR</strong> que hace
+toda la pincha, se llama <strong>b43-firmware</strong></p>
 
 <p>Tras instalarlo, hay que poner en la lista negra, el driver anterior, si no se
 forma un reguero tremendo a la hora de cargar los driver y seleccionará el
@@ -139,7 +137,40 @@ opensource por defecto.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>y reinicia&hellip;</p>
+<p>Por si las moscas, ejecuta:</p>
+
+<figure class='code'><figcaption><span>&#8220;depmod&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># depmod -a</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y reinicia</p>
+
+<h4>brcm80211</h4>
+
+<p>La wifi pincha DE PINGA. Dentro de la banda de los 2.4Ghz, hace de todo, desde
+AP (modo master) hasta la dichosa autenticación WPA2. Soporta incluso survey.
+<strong>PERO</strong> el bluetooth pincha de asco. Se desaparece cuando lo usas más de 20
+minutos, diciendo que un dispositivo USB fue desconectado.</p>
+
+<h4>broadcom-wl</h4>
+
+<p>Sin dudas, el driver propietario es una seda, dice que habilita los canales de
+5Ghz pero es mentira. El bluetooth pincha de maravilla, sobre todo en lo
+referente a calidad de audio <strong>PERO</strong> cada vez que cambias de kernel el driver
+debe recompilarse y suele fallar (eso dicen). En tal caso, reinstalar el driver
+es una solución. Además, te recuerdo que <strong>no es de código abierto</strong>. Sabe dios
+que backdoor te mete dentro del kernel. En cuanto a las prestaciones de la wifi,
+hay unas cuantas pérdidas: No puede autenticar con WPA2 y no soporta modo
+master. Tampoco el survey parece pinchar.</p>
+
+<h4>b43</h4>
+
+<p>La wifi, tiene las mismas prestaciones que el propietario. El bluetooth funciona
+excelente. La wifi se porta muy bien los primeros días. <strong>PERO</strong> El día que
+amanezca con el moño virao la wifi se desparece, corriendo depmod AVEEECEES
+aparece. O sea, la mismas miserias del propietario, pero con la aleatoria
+posibilidad de que amanezcas sin wifi.</p>
 </div>
 
 
@@ -181,6 +212,8 @@ opensource por defecto.</p>
         <a class="basic-alignment left" href="/blog/2016/09/22/audifonos-blutu/" title="Previous Post: audífonos blutú">&laquo; audífonos blutú</a>
       
       
+        <a class="basic-alignment right" href="/blog/2016/10/22/ipv6/" title="Next Post: la resolución 185/2016">la resolución 185/2016 &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -200,6 +233,26 @@ opensource por defecto.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/el-domain-pop/">recolección domain pop</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/tunel-6in4/">túnel 6in4</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/cortafuegos-ipv6-sencillo/">cortafuegos ipv6 sencillo</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/poniendo-direcciones-ipv6/">las reglas del juego ipv6</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/ipv6/">la resolución 185/2016</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/10/04/dirver-broadcom/">driver broadcom</a>
@@ -507,6 +560,10 @@ opensource por defecto.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2013/11/12/domainpop-con-postfix/">domainpop con postfix</a>
 		</li>
 		
 	</ul>

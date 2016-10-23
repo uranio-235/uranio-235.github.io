@@ -9,9 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="bind9, registro arbitratio 25/01/2016 8:35 pm | Comments Para este tipo de cosas, usualmente recomiendo
-dnsmasq pero aveces, no nos
-queda más &hellip;">
+  <meta name="description" content="misterio con ethernet foxconn 14/03/2016 2:52 pm | Comments Para nadie es un secreto que foxconn, no le descarga a Linux. Hacen mil mierdas
+para &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +81,495 @@ queda más &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/03/14/misterio-con-ethernet-foxconn/">misterio con ethernet foxconn</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-03-14T14:52:46-04:00'><span class='date'>14/03/2016</span> <span class='time'>2:52 pm</span></time>
+        
+           | <a href="/blog/2016/03/14/misterio-con-ethernet-foxconn/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/03/14/misterio-con-ethernet-foxconn/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Para nadie es un secreto que foxconn, no le descarga a Linux. Hacen mil mierdas
+para entorpecerlo cuando corre sobre su hardware.</p>
+
+<p>Uno de los misterios, es cuando las tajetas de red permiten conexiones, pues dan
+ping sin problema. Pero al intentar transferir grandes bloques de red, da
+timeout.</p>
+
+<p>Problema, el tamaño del MTU por defecto en sus putas tarjetas</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ip l set dev eth0 mtu 1492</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Veremos con que se bajan la próxima vez</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/03/07/cargar-rvm/">cargar rvm</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-03-07T21:25:44-05:00'><span class='date'>07/03/2016</span> <span class='time'>9:25 pm</span></time>
+        
+           | <a href="/blog/2016/03/07/cargar-rvm/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/03/07/cargar-rvm/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>De siempre, desplegar Ruby con <a href="https://rvm.io/">RVM</a>, ha sido un método
+catalogado de &ldquo;burdo&rdquo; o &ldquo;sucio&rdquo; aunque sin dudas, es el más rápido.</p>
+
+<p>Un problema que se enfrenta con RVM, es a la hora de integrarlo a entornos que
+no carguen el bashrc modificado por el instalador. Por ejemplo, un script de
+arrancada con el sistema o un script del cron.</p>
+
+<p>He aquí un ejemplo, de un escript.sh que levanta una aplicación de ruby on
+rails, luego de haber cargado el entorno de RVM.</p>
+
+<figure class='code'><figcaption><span>&#8220;startapp.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="nb">cd</span> /opt/aplicacion
+</span><span class='line'><span class="nb">source</span> /usr/local/rvm/environments/default
+</span><span class='line'>unicorn -l 0:8080 -D
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como vemos, el dichero en <strong>environments</strong> carga todas las variables de entorno
+requerida y de facto; <strong>unicorn</strong> pasa a ser un ejecutable, ya que <strong>$PATH</strong>
+ahora contiene también la ruta bin/ donde se instalaron las gemas&hellip;</p>
+
+<p>Problema <em>resolvido</em>&hellip;</p>
+
+<p>Note en caso de tener varios rubies instalados, en environments, tendrás junto a
+default, los demás script necesarios para cargar dichos rubies.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/02/22/data-confirm-en-un-boton/">data confirm en un boton</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-02-22T14:20:33-05:00'><span class='date'>22/02/2016</span> <span class='time'>2:20 pm</span></time>
+        
+           | <a href="/blog/2016/02/22/data-confirm-en-un-boton/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/02/22/data-confirm-en-un-boton/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Usualmente, tenemos un botón en un formulario y nos gustaría que al pulsar este,
+nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
+
+<figure class='code'><figcaption><span>&#8221;_navbar.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='rhtml'><span class='line'>  <span class="cp">&lt;%=</span> <span class="n">form_tag</span> <span class="n">manager_email_path</span><span class="p">,</span><span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;navbar-form navbar-left&#39;</span><span class="p">,</span><span class="ss">role</span><span class="p">:</span> <span class="s1">&#39;search&#39;</span><span class="p">,</span><span class="nb">method</span><span class="p">:</span> <span class="ss">:post</span> <span class="k">do</span> <span class="cp">%&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;form-group&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">name=</span><span class="s">&quot;email&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">class=</span><span class="s">&quot;form-control&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;fulanito@infomed.sld.cu&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>     <span class="cp">&lt;%=</span> <span class="n">button_tag</span><span class="p">(</span><span class="ss">:class</span> <span class="o">=&gt;</span> <span class="s2">&quot;btn btn-default&quot;</span><span class="p">,</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span><span class="ss">:confirm</span> <span class="o">=&gt;</span> <span class="s1">&#39;Seguro?&#39;</span><span class="p">}</span> <span class="p">)</span> <span class="k">do</span> <span class="cp">%&gt;</span>
+</span><span class='line'>        Enviar
+</span><span class='line'>     <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+</span><span class='line'>  <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/02/20/hooks-de-pacman/">los hooks de pacman</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-02-20T03:14:28-05:00'><span class='date'>20/02/2016</span> <span class='time'>3:14 am</span></time>
+        
+           | <a href="/blog/2016/02/20/hooks-de-pacman/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/02/20/hooks-de-pacman/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Finalmente, después de tantas plegarias, tenemos <strong>hooks</strong> en pacman. Lo cual
+nos permite, por medio de la poderosa API de alpm correr script antes o después
+de cada instalación.</p>
+
+<p>Desgraciadamente, hay poca documentación sobre el tema. Para colmo, la página de
+man de alpm-hooks, no dice como deben llamarse los archivos. Tuve que adivinar
+que la extensión <strong>.hook</strong> era necesaria.</p>
+
+<p>Primero que todo, vamos a especificar en <strong>/etc/pacman.conf</strong> que el directorio
+de hooks está en otro lado.</p>
+
+<figure class='code'><figcaption><span>&#8220;escope de</span><a href='/etc/pacman.conf"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">HookDir</span> <span class="o">=</span> /etc/pacman.d/hooks/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¿Por qué aquí? Muy sencillo. Quiero que al hacer una salva de mi configuración
+de pacman, los hooks también se salven. Un hook sencillo, podría correr un
+comando simple, como el del ejemplo en la página de man; sin embargo, uno
+complejo, sería mejor ponerlo en un script.</p>
+
+<p>Lo más importante: El fichero con el hook <strong>debe tener la extensión .hook</strong> Si
+no pacman se limpia el culo con él.</p>
+
+<p>Creemos uno de ejemplo, llamado /etc/pacman.d/hooks/migancho<strong>.hook</strong> y
+digámosle que ejecutará el script, sito en /etc/pacman.d/hooks/migancho.sh</p>
+
+<p>Sería así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.hook&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>Trigger<span class="o">]</span>
+</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Install
+</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Upgrade
+</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Remove
+</span><span class='line'><span class="nv">Type</span> <span class="o">=</span> Package
+</span><span class='line'><span class="nv">Target</span> <span class="o">=</span> *
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Action<span class="o">]</span>
+</span><span class='line'><span class="nv">Description</span> <span class="o">=</span> sincronizando disco
+</span><span class='line'><span class="nv">Depends</span> <span class="o">=</span> coreutils
+</span><span class='line'><span class="nv">When</span> <span class="o">=</span> PostTransaction
+</span><span class='line'><span class="nv">Exec</span> <span class="o">=</span> /etc/pacman.d/hooks/migancho.sh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ve, la cláusula <strong>Operation</strong> está repetida, con los 3 posibles momentos
+que se disparará el gancho. Podrías hacerlo en uno de ellos solamente. La
+cláusula <strong>Description</strong> se verá cuando pacman termine de instalar. En este caso
+cuando termine, ya que la cláusula <strong>When</strong> especifica <em>PreTransaction</em> o
+<em>PostTransaction</em> (antes o después de la transacción).</p>
+
+<p>Ahora creamos el script <strong>migancho.sh</strong> y le ponemos todas las aberraciones que
+queremos llevar a cabo tras una instalación, desinstalación o actualización.</p>
+
+<p>Digamos por ejemplo, en este caso uno trivial, ejecutar sync cuando termine una
+operación, lo cual evita que si falla la energía en ese momento, queden datos
+por escribirse en la cache disco (con suerte).</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>/usr/bin/sync
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Veámoslo en acción</p>
+
+<figure class='code'><figcaption><span>&#8220;el hook&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># pacman -S --noconfirm unrar</span>
+</span><span class='line'>warning: unrar-1:5.3.11-1 is up to date -- reinstalling
+</span><span class='line'>resolving dependencies...
+</span><span class='line'>looking <span class="k">for</span> conflicting packages...
+</span><span class='line'>
+</span><span class='line'>Packages <span class="o">(</span>1<span class="o">)</span> unrar-1:5.3.11-1
+</span><span class='line'>
+</span><span class='line'>Total Installed Size:  0.32 MiB
+</span><span class='line'>Net Upgrade Size:      0.00 MiB
+</span><span class='line'>
+</span><span class='line'>:: Proceed with installation? <span class="o">[</span>Y/n<span class="o">]</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking keys in keyring                                                   <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking package integrity                                                 <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> loading package files                                                      <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking <span class="k">for</span> file conflicts                                                <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking available disk space                                              <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'>:: Processing package changes...
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> reinstalling unrar                                                         <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'>:: Running post-transaction hooks...
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> sincronizando disco
+</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c">#</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Véanlo como dice <em>sincronizando discos</em> en español, corriendo la operación (1/1)
+ya que hay un solo hook.</p>
+
+<p>Sencillo!!! Como todo en ArchLinux: KISS</p>
+
+<p>Podría volverse más creativo&hellip;</p>
+
+<p>Digamos por ejemplo, que yo quiero tener la lista de paquetes que tiene mi
+sistema antes y después de una instalación, para saber que se instalo y cuando.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/listpackages.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>pacman -Qe &gt; /root/<span class="k">$(</span>date +%j%H%M%S<span class="k">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Eso creará un fichero similar a /root/051153712, el nombre, es el yday (día del
+año) y con la hora, minuto y segundo. Dentro del fichero, una lista de todos los
+paquetes instalados. Muy útil si eres tester o desarrollador, o simplemente
+quieres saber que paquetes había antes o después de instalar.</p>
+
+<p>Por cierto, otra manera de saber que si instalo hoy y ayer, es esta:</p>
+
+<figure class='code'><figcaption><span>&#8220;¿cuando fue?&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ls -ltcr --time-style +%j /var/lib/pacman/local/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Devuelve el día del año en el que se instaló un paquete. Así sabes que se
+instaló hoy. Te recuerdo, que en ArchLinux, todos los días hay algo nuevo que
+instalar :D</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/02/01/arch-compartir-paquetes/">arch compartir paquetes</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-02-01T13:56:56-05:00'><span class='date'>01/02/2016</span> <span class='time'>1:56 pm</span></time>
+        
+           | <a href="/blog/2016/02/01/arch-compartir-paquetes/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/02/01/arch-compartir-paquetes/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>No desde cuando, pero por fin, un sueño echo realidad en ArchLinux. Revertir un
+paquete de su forma instalada, a su forma de paquete. Esto puede no resultar
+algo novedoso para el que tenga internet como algo cotidiano, pero para los
+cubanos de a pie, resulta una verdadera novedad.</p>
+
+<p>Digamos que mi socio necesita instalar nginx en su arch, misma arquitectura que
+el mío. Simplemente, le genero el paquete a partir de mi instalación y listo.</p>
+
+<figure class='code'><figcaption><span>&#8220;bacman en acción&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@samsung ~<span class="o">]</span><span class="c"># cd /var/cache/pacman/pkg/</span>
+</span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># bacman nginx</span>
+</span><span class='line'><span class="o">==</span>&gt; Package: nginx-1.8.1-1
+</span><span class='line'>  -&gt; Copying package files...
+</span><span class='line'>    -&gt; Generating .PKGINFO metadata...
+</span><span class='line'>    -&gt; Generating the package...
+</span><span class='line'>  <span class="o">==</span>&gt; Done.
+</span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># ls nginx*</span>
+</span><span class='line'>nginx-1.8.1-1-x86_64.pkg.tar.xz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pues <strong>bacman</strong> es la respuesta. Ahora se puede regresar un paquete a su estado;
+digamos &ldquo;pristino&rdquo;.</p>
+
+<p>¡¡OJO!! <strong>TUS</strong> ficheros de configuración, también se empaquetan.</p>
+
+<p>Usualmente solía mantener en mi caché los paquetes necesarios para llevar a cabo
+una instalación de archlinux usando mi laptop; pero con este nuevo método, la
+cosa cambia bastante. Ahora solo debo cargar con el &ldquo;.iso&rdquo;</p>
+
+<p>Mi proxima idea es reconstruir el grupo <strong>base</strong> completo dentro de la cache y
+luego con <strong>repo-add</strong> crear un mirror, capaz de llevar a cabo una instalación
+de sistema.</p>
+
+<p>De momento quiero probar este script:</p>
+
+<figure class='code'><figcaption><span>&#8220;pristine.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># cambiate al directorio de cache</span>
+</span><span class='line'><span class="nb">cd</span> /var/cache/pacman/pkg/
+</span><span class='line'>
+</span><span class='line'><span class="c"># itera por los paquetes del sistema base</span>
+</span><span class='line'><span class="k">for</span> pkg in <span class="k">$(</span>pacman -Qeg base<span class="p">|</span>awk <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span><span class="p">;</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># háblate</span>
+</span><span class='line'>   <span class="nb">echo</span> <span class="nv">$pkg</span> <span class="s1">&#39;&gt;&#39;</span> <span class="k">$(</span>pacman -Qi <span class="nv">$pkg</span><span class="p">|</span>grep Description<span class="p">|</span>cut -d : -f 2<span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># reviértelo</span>
+</span><span class='line'>   bacman <span class="nv">$pkg</span> 2&gt; /dev/null &gt; /dev/null
+</span><span class='line'>
+</span><span class='line'><span class="k">done</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># crea el repo</span>
+</span><span class='line'>rm /var/cache/pacman/pkg/custom.db.tar.gz
+</span><span class='line'>repo-add /var/cache/pacman/pkg/custom.db.tar.gz /var/cache/pacman/pkg/*.pkg.tar.xz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Tendré que probar a instalar usando mi cache como repo. Poniéndole a la máquina
+una source como esta:</p>
+
+<figure class='code'><figcaption><span>&#8220;pacman.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>mirepo<span class="o">]</span>
+</span><span class='line'><span class="nv">SigLevel</span> <span class="o">=</span> Optional TrustAll
+</span><span class='line'><span class="nv">Server</span> <span class="o">=</span> http://localhost:8080
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>Nota para los imbéciles: Cambiar <strong>localhost</strong> por la ip de la máquina que está compartiendo la caché.</em></p>
+
+<p>Y para servir tu cache como repo, puedes usar darkhttpd</p>
+
+<figure class='code'><figcaption><span>&#8220;darkhttpd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>darkhttpd /var/cache/pacman/pkg/ --chroot --port 8080
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -182,496 +670,7 @@ tiempo.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/01/19/espejos-de-clamav/">espejos de clamav y salud</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-01-19T13:32:53-05:00'><span class='date'>19/01/2016</span> <span class='time'>1:32 pm</span></time>
-        
-           | <a href="/blog/2016/01/19/espejos-de-clamav/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/01/19/espejos-de-clamav/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>ClamAV, el antivirus más subestimado en mi opinión. De siempre, lo he usado por
-compromiso; aunque nunca he sentido la necesidad de hacerlo.</p>
-
-<p>Infomed, mantiene un espejo de ClamAV bien al día pero no un mirror como tal.</p>
-
-<p>Decidí bajarlos para mi máquina y usar la misma como espejo. Después de todo, la
-misma tiene lo que necesita para correr un mirror. Es algo tan sencillo como
-crear un virtualhost y poner en su raíz las actualziaciones.</p>
-
-<p>Más fácil aún, es usar /var/lib/clamav/ como raíz y así TU actualización se
-convierte en el mirror.</p>
-
-<p>En mi caso, el virtualhost de nginx me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/nginx/sites-enabled/clamav&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>server <span class="o">{</span>
-</span><span class='line'>   listen   10.1.1.14:80<span class="p">;</span>
-</span><span class='line'>   listen   10.1.1.14:443 ssl<span class="p">;</span>
-</span><span class='line'>   server_name clamav.hcg.sld.cu<span class="p">;</span>
-</span><span class='line'>   location / <span class="o">{</span>
-</span><span class='line'>      root /var/lib/clamav/<span class="p">;</span>
-</span><span class='line'>   <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El resto del truco está en el lado del cliente, ya que hay que hacerle una
-burumba a freshclam. Decirle que no busque scripts, así me quedó el freshclam.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/clamav/freshclam.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>UpdateLogFile /var/log/clamav/freshclam.log
-</span><span class='line'>DatabaseMirror clamav.hcg.sld.cu
-</span><span class='line'>NotifyClamd /etc/clamav/clamd.conf
-</span><span class='line'>ScriptedUpdates no
-</span><span class='line'>PrivateMirror clamav.hcg.sld.cu
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>No olvides el puntero a <strong>clamav.tudominio.cu</strong></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/01/14/clamav-en-windows/">clamav en windows</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-01-14T21:39:45-05:00'><span class='date'>14/01/2016</span> <span class='time'>9:39 pm</span></time>
-        
-           | <a href="/blog/2016/01/14/clamav-en-windows/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/01/14/clamav-en-windows/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Síiiii, por loco que suene&hellip;</p>
-
-<p>Una compañía llamada Source Fire, desarrolló un producto llamado &ldquo;immunet&rdquo;, Por
-lo que vi, es una herramienta de &ldquo;cloud security&rdquo;. En teoría; un antivirus que
-no necesita ser actualizado, una especie de community driven (reescribió la
-rueda y le quedó bien).</p>
-
-<p>Esto en cuba es un chiste, por el ancho de banda. No obstante, pasarle todos tus
-archivos a un servidor para que este los verifique, no me parece un buen
-negocio. Aunque sabe dios que hace windows con tus archivos&hellip;</p>
-
-<p>No obstante, estos señores, incluyeron el motor de clamav y frontend para
-escanear en tiempo real usando clamav y <strong>QUE PINCHA</strong>. Se la comieron!</p>
-
-<p>Quiero advertirte que: Mis conocimientos de windows son BIEN REDUCIDOS, así que
-veré como me hago entender. Trataré de escribir de memoria lo que hice, antes de
-que se me olvide.</p>
-
-<p>Primero llégate a <a href="http://www.immunet.com/free/index.html">www.immunet.com</a> y
-manda a descargar el antivirus. Te dará un ficherito triste de unos kilobytes.
-Este es el downloader.</p>
-
-<p>Ve a una máquina con windows y ejecuta el downloader. Pulsa un botón que dice
-&ldquo;detalles&rdquo;, para que veas que está instalando.</p>
-
-<p>Antes de que se cierre el dialogo del instalador, o sea, antes de pulsar el
-botón &ldquo;Finalizar&rdquo;, mira en las rutas, el directorio temporal donde se está
-descargando y localiza un fichero llamado <strong>protect-latest.exe</strong></p>
-
-<p>No he logrado capturar la URL!!! Sería bueno, así te evitas el ritual anterior.
-No es algo que puedas trazar con squid, ya que la descarga es una conexión SSL.</p>
-
-<p>Una vez que tengas <strong>protect-latest.exe</strong> en la mano, podrás instalarlo donde
-quieras.</p>
-
-<p>Cuando termines, te puso el ícono de immunet en el escritorio. Ejecútalo y
-dirígete a <strong>settings</strong>, ahí le pones el botón <strong>on</strong> a un chucho que dice
-<strong>Enable Clamav Engine</strong>.</p>
-
-<p><img class="center" src="/images/immunenet_config.png"></p>
-
-<p>Cierra esa interfaz y has click secundario en el acceso directo del escritorio.</p>
-
-<p>Verás una opción en el menú que dice &ldquo;Abrir directorio que lo contiene&rdquo; o algo
-por el estilo, no recuerdo bien.</p>
-
-<p>Una vez en el directorio de Immunet, sube un nivel y verás el directorio
-<strong>clamav</strong>. Entra ahí.</p>
-
-<p><img class="center" src="/images/segui.png"></p>
-
-<p>Ejecuta el fichero <strong>sigui.exe</strong>(1) y en la pestaña derecha, verás una opción
-que dice &ldquo;Local Signature Management&rdquo;.</p>
-
-<p>Toca el boton &ldquo;Add&rdquo;(2) y te dará un browser de ficheros. Localiza el directorio
-donde tiene los *.cvd de clamav. Puedes seleccionar los tres ficheros de un
-palo, incluso, pincha por carpeta compartida.</p>
-
-<p>Cuando estén en la caja de arriba, has click en &ldquo;Verify and Install
-signatures&rdquo;(3).</p>
-
-<p>ANDANDO! Ya lo tienes configurado.</p>
-
-<p>En la máquina que lo probé. Restuaré la cuarentena de nod32 y el clamav se
-despacho los virus. A los 5 segundos, nod32 pedía reinicio para desinfectar
-amenazas. Simplemente lo desinstalé.</p>
-
-<p>Como muchos saben, el motor de clamav cambia constantemente. No se si será
-necesario la descarga y reinstalación del antivirus. Pero un compañero me
-planteaba que eso significaría un buen negocio.</p>
-
-<p>Suerte&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/14/servidor-jabber-con-prosody/">servidor jabber con prosody</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-12-14T18:22:29-05:00'><span class='date'>14/12/2015</span> <span class='time'>6:22 pm</span></time>
-        
-           | <a href="/blog/2015/12/14/servidor-jabber-con-prosody/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/12/14/servidor-jabber-con-prosody/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Lua, es uno de los tantos lenguajes interpretados que hay. Lo curioso de este es
-que es Made in Brasil&hellip;</p>
-
-<p>Aunque no les quedó mal, lo de ellos definitivamente es la samba y el futboll.
-Lo digo porque ese fue uno de los primeros lenguajes que estuve manoseando y No
-creo que halla un buen motivo para escribir algo con él.</p>
-
-<p>¡Pero <a href="https://prosody.im/">Proŝody</a>, demuestra que me equivoco!</p>
-
-<p>La robusteza, simplicidad y el rendimiento de este servidor, quizás sean
-superiores a la de ejabberd (que está escrito en Erlang, un lenguaje aún más
-exótico que Lua). Por otra parte, su todo en uno, lo hace más versátil que otros
-cuantos. No tiene nada que envidiarle al cochino OpenFire y toda su parafernaria
-de Java.</p>
-
-<p>En su estado natural, prosody solo viene con lo básico. Ampliarlo, es solo
-cuestión de modificar la configuración. No piense en una extraña interfaz web
-como la de ejabber, hablamos de un fichero de configuración &ldquo;.lua&rdquo; con todo
-comentado. Lua, que es bien rarito, usa para comentario es &ldquo;&ndash;&rdquo; en vez de &ldquo;#&rdquo;</p>
-
-<p>Comenzamos. En debian todo es muy fácil:</p>
-
-<figure class='code'><figcaption><span>&#8220;aptitude&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install prosody
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Esto dará lugar un fichero de configuracion en: <strong>/etc/prosody/prosody.cfg.lua</strong></p>
-
-<p>De ahí modificaremos lo que necesitamos. Primero, poner la JID del admin, eso
-lo haremos aunque nuestro dominio no halla sido declarado.</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">admins</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;</span><span class="s">tu_usaurio@tudominio.cu&#39;</span> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora vamos a la sesión modules_enabled. Todo bien comentadito. Yo lo habilito
-todo menos el servidor http y el telnet, como que no me da buena espina.</p>
-
-<p>Si habilitamos el módulo &ldquo;motd&rdquo; nuestro servidor contará con un MOTD,
-pero debemos especificarlo. De esta forma cada módulo es una función que puede
-o no llevar parámetros de configuración. Para argumentar la configuración
-de motd, escribimos FUERA de las sesión de módulos.</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">motd_text</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="s">este es el motd de mi server&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Pero <strong>motd_text</strong> no estaba escrito en ninguna parte. Para ver si un
-módulo tiene o no configuración, sus detalles, que hace y hasta un ejemplo,
-podemos verlo en la lista de módulos.</p>
-
-<p><a href="http://prosody.im/doc/modules">http://prosody.im/doc/modules</a></p>
-
-<p>Pero volvamos a la configuración. La siguiente linea de interés es la
-que permite el registro de usuarios.</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">allow_registration</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>OJO! se requiere un &ldquo;;&rdquo; al final de la configuración (razón por la cual abandoné
-Lua en aquel entonce). Si no quieres que los usuarios se registren déjalo en
-false. Puedes usar la aplicación de control para crear usuarios. Ejecuta
-<strong>prosodyctl</strong> sin parámetros y veras una pantalla aprueba de imbéciles que te
-dice como crear los usuarios y otras opciones interesantes.</p>
-
-<p>Por ejemplo, para crear un usuario</p>
-
-<figure class='code'><figcaption><span>&#8220;prosodyctl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>prosodyctl adduser fulanito@dominio.cu
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lo siguiente es el SSL, no es bueno desabilitarlo porque muchos cliente jabbers
-traen por definición usar ssl. Mejor seguir a las que dice:</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">c2s_require_encryption</span> <span class="o">=</span> <span class="kc">false</span>
-</span><span class='line'><span class="n">s2s_require_encryption</span> <span class="o">=</span> <span class="kc">false</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Poniéndolas en false, el servidor usara lo mismo SSL que plana.</p>
-
-<p>Pero aún no hemos declarado el dominio. Resulta que como te dije todo es
-modular. Los dominios son VirtualHost. Al igual que en apache, incluso el
-dominio por defecto, es un virtual host. Podemos declarar varios dominios y
-dejarlos deshabilitados.</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">VirtualHost</span> <span class="s2">&quot;</span><span class="s">tudominio.cu&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ya tenemos un dominio, podríamos tener más con solo agregarlos pero con eso ya
-tenemos un servidor con lo indispensable. Vamos a extenderlo un poco, una sala
-de conferencia:</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">Component</span> <span class="s2">&quot;</span><span class="s">conference.tudominio.cu&quot;</span> <span class="s2">&quot;</span><span class="s">muc&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora solo falta crear un puntero DNS que apunte a <strong>conference.tudominio.cu</strong></p>
-
-<p>Pero hablando de punteros DNS. Para que jabber pinche, necesita un puntero DNS
-especial.</p>
-
-<p>Para <strong>dnsmasq</strong>, supongamos que el servidor que correo el jabber se llama
-<strong>chat.tudominio.cu</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;dnsmasq.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">address</span><span class="o">=</span>/chat.tudominio.cu/10.1.1.1
-</span><span class='line'>srv-host<span class="o">=</span>_xmpp-client._tcp.chat.tudominio.cu,chat.tudominio.cu,5222
-</span><span class='line'>srv-host<span class="o">=</span>_xmpp-server._tcp.chat.tudominio.cu,chat.tudominio.cu,5269
-</span><span class='line'>txt-record<span class="o">=</span>_xmppconnect.chat.tudominio.cu,<span class="s2">&quot;_xmpp-client-xbosh=http://chat.tudominio.cu:5280/http-bind&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Por cierto, eso último, es el puntero al servidor bosh.</p>
-
-<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='lua'><span class='line'> <span class="n">bosh_ports</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">5280</span> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>y a cotorrear se ha dicho&hellip;</p>
-</div>
-  
-  
-
-
 <p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/29/mc-demora-en-abrir/">mc demora en abrir</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-29T19:37:00-05:00'><span class='date'>29/11/2015</span> <span class='time'>7:37 pm</span></time>
-        
-           | <a href="/blog/2015/11/29/mc-demora-en-abrir/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/29/mc-demora-en-abrir/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Esta es una nota bien rápida pa que no se me olvide&hellip;</p>
-
-<p>Alguna vez han notado que los midnight commander con soporte para operaciones de
-red (especialmente samba) y al arrancarlo, se mete tremendo rato levantando?
-Pues esta es la razón por la cual debian <em>bota el sofá</em>.</p>
-
-<p><img class="right" src="/images/mc.png" title="" ></p>
-
-<p>Resulta que buscar el propio hostname de la máquina, se mete tremendo rato
-haciendo un reverse lookup. Cuando tiene declaro un servidor dns inalcanzable,
-se pone más feo todavía.</p>
-
-<p>Solución. Pon tu propio hostname en <strong>/etc/hosts</strong> junto a localhost</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/23/desmume-ultralento/">desmume ultralento</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-23T21:37:40-05:00'><span class='date'>23/11/2015</span> <span class='time'>9:37 pm</span></time>
-        
-           | <a href="/blog/2015/11/23/desmume-ultralento/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/23/desmume-ultralento/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Es tremendo mojón departe del desmume, no venir con el compilador JIT activado
-por defecto. Los juegos de DS corren suúuuuper lentos. Pero si corres desmume
-con los siguientes argumentos:</p>
-
-<figure class='code'><figcaption><span>&#8220;desmume&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>desmume  --fwlang<span class="o">=</span><span class="m">5</span> --jit-size<span class="o">=</span><span class="m">100</span> --cpu-mode<span class="o">=</span><span class="m">1</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Se activará el <a href="https://es.wikipedia.org/wiki/Compilaci%C3%B3n_en_tiempo_de_ejecuci%C3%B3n">Compilador en Tiempo de Ejecución</a>
-que tiene desmume y créeme, la mejora es increíble. Tanto que luego se dispara
-de una manera descomunal, así que será necesario limitar el FrameSkip a 60 FPS.</p>
-
-<p><img class="right" src="/images/desmume.png"></p>
-
-<p>Como ven en la imagen, está corriendo Le pokemón negro, y con un micro de 2 mil
-herzios se me monta en los 80fps renderizando 3d. Con la Soul Silver, se me
-monta en +100 fps, ya que las peleas son en 2D.</p>
-
-<p>Te preguntarás por que usar Frameskip entonces. Pues al menos en mi caso, cuando
-el juego renderiza 3D, sin Frameskip, no llega ni a las 40FPS. Por suerte, con
-la opción marcada debajo, ni se siente el frame-skip, cosa que en otros
-emuladores es un dolor.</p>
-
-<p>Por suerte el DS solo puede renderizar 3D en una sola pantalla a la vez. Ah!
-OpenGL es por gusto, desmume pincha arriba del micro.</p>
-
-<p>Para mayor comodida, puedes crear un .desktop en tu home, el cual se lanze con
-los parámetros. A mi me quedó así</p>
-
-<figure class='code'><figcaption><span>&#8221;~/.local/share/applications/desmume.desktop&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Desktop Entry]</span>
-</span><span class='line'><span class="na">Version</span><span class="o">=</span><span class="s">1.0</span>
-</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">Application</span>
-</span><span class='line'><span class="na">Name</span><span class="o">=</span><span class="s">DeSmuME (Gtk)</span>
-</span><span class='line'><span class="na">Comment</span><span class="o">=</span><span class="s">Nintento DS emulator</span>
-</span><span class='line'><span class="na">TryExec</span><span class="o">=</span><span class="s">desmume --fwlang=5 --jit-size=90 --cpu-mode=1</span>
-</span><span class='line'><span class="na">Exec</span><span class="o">=</span><span class="s">desmume --fwlang=5 --jit-size=90 --cpu-mode=1</span>
-</span><span class='line'><span class="na">Icon</span><span class="o">=</span><span class="s">DeSmuME</span>
-</span><span class='line'><span class="na">Categories</span><span class="o">=</span><span class="s">GNOME;GTK;Game;Emulator;</span>
-</span><span class='line'><span class="na">MimeType</span><span class="o">=</span><span class="s">application/x-nintendo-ds-rom;</span>
-</span><span class='line'><span class="na">X-Desktop-File-Install-Version</span><span class="o">=</span><span class="s">0.22</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -692,6 +691,26 @@ los parámetros. A mi me quedó así</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/el-domain-pop/">recolección domain pop</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/tunel-6in4/">túnel 6in4</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/cortafuegos-ipv6-sencillo/">cortafuegos ipv6 sencillo</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/poniendo-direcciones-ipv6/">las reglas del juego ipv6</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/ipv6/">la resolución 185/2016</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/10/04/dirver-broadcom/">driver broadcom</a>
@@ -999,6 +1018,10 @@ los parámetros. A mi me quedó así</p>
 		
 		<li class="post">
 			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2013/11/12/domainpop-con-postfix/">domainpop con postfix</a>
 		</li>
 		
 	</ul>

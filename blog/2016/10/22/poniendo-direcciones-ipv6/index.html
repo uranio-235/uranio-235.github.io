@@ -1,0 +1,792 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>las reglas del juego ipv6 - El SysAdmin del 3er Mundo</title>
+  <meta name="author" content="låzaro">
+
+  
+  <meta name="description" content="las reglas del juego ipv6 22/10/2016 1:17 am | Comments ipv4 se parece a ipv6, lo que las damas se parecen al ajedrez Ambos juegos se desarrollan &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2016/10/22/poniendo-direcciones-ipv6/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-68987437-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
+  
+    <h2>luchando contra el subdesarrollo en todos los frentes</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://www.google.com" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="uranio-235.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/archives">Archivo</a></li>
+  <li><a href="/blog/categories/rails/">Ruby on Rails</a></li>
+  <li><a href="/blog/categories/destacado/">Destacado</a></li>
+  <li><a href="/blog/categories/razonemos/">Razonemos</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">las reglas del juego ipv6</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-10-22T01:17:30-04:00'><span class='date'>22/10/2016</span> <span class='time'>1:17 am</span></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>   <blockquote><p>ipv4 se parece a ipv6, lo que las damas se parecen al ajedrez</p></blockquote></p>
+
+<p>Ambos juegos se desarrollan sobre un tablero de 64 casillas, moviendo fichas y
+comiéndose las del adversario. Pero sus fundamentos, aunque similares, no son
+iguales y para que hablar de las reglas.</p>
+
+<p>En la entrada anterior, comentaba los disparates primordiales que he ido viendo
+con respecto a ipv6. Aquí les dejo un básico sobre las reglas del juego con
+ipv6.</p>
+
+<h4>2001:db8:: NO ES UN RANGO USABLE</h4>
+
+<p>Realmente sí lo es, pero está reservado <strong>para documentación</strong> esto quiere
+decir que <strong>NO DEBE HABER UNA LAN CON ESTE RANGO</strong>.</p>
+
+<h4>¿Entonces la LAN y la pública?</h4>
+
+<p>En ipv6, las direcciones de la LAN, son parte de la pública. No existe una
+distinción real entre LAN o internet y sobre todo:</p>
+
+<p><strong>NO HAY NATEO!!!</strong></p>
+
+<p>Te delegarán un prefijo y tú tendrás suficientes ip como para asignarle un ip a
+cada partícula de polvo de tu oficina. Pero ojo:</p>
+
+<p><strong>esas ip serán visibles desde y hacia internet</strong></p>
+
+<p>Cada ip que delegues de tu prefijo, formará parte del ciberspacio. Visto de otra
+forma. Si asignas 2001:db8::0h1 a una máquina en tu LAN, esa dirección será de
+facto, alcanzable desde internet, como mismo las máquinas en tu LAN la ven.</p>
+
+<p>Para lidiar con esta situación, deberás tener bien claro el forward en tu
+router.</p>
+
+<h3>pero yo no tengo una ipv6 real</h3>
+
+<p>No estés tan seguro&hellip; Si tienes una ipv4 pública, tienes algo parecido. Más adelante veremos como
+hacer un túnel 6in4, así que el prefijo de dirección más apropiado para tu LAN
+lo calcularás así:</p>
+
+<figure class='code'><figcaption><span>&#8220;ipv6calc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipv6calc --quiet --action conv6to4 tu.ipv4.publica.aqui
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nota para los imbéciles: ¿¿Notaste lo que dice <strong>tu.ipv4.publica.aqui</strong>??</p>
+
+<p>Eso te devolverá algo como <strong>2002:a00:1::</strong> lo cual es prefijo 6in4 en base a la
+ipv4 pública de tu LAN. Ese será tu prefijo ipv6.</p>
+
+<p>Otra cosa: <strong>NO SE PONEN IP CORRIDAS</strong> como por ejemplo 2002:a00:1::1 y
+2002:a00:1::2 ya que una de las cosas que intenta evitar ipv6 es el escaneo de
+redes. Las ipv6 se calculan en base a la mac. Más tarde veremos como lo hace el
+protocolo SLAAC.</p>
+
+<p>A mi en lo personal, me gusta ponerle al ruter &ldquo;cafe&rdquo; <strong>2002:a00:1::cafe</strong> y un
+ejemplo mas creativo 2002:a00:1::caba110 (caballo) así cada servidor tendría un
+nombre: cafe, caba110, ada, ded0, dad0, 1ce, a5ado</p>
+
+<p>Por cierto, los 0 a la izquierda, se descartan</p>
+
+<p>2002:a00:1::0001 es la misma dirección que 2002:a00:1::1 y de echo, es mucho más
+largo, porque tiene una pila de 0 por medio, pero así se expresa de manera más
+corta. Incluso así puede hacer ping y cualquier referencia a la dirección que el
+stack ipv6 se encarga de comprimirla y descomprimirla, sepa usted.</p>
+
+<p>Note que en <strong>a00</strong> sí se ponen los ceros, porque <strong>NO</strong> están a la izquierda.</p>
+
+<h3>Entonces el Forward</h3>
+
+<p>El forward de un cortafuegos será lo que controla que será visible dentro de tu
+LAN. La puerta de enlace decide qué será visible o no. Más adelante veremos un
+firewall ipv6 lo más sencillo posible.</p>
+
+<h3>y el dhcp?</h3>
+
+<p>Hay servidores dhcp para ipv6, pero el mecanismo bacán es SLAAC. Te adelanto que
+dnsmasq tiene SLAAC, pero el pro, es <strong>radvd</strong></p>
+
+<p>Una configuración de radvd típica se ve así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/radvd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='C'><span class='line'><span class="n">interface</span> <span class="n">eth1</span> <span class="p">{</span>
+</span><span class='line'>     <span class="n">AdvSendAdvert</span> <span class="n">on</span><span class="p">;</span>
+</span><span class='line'>     <span class="n">MinRtrAdvInterval</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'>     <span class="n">MaxRtrAdvInterval</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>     <span class="n">prefix</span> <span class="o">::/</span><span class="mi">64</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">AdvOnLink</span> <span class="n">on</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">AdvAutonomous</span> <span class="n">on</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">AdvRouterAddr</span> <span class="n">on</span><span class="p">;</span>
+</span><span class='line'>     <span class="p">};</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como vez, no especificas que rango de ip darás ni cosa parecida. El rango que
+darás, será del mismo prefijo que tiene en la interfaz eth1 (en este caso).</p>
+
+<h3>¿qué son las direcciones ff02 y fe80?</h3>
+
+<p>Son direcciones link-local. En ipv6, hay direcciones del tipo &ldquo;multicast&rdquo; cuyo
+destino serán todas las ip que estén dislocadas en la red. Esto no debe
+confundirse con anycast y vale aclarar que en ipv6 NO EXISTE broadcast.</p>
+
+<figure class='code'><figcaption><span>&#8220;ping multicast&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># ping ff02::1%wlp2s0</span>
+</span><span class='line'>PING ff02::1%wlp2s0<span class="o">(</span>ff02::1%wlp2s0<span class="o">)</span> <span class="m">56</span> data bytes
+</span><span class='line'><span class="m">64</span> bytes from fe80::420e:85ff:fe7a:e6d7%wlp2s0: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">17</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span><span class="m">112</span> ms
+</span><span class='line'><span class="m">64</span> bytes from fe80::420e:85ff:fe7a:e6d7%wlp2s0: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">18</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>7.42 ms
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Eso hará le hará ping a malanga y puesto de vianda que tengan un
+<a href="https://es.wikipedia.org/wiki/Direcci%C3%B3n_de_Enlace-Local">link-local</a> en la
+red que tiene conectado el cable de eth0.</p>
+
+<p>Sin embargo, al hacer ping a <strong>ff02::2</strong> solo responderán aquellas ipv6 que sean
+<strong>routers</strong>. Eso es una manera de saber quien es un router o simplemente si hay
+alguno. O sea, una manera de comprobar, si la red tiene salida a la red de
+redes.</p>
+
+<p>Las direcciones <strong>fe80::</strong> son enlaces locales. Podría decirse que las
+direcciones fe80 son como decir &ldquo;arp&rdquo; pero se les puede hacer ping y otras
+boberías. O sea, es de palo tener direcciones fe80:: aparte de las globales.</p>
+
+<h4>¿y dnsmasq?</h4>
+
+<p>Ese es otro que bien baila y con cualquier música. Tiene un SLAAC implementado
+que es una maravilla. Al parámetro <strong>dhcp-range</strong> se le mandan unas clásulas
+especiales que hacen maravillas. La que más me gusta es <strong>ra-names</strong> que asigna
+una ip y un registro AAAA para máquina.</p>
+
+<h4>que bolá con bind?</h4>
+
+<p>Los registros del tipo AAAA resuelven punteros address para direcciones ipv6.</p>
+
+<p>Sean:</p>
+
+<ul>
+<li> ns01 el nombre del servidor</li>
+<li> ns01 registro A con ip 192.168.0.1</li>
+<li> ns01 registro AAAA con ip 2001:db8::cafe</li>
+<li> proxy registro CNAME que apunta a ns01</li>
+</ul>
+
+
+<p>Cuando preguntes por la ipv6 de proxy, resolverá 2001:db8::cafe</p>
+
+<figure class='code'><figcaption><span>&#8220;dominio.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="p">;</span> El <span class="m">1</span> el proxy
+</span><span class='line'>ns01         IN      A       192.168.0.1
+</span><span class='line'>ns01         IN      AAAA    2001:db8::cafe
+</span><span class='line'>             IN      MX  <span class="m">0</span>   ns01
+</span><span class='line'>router       IN      CNAME   ns01
+</span><span class='line'>proxy        IN      CNAME   ns01
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ejemplo vivo:</p>
+
+<figure class='code'><figcaption><span>&#8220;ping ipv6 a un CNAME&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>ping -6 proxy.hcg.sld.cu
+</span><span class='line'>PING proxy.hcg.sld.cu<span class="o">(</span>ns01 <span class="o">(</span>2002:a00:1::cafe<span class="o">))</span> <span class="m">56</span> data bytes
+</span><span class='line'><span class="m">64</span> bytes from artema <span class="o">(</span>2002:a00:1::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.100 ms
+</span><span class='line'><span class="m">64</span> bytes from artema <span class="o">(</span>2002:a00:1::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">2</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.174 ms
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">låzaro</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-10-22T01:17:30-04:00'><span class='date'>22/10/2016</span> <span class='time'>1:17 am</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2016/10/22/poniendo-direcciones-ipv6/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2016/10/22/poniendo-direcciones-ipv6/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/10/22/ipv6/" title="Previous Post: la resolución 185/2016">&laquo; la resolución 185/2016</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2016/10/22/cortafuegos-ipv6-sencillo/" title="Next Post: cortafuegos ipv6 sencillo">cortafuegos ipv6 sencillo &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+
+	<h1>Lo m&aacute;s reciente</h1>
+
+	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/el-domain-pop/">recolección domain pop</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/tunel-6in4/">túnel 6in4</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/cortafuegos-ipv6-sencillo/">cortafuegos ipv6 sencillo</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/poniendo-direcciones-ipv6/">las reglas del juego ipv6</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/ipv6/">la resolución 185/2016</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/04/dirver-broadcom/">driver broadcom</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/09/22/audifonos-blutu/">audífonos blutú</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/09/16/dispatcher-script/">dispatcher script</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/08/16/password-de-windows/">password de windows</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/07/31/kiwix-como-servicio/">kiwix como servicio</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/07/17/hibernar-en-archlinux/">hibernar en archlinux</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/07/17/rsync-basico/">rsync básico</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/06/20/correos-del-cron/">correos del cron</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/06/18/dkim-y-spf-en-postfix/">dkim y spf en postfix</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/06/06/desacelerar-mouse/">desacelerar mouse</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/05/12/deshabilitar-historial-de-bash/">deshabilitar historial de bash</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/04/29/reparar-archivos-de-innodb/">reparar archivos de innodb</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/04/01/wpa2-con-freeradius/">WPA2 con freeradius</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/03/14/misterio-con-ethernet-foxconn/">misterio con ethernet foxconn</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/03/07/cargar-rvm/">cargar rvm</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/02/22/data-confirm-en-un-boton/">data confirm en un boton</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/02/20/hooks-de-pacman/">los hooks de pacman</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/02/01/arch-compartir-paquetes/">arch compartir paquetes</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/01/25/hostname-arbitrario-en-bind9/">bind9, registro arbitratio</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/01/19/espejos-de-clamav/">espejos de clamav y salud</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/01/14/clamav-en-windows/">clamav en windows</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/12/14/servidor-jabber-con-prosody/">servidor jabber con prosody</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/11/29/mc-demora-en-abrir/">mc demora en abrir</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/11/23/desmume-ultralento/">desmume ultralento</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/11/22/certificado-autofirmado/">certificado autofirmado</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/11/03/las-mujeres-gordas/">las mujeres gordas</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/11/03/tls-y-ssl-en-postfix/">tls y ssl en postfix</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/10/20/compartir-la-wifi/">compartir la wifi</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/10/18/systemd-timesyncd/">systemd-timesyncd</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/10/16/palo-con-la-wifi/">palo con la wifi</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/10/15/repo-de-fdroid/">repo de fdroid</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/10/05/assets-por-controlador/">assets por controlador</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/09/17/dhcp-por-grupos/">dhcp por grupos</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/09/10/plymouth-boot-screen/">plymouth boot screen</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/09/07/git-clone-rapido/">git clone rápido</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/09/07/archlinux-dos-kernel/">archlinux con dos kernel</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/09/01/squid-transparente/">squid transparente</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/08/28/compute-remote-uptime/">compute remote uptime</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/07/19/will-paginate/">will_paginate</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/07/12/date-select-en-espanol/">date_select en español</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/07/11/openvas-en-archlinux/">OpenVAS en Archlinux</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/">añadir verbo a un scaffold</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/07/05/asset-pipeline-en-production/">asset pipeline en production</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/06/14/revocar-certificados-de-ovpn/">revocar certificados de OVPN</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/06/12/systemd-automount/">systemd automount</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/06/07/openvpn-en-arch/">OpenVPN en Arch</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/06/01/pacman-bajo-el-microscopio/">pacman bajo el microscopio</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/05/28/cambiar-user-agent-en-squid/">cambiar user agent con squid</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/05/26/nic-bonding/">NIC bonding</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/05/23/ltsp-en-debian8-y-salud/">ltsp en debian8 y salud</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/02/22/rails-sin-turbolink/">rails sin turbolinks</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/02/19/delay-pools-de-squid/">delay pools de squid</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/02/12/rails-con-mongodb/">rails con mongodb</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/02/06/zentyal/">Zentyal</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/02/01/bundle/">bundle</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/12/02/welcome-aboard/">welcome aboard</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/09/24/verdial-y-el-imagis/">la pena de verdial</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/09/05/palos-de-wordpress/">palos de wordpress</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/08/25/mas-de-ocs/">más de OCS</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/08/15/subdesarrollo/">subdesarrollo</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/08/11/ocs-inventory/">ocs-inventory</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/07/08/select-en-bootstrap/">select en bootstrap</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/07/05/empirico/">empíricos</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/06/27/crear-un-chroot-con-debian/">crear un chroot con debian</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/06/10/autenticador-sql-en-el-proxy/">autenticador SQL en el proxy</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/06/09/postfix-entrando-en-el-baile/">postfix entrando en el baile</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2013/11/12/domainpop-con-postfix/">domainpop con postfix</a>
+		</li>
+		
+	</ul>
+	
+</section>
+
+
+
+
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-68987437-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - låzaro -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'uranio-235';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2016/10/22/poniendo-direcciones-ipv6/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2016/10/22/poniendo-direcciones-ipv6/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-68987437-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+
+</body>
+</html>

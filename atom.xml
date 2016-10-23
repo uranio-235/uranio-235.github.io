@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-10-04T15:33:37-04:00</updated>
+  <updated>2016-10-23T17:54:14-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,569 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[recolección domain pop]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/10/22/el-domain-pop/"/>
+    <updated>2016-10-22T22:44:36-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/10/22/el-domain-pop</id>
+    <content type="html"><![CDATA[<p>Esta entrada ha sido copiada de mi antiguo blog <a href="http://otherlinuxblog.blogspot.com">puheroska</a>.
+Vale aclarar que la escribí en el 2012&hellip;</p>
+
+<p>Se sabe poco sobre los orígenes de ese aborto de la naturaleza que es conocido
+por algunos como &ldquo;recolección aPOP&rdquo; o por otros como &ldquo;DomainPOP&rdquo;.</p>
+
+<p>Haciendo referencia al hecho de bajar todo el correo para un dominio de un pop
+remoto. Muchos seguron lo identifican con un popular, potente y hermoso servidor
+de correo, para windows llamado MDeamon (pronunciado por algunos como
+&ldquo;emodimons&rdquo; y por otro como &ldquo;emdaimons&rdquo;). Muy conocido por su simple pero
+elegante cliente web, el World Client. Entre sus <em>features</em>, podemos ver el
+almacenamiento de TODO el correo de un dominio en un mismo buzón. Esto, sumado a
+que en cuba todo el software es gratis :D lo convirtió en la herramienta
+definitiva para las redes conmutadas.</p>
+
+<p>Por otra parte, no todo se le impugna windows. Cuando aún el morro era de palo y
+los cañones tiraban taquitos; ya citmatel usaba un CuciPOP (vean que clase de
+nombre &ldquo;Cubic Circles = CuCiPOP&rdquo;) para depositar el correo de sus clientes por
+lineas conmutadas; una clara implementación de aPOP. Esto resolvió ser la manera
+mas burda pero eficiente de resolver el problema del correo en lineas conmutadas.</p>
+
+<p>Lo único que perturba este barato panorama, es el hecho de que si el correo
+no tiene un To: bien claro, se jode todo y te ves obligado a usar MDeamon, que
+en ese aspecto se saca todos los premios. Por su puesto, el es una de
+la principales implementaciones de este modelo.</p>
+
+<p>A menudo nos encontramos con que al bajar el correo con fetchmail, uno o varios
+correos no van a su destino, y, por el contrario, van al postmaster sin tener
+coincidencias de usuarios locales.</p>
+
+<p>Hay quien esta acostumbrado a que el postmaster este LLENO de correos y eso
+le parece normal, cuando el buen funcionamiento de un servidor, se mide por el
+postmaster vacío.</p>
+
+<p>Si un correo tiene un To: o un Cc: fetchmail lo parsea (del infintivo &ldquo;parsear&rdquo;)
+y localiza una dirección de nuestro dominio basándose en que tiene el dominio en
+la configuración. Como le dijimos &lsquo;is * here&rsquo; buscará cual nombre que este
+delante de lo que se parezca a nuestro dominio y lo entregara.</p>
+
+<p>Pero: Qué pasa si el To: o el Cc: NO tienen una dirección de nuestro dominio?</p>
+
+<p>Supongamos que el correo viene Bcc: (blink carbon copy)</p>
+
+<p>Como por ejemplo, los correos de listas de distribuciones, etc&hellip; En ese caso
+los destinos se especifican en la orden RCPTO durante la sesión SMTP. Algunos
+servidores incluyen encabezados como: &ldquo;Delivery-To&rdquo;,&ldquo;Envelope-To&rdquo; o
+&ldquo;X-Orignial-To&rdquo; En mi opinión todos están de más, porque el Received: tiene esta
+información; pero bueno, podríamos decirle a fetchmail que ademas de esos,
+parsee encabezados Received: Eso parecería una solución, el único problema es
+que no pincha :-P</p>
+
+<h4>Hasta aquí la entrada de puheroska.</h4>
+
+<p>En aquel momento consideraba eso &ldquo;un problema sin solución&rdquo;</p>
+
+<p>Cuando llegué a salud, me encontré nuevamente con los DomainPOP, pero <strong>por
+suerte</strong>, los exim de infomed hacen bien esa pincha y dejan plasmado el
+destinatario en un encabezado &ldquo;Envelope-To&rdquo;</p>
+
+<p>He aquí el fetchmailrc que tengo en el calixto:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/fetchmailrc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Fichero de configuración de fethcmail, adecuado para los MultiPOP de infomed</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">set </span>daemon 60
+</span><span class='line'><span class="nb">set </span>postmaster <span class="s2">&quot;root&quot;</span>
+</span><span class='line'><span class="nb">set </span>no bouncemail
+</span><span class='line'><span class="nb">set </span>no spambounce
+</span><span class='line'><span class="nb">set </span>logfile .fetchmail.log
+</span><span class='line'><span class="nb">set </span>no syslog
+</span><span class='line'>
+</span><span class='line'>defaults
+</span><span class='line'>    timeout 10
+</span><span class='line'>    no keep
+</span><span class='line'>    fetchall
+</span><span class='line'>    expunge 5
+</span><span class='line'>    dropstatus
+</span><span class='line'>
+</span><span class='line'>poll multipop.sld.cu port <span class="m">110</span> protocol pop3 localdomains tudominio.sld.cu
+</span><span class='line'>    envelope <span class="m">1</span> <span class="s2">&quot;Envelope-to:&quot;</span>
+</span><span class='line'>    no dns
+</span><span class='line'>    username tuusuario
+</span><span class='line'>    password tupassword
+</span><span class='line'>    to * here
+</span><span class='line'>    limitflush
+</span><span class='line'>    smtphost localhost
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[túnel 6in4]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/10/22/tunel-6in4/"/>
+    <updated>2016-10-22T03:18:11-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/10/22/tunel-6in4</id>
+    <content type="html"><![CDATA[<p>Típico: Quiero darle cumplimiento a la resolución 185/2016, pero mi proveedor
+no me ha dado una ipv6</p>
+
+<p>¿Tienes una ipv4 pública? Felicidades, puedes jugar con ipv6</p>
+
+<p>Existe una tecnología transisional poco recomendada que se conoce como <a href="https://es.wikipedia.org/wiki/6to4?">6in4</a>,
+consiste en levantar un túnel especial que te permite hacerte con un rango ipv6
+pa jugar y comer mierda, porque no es ipv6 puro. Supuestamente interner debe
+tener servididores que hagan relay hacia ipv6 real pero hoy en día son cada vez
+menos.</p>
+
+<p>y ahora un mensaje:</p>
+
+<p>Si bien <em>Hurricane Electric</em> provee <a href="http://tunnelbroker.net/">túneles</a>, siendo
+esto una solución PERFECTA; hay que tener en cuenta que: No se con que cuchara
+etecsa se coma eso.</p>
+
+<p>Pero volviendo al tema:</p>
+
+<p>Las grandes redes dual-stack como google y facebook, tiene sus 6in4 bien
+afinaditos, así que a través de un 6in4 puedes perfectamente llegar a ellos.
+En otros tiempo, esta solución me pinchó finísimo pero recientemente no la he
+probado.</p>
+
+<p>Digamos que tu ip pública es <strong>220.110.12.190</strong> Calculamos la ipv6 que te toca:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>   ipv6calc --quiet --action conv6to4 220.110.12.190
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Digamos que devolvió el prefijo <strong>2002:a00:1::</strong> Ese será nuestro prefijo, para
+meter cuantas direcciones querramos.</p>
+
+<figure class='code'><figcaption><span>&#8220;creando el túnel&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip tunnel add tun6to4 mode sit ttl <span class="m">255</span> remote any <span class="nb">local </span>10.0.0.1
+</span><span class='line'>ip link <span class="nb">set </span>tun6to4 up
+</span><span class='line'>ip -6 addr add 2002:a00:1::1/16 dev tun6to4
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Una vez levantada la interfaze, levantamos una puerta de enlace que saque todas
+las direcciones ipv6 de el túnel que traduce las ipv4:</p>
+
+<figure class='code'><figcaption><span>&#8220;ruta&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -6 route add 2000::/3 via ::192.88.99.1 dev tun6to4 metric 1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora, asignamos la primera dirección ipv6 a la interfaz pública (eth0):</p>
+
+<figure class='code'><figcaption><span>&#8220;ip a&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -6 addr add 2002:a00:1::cafe/64 dev eth0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A la interfaz de la LAN (eth1) le asignamos una ip también, pero le decimos que
+::cafe es la puerta de enlace predeterminada. En su momento, el servidor con
+debian me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/network/interfaces&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>iface eth0 inet6 static
+</span><span class='line'>        address 2002:a00:1::cafe
+</span><span class='line'>        netmask 64
+</span><span class='line'>
+</span><span class='line'>iface eth1 inet6 static
+</span><span class='line'>        address 2002:a00:1:21c:c0ff:feb2:91c2
+</span><span class='line'>        netmask 64
+</span><span class='line'>        gateway 2002:a00:1::cafe
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En la entrada anterior vimos como usar el forward y como habilitarlo.
+Recuerdas?</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[cortafuegos ipv6 sencillo]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/10/22/cortafuegos-ipv6-sencillo/"/>
+    <updated>2016-10-22T02:56:00-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/10/22/cortafuegos-ipv6-sencillo</id>
+    <content type="html"><![CDATA[<p>En entradas anteriores mencionábamos la necesidad urgente de un cortafuegos para
+ipv6. Aquí les va uno hipotético y sencillo:</p>
+
+<p>Sean:</p>
+
+<ul>
+<li>la red 2001:db8:: /64</li>
+<li>eth0 interfaz de cara al enlace</li>
+<li>eth1 interfaz de cara a la LAN</li>
+<li>2001:db8::1 servidor DNS</li>
+<li>2001:db8::2 servidor de correo</li>
+</ul>
+
+
+<figure class='code'><figcaption><span>&#8220;firewall ipv6&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># al piedra angular</span>
+</span><span class='line'>ip6tables -A INPUT   -m state --state RELATED,ESTABLISHED -j ACCEPT
+</span><span class='line'>ip6tables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+</span><span class='line'>
+</span><span class='line'><span class="c"># nuestro ruter no tiene ningún servicio corriendo</span>
+</span><span class='line'><span class="c"># así que no permitimos nada pa adentro</span>
+</span><span class='line'>ip6tables -A INPUT -j DROP
+</span><span class='line'>
+</span><span class='line'><span class="c"># el forward desde internet hacia la LAN va descartado</span>
+</span><span class='line'>ip6tables -A FORWARD -i eth0 -o eth1 -j DROP
+</span><span class='line'>
+</span><span class='line'><span class="c"># permitimos que las máquinas en la LAN vean los sitios web de internet</span>
+</span><span class='line'>ip6tables -A FORWARD -i eth1 -o eth0 -p tcp --dport <span class="m">80</span>  -j ACCEPT
+</span><span class='line'>ip6tables -A FORWARD -i eth1 -o eth0 -p tcp --dport <span class="m">443</span> -j ACCEPT
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c"># al servidor DNS le permitimos que encueste a otros servidores dns</span>
+</span><span class='line'><span class="c"># nuestro servidor dns es un servidor de cache, para la LAN. Dice:</span>
+</span><span class='line'><span class="c"># lo que venga por la lan, a salir por el enlace, proveniente del servidor DNS</span>
+</span><span class='line'><span class="c"># y además, cuto puerto de destino sea el 53, permítelo</span>
+</span><span class='line'>ip6tables -A FORWARD -i eth1 -o eth0 -p udp --dport <span class="m">53</span> -s 2001:db8::01 -j ACCEPT
+</span><span class='line'>ip6tables -A FORWARD -i eth1 -o eth0 -p tcp --dport <span class="m">53</span> -s 2001:db8::01 -j ACCEPT
+</span><span class='line'>
+</span><span class='line'><span class="c"># permitimos que el servidor de correo sea visible desde afuera</span>
+</span><span class='line'><span class="c"># lo que venga, de afuera, pa adentro, protocolo tcp del puerto tal</span>
+</span><span class='line'><span class="c"># y como destino sea la ip del servidor de correo, permítelo</span>
+</span><span class='line'>ip6tables -A FORWARD -i eth0 -o eth1 -p tcp --dport <span class="m">25</span>  -d 2001:db8::2 -j ACCEPT
+</span><span class='line'>ip6tables -A FORWARD -i eth0 -o eth1 -p tcp --dport <span class="m">80</span>  -d 2001:db8::2 -j ACCEPT
+</span><span class='line'>ip6tables -A FORWARD -i eth0 -o eth1 -p tcp --dport <span class="m">110</span> -d 2001:db8::2 -j ACCEPT
+</span><span class='line'>
+</span><span class='line'><span class="c"># el resto del tráfico proveniente de la LAN hacia internet, le hacemos reject</span>
+</span><span class='line'><span class="c"># esto evita que los teléfonos no se queden locos intentando buscar salida</span>
+</span><span class='line'>ip6tables -A FORWARD -i eth1 -o eth0 -j REJECT
+</span><span class='line'>
+</span><span class='line'><span class="c"># el resto del tráfico que venga de internet, le hacemos DROP</span>
+</span><span class='line'>ip6tables -A FORWARD -i eth0 -o eth1 -j DROP
+</span><span class='line'>
+</span><span class='line'><span class="c"># habilita el forward</span>
+</span><span class='line'>sysctl net.ipv6.conf.all.forwarding<span class="o">=</span>1
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[las reglas del juego ipv6]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/10/22/poniendo-direcciones-ipv6/"/>
+    <updated>2016-10-22T01:17:30-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/10/22/poniendo-direcciones-ipv6</id>
+    <content type="html"><![CDATA[<p>   <blockquote><p>ipv4 se parece a ipv6, lo que las damas se parecen al ajedrez</p></blockquote></p>
+
+<p>Ambos juegos se desarrollan sobre un tablero de 64 casillas, moviendo fichas y
+comiéndose las del adversario. Pero sus fundamentos, aunque similares, no son
+iguales y para que hablar de las reglas.</p>
+
+<p>En la entrada anterior, comentaba los disparates primordiales que he ido viendo
+con respecto a ipv6. Aquí les dejo un básico sobre las reglas del juego con
+ipv6.</p>
+
+<h4>2001:db8:: NO ES UN RANGO USABLE</h4>
+
+<p>Realmente sí lo es, pero está reservado <strong>para documentación</strong> esto quiere
+decir que <strong>NO DEBE HABER UNA LAN CON ESTE RANGO</strong>.</p>
+
+<h4>¿Entonces la LAN y la pública?</h4>
+
+<p>En ipv6, las direcciones de la LAN, son parte de la pública. No existe una
+distinción real entre LAN o internet y sobre todo:</p>
+
+<p><strong>NO HAY NATEO!!!</strong></p>
+
+<p>Te delegarán un prefijo y tú tendrás suficientes ip como para asignarle un ip a
+cada partícula de polvo de tu oficina. Pero ojo:</p>
+
+<p><strong>esas ip serán visibles desde y hacia internet</strong></p>
+
+<p>Cada ip que delegues de tu prefijo, formará parte del ciberspacio. Visto de otra
+forma. Si asignas 2001:db8::0h1 a una máquina en tu LAN, esa dirección será de
+facto, alcanzable desde internet, como mismo las máquinas en tu LAN la ven.</p>
+
+<p>Para lidiar con esta situación, deberás tener bien claro el forward en tu
+router.</p>
+
+<h3>pero yo no tengo una ipv6 real</h3>
+
+<p>No estés tan seguro&hellip; Si tienes una ipv4 pública, tienes algo parecido. Más adelante veremos como
+hacer un túnel 6in4, así que el prefijo de dirección más apropiado para tu LAN
+lo calcularás así:</p>
+
+<figure class='code'><figcaption><span>&#8220;ipv6calc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipv6calc --quiet --action conv6to4 tu.ipv4.publica.aqui
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nota para los imbéciles: ¿¿Notaste lo que dice <strong>tu.ipv4.publica.aqui</strong>??</p>
+
+<p>Eso te devolverá algo como <strong>2002:a00:1::</strong> lo cual es prefijo 6in4 en base a la
+ipv4 pública de tu LAN. Ese será tu prefijo ipv6.</p>
+
+<p>Otra cosa: <strong>NO SE PONEN IP CORRIDAS</strong> como por ejemplo 2002:a00:1::1 y
+2002:a00:1::2 ya que una de las cosas que intenta evitar ipv6 es el escaneo de
+redes. Las ipv6 se calculan en base a la mac. Más tarde veremos como lo hace el
+protocolo SLAAC.</p>
+
+<p>A mi en lo personal, me gusta ponerle al ruter &ldquo;cafe&rdquo; <strong>2002:a00:1::cafe</strong> y un
+ejemplo mas creativo 2002:a00:1::caba110 (caballo) así cada servidor tendría un
+nombre: cafe, caba110, ada, ded0, dad0, 1ce, a5ado</p>
+
+<p>Por cierto, los 0 a la izquierda, se descartan</p>
+
+<p>2002:a00:1::0001 es la misma dirección que 2002:a00:1::1 y de echo, es mucho más
+largo, porque tiene una pila de 0 por medio, pero así se expresa de manera más
+corta. Incluso así puede hacer ping y cualquier referencia a la dirección que el
+stack ipv6 se encarga de comprimirla y descomprimirla, sepa usted.</p>
+
+<p>Note que en <strong>a00</strong> sí se ponen los ceros, porque <strong>NO</strong> están a la izquierda.</p>
+
+<h3>Entonces el Forward</h3>
+
+<p>El forward de un cortafuegos será lo que controla que será visible dentro de tu
+LAN. La puerta de enlace decide qué será visible o no. Más adelante veremos un
+firewall ipv6 lo más sencillo posible.</p>
+
+<h3>y el dhcp?</h3>
+
+<p>Hay servidores dhcp para ipv6, pero el mecanismo bacán es SLAAC. Te adelanto que
+dnsmasq tiene SLAAC, pero el pro, es <strong>radvd</strong></p>
+
+<p>Una configuración de radvd típica se ve así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/radvd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='C'><span class='line'><span class="n">interface</span> <span class="n">eth1</span> <span class="p">{</span>
+</span><span class='line'>     <span class="n">AdvSendAdvert</span> <span class="n">on</span><span class="p">;</span>
+</span><span class='line'>     <span class="n">MinRtrAdvInterval</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'>     <span class="n">MaxRtrAdvInterval</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>     <span class="n">prefix</span> <span class="o">::/</span><span class="mi">64</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">AdvOnLink</span> <span class="n">on</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">AdvAutonomous</span> <span class="n">on</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">AdvRouterAddr</span> <span class="n">on</span><span class="p">;</span>
+</span><span class='line'>     <span class="p">};</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como vez, no especificas que rango de ip darás ni cosa parecida. El rango que
+darás, será del mismo prefijo que tiene en la interfaz eth1 (en este caso).</p>
+
+<h3>¿qué son las direcciones ff02 y fe80?</h3>
+
+<p>Son direcciones link-local. En ipv6, hay direcciones del tipo &ldquo;multicast&rdquo; cuyo
+destino serán todas las ip que estén dislocadas en la red. Esto no debe
+confundirse con anycast y vale aclarar que en ipv6 NO EXISTE broadcast.</p>
+
+<figure class='code'><figcaption><span>&#8220;ping multicast&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># ping ff02::1%wlp2s0</span>
+</span><span class='line'>PING ff02::1%wlp2s0<span class="o">(</span>ff02::1%wlp2s0<span class="o">)</span> <span class="m">56</span> data bytes
+</span><span class='line'><span class="m">64</span> bytes from fe80::420e:85ff:fe7a:e6d7%wlp2s0: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">17</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span><span class="m">112</span> ms
+</span><span class='line'><span class="m">64</span> bytes from fe80::420e:85ff:fe7a:e6d7%wlp2s0: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">18</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>7.42 ms
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Eso hará le hará ping a malanga y puesto de vianda que tengan un
+<a href="https://es.wikipedia.org/wiki/Direcci%C3%B3n_de_Enlace-Local">link-local</a> en la
+red que tiene conectado el cable de eth0.</p>
+
+<p>Sin embargo, al hacer ping a <strong>ff02::2</strong> solo responderán aquellas ipv6 que sean
+<strong>routers</strong>. Eso es una manera de saber quien es un router o simplemente si hay
+alguno. O sea, una manera de comprobar, si la red tiene salida a la red de
+redes.</p>
+
+<p>Las direcciones <strong>fe80::</strong> son enlaces locales. Podría decirse que las
+direcciones fe80 son como decir &ldquo;arp&rdquo; pero se les puede hacer ping y otras
+boberías. O sea, es de palo tener direcciones fe80:: aparte de las globales.</p>
+
+<h4>¿y dnsmasq?</h4>
+
+<p>Ese es otro que bien baila y con cualquier música. Tiene un SLAAC implementado
+que es una maravilla. Al parámetro <strong>dhcp-range</strong> se le mandan unas clásulas
+especiales que hacen maravillas. La que más me gusta es <strong>ra-names</strong> que asigna
+una ip y un registro AAAA para máquina.</p>
+
+<h4>que bolá con bind?</h4>
+
+<p>Los registros del tipo AAAA resuelven punteros address para direcciones ipv6.</p>
+
+<p>Sean:</p>
+
+<ul>
+<li> ns01 el nombre del servidor</li>
+<li> ns01 registro A con ip 192.168.0.1</li>
+<li> ns01 registro AAAA con ip 2001:db8::cafe</li>
+<li> proxy registro CNAME que apunta a ns01</li>
+</ul>
+
+
+<p>Cuando preguntes por la ipv6 de proxy, resolverá 2001:db8::cafe</p>
+
+<figure class='code'><figcaption><span>&#8220;dominio.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="p">;</span> El <span class="m">1</span> el proxy
+</span><span class='line'>ns01         IN      A       192.168.0.1
+</span><span class='line'>ns01         IN      AAAA    2001:db8::cafe
+</span><span class='line'>             IN      MX  <span class="m">0</span>   ns01
+</span><span class='line'>router       IN      CNAME   ns01
+</span><span class='line'>proxy        IN      CNAME   ns01
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ejemplo vivo:</p>
+
+<figure class='code'><figcaption><span>&#8220;ping ipv6 a un CNAME&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>ping -6 proxy.hcg.sld.cu
+</span><span class='line'>PING proxy.hcg.sld.cu<span class="o">(</span>ns01 <span class="o">(</span>2002:a00:1::cafe<span class="o">))</span> <span class="m">56</span> data bytes
+</span><span class='line'><span class="m">64</span> bytes from artema <span class="o">(</span>2002:a00:1::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.100 ms
+</span><span class='line'><span class="m">64</span> bytes from artema <span class="o">(</span>2002:a00:1::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">2</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.174 ms
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[la resolución 185/2016]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/10/22/ipv6/"/>
+    <updated>2016-10-22T00:51:14-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/10/22/ipv6</id>
+    <content type="html"><![CDATA[<p>El otro día, me doy por enterado que que lanzaron la resolución 185/2016 nada
+menos que sobre la implementación de ipv6. Como todo en cuba; llega tarde pero
+bien recibido. Me reí muchísimo cuando la leí. No con la ley, si no imaginándome
+la puesta en vigor de la ley.</p>
+
+<p>Me imaginé:</p>
+
+<ul>
+<li>la gente poniendo ipv6 en su LAN con el prefijo 2001:db8::</li>
+<li>los cortafuegos sin configurar</li>
+<li>los que no leen preguntando como hacer un forward o un nateo</li>
+</ul>
+
+
+<p>Y la mierda estaba por llover, cuando vi mi vaticinio materializándose ante mis
+ojos.</p>
+
+<h3>Podría ser este tu caso</h3>
+
+<p>Luego de entablar un diálogo técnico, una persona a la que consideraba buena en
+este asunto de los servidores y redes, me dice que implementó ipv6 hace como un
+mes, pero que tenía &ldquo;un problema&rdquo;, ya que no lograba hacer un NAT para que el
+servidor de correo dentro de la LAN, recibiera los correos desde afuera.</p>
+
+<p>Cuando le dije que me mandara su cortafuegos, me dijo que no tenía un
+cortafuegos aún para ipv6.</p>
+
+<p>Me insistió que por favor le explicara <strong>cómo hacer el singao nateo</strong>.</p>
+
+<p>Le pedí que me mostrara como tenía ipv6 desplegado y me dijo que la puerta de
+enlace era 2001:db8::1 y el servidor de correo ::2</p>
+
+<p>Llegado a ese punto, lo mandé a fumarse un peo, pero volvió a llamar; pasando
+por alto el collar de insultos que le había puesto antes de tirar el teléfono.</p>
+
+<h3>Sobre el &ldquo;nateo de ipv6&rdquo;</h3>
+
+<p><strong>ipv6 NO lleva nateo. El nateo fue una solución que mandó a la mierda ipv6</strong></p>
+
+<p>Si tienes una ip pública con máscara /64 es visible desde y hacia internet. O
+sea, que si tu servidor de correo tiene una dirección como 2001:db8::2/64 <strong>YA
+ES VISIBLE EN INTERNET</strong> y si no tienen cortafuegos pinguísimo <strong>aprepárate</strong>.</p>
+
+<p>Más detalles en la siguiente entrada&hellip;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[driver broadcom]]></title>
@@ -22,8 +585,9 @@
 bluetooth y una wifi. Me imagino que los broadcom modernos, tengan además dual
 band (wifi de 5Ghz).</p>
 
-<p>En la entrada anterior, mencioné que había adquirido unos audífonos bluetooth.
-Pues el driver opensource <strong>brcm80211</strong> no pinchaba bien del todo con el
+<p>En la entrada anterior, mencioné que había adquirido unos audífonos bluetooth;
+junto con él, un montón de nuevas resinguetas (como todo en archlinux). Resulta
+que el driver opensource <strong>brcm80211</strong> no pinchaba bien del todo con el
 bluetooth. Al punto que no podía alejarme ni un metro del dispositivo, además,
 que el mero echo de moverme, hacía que el audio se cortara.</p>
 
@@ -34,12 +598,9 @@ lo había dicho el célebre comunistón Chino:</p>
 
 <p>   <blockquote><p>Todo conocimiento auténtico nace de la experiencia directa</p><footer><strong>Mao Zedong</strong></footer></blockquote></p>
 
-<p>Al parecer el, el driver ya viene con el sistema, sin embargo, necesita un
-firmware para poder levantar el hardware. Parece que le hicieron ingenería
-inversa al controlador.</p>
-
-<p>Por suerte hay un paquete en aur que hace toda la pincha, se llama
-<strong>b43-firmware</strong></p>
+<p>Al parecer, el driver ya viene con el sistema, sin embargo, necesita un firmware
+para poder levantar el hardware. Por suerte hay un paquete en <strong>AUR</strong> que hace
+toda la pincha, se llama <strong>b43-firmware</strong></p>
 
 <p>Tras instalarlo, hay que poner en la lista negra, el driver anterior, si no se
 forma un reguero tremendo a la hora de cargar los driver y seleccionará el
@@ -54,7 +615,40 @@ opensource por defecto.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>y reinicia&hellip;</p>
+<p>Por si las moscas, ejecuta:</p>
+
+<figure class='code'><figcaption><span>&#8220;depmod&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># depmod -a</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y reinicia</p>
+
+<h4>brcm80211</h4>
+
+<p>La wifi pincha DE PINGA. Dentro de la banda de los 2.4Ghz, hace de todo, desde
+AP (modo master) hasta la dichosa autenticación WPA2. Soporta incluso survey.
+<strong>PERO</strong> el bluetooth pincha de asco. Se desaparece cuando lo usas más de 20
+minutos, diciendo que un dispositivo USB fue desconectado.</p>
+
+<h4>broadcom-wl</h4>
+
+<p>Sin dudas, el driver propietario es una seda, dice que habilita los canales de
+5Ghz pero es mentira. El bluetooth pincha de maravilla, sobre todo en lo
+referente a calidad de audio <strong>PERO</strong> cada vez que cambias de kernel el driver
+debe recompilarse y suele fallar (eso dicen). En tal caso, reinstalar el driver
+es una solución. Además, te recuerdo que <strong>no es de código abierto</strong>. Sabe dios
+que backdoor te mete dentro del kernel. En cuanto a las prestaciones de la wifi,
+hay unas cuantas pérdidas: No puede autenticar con WPA2 y no soporta modo
+master. Tampoco el survey parece pinchar.</p>
+
+<h4>b43</h4>
+
+<p>La wifi, tiene las mismas prestaciones que el propietario. El bluetooth funciona
+excelente. La wifi se porta muy bien los primeros días. <strong>PERO</strong> El día que
+amanezca con el moño virao la wifi se desparece, corriendo depmod AVEEECEES
+aparece. O sea, la mismas miserias del propietario, pero con la aleatoria
+posibilidad de que amanezcas sin wifi.</p>
 ]]></content>
   </entry>
   
@@ -109,6 +703,34 @@ pero no pincha. Hay que deshabilitarlo con systemd. Ejecuta esto <strong>como ro
 <p>Reinicia y al conectar los audífonos, el al hacerle click al dipositivo, debe
 darte una opción que conduce a la configuración de audio. Ahí mismo cambias el
 modo y seleccionas el dispositivo de salida de audio por defecto.</p>
+
+<p>Otra cuestión es que pulseaudio use los audífonos como salida de audio por
+defecto al conectarlos. Finalmente decidí pasar mis configuraciones de
+pulseaudio al directorio de usuario:</p>
+
+<figure class='code'><figcaption><span>&#8220;pulseudio en el home&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir ~/.config/pulse/
+</span><span class='line'>cp -ruv /etc/pulse/ ~/.config/pulse/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Localiza el fichero <strong>~/.config/pulse/default.pa</strong> y al final añadele esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;default.pa&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema pulse<span class="o">]</span><span class="nv">$ </span>tail -4 ~/.config/pulse/default.pa
+</span><span class='line'>
+</span><span class='line'><span class="c"># file:///usr/share/doc/arch-wiki/html/en/PulseAudio/Troubleshooting.html#Bluetooth</span>
+</span><span class='line'><span class="c"># automatically switch to newly-connected devices</span>
+</span><span class='line'>load-module module-switch-on-connect
+</span></code></pre></td></tr></table></div></figure>
+
+
+
 ]]></content>
   </entry>
   
@@ -122,7 +744,7 @@ Resulta que cuando levanta la red, no se por qué, telepathy-salut se queda
 mariado y el chat &ldquo;gente cerca&rdquo; no ve a los usuarios. Al reiniciar avahi se le
 quita el mareo. Entonces la talla sería que el avahi se reiniciara solo.</p>
 
-<p>Resulta que NetworkManger, tiene los lamados dispatcher. Puedes ver
+<p>Resulta que NetworkManger, tiene los llamados dispatcher. Puedes ver
 <a href="https://developer.gnome.org/NetworkManager/stable/NetworkManager.html">la documentación aquí</a></p>
 
 <p>Conclusión, el directorio /etc/NetworkManager/dispatcher.d/ creas los
@@ -150,8 +772,8 @@ la conectividad, etc&hellip; Puedes ver los detalles en el link anterior.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>No hay problema con para empathy, ya que el framework telepthy, será reiniciado
-por dbus (con suerte).</p>
+<p>No hay problema con detener empathy, ya que el framework telepathy, será
+reiniciado por dbus o por avahi (con suerte).</p>
 ]]></content>
   </entry>
   
@@ -575,7 +1197,7 @@ configuración sería más o menos así en el fichero <strong>/etc/esmtprc</stro
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Listo! El correo <a href="&#109;&#x61;&#105;&#108;&#116;&#x6f;&#58;&#x72;&#x6f;&#111;&#x74;&#64;&#116;&#x75;&#x64;&#x6f;&#109;&#x69;&#x6e;&#105;&#x6f;&#x2e;&#x63;&#117;">&#114;&#111;&#x6f;&#x74;&#x40;&#116;&#x75;&#x64;&#111;&#x6d;&#x69;&#110;&#x69;&#x6f;&#x2e;&#99;&#x75;</a> recibirá correos de <a href="&#109;&#97;&#x69;&#x6c;&#x74;&#x6f;&#x3a;&#99;&#114;&#111;&#x6e;&#x40;&#x74;&#x75;&#x64;&#111;&#109;&#x69;&#x6e;&#x69;&#111;&#46;&#x63;&#x75;">&#x63;&#x72;&#111;&#110;&#x40;&#116;&#117;&#x64;&#111;&#x6d;&#x69;&#x6e;&#105;&#111;&#x2e;&#99;&#117;</a> con la
+<p>Listo! El correo <a href="&#109;&#x61;&#x69;&#108;&#x74;&#x6f;&#x3a;&#x72;&#111;&#x6f;&#116;&#64;&#x74;&#117;&#100;&#x6f;&#109;&#105;&#x6e;&#x69;&#111;&#x2e;&#x63;&#117;">&#114;&#x6f;&#x6f;&#116;&#x40;&#116;&#x75;&#x64;&#x6f;&#109;&#x69;&#x6e;&#x69;&#111;&#46;&#99;&#x75;</a> recibirá correos de <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#x3a;&#x63;&#x72;&#111;&#x6e;&#64;&#x74;&#x75;&#100;&#x6f;&#109;&#105;&#110;&#x69;&#111;&#x2e;&#99;&#117;">&#99;&#x72;&#111;&#x6e;&#x40;&#116;&#117;&#100;&#111;&#x6d;&#105;&#x6e;&#x69;&#x6f;&#46;&#99;&#117;</a> con la
 salida del cron&hellip;</p>
 ]]></content>
   </entry>
@@ -1519,447 +2141,6 @@ ahora contiene también la ruta bin/ donde se instalaron las gemas&hellip;</p>
 
 <p>Note en caso de tener varios rubies instalados, en environments, tendrás junto a
 default, los demás script necesarios para cargar dichos rubies.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[data confirm en un boton]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/02/22/data-confirm-en-un-boton/"/>
-    <updated>2016-02-22T14:20:33-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/02/22/data-confirm-en-un-boton</id>
-    <content type="html"><![CDATA[<p>Usualmente, tenemos un botón en un formulario y nos gustaría que al pulsar este,
-nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
-
-<figure class='code'><figcaption><span>&#8221;_navbar.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='rhtml'><span class='line'>  <span class="cp">&lt;%=</span> <span class="n">form_tag</span> <span class="n">manager_email_path</span><span class="p">,</span><span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;navbar-form navbar-left&#39;</span><span class="p">,</span><span class="ss">role</span><span class="p">:</span> <span class="s1">&#39;search&#39;</span><span class="p">,</span><span class="nb">method</span><span class="p">:</span> <span class="ss">:post</span> <span class="k">do</span> <span class="cp">%&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;form-group&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">name=</span><span class="s">&quot;email&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">class=</span><span class="s">&quot;form-control&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;fulanito@infomed.sld.cu&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>     <span class="cp">&lt;%=</span> <span class="n">button_tag</span><span class="p">(</span><span class="ss">:class</span> <span class="o">=&gt;</span> <span class="s2">&quot;btn btn-default&quot;</span><span class="p">,</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span><span class="ss">:confirm</span> <span class="o">=&gt;</span> <span class="s1">&#39;Seguro?&#39;</span><span class="p">}</span> <span class="p">)</span> <span class="k">do</span> <span class="cp">%&gt;</span>
-</span><span class='line'>        Enviar
-</span><span class='line'>     <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
-</span><span class='line'>  <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[los hooks de pacman]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/02/20/hooks-de-pacman/"/>
-    <updated>2016-02-20T03:14:28-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/02/20/hooks-de-pacman</id>
-    <content type="html"><![CDATA[<p>Finalmente, después de tantas plegarias, tenemos <strong>hooks</strong> en pacman. Lo cual
-nos permite, por medio de la poderosa API de alpm correr script antes o después
-de cada instalación.</p>
-
-<p>Desgraciadamente, hay poca documentación sobre el tema. Para colmo, la página de
-man de alpm-hooks, no dice como deben llamarse los archivos. Tuve que adivinar
-que la extensión <strong>.hook</strong> era necesaria.</p>
-
-<p>Primero que todo, vamos a especificar en <strong>/etc/pacman.conf</strong> que el directorio
-de hooks está en otro lado.</p>
-
-<figure class='code'><figcaption><span>&#8220;escope de</span><a href='http://uranio-235.github.io/etc/pacman.conf"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">HookDir</span> <span class="o">=</span> /etc/pacman.d/hooks/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>¿Por qué aquí? Muy sencillo. Quiero que al hacer una salva de mi configuración
-de pacman, los hooks también se salven. Un hook sencillo, podría correr un
-comando simple, como el del ejemplo en la página de man; sin embargo, uno
-complejo, sería mejor ponerlo en un script.</p>
-
-<p>Lo más importante: El fichero con el hook <strong>debe tener la extensión .hook</strong> Si
-no pacman se limpia el culo con él.</p>
-
-<p>Creemos uno de ejemplo, llamado /etc/pacman.d/hooks/migancho<strong>.hook</strong> y
-digámosle que ejecutará el script, sito en /etc/pacman.d/hooks/migancho.sh</p>
-
-<p>Sería así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.hook&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>Trigger<span class="o">]</span>
-</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Install
-</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Upgrade
-</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Remove
-</span><span class='line'><span class="nv">Type</span> <span class="o">=</span> Package
-</span><span class='line'><span class="nv">Target</span> <span class="o">=</span> *
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Action<span class="o">]</span>
-</span><span class='line'><span class="nv">Description</span> <span class="o">=</span> sincronizando disco
-</span><span class='line'><span class="nv">Depends</span> <span class="o">=</span> coreutils
-</span><span class='line'><span class="nv">When</span> <span class="o">=</span> PostTransaction
-</span><span class='line'><span class="nv">Exec</span> <span class="o">=</span> /etc/pacman.d/hooks/migancho.sh
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ve, la cláusula <strong>Operation</strong> está repetida, con los 3 posibles momentos
-que se disparará el gancho. Podrías hacerlo en uno de ellos solamente. La
-cláusula <strong>Description</strong> se verá cuando pacman termine de instalar. En este caso
-cuando termine, ya que la cláusula <strong>When</strong> especifica <em>PreTransaction</em> o
-<em>PostTransaction</em> (antes o después de la transacción).</p>
-
-<p>Ahora creamos el script <strong>migancho.sh</strong> y le ponemos todas las aberraciones que
-queremos llevar a cabo tras una instalación, desinstalación o actualización.</p>
-
-<p>Digamos por ejemplo, en este caso uno trivial, ejecutar sync cuando termine una
-operación, lo cual evita que si falla la energía en ese momento, queden datos
-por escribirse en la cache disco (con suerte).</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>/usr/bin/sync
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Veámoslo en acción</p>
-
-<figure class='code'><figcaption><span>&#8220;el hook&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># pacman -S --noconfirm unrar</span>
-</span><span class='line'>warning: unrar-1:5.3.11-1 is up to date -- reinstalling
-</span><span class='line'>resolving dependencies...
-</span><span class='line'>looking <span class="k">for</span> conflicting packages...
-</span><span class='line'>
-</span><span class='line'>Packages <span class="o">(</span>1<span class="o">)</span> unrar-1:5.3.11-1
-</span><span class='line'>
-</span><span class='line'>Total Installed Size:  0.32 MiB
-</span><span class='line'>Net Upgrade Size:      0.00 MiB
-</span><span class='line'>
-</span><span class='line'>:: Proceed with installation? <span class="o">[</span>Y/n<span class="o">]</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking keys in keyring                                                   <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking package integrity                                                 <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> loading package files                                                      <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking <span class="k">for</span> file conflicts                                                <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking available disk space                                              <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'>:: Processing package changes...
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> reinstalling unrar                                                         <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'>:: Running post-transaction hooks...
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> sincronizando disco
-</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c">#</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Véanlo como dice <em>sincronizando discos</em> en español, corriendo la operación (1/1)
-ya que hay un solo hook.</p>
-
-<p>Sencillo!!! Como todo en ArchLinux: KISS</p>
-
-<p>Podría volverse más creativo&hellip;</p>
-
-<p>Digamos por ejemplo, que yo quiero tener la lista de paquetes que tiene mi
-sistema antes y después de una instalación, para saber que se instalo y cuando.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/listpackages.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>pacman -Qe &gt; /root/<span class="k">$(</span>date +%j%H%M%S<span class="k">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Eso creará un fichero similar a /root/051153712, el nombre, es el yday (día del
-año) y con la hora, minuto y segundo. Dentro del fichero, una lista de todos los
-paquetes instalados. Muy útil si eres tester o desarrollador, o simplemente
-quieres saber que paquetes había antes o después de instalar.</p>
-
-<p>Por cierto, otra manera de saber que si instalo hoy y ayer, es esta:</p>
-
-<figure class='code'><figcaption><span>&#8220;¿cuando fue?&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ls -ltcr --time-style +%j /var/lib/pacman/local/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Devuelve el día del año en el que se instaló un paquete. Así sabes que se
-instaló hoy. Te recuerdo, que en ArchLinux, todos los días hay algo nuevo que
-instalar :D</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[arch compartir paquetes]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/02/01/arch-compartir-paquetes/"/>
-    <updated>2016-02-01T13:56:56-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/02/01/arch-compartir-paquetes</id>
-    <content type="html"><![CDATA[<p>No desde cuando, pero por fin, un sueño echo realidad en ArchLinux. Revertir un
-paquete de su forma instalada, a su forma de paquete. Esto puede no resultar
-algo novedoso para el que tenga internet como algo cotidiano, pero para los
-cubanos de a pie, resulta una verdadera novedad.</p>
-
-<p>Digamos que mi socio necesita instalar nginx en su arch, misma arquitectura que
-el mío. Simplemente, le genero el paquete a partir de mi instalación y listo.</p>
-
-<figure class='code'><figcaption><span>&#8220;bacman en acción&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@samsung ~<span class="o">]</span><span class="c"># cd /var/cache/pacman/pkg/</span>
-</span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># bacman nginx</span>
-</span><span class='line'><span class="o">==</span>&gt; Package: nginx-1.8.1-1
-</span><span class='line'>  -&gt; Copying package files...
-</span><span class='line'>    -&gt; Generating .PKGINFO metadata...
-</span><span class='line'>    -&gt; Generating the package...
-</span><span class='line'>  <span class="o">==</span>&gt; Done.
-</span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># ls nginx*</span>
-</span><span class='line'>nginx-1.8.1-1-x86_64.pkg.tar.xz
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Pues <strong>bacman</strong> es la respuesta. Ahora se puede regresar un paquete a su estado;
-digamos &ldquo;pristino&rdquo;.</p>
-
-<p>¡¡OJO!! <strong>TUS</strong> ficheros de configuración, también se empaquetan.</p>
-
-<p>Usualmente solía mantener en mi caché los paquetes necesarios para llevar a cabo
-una instalación de archlinux usando mi laptop; pero con este nuevo método, la
-cosa cambia bastante. Ahora solo debo cargar con el &ldquo;.iso&rdquo;</p>
-
-<p>Mi proxima idea es reconstruir el grupo <strong>base</strong> completo dentro de la cache y
-luego con <strong>repo-add</strong> crear un mirror, capaz de llevar a cabo una instalación
-de sistema.</p>
-
-<p>De momento quiero probar este script:</p>
-
-<figure class='code'><figcaption><span>&#8220;pristine.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># cambiate al directorio de cache</span>
-</span><span class='line'><span class="nb">cd</span> /var/cache/pacman/pkg/
-</span><span class='line'>
-</span><span class='line'><span class="c"># itera por los paquetes del sistema base</span>
-</span><span class='line'><span class="k">for</span> pkg in <span class="k">$(</span>pacman -Qeg base<span class="p">|</span>awk <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span><span class="p">;</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c"># háblate</span>
-</span><span class='line'>   <span class="nb">echo</span> <span class="nv">$pkg</span> <span class="s1">&#39;&gt;&#39;</span> <span class="k">$(</span>pacman -Qi <span class="nv">$pkg</span><span class="p">|</span>grep Description<span class="p">|</span>cut -d : -f 2<span class="k">)</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c"># reviértelo</span>
-</span><span class='line'>   bacman <span class="nv">$pkg</span> 2&gt; /dev/null &gt; /dev/null
-</span><span class='line'>
-</span><span class='line'><span class="k">done</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># crea el repo</span>
-</span><span class='line'>rm /var/cache/pacman/pkg/custom.db.tar.gz
-</span><span class='line'>repo-add /var/cache/pacman/pkg/custom.db.tar.gz /var/cache/pacman/pkg/*.pkg.tar.xz
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Tendré que probar a instalar usando mi cache como repo. Poniéndole a la máquina
-una source como esta:</p>
-
-<figure class='code'><figcaption><span>&#8220;pacman.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>mirepo<span class="o">]</span>
-</span><span class='line'><span class="nv">SigLevel</span> <span class="o">=</span> Optional TrustAll
-</span><span class='line'><span class="nv">Server</span> <span class="o">=</span> http://localhost:8080
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><em>Nota para los imbéciles: Cambiar <strong>localhost</strong> por la ip de la máquina que está compartiendo la caché.</em></p>
-
-<p>Y para servir tu cache como repo, puedes usar darkhttpd</p>
-
-<figure class='code'><figcaption><span>&#8220;darkhttpd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>darkhttpd /var/cache/pacman/pkg/ --chroot --port 8080
-</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[bind9, registro arbitratio]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/01/25/hostname-arbitrario-en-bind9/"/>
-    <updated>2016-01-25T20:35:37-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/01/25/hostname-arbitrario-en-bind9</id>
-    <content type="html"><![CDATA[<p>Para este tipo de cosas, usualmente recomiendo
-<a href="https://wiki.archlinux.org/index.php/dnsmasq">dnsmasq</a> pero aveces, no nos
-queda más remiendo que usar bind9, por N motivos.</p>
-
-<p>En algunas ocasiones, nos vemos forzados a declarar registros para punteros, a
-host que nada tienen que ver con nuestro domino. Por ejemplo, queremos que el
-host time.windows.com apunte a nuestro servidor de tiempo, para que todos las
-computadoras con windows de la red, se actualicen por nuestro servidor ntp.</p>
-
-<p>En salud, aveces es mejor declarar localmente los punteros a los servidores de
-correo de salud, que hacer otro forward y además, tener que especificarle un
-segundo servidor DNS a nuestros usuarios.</p>
-
-<p>Para lograr esto, debemos declarar una raíz dns en nuestro named.conf, que
-responda a todo, o sea, &ldquo;.&rdquo;, a mi me quedó así.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/bind/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// la zona pa hacer lo que me de la gana</span>
-</span><span class='line'><span class="nx">zone</span> <span class="s2">&quot;.&quot;</span> <span class="p">{</span>
-</span><span class='line'>   <span class="nx">type</span> <span class="nx">master</span><span class="p">;</span>
-</span><span class='line'>   <span class="nx">file</span> <span class="s2">&quot;/etc/bind/fakeroot.zone&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Acá, el fichero <strong>fakeroot.zone</strong> tendrá los registros, donde declaramos los
-FQDN como si fueran hostnames.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/bind/fakeroot.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err">@</span>       <span class="nx">IN</span>      <span class="nx">SOA</span>     <span class="p">.</span> <span class="nx">hostmaster</span><span class="p">.</span><span class="nx">domain</span><span class="p">.</span><span class="nx">com</span><span class="p">.</span> <span class="p">(</span> <span class="mi">1</span> <span class="mi">3</span><span class="nx">h</span> <span class="mi">1</span><span class="nx">h</span> <span class="mi">1</span><span class="nx">w</span> <span class="mi">1</span><span class="nx">d</span> <span class="p">)</span>
-</span><span class='line'><span class="nx">localhost</span>             <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">127.0</span><span class="p">.</span><span class="mf">0.1</span>
-</span><span class='line'><span class="err">@</span>                     <span class="nx">IN</span>      <span class="nx">NS</span>      <span class="nx">localhost</span><span class="p">.</span>
-</span><span class='line'><span class="p">;</span>
-</span><span class='line'><span class="p">;</span> <span class="nx">Los</span> <span class="nx">servidores</span> <span class="nx">de</span> <span class="nx">correo</span> <span class="nx">de</span> <span class="nx">infomed</span>
-</span><span class='line'><span class="nx">smtp</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">201.220</span><span class="p">.</span><span class="mf">211.39</span>
-</span><span class='line'><span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>            <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">201.220</span><span class="p">.</span><span class="mf">211.7</span>
-</span><span class='line'><span class="nx">pop3</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>
-</span><span class='line'><span class="nx">imap</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>
-</span><span class='line'><span class="p">;</span>
-</span><span class='line'><span class="p">;</span> <span class="nx">Los</span> <span class="nx">servidores</span> <span class="nx">de</span> <span class="nx">tiempo</span> <span class="nx">m</span><span class="err">á</span><span class="nx">s</span> <span class="nx">pedidos</span>
-</span><span class='line'><span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>          <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">10.1</span><span class="p">.</span><span class="mf">1.1</span>
-</span><span class='line'><span class="o">*</span><span class="p">.</span><span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span><span class="p">.</span>       <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
-</span><span class='line'><span class="nx">time</span><span class="p">.</span><span class="nx">microsoft</span><span class="p">.</span><span class="nx">com</span>    <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
-</span><span class='line'><span class="nx">time</span><span class="p">.</span><span class="nx">windows</span><span class="p">.</span><span class="nx">com</span>      <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
-</span><span class='line'><span class="nx">time</span><span class="o">-</span><span class="nx">ios</span><span class="p">.</span><span class="nx">apple</span><span class="p">.</span><span class="nx">com</span>    <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En este caso de ejemplo, declaramos un par de host que son de salud, con una ip
-externa. Abajo, los host ntp más típicos, apuntando a nuestro servidor de
-tiempo.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[espejos de clamav y salud]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/01/19/espejos-de-clamav/"/>
-    <updated>2016-01-19T13:32:53-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/01/19/espejos-de-clamav</id>
-    <content type="html"><![CDATA[<p>ClamAV, el antivirus más subestimado en mi opinión. De siempre, lo he usado por
-compromiso; aunque nunca he sentido la necesidad de hacerlo.</p>
-
-<p>Infomed, mantiene un espejo de ClamAV bien al día pero no un mirror como tal.</p>
-
-<p>Decidí bajarlos para mi máquina y usar la misma como espejo. Después de todo, la
-misma tiene lo que necesita para correr un mirror. Es algo tan sencillo como
-crear un virtualhost y poner en su raíz las actualziaciones.</p>
-
-<p>Más fácil aún, es usar /var/lib/clamav/ como raíz y así TU actualización se
-convierte en el mirror.</p>
-
-<p>En mi caso, el virtualhost de nginx me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/nginx/sites-enabled/clamav&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>server <span class="o">{</span>
-</span><span class='line'>   listen   10.1.1.14:80<span class="p">;</span>
-</span><span class='line'>   listen   10.1.1.14:443 ssl<span class="p">;</span>
-</span><span class='line'>   server_name clamav.hcg.sld.cu<span class="p">;</span>
-</span><span class='line'>   location / <span class="o">{</span>
-</span><span class='line'>      root /var/lib/clamav/<span class="p">;</span>
-</span><span class='line'>   <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El resto del truco está en el lado del cliente, ya que hay que hacerle una
-burumba a freshclam. Decirle que no busque scripts, así me quedó el freshclam.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/clamav/freshclam.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>UpdateLogFile /var/log/clamav/freshclam.log
-</span><span class='line'>DatabaseMirror clamav.hcg.sld.cu
-</span><span class='line'>NotifyClamd /etc/clamav/clamd.conf
-</span><span class='line'>ScriptedUpdates no
-</span><span class='line'>PrivateMirror clamav.hcg.sld.cu
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>No olvides el puntero a <strong>clamav.tudominio.cu</strong></p>
 ]]></content>
   </entry>
   

@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="certificado autofirmado 22/11/2015 7:33 pm | Comments Ya hemos visto en varios post, que para hacer un servicio con SSL, requerimos un
-certificado &hellip;">
+  <meta name="description" content="espejos de clamav y salud 19/01/2016 1:32 pm | Comments ClamAV, el antivirus más subestimado en mi opinión. De siempre, lo he usado por
+compromiso; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +81,495 @@ certificado &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/19/espejos-de-clamav/">espejos de clamav y salud</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-01-19T13:32:53-05:00'><span class='date'>19/01/2016</span> <span class='time'>1:32 pm</span></time>
+        
+           | <a href="/blog/2016/01/19/espejos-de-clamav/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/01/19/espejos-de-clamav/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>ClamAV, el antivirus más subestimado en mi opinión. De siempre, lo he usado por
+compromiso; aunque nunca he sentido la necesidad de hacerlo.</p>
+
+<p>Infomed, mantiene un espejo de ClamAV bien al día pero no un mirror como tal.</p>
+
+<p>Decidí bajarlos para mi máquina y usar la misma como espejo. Después de todo, la
+misma tiene lo que necesita para correr un mirror. Es algo tan sencillo como
+crear un virtualhost y poner en su raíz las actualziaciones.</p>
+
+<p>Más fácil aún, es usar /var/lib/clamav/ como raíz y así TU actualización se
+convierte en el mirror.</p>
+
+<p>En mi caso, el virtualhost de nginx me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/nginx/sites-enabled/clamav&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>server <span class="o">{</span>
+</span><span class='line'>   listen   10.1.1.14:80<span class="p">;</span>
+</span><span class='line'>   listen   10.1.1.14:443 ssl<span class="p">;</span>
+</span><span class='line'>   server_name clamav.hcg.sld.cu<span class="p">;</span>
+</span><span class='line'>   location / <span class="o">{</span>
+</span><span class='line'>      root /var/lib/clamav/<span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El resto del truco está en el lado del cliente, ya que hay que hacerle una
+burumba a freshclam. Decirle que no busque scripts, así me quedó el freshclam.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/clamav/freshclam.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>UpdateLogFile /var/log/clamav/freshclam.log
+</span><span class='line'>DatabaseMirror clamav.hcg.sld.cu
+</span><span class='line'>NotifyClamd /etc/clamav/clamd.conf
+</span><span class='line'>ScriptedUpdates no
+</span><span class='line'>PrivateMirror clamav.hcg.sld.cu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No olvides el puntero a <strong>clamav.tudominio.cu</strong></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/14/clamav-en-windows/">clamav en windows</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-01-14T21:39:45-05:00'><span class='date'>14/01/2016</span> <span class='time'>9:39 pm</span></time>
+        
+           | <a href="/blog/2016/01/14/clamav-en-windows/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/01/14/clamav-en-windows/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Síiiii, por loco que suene&hellip;</p>
+
+<p>Una compañía llamada Source Fire, desarrolló un producto llamado &ldquo;immunet&rdquo;, Por
+lo que vi, es una herramienta de &ldquo;cloud security&rdquo;. En teoría; un antivirus que
+no necesita ser actualizado, una especie de community driven (reescribió la
+rueda y le quedó bien).</p>
+
+<p>Esto en cuba es un chiste, por el ancho de banda. No obstante, pasarle todos tus
+archivos a un servidor para que este los verifique, no me parece un buen
+negocio. Aunque sabe dios que hace windows con tus archivos&hellip;</p>
+
+<p>No obstante, estos señores, incluyeron el motor de clamav y frontend para
+escanear en tiempo real usando clamav y <strong>QUE PINCHA</strong>. Se la comieron!</p>
+
+<p>Quiero advertirte que: Mis conocimientos de windows son BIEN REDUCIDOS, así que
+veré como me hago entender. Trataré de escribir de memoria lo que hice, antes de
+que se me olvide.</p>
+
+<p>Primero llégate a <a href="http://www.immunet.com/free/index.html">www.immunet.com</a> y
+manda a descargar el antivirus. Te dará un ficherito triste de unos kilobytes.
+Este es el downloader.</p>
+
+<p>Ve a una máquina con windows y ejecuta el downloader. Pulsa un botón que dice
+&ldquo;detalles&rdquo;, para que veas que está instalando.</p>
+
+<p>Antes de que se cierre el dialogo del instalador, o sea, antes de pulsar el
+botón &ldquo;Finalizar&rdquo;, mira en las rutas, el directorio temporal donde se está
+descargando y localiza un fichero llamado <strong>protect-latest.exe</strong></p>
+
+<p>No he logrado capturar la URL!!! Sería bueno, así te evitas el ritual anterior.
+No es algo que puedas trazar con squid, ya que la descarga es una conexión SSL.</p>
+
+<p>Una vez que tengas <strong>protect-latest.exe</strong> en la mano, podrás instalarlo donde
+quieras.</p>
+
+<p>Cuando termines, te puso el ícono de immunet en el escritorio. Ejecútalo y
+dirígete a <strong>settings</strong>, ahí le pones el botón <strong>on</strong> a un chucho que dice
+<strong>Enable Clamav Engine</strong>.</p>
+
+<p><img class="center" src="/images/immunenet_config.png"></p>
+
+<p>Cierra esa interfaz y has click secundario en el acceso directo del escritorio.</p>
+
+<p>Verás una opción en el menú que dice &ldquo;Abrir directorio que lo contiene&rdquo; o algo
+por el estilo, no recuerdo bien.</p>
+
+<p>Una vez en el directorio de Immunet, sube un nivel y verás el directorio
+<strong>clamav</strong>. Entra ahí.</p>
+
+<p><img class="center" src="/images/segui.png"></p>
+
+<p>Ejecuta el fichero <strong>sigui.exe</strong>(1) y en la pestaña derecha, verás una opción
+que dice &ldquo;Local Signature Management&rdquo;.</p>
+
+<p>Toca el boton &ldquo;Add&rdquo;(2) y te dará un browser de ficheros. Localiza el directorio
+donde tiene los *.cvd de clamav. Puedes seleccionar los tres ficheros de un
+palo, incluso, pincha por carpeta compartida.</p>
+
+<p>Cuando estén en la caja de arriba, has click en &ldquo;Verify and Install
+signatures&rdquo;(3).</p>
+
+<p>ANDANDO! Ya lo tienes configurado.</p>
+
+<p>En la máquina que lo probé. Restuaré la cuarentena de nod32 y el clamav se
+despacho los virus. A los 5 segundos, nod32 pedía reinicio para desinfectar
+amenazas. Simplemente lo desinstalé.</p>
+
+<p>Como muchos saben, el motor de clamav cambia constantemente. No se si será
+necesario la descarga y reinstalación del antivirus. Pero un compañero me
+planteaba que eso significaría un buen negocio.</p>
+
+<p>Suerte&hellip;</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/12/14/servidor-jabber-con-prosody/">servidor jabber con prosody</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-12-14T18:22:29-05:00'><span class='date'>14/12/2015</span> <span class='time'>6:22 pm</span></time>
+        
+           | <a href="/blog/2015/12/14/servidor-jabber-con-prosody/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/12/14/servidor-jabber-con-prosody/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Lua, es uno de los tantos lenguajes interpretados que hay. Lo curioso de este es
+que es Made in Brasil&hellip;</p>
+
+<p>Aunque no les quedó mal, lo de ellos definitivamente es la samba y el futboll.
+Lo digo porque ese fue uno de los primeros lenguajes que estuve manoseando y No
+creo que halla un buen motivo para escribir algo con él.</p>
+
+<p>¡Pero <a href="https://prosody.im/">Proŝody</a>, demuestra que me equivoco!</p>
+
+<p>La robusteza, simplicidad y el rendimiento de este servidor, quizás sean
+superiores a la de ejabberd (que está escrito en Erlang, un lenguaje aún más
+exótico que Lua). Por otra parte, su todo en uno, lo hace más versátil que otros
+cuantos. No tiene nada que envidiarle al cochino OpenFire y toda su parafernaria
+de Java.</p>
+
+<p>En su estado natural, prosody solo viene con lo básico. Ampliarlo, es solo
+cuestión de modificar la configuración. No piense en una extraña interfaz web
+como la de ejabber, hablamos de un fichero de configuración &ldquo;.lua&rdquo; con todo
+comentado. Lua, que es bien rarito, usa para comentario es &ldquo;&ndash;&rdquo; en vez de &ldquo;#&rdquo;</p>
+
+<p>Comenzamos. En debian todo es muy fácil:</p>
+
+<figure class='code'><figcaption><span>&#8220;aptitude&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install prosody
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Esto dará lugar un fichero de configuracion en: <strong>/etc/prosody/prosody.cfg.lua</strong></p>
+
+<p>De ahí modificaremos lo que necesitamos. Primero, poner la JID del admin, eso
+lo haremos aunque nuestro dominio no halla sido declarado.</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">admins</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;</span><span class="s">tu_usaurio@tudominio.cu&#39;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora vamos a la sesión modules_enabled. Todo bien comentadito. Yo lo habilito
+todo menos el servidor http y el telnet, como que no me da buena espina.</p>
+
+<p>Si habilitamos el módulo &ldquo;motd&rdquo; nuestro servidor contará con un MOTD,
+pero debemos especificarlo. De esta forma cada módulo es una función que puede
+o no llevar parámetros de configuración. Para argumentar la configuración
+de motd, escribimos FUERA de las sesión de módulos.</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">motd_text</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="s">este es el motd de mi server&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero <strong>motd_text</strong> no estaba escrito en ninguna parte. Para ver si un
+módulo tiene o no configuración, sus detalles, que hace y hasta un ejemplo,
+podemos verlo en la lista de módulos.</p>
+
+<p><a href="http://prosody.im/doc/modules">http://prosody.im/doc/modules</a></p>
+
+<p>Pero volvamos a la configuración. La siguiente linea de interés es la
+que permite el registro de usuarios.</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">allow_registration</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>OJO! se requiere un &ldquo;;&rdquo; al final de la configuración (razón por la cual abandoné
+Lua en aquel entonce). Si no quieres que los usuarios se registren déjalo en
+false. Puedes usar la aplicación de control para crear usuarios. Ejecuta
+<strong>prosodyctl</strong> sin parámetros y veras una pantalla aprueba de imbéciles que te
+dice como crear los usuarios y otras opciones interesantes.</p>
+
+<p>Por ejemplo, para crear un usuario</p>
+
+<figure class='code'><figcaption><span>&#8220;prosodyctl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>prosodyctl adduser fulanito@dominio.cu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lo siguiente es el SSL, no es bueno desabilitarlo porque muchos cliente jabbers
+traen por definición usar ssl. Mejor seguir a las que dice:</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">c2s_require_encryption</span> <span class="o">=</span> <span class="kc">false</span>
+</span><span class='line'><span class="n">s2s_require_encryption</span> <span class="o">=</span> <span class="kc">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Poniéndolas en false, el servidor usara lo mismo SSL que plana.</p>
+
+<p>Pero aún no hemos declarado el dominio. Resulta que como te dije todo es
+modular. Los dominios son VirtualHost. Al igual que en apache, incluso el
+dominio por defecto, es un virtual host. Podemos declarar varios dominios y
+dejarlos deshabilitados.</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">VirtualHost</span> <span class="s2">&quot;</span><span class="s">tudominio.cu&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya tenemos un dominio, podríamos tener más con solo agregarlos pero con eso ya
+tenemos un servidor con lo indispensable. Vamos a extenderlo un poco, una sala
+de conferencia:</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">Component</span> <span class="s2">&quot;</span><span class="s">conference.tudominio.cu&quot;</span> <span class="s2">&quot;</span><span class="s">muc&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora solo falta crear un puntero DNS que apunte a <strong>conference.tudominio.cu</strong></p>
+
+<p>Pero hablando de punteros DNS. Para que jabber pinche, necesita un puntero DNS
+especial.</p>
+
+<p>Para <strong>dnsmasq</strong>, supongamos que el servidor que correo el jabber se llama
+<strong>chat.tudominio.cu</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;dnsmasq.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">address</span><span class="o">=</span>/chat.tudominio.cu/10.1.1.1
+</span><span class='line'>srv-host<span class="o">=</span>_xmpp-client._tcp.chat.tudominio.cu,chat.tudominio.cu,5222
+</span><span class='line'>srv-host<span class="o">=</span>_xmpp-server._tcp.chat.tudominio.cu,chat.tudominio.cu,5269
+</span><span class='line'>txt-record<span class="o">=</span>_xmppconnect.chat.tudominio.cu,<span class="s2">&quot;_xmpp-client-xbosh=http://chat.tudominio.cu:5280/http-bind&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por cierto, eso último, es el puntero al servidor bosh.</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'> <span class="n">bosh_ports</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">5280</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y a cotorrear se ha dicho&hellip;</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/29/mc-demora-en-abrir/">mc demora en abrir</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-29T19:37:00-05:00'><span class='date'>29/11/2015</span> <span class='time'>7:37 pm</span></time>
+        
+           | <a href="/blog/2015/11/29/mc-demora-en-abrir/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/29/mc-demora-en-abrir/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Esta es una nota bien rápida pa que no se me olvide&hellip;</p>
+
+<p>Alguna vez han notado que los midnight commander con soporte para operaciones de
+red (especialmente samba) y al arrancarlo, se mete tremendo rato levantando?
+Pues esta es la razón por la cual debian <em>bota el sofá</em>.</p>
+
+<p><img class="right" src="/images/mc.png" title="" ></p>
+
+<p>Resulta que buscar el propio hostname de la máquina, se mete tremendo rato
+haciendo un reverse lookup. Cuando tiene declaro un servidor dns inalcanzable,
+se pone más feo todavía.</p>
+
+<p>Solución. Pon tu propio hostname en <strong>/etc/hosts</strong> junto a localhost</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/23/desmume-ultralento/">desmume ultralento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-23T21:37:40-05:00'><span class='date'>23/11/2015</span> <span class='time'>9:37 pm</span></time>
+        
+           | <a href="/blog/2015/11/23/desmume-ultralento/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/23/desmume-ultralento/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Es tremendo mojón departe del desmume, no venir con el compilador JIT activado
+por defecto. Los juegos de DS corren suúuuuper lentos. Pero si corres desmume
+con los siguientes argumentos:</p>
+
+<figure class='code'><figcaption><span>&#8220;desmume&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>desmume  --fwlang<span class="o">=</span><span class="m">5</span> --jit-size<span class="o">=</span><span class="m">100</span> --cpu-mode<span class="o">=</span><span class="m">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Se activará el <a href="https://es.wikipedia.org/wiki/Compilaci%C3%B3n_en_tiempo_de_ejecuci%C3%B3n">Compilador en Tiempo de Ejecución</a>
+que tiene desmume y créeme, la mejora es increíble. Tanto que luego se dispara
+de una manera descomunal, así que será necesario limitar el FrameSkip a 60 FPS.</p>
+
+<p><img class="right" src="/images/desmume.png"></p>
+
+<p>Como ven en la imagen, está corriendo Le pokemón negro, y con un micro de 2 mil
+herzios se me monta en los 80fps renderizando 3d. Con la Soul Silver, se me
+monta en +100 fps, ya que las peleas son en 2D.</p>
+
+<p>Te preguntarás por que usar Frameskip entonces. Pues al menos en mi caso, cuando
+el juego renderiza 3D, sin Frameskip, no llega ni a las 40FPS. Por suerte, con
+la opción marcada debajo, ni se siente el frame-skip, cosa que en otros
+emuladores es un dolor.</p>
+
+<p>Por suerte el DS solo puede renderizar 3D en una sola pantalla a la vez. Ah!
+OpenGL es por gusto, desmume pincha arriba del micro.</p>
+
+<p>Para mayor comodida, puedes crear un .desktop en tu home, el cual se lanze con
+los parámetros. A mi me quedó así</p>
+
+<figure class='code'><figcaption><span>&#8221;~/.local/share/applications/desmume.desktop&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Desktop Entry]</span>
+</span><span class='line'><span class="na">Version</span><span class="o">=</span><span class="s">1.0</span>
+</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">Application</span>
+</span><span class='line'><span class="na">Name</span><span class="o">=</span><span class="s">DeSmuME (Gtk)</span>
+</span><span class='line'><span class="na">Comment</span><span class="o">=</span><span class="s">Nintento DS emulator</span>
+</span><span class='line'><span class="na">TryExec</span><span class="o">=</span><span class="s">desmume --fwlang=5 --jit-size=90 --cpu-mode=1</span>
+</span><span class='line'><span class="na">Exec</span><span class="o">=</span><span class="s">desmume --fwlang=5 --jit-size=90 --cpu-mode=1</span>
+</span><span class='line'><span class="na">Icon</span><span class="o">=</span><span class="s">DeSmuME</span>
+</span><span class='line'><span class="na">Categories</span><span class="o">=</span><span class="s">GNOME;GTK;Game;Emulator;</span>
+</span><span class='line'><span class="na">MimeType</span><span class="o">=</span><span class="s">application/x-nintendo-ds-rom;</span>
+</span><span class='line'><span class="na">X-Desktop-File-Install-Version</span><span class="o">=</span><span class="s">0.22</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -258,835 +747,7 @@ hackers por ahí.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-12T09:49:30-05:00'><span class='date'>12/11/2015</span> <span class='time'>9:49 am</span></time>
-        
-           | <a href="/blog/2015/11/12/rc-dot-local-en-systemd/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/12/rc-dot-local-en-systemd/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Déjame decirte, que es un gran mojón de parte de systemd; el hecho de que no
-halla una puñetera compatibilidad con el <strong>rc.local</strong>. Si buscas en google, como
-correr un comando al butear, verás que complicado se vuelve.</p>
-
-<p>Para palear este desmesurado inconveniente. Me he creado una unit del tipo
-oneshot, que cargue el /etc/rc.local</p>
-
-<p>Crea el fichero <strong>/etc/systemd/system/rclocal.service</strong> y métele esto:</p>
-
-<figure class='code'><figcaption><span>/etc/systemd/system/rclocal.service</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>Unit<span class="o">]</span>
-</span><span class='line'><span class="nv">Description</span><span class="o">=</span>El viejo /etc/rc.local
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Service<span class="o">]</span>
-</span><span class='line'><span class="nv">Type</span><span class="o">=</span>oneshot
-</span><span class='line'><span class="nv">ExecStart</span><span class="o">=</span>/bin/bash /etc/rc.local
-</span><span class='line'><span class="nv">TimeoutSec</span><span class="o">=</span>0
-</span><span class='line'><span class="nv">StandardOutput</span><span class="o">=</span>tty
-</span><span class='line'><span class="nv">RemainAfterExit</span><span class="o">=</span>yes
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Install<span class="o">]</span>
-</span><span class='line'><span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lo habilitamos:</p>
-
-<figure class='code'><figcaption><span>&#8220;systemctl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl daemon-reload
-</span><span class='line'>systemctl <span class="nb">enable </span>rclocal
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A singar por tuberías, esto es todo&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/03/las-mujeres-gordas/">las mujeres gordas</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-03T23:41:52-05:00'><span class='date'>03/11/2015</span> <span class='time'>11:41 pm</span></time>
-        
-           | <a href="/blog/2015/11/03/las-mujeres-gordas/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/03/las-mujeres-gordas/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><em>¿Como te gustan las mujeres gordas o flacas?</em></p>
-
-<p><img class="right" src="/images/gorda2.jpg" width="190" height="290" title="" ></p>
-
-<p>Esa pregunta se a vuelto un boicot.</p>
-
-<p>Hasta los <del>cojones</del> estoy de vivir en una sociedad que desprecia a las mujeres por
-que su figura no encaja en un patrón de belleza que <strong>alguien</strong> impuso.</p>
-
-<p>Resulta que &ldquo;delgado&rdquo; es sinónimo de &ldquo;lindo&rdquo;.</p>
-
-<p>Nadie hizo una encuesta ni le preguntó a los hombres si preferían a las mujeres
-flacas o gordas, simplemente, impusieron un paradigma.</p>
-
-<p>Hay gustos para todo y eso hay que tenerlo en cuenta.</p>
-
-<p><em>&ldquo;no debemos juzgar a una mujer por su figura&rdquo;</em> <strong>FALSO</strong> Las seguiremos
-juzgando por su figura, porque tenemos ojos en la cara, pero no con paradigmas
-impuesto por una sociedad, si no con nuestro gusto.</p>
-
-<p>¿A qué hombre no le gusta una mujer con las piernas gordas, los senos
-extratalla y las nalgas grandes.</p>
-
-<p>&ldquo;hembras y con masa&rdquo;</p>
-
-<p>Ah! Casi todas las gordas tienen la cara linda, eso es casi axiomático, aunque
-toda regla tiene su acepción.</p>
-
-<h4>NO estoy aplaudiendo la obesidad.</h4>
-
-<p>Las gordas lindas son las gordas que hacen ejercicio.</p>
-
-<ul>
-<li> tiene cintura</li>
-<li> no tienen mucho abdomen</li>
-<li> no están flácidas</li>
-<li> tienen carne en vez de grasa</li>
-</ul>
-
-
-<p>Gorda con Ejercicio</p>
-
-<p>Mi hermano, a una mujer así, múerdete la lengua antes de decirle gorda, porque
-estás ante un monumento.</p>
-
-<p>Si eres mujer y te sientes pasada de peso. No hagas ejercicios para bajar de
-peso. Has ejercicios para mejorar tu figura. Mi esposa usa ajustadores talla 44
-y cuando baja de peso le empiezan a quedar grandes. Pal coppelia urgente.</p>
-
-<p>Preocúpense por estar macizas en vez de grasosas, no por bajar de peso.</p>
-
-<p>Cuando coges una gorda sentada, le aprietas un muslo y te dice &ldquo;ay! eso duele&rdquo;,
-esa es masa pura. Si no le duele, es manteca.</p>
-
-<h4>deterioro de la autoestima</h4>
-
-<p><img class="right" src="/images/gorda1.jpg" width="190" height="290" title="" ></p>
-
-<p>Este tema es muy peliagudo y repercute, tanto pa las gordas, como para los
-amantes de las curvas.</p>
-
-<p>Los hombres, en la mayoría de los casos, NO andamos diciéndole a las mujeres si
-están gordas. Pero entre ellas mismas, se dicen &ldquo;ay mija que gorda estás&rdquo; y
-todas las sandeces esas.</p>
-
-<p>Resulta que una mujer gorda, se autoconsidera fea generalmente. <strong>Por el mero
-hecho de que a ella no le gusta lo que ve en el espejo.</strong> ¿Ya te cercioraste si
-a alguien de tu trabajo y barrio le gusta?</p>
-
-<p>Quizás quiere acercarse alguien, pero postpone el plan para cuando baje un poco
-de peso (nunca). Por esa misma razón: no va a la playa, no usa sayas cortas, no
-usa la ropa tal, etc&hellip;</p>
-
-<p>Por suerte las licras han vuelto a ponerse de moda.</p>
-
-<p>Otro caso es que le decimos a la mujer &ldquo;me gusta que seas gorda&rdquo; y casi se
-ofenden: &ldquo;¿me estás diciendo gorda?&rdquo; Síiii! Te estoy diciendo gorda! ¿Qué hay de
-malo en eso?</p>
-
-<p>Muchas mujeres <em>quieren</em> bajar de peso pero no tienen la voluntad suficiente
-para lograrlo. Mientras tanto, viven flagelándose con las dietas.</p>
-
-<h4>Si fueras flaca a lo mejor él no te hubiera mirado!!!</h4>
-
-<p>El tema <a href="https://es.wikipedia.org/wiki/All_About_That_Bass">All About That Bass</a>
-de Meghan Trainor, tuvo una crítica muy disímil por esta razón. Dijeron que era
-antifeminista. Como si ser gorda fuera ir contra la feminidad. No obstante, el
-tema estuvo en la cima de Billboard Hot 100 ocho semanas (y eso es mucho decir)
-así que la gente aceptó la cancioncita.</p>
-
-<p>Y vamos a estar aquí. Soy flaco como un güin, pero pa flaco yo. Prefiero abultar
-ideas que bíceps. Yo estoy malo, malo, maaaalooo y digo: <em>las lagartijas, pa
-poder treparse en la pared, no pueden ser musculosas</em>. No me preocupa mi figura,
-porque hay mujeres que le encantan los flacos desbaratados y por lo general, son
-gordas (afortunadamente).</p>
-
-<p>Las mujeres si no están en esa bobería. Está la rubia que le encantan los negros
-y NO se esconde para decirlo, se pasea con su prieto por la calle. En cambio, el
-tipo que le gustan las gordas, le pesa reconocerlo e incluso, le da pena que la
-gente lo vean con aun gorda.</p>
-
-<p>   <blockquote><p>Los huesos son para los perros,<br/>   los hombres comen carne.</p></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/03/tls-y-ssl-en-postfix/">tls y ssl en postfix</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-03T21:13:44-05:00'><span class='date'>03/11/2015</span> <span class='time'>9:13 pm</span></time>
-        
-           | <a href="/blog/2015/11/03/tls-y-ssl-en-postfix/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/03/tls-y-ssl-en-postfix/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Acá en salud, ahora <em>se están cayendo de la mata</em> y dándose cuenta de los
-peligroso que son las conexiones planas.</p>
-
-<p>Aún no logro hacerle entender a la gente, la diferencia entre un certificado
-autofirmado y un certificado emitido por una <a href="https://es.wikipedia.org/wiki/Autoridad_de_certificaci%C3%B3n">autoridad de certificación</a>
-; pero que más les vamos a pedir, si el certificado de nauta es autofirmado.</p>
-
-<p>De momento con darle la muela del candadito y las letricas verdes en el
-navegador, van cogiendo algo.</p>
-
-<p>Pero volviendo al tema <strong>postfix con SSL</strong>. Vamos a crear un certificado
-autofirmado, por tanto, regla de oro:</p>
-
-<h4>el hostname que provees en el certificado, debe ser machear al del servicio</h4>
-
-<p>En letra de molde. Si proveemos un certificado autofirmado, para conectarnos a
-<strong>smtp.hcg.sld.cu</strong> no puedes decir en el cliente de correo, que el servidor
-smtp es <strong>192.168.0.1</strong> porque no será válido.</p>
-
-<p>Aún cuando el certificado no sea válido, déjame recodarte que debemos ir
-haciéndole cultura de seguridad informática, si no&hellip; bueno&hellip; no me voy a meter
-en un lío diciendo las barbaridades que se logran suplantando identidades.</p>
-
-<p>Bueno entremos en materia. Lo Primero que haremos será generar la clave privada
-para el servidor.</p>
-
-<p>Donde dice <strong>smtp.tudominio.cu</strong> tu pondrás el hostname de que apunta para tu
-servidor smtp. Si eres un desastre y no tiene DNS. Pon la IP de tu servidor de
-correo.</p>
-
-<h4>REPITO</h4>
-
-<p>Donde dice <strong>FQDN or YOUR name</strong> debe decir la dirección del servidor SMTP. La
-dirección tal cual la pones en los clientes.</p>
-
-<p>Cuando lo hagas, te pedirá un password.</p>
-
-<figure class='code'><figcaption><span>&#8220;generando clave privada del servidor&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl genrsa -des3 -out smtp.tudominio.cu.key 2048
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora creamos el certificado. Te pedirá hasta la talla de calzoncillos que usas.
-<strong>NO respondas a lo locoi</strong>, recuerda el <strong>FQDN</strong>. Te acuerdas del password
-que pusiste?</p>
-
-<figure class='code'><figcaption><span>&#8220;creando el certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl req -new -key smtp.tudominio.cu.key -out smtp.tudominio.cu.csr
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Debes ver algo como esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;ceremonia de creación de certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Enter pass phrase <span class="k">for</span> smtp.tudominio.cu.key:
-</span><span class='line'>You are about to be asked to enter information that will be incorporated
-</span><span class='line'>into your certificate request.
-</span><span class='line'>What you are about to enter is what is called a Distinguished Name or a DN.
-</span><span class='line'>There are quite a few fields but you can leave some blank
-</span><span class='line'>For some fields there will be a default value,
-</span><span class='line'>If you enter <span class="s1">&#39;.&#39;</span>, the field will be left blank.
-</span><span class='line'>-----
-</span><span class='line'>Country Name <span class="o">(</span><span class="m">2</span> letter code<span class="o">)</span> <span class="o">[</span>AU<span class="o">]</span>:CU
-</span><span class='line'>State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>Some-State<span class="o">]</span>:Havana
-</span><span class='line'>Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[]</span>:Plaza
-</span><span class='line'>Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>Internet Widgits Pty Ltd<span class="o">]</span>:Calixto
-</span><span class='line'>Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[]</span>:Informatica
-</span><span class='line'>Common Name <span class="o">(</span>e.g. server FQDN or YOUR name<span class="o">)</span> <span class="o">[]</span>:smtp.tudominio.cu
-</span><span class='line'>Email Address <span class="o">[]</span>:ssl@tudominio.cu
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Bites verdad? Bueno, ya hicimos lo más importante, pero no hemos terminado.
-Vamos a firmar el certificado con la la llave emisora.</p>
-
-<figure class='code'><figcaption><span>&#8220;cri-cra firmando el certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl x509 -req -days <span class="m">365</span> -in smtp.tudominio.cu.csr -signkey smtp.tudominio.cu.key -out smtp.tudominio.cu.crt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora vamos a dar un paso <strong>cuestionable</strong>.</p>
-
-<p>Cada vez que un servicio con con un certificado SSL valla a ser iniciado.
-Debería pedir un password, para así asegurar que el legítimo operador de
-servicio ha sido quien le dio la arrancada. Pero poner un password cada vez que
-arranca postfix, no es ninguna gracia. Por tanto, quitamos el password.
-Obviamente, te lo pedirá una última vez.</p>
-
-<figure class='code'><figcaption><span>&#8220;quitando el password&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl rsa -in smtp.tudominio.cu.key -out smtp.tudominio.cu.key.sinpassword
-</span><span class='line'>mv smtp.tudominio.cu.key.sinpassword smtp.tudominio.cu.key
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Emitimos una autoridad de raíz (de pacotilla)</p>
-
-<figure class='code'><figcaption><span>&#8220;la CA del chiste&#8221; </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl req -new -x509 -extensions v3_ca -keyout cakey.pem -out cacert.pem -days 3650
-</span><span class='line'><span class="c"># aqui te pedirá la misma rutina, ojo con lo que pones en el campo FQDN or YOUR name</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Bueno, con el disi y con el mulo, ya tenemos una CA loca, que la podemos reusar
-para otros servicios, por tanto, tratemosla como tal.</p>
-
-<figure class='code'><figcaption><span>&#8220;los puntos sobre las ies&#8221; </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>chmod <span class="m">600</span> smtp.tudominio.cu.key
-</span><span class='line'>chmod <span class="m">600</span> cakey.pem
-</span><span class='line'>mv smtp.tudominio.cu.key /etc/ssl/private/
-</span><span class='line'>mv smtp.tudominio.cu.crt /etc/ssl/certs/
-</span><span class='line'>mv cakey.pem /etc/ssl/private/
-</span><span class='line'>mv cacert.pem /etc/ssl/certs/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora viene el turno de postfix. Haremos dos cosas</p>
-
-<ul>
-<li>habilitar el tranporte ssl/tls por el puerto 465</li>
-<li>habilitar las funciones ssl</li>
-</ul>
-
-
-<p>Ve al <strong>master.cf</strong> y busca la cadena de texto <strong>smtps</strong> debes ver algo como
-esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;parte del master.cf ANTES&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>smtp      inet  n       -       -       -       -       smtpd
-</span><span class='line'><span class="c">#smtp      inet  n       -       -       -       1       postscreen</span>
-</span><span class='line'><span class="c">#smtpd     pass  -       -       -       -       -       smtpd</span>
-</span><span class='line'><span class="c">#dnsblog   unix  -       -       -       -       0       dnsblog</span>
-</span><span class='line'><span class="c">#tlsproxy  unix  -       -       -       -       0       tlsproxy</span>
-</span><span class='line'><span class="c">#submission inet n       -       -       -       -       smtpd</span>
-</span><span class='line'><span class="c">#  -o syslog_name=postfix/submission</span>
-</span><span class='line'><span class="c">#  -o smtpd_tls_security_level=encrypt</span>
-</span><span class='line'><span class="c">#  -o smtpd_sasl_auth_enable=yes</span>
-</span><span class='line'><span class="c">#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject</span>
-</span><span class='line'><span class="c">#  -o milter_macro_daemon_name=ORIGINATING</span>
-</span><span class='line'><span class="c">#smtps     inet  n       -       -       -       -       smtpd</span>
-</span><span class='line'><span class="c">#  -o syslog_name=postfix/smtps</span>
-</span><span class='line'><span class="c">#  -o smtpd_tls_wrappermode=yes</span>
-</span><span class='line'><span class="c">#  -o smtpd_sasl_auth_enable=yes</span>
-</span><span class='line'><span class="c">#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject</span>
-</span><span class='line'><span class="c">#  -o milter_macro_daemon_name=ORIGINATING</span>
-</span><span class='line'><span class="c">#628       inet  n       -       -       -       -       qmqpd</span>
-</span><span class='line'>pickup    fifo  n       -       -       <span class="m">60</span>      <span class="m">1</span>       pickup
-</span><span class='line'>cleanup   unix  n       -       -       -       <span class="m">0</span>       cleanup
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Descomentamos todo lo que tenga que ver con <strong>smtps</strong> debe quedarte más o menos
-así:</p>
-
-<figure class='code'><figcaption><span>&#8220;parte del master.cf DESPUES&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>smtp      inet  n       -       -       -       -       smtpd
-</span><span class='line'><span class="c">#smtp      inet  n       -       -       -       1       postscreen</span>
-</span><span class='line'><span class="c">#smtpd     pass  -       -       -       -       -       smtpd</span>
-</span><span class='line'><span class="c">#dnsblog   unix  -       -       -       -       0       dnsblog</span>
-</span><span class='line'><span class="c">#tlsproxy  unix  -       -       -       -       0       tlsproxy</span>
-</span><span class='line'><span class="c">#submission inet n       -       -       -       -       smtpd</span>
-</span><span class='line'><span class="c">#  -o syslog_name=postfix/submission</span>
-</span><span class='line'><span class="c">#  -o smtpd_tls_security_level=encrypt</span>
-</span><span class='line'><span class="c">#  -o smtpd_sasl_auth_enable=yes</span>
-</span><span class='line'><span class="c">#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject</span>
-</span><span class='line'><span class="c">#  -o milter_macro_daemon_name=ORIGINATING</span>
-</span><span class='line'>smtps     inet  n       -       -       -       -       smtpd
-</span><span class='line'>  -o <span class="nv">syslog_name</span><span class="o">=</span>postfix/smtps
-</span><span class='line'>  -o <span class="nv">smtpd_tls_wrappermode</span><span class="o">=</span>yes
-</span><span class='line'>  -o <span class="nv">smtpd_sasl_auth_enable</span><span class="o">=</span>yes
-</span><span class='line'>  -o <span class="nv">smtpd_client_restrictions</span><span class="o">=</span>permit_sasl_authenticated,reject
-</span><span class='line'>  -o <span class="nv">milter_macro_daemon_name</span><span class="o">=</span>ORIGINATING
-</span><span class='line'><span class="c">#628       inet  n       -       -       -       -       qmqpd</span>
-</span><span class='line'>pickup    fifo  n       -       -       <span class="m">60</span>      <span class="m">1</span>       pickup
-</span><span class='line'>cleanup   unix  n       -       -       -       <span class="m">0</span>       cleanup
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora trabajemos con el <strong>main.cf</strong>, habilitamos las funciones que tengan que
-ver con SSL, declarando esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;tope del main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">smtpd_use_tls</span> <span class="o">=</span> yes
-</span><span class='line'><span class="nv">smtpd_tls_auth_only</span> <span class="o">=</span> no
-</span><span class='line'><span class="nv">smtpd_tls_key_file</span> <span class="o">=</span> /etc/ssl/private/smtp.tudominio.cu.key
-</span><span class='line'><span class="nv">smtpd_tls_cert_file</span> <span class="o">=</span> /etc/ssl/certs/smtp.tudominio.cu.crt
-</span><span class='line'><span class="nv">smtpd_tls_CAfile</span> <span class="o">=</span> /etc/ssl/certs/cacert.pem
-</span><span class='line'><span class="nv">tls_random_source</span> <span class="o">=</span> dev:/dev/urandom
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>No olvides correr <strong>postfix reload</strong></p>
-
-<p>   <blockquote><p>Te voy a coser el culo con un alambre finito.<br/>   No te quedará bonito, pero te quedará seguro.</p><footer><strong>Décima popular</strong></footer></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/20/compartir-la-wifi/">compartir la wifi</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-10-20T23:36:19-04:00'><span class='date'>20/10/2015</span> <span class='time'>11:36 pm</span></time>
-        
-           | <a href="/blog/2015/10/20/compartir-la-wifi/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/20/compartir-la-wifi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="right" src="/images/23_gente.jpg" width="300" height="500" title="" ></p>
-
-<p>Cada vez que paso por
-<a href="http://www.ecured.cu/index.php/Calle_23_%28Vedado%29">23</a>, me cuentro mil y una
-red cuyo ESSID tiene el sufijo <strong>Conectify</strong> delante. Insultado por semejante
-derroche de windows, le comentaba a un colega, que daba tristeza no ver un
-linuxero ahí conectado.</p>
-
-<p>El socio me dijo: -en linux no se puede compartir la wifi</p>
-
-<p>PA DARLE POR LA CARA!</p>
-
-<p>Dos paquetes nada más que hacen falta: <strong>iw</strong>, <strong>hostapd</strong></p>
-
-<p>La idea es:</p>
-
-<ul>
-<li>crear una interfaz wifi como estacion</li>
-<li>crear una interfaz wifi como AP</li>
-<li>crear un interfaz bridge (puente)</li>
-<li>declarar que la interfaz de salida del puente, es la estación</li>
-<li>echar a andar el AP por software</li>
-</ul>
-
-
-<h3>¿SE ENTENDIÓ?</h3>
-
-<p>Si tienes el puñetero NetworkManager corriendo, este es un buen momento para
-pararlo.</p>
-
-<p>La interfaz que usualmente vez como <strong>wlan0</strong> es en realidad <strong>phy0</strong>. ¿Quieres
-verlo? Corre esto:</p>
-
-<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw dev wlan0 del
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>¿Te fijaste que<strong> wlan0</strong> desapareció? No te preocupes, puedes volver a crearla.
-Así:</p>
-
-<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw phy phy0 interface add estacion0 <span class="nb">type </span>station
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como mismo hicimos una estación, podemos hacer un AP.</p>
-
-<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw phy phy0 interface add hotspot0 <span class="nb">type </span>__ap
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora creamos la interfaz de puente y le asignamos a <strong>wlan0</strong> como extremo de
-salida.</p>
-
-<figure class='code'><figcaption><span>br0</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip link add name br0 <span class="nb">type </span>bridge
-</span><span class='line'>iw dev estacion0 <span class="nb">set </span>4addr on
-</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 promisc on
-</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 up
-</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 master br0
-</span><span class='line'>ip link <span class="nb">set </span>up dev br0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En letra de molde:</p>
-
-<ul>
-<li>crea un bridge llamado br0</li>
-<li>dile que lleva ipv4 (requerido, no se por qué)</li>
-<li>pon la interfaz en modo promiscuo</li>
-<li>levanta el enlace de estaicon0</li>
-<li>coloca a estacion0 como interfaz de salida del túnel</li>
-<li>levanta el bridge</li>
-</ul>
-
-
-<p>Ahora viene lo más importante, el AP. El fichero <strong>/etc/hostapd/hostapd.conf</strong>
-contendrá la configuración de nuestros AP. A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>/etc/hostapd/hostapd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># el nombre de tu wifi</span>
-</span><span class='line'><span class="nv">ssid</span><span class="o">=</span>Linux
-</span><span class='line'>
-</span><span class='line'><span class="c"># la contraseña de tu wifi</span>
-</span><span class='line'><span class="nv">wpa_passphrase</span><span class="o">=</span>secretisisimo
-</span><span class='line'>
-</span><span class='line'><span class="c"># la interfaz de red que hará de AP</span>
-</span><span class='line'><span class="nv">interface</span><span class="o">=</span>hostspot0
-</span><span class='line'>
-</span><span class='line'><span class="c"># el puente al que se acoplará</span>
-</span><span class='line'><span class="nv">bridge</span><span class="o">=</span>br0
-</span><span class='line'>
-</span><span class='line'><span class="c"># el canal, lo puede seleccionar manual</span>
-</span><span class='line'><span class="c"># pero un valor de 0, hará el survey.</span>
-</span><span class='line'><span class="c"># Mejor que el ap lo seleccione, así</span>
-</span><span class='line'><span class="c"># no chocas con ningún canal de etecsa en 23</span>
-</span><span class='line'><span class="c"># y aprovechemos ahora que podemos hacer lo</span>
-</span><span class='line'><span class="c"># que nos de la gana con el espectro radioeléctrico</span>
-</span><span class='line'><span class="nv">channel</span><span class="o">=</span>0
-</span><span class='line'>
-</span><span class='line'><span class="c"># no toques más nada de aquí pa abajo</span>
-</span><span class='line'><span class="nv">auth_algs</span><span class="o">=</span>3
-</span><span class='line'><span class="nv">driver</span><span class="o">=</span>nl80211
-</span><span class='line'><span class="nv">hw_mode</span><span class="o">=</span>g
-</span><span class='line'><span class="nv">logger_stdout</span><span class="o">=</span>-1
-</span><span class='line'><span class="nv">logger_stdout_level</span><span class="o">=</span>2
-</span><span class='line'><span class="nv">max_num_sta</span><span class="o">=</span>5
-</span><span class='line'><span class="nv">rsn_pairwise</span><span class="o">=</span>CCMP
-</span><span class='line'><span class="nv">wpa</span><span class="o">=</span>2
-</span><span class='line'><span class="nv">wpa_key_mgmt</span><span class="o">=</span>WPA-PSK
-</span><span class='line'><span class="nv">wpa_pairwise</span><span class="o">=</span>TKIP CCMP
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>y arráncalo:</p>
-
-<figure class='code'><figcaption><span>systemctl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl start hostapd
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Desde entonces, lo que se conecte a tu wifi con ESSID &ldquo;Linux&rdquo; en este caso, irá
-a dar a la red que tengas conectada en tu Wifi. En este caso la red de br0, cuyo
-otro extremo sería la wifi de etecsa.</p>
-
-<p>Lo mismo puede hacer cambiando el extremo del tunel. Por ejemplo, con eth0
-saldría hacia una red cableada. Una manera de meter una WiFi en una red.</p>
-
-<h4>Además</h4>
-
-<p>De esta misma forma, si tuvieras dos tarjetas wifi, pones una como AP y le pones
-la otra como extremo del puente.</p>
-
-<h4>OJO</h4>
-
-<p>Otra cosa, si tienes corriendo el <strong>NetworkManager</strong> no podrás echar a andar
-<strong>hostapd</strong>. Páralo, arranca hostapd y vuelve a hechar a andar el
-NetworkManager.</p>
-
-<p>   <blockquote><p>La técnica es la técnica y sin técnica, no hay técnica.</p><footer><strong>Teófilo Stevenson</strong> <cite><a href='https://es.wikipedia.org/wiki/Te%C3%B3filo_Stevenson'>Boxeador Cubano</a></cite></footer></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/18/systemd-timesyncd/">systemd-timesyncd</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-10-18T13:19:01-04:00'><span class='date'>18/10/2015</span> <span class='time'>1:19 pm</span></time>
-        
-           | <a href="/blog/2015/10/18/systemd-timesyncd/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/18/systemd-timesyncd/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Mantener un reloj sincronizado y en hora, siempre ha sido un dilema. Algunas
-personas no reconocen la necesidad de esto; y además son tan imbéciles, que
-luego se quejan cuando la desfasada fecha de su computadora les impide
-conectarse a un sitio SSL.</p>
-
-<p>En los servidores y en las estaciones de trabajo que se respeten; siempre ha
-sido una opción usar un cliente NTP. Pero los ntp, cuando la fecha no está en el
-día adecuado, no se toman la molestia de sincronizar. En los raspberry-pi eso
-puede llegar a ser un tremendo problema, ya que NO tienen reloj de hardware y ni
-siquiera conservan la fecha.</p>
-
-<p>El tan criticado <a href="https://es.wikipedia.org/wiki/Systemd">Systemd</a>, tiene una
-solución para este problema. Sucia y burda, pero muy eficiente. Normalmente, los
-&ldquo;clientes&rdquo; <a href="https://es.wikipedia.org/wiki/Network_Time_Protocol">NTP</a>, son
-cliente y servidor. En el caso de systemd-timsyncd, no se tomaron la molestia de
-implementar un servidor; solamente un cliente minimalista. Además, guarda las
-sincronizaciones en un fichero, para determinar si tu reloj de hardware se
-adelante o atraza y contrarrestar dicho efecto.</p>
-
-<p>Lo bueno que tiene es que agarra la fecha y hora de cualquier parte; luego, la
-setea sin chistar. La configuración es sencillísima. Localiza el fichero:</p>
-
-<p><strong>/etc/systemd/timesyncd.conf</strong></p>
-
-<p>Declárale un servidor principal y si te da la gana, uno o varios adicionales. A
-mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>/etc/systemd/timesyncd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#  This file is part of systemd.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#  systemd is free software; you can redistribute it and/or modify it</span>
-</span><span class='line'><span class="c">#  under the terms of the GNU Lesser General Public License as published by</span>
-</span><span class='line'><span class="c">#  the Free Software Foundation; either version 2.1 of the License, or</span>
-</span><span class='line'><span class="c">#  (at your option) any later version.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># You can override the directives in this file by creating files in</span>
-</span><span class='line'><span class="c"># /etc/systemd/timesyncd.conf.d/*.conf.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># See timesyncd.conf(5) for details</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Time<span class="o">]</span>
-</span><span class='line'><span class="nv">NTP</span><span class="o">=</span>time.hcg.sld.cu
-</span><span class='line'><span class="nv">FallbackNTP</span><span class="o">=</span>time.sld.cu time.microsoft.com
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Generalmente, mi laptop está en el calixto, por eso puse mi servidor local como
-primario; pero si no lo estuviera, de seguro <strong>time.sld.cu</strong> sería alcanzable. En
-el dificilísimo caso de que estuviera de cara a internet, quizás responda el de
-microsoft, que no está malo. Por cierto, los comentarios del fichero son
-bastante útiles, vale la pena leerlos.</p>
-
-<p>Por último, lo más importante, habilitar y arrancar el servicio:</p>
-
-<p>systemctl <strong>start</strong> systemd-timesyncd.service</p>
-
-<p>systemctl <strong>enable</strong> systemd-timesyncd.service</p>
-
-<p>Para saber el estado del servicio, corre:</p>
-
-<p><strong>timedatectl</strong></p>
-
-<p>Te dirá la hora local y la UTC; te dirá además si está sincronizando por NTP.
-Con ese comando puede hacer un montón de operaciones, por ejemplo, setear la
-hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.org/wiki/Reloj_en_tiempo_real">RTC</a> también.</p>
-
-<p>   <blockquote><p>No existe juez más justo, que el pasar del tiempo.</p></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1107,6 +768,26 @@ hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.or
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/el-domain-pop/">recolección domain pop</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/tunel-6in4/">túnel 6in4</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/cortafuegos-ipv6-sencillo/">cortafuegos ipv6 sencillo</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/poniendo-direcciones-ipv6/">las reglas del juego ipv6</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/ipv6/">la resolución 185/2016</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/10/04/dirver-broadcom/">driver broadcom</a>
@@ -1414,6 +1095,10 @@ hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.or
 		
 		<li class="post">
 			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2013/11/12/domainpop-con-postfix/">domainpop con postfix</a>
 		</li>
 		
 	</ul>
