@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-10-23T17:54:14-04:00</updated>
+  <updated>2016-11-08T21:47:21-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[recolección domain pop]]></title>
+    <title type="html"><![CDATA[recolección DomainPOP]]></title>
     <link href="http://uranio-235.github.io/blog/2016/10/22/el-domain-pop/"/>
     <updated>2016-10-22T22:44:36-04:00</updated>
     <id>http://uranio-235.github.io/blog/2016/10/22/el-domain-pop</id>
@@ -23,6 +23,8 @@ Vale aclarar que la escribí en el 2012&hellip;</p>
 
 <p>Se sabe poco sobre los orígenes de ese aborto de la naturaleza que es conocido
 por algunos como &ldquo;recolección aPOP&rdquo; o por otros como &ldquo;DomainPOP&rdquo;.</p>
+
+<p><img class="right" src="http://uranio-235.github.io/images/apartado_postal.jpg" width="200" height="300" title="" ></p>
 
 <p>Haciendo referencia al hecho de bajar todo el correo para un dominio de un pop
 remoto. Muchos seguron lo identifican con un popular, potente y hermoso servidor
@@ -37,11 +39,12 @@ definitiva para las redes conmutadas.</p>
 los cañones tiraban taquitos; ya citmatel usaba un CuciPOP (vean que clase de
 nombre &ldquo;Cubic Circles = CuCiPOP&rdquo;) para depositar el correo de sus clientes por
 lineas conmutadas; una clara implementación de aPOP. Esto resolvió ser la manera
-mas burda pero eficiente de resolver el problema del correo en lineas conmutadas.</p>
+mas burda pero eficiente para resolver el problema del correo en lineas
+conmutadas.</p>
 
 <p>Lo único que perturba este barato panorama, es el hecho de que si el correo
 no tiene un To: bien claro, se jode todo y te ves obligado a usar MDeamon, que
-en ese aspecto se saca todos los premios. Por su puesto, el es una de
+en ese aspecto se saca todos los premios. Por su puesto, él es una de
 la principales implementaciones de este modelo.</p>
 
 <p>A menudo nos encontramos con que al bajar el correo con fetchmail, uno o varios
@@ -166,11 +169,13 @@ probado.</p>
 <p>Digamos que tu ip pública es <strong>220.110.12.190</strong> Calculamos la ipv6 que te toca:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>   ipv6calc --quiet --action conv6to4 220.110.12.190
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>   ipv6calc --quiet --action conv6to4 220.110.12.190
+</span><span class='line'>2002:dc6e:cbe::
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Digamos que devolvió el prefijo <strong>2002:a00:1::</strong> Ese será nuestro prefijo, para
+<p>Digamos que devolvió el prefijo <strong>2002:dc6e:cbe::</strong> Ese será nuestro prefijo, para
 meter cuantas direcciones querramos.</p>
 
 <figure class='code'><figcaption><span>&#8220;creando el túnel&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -178,22 +183,25 @@ meter cuantas direcciones querramos.</p>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>ip tunnel add tun6to4 mode sit ttl <span class="m">255</span> remote any <span class="nb">local </span>10.0.0.1
 </span><span class='line'>ip link <span class="nb">set </span>tun6to4 up
-</span><span class='line'>ip -6 addr add 2002:a00:1::1/16 dev tun6to4
+</span><span class='line'>ip -6 addr add 2002:dc6e:cbe::1/16 dev tun6to4
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>Una vez levantada la interfaze, levantamos una puerta de enlace que saque todas
-las direcciones ipv6 de el túnel que traduce las ipv4:</p>
+las direcciones ipv6 del túnel que traduce las ipv4:</p>
 
 <figure class='code'><figcaption><span>&#8220;ruta&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -6 route add 2000::/3 via ::192.88.99.1 dev tun6to4 metric 1
 </span></code></pre></td></tr></table></div></figure>
 
 
+<p>Nota que la dirección ::192.88.99.1 es así de palo, es una ruta especial que da
+lugar al túnel 6in4.</p>
+
 <p>Ahora, asignamos la primera dirección ipv6 a la interfaz pública (eth0):</p>
 
 <figure class='code'><figcaption><span>&#8220;ip a&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -6 addr add 2002:a00:1::cafe/64 dev eth0
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -6 addr add 2002:dc6e:cbe::cafe/64 dev eth0
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -209,10 +217,16 @@ debian me quedó así:</p>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iface eth0 inet6 static
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># la asignamos a la publica una ipv6</span>
+</span><span class='line'>iface eth0 inet6 static
 </span><span class='line'>        address 2002:a00:1::cafe
 </span><span class='line'>        netmask 64
 </span><span class='line'>
+</span><span class='line'><span class="c"># y la interfaz de la LAN se asignamos otra</span>
+</span><span class='line'><span class="c"># pero ::cafe será la puerta de enlace</span>
 </span><span class='line'>iface eth1 inet6 static
 </span><span class='line'>        address 2002:a00:1:21c:c0ff:feb2:91c2
 </span><span class='line'>        netmask 64
@@ -360,17 +374,17 @@ cada partícula de polvo de tu oficina. Pero ojo:</p>
 <p><strong>esas ip serán visibles desde y hacia internet</strong></p>
 
 <p>Cada ip que delegues de tu prefijo, formará parte del ciberspacio. Visto de otra
-forma. Si asignas 2001:db8::0h1 a una máquina en tu LAN, esa dirección será de
-facto, alcanzable desde internet, como mismo las máquinas en tu LAN la ven.</p>
+forma. Si asignas 2001:db8::a0h1 a una máquina en tu LAN, esa dirección será de
+facto, alcanzable desde internet (si tienes internet claro).</p>
 
 <p>Para lidiar con esta situación, deberás tener bien claro el forward en tu
 router.</p>
 
 <h3>pero yo no tengo una ipv6 real</h3>
 
-<p>No estés tan seguro&hellip; Si tienes una ipv4 pública, tienes algo parecido. Más adelante veremos como
-hacer un túnel 6in4, así que el prefijo de dirección más apropiado para tu LAN
-lo calcularás así:</p>
+<p>No estés tan seguro&hellip; Si tienes una ipv4 pública, tienes algo parecido. Más
+adelante veremos como hacer un túnel 6in4, así que el prefijo de dirección más
+apropiado para tu LAN lo calcularás así:</p>
 
 <figure class='code'><figcaption><span>&#8220;ipv6calc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>ipv6calc --quiet --action conv6to4 tu.ipv4.publica.aqui
@@ -393,7 +407,7 @@ nombre: cafe, caba110, ada, ded0, dad0, 1ce, a5ado</p>
 
 <p>Por cierto, los 0 a la izquierda, se descartan</p>
 
-<p>2002:a00:1::0001 es la misma dirección que 2002:a00:1::1 y de echo, es mucho más
+<p>2002:a00:1::<strong>000</strong>1 es la misma dirección que 2002:a00:1::1 y de echo, es mucho más
 largo, porque tiene una pila de 0 por medio, pero así se expresa de manera más
 corta. Incluso así puede hacer ping y cualquier referencia a la dirección que el
 stack ipv6 se encarga de comprimirla y descomprimirla, sepa usted.</p>
@@ -406,7 +420,7 @@ stack ipv6 se encarga de comprimirla y descomprimirla, sepa usted.</p>
 LAN. La puerta de enlace decide qué será visible o no. Más adelante veremos un
 firewall ipv6 lo más sencillo posible.</p>
 
-<h3>y el dhcp?</h3>
+<h3>¿y el dhcp?</h3>
 
 <p>Hay servidores dhcp para ipv6, pero el mecanismo bacán es SLAAC. Te adelanto que
 dnsmasq tiene SLAAC, pero el pro, es <strong>radvd</strong></p>
@@ -514,9 +528,9 @@ una ip y un registro AAAA para máquina.</p>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>ping -6 proxy.hcg.sld.cu
-</span><span class='line'>PING proxy.hcg.sld.cu<span class="o">(</span>ns01 <span class="o">(</span>2002:a00:1::cafe<span class="o">))</span> <span class="m">56</span> data bytes
-</span><span class='line'><span class="m">64</span> bytes from artema <span class="o">(</span>2002:a00:1::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.100 ms
-</span><span class='line'><span class="m">64</span> bytes from artema <span class="o">(</span>2002:a00:1::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">2</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.174 ms
+</span><span class='line'>PING proxy.hcg.sld.cu<span class="o">(</span>ns01 <span class="o">(</span>2002:c9dc:d582::cafe<span class="o">))</span> <span class="m">56</span> data bytes
+</span><span class='line'><span class="m">64</span> bytes from ns01 <span class="o">(</span>2002:c9dc:d582::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.100 ms
+</span><span class='line'><span class="m">64</span> bytes from ns01 <span class="o">(</span>2002:c9dc:d582::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">2</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.174 ms
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -747,33 +761,123 @@ quita el mareo. Entonces la talla sería que el avahi se reiniciara solo.</p>
 <p>Resulta que NetworkManger, tiene los llamados dispatcher. Puedes ver
 <a href="https://developer.gnome.org/NetworkManager/stable/NetworkManager.html">la documentación aquí</a></p>
 
-<p>Conclusión, el directorio /etc/NetworkManager/dispatcher.d/ creas los
-directorios <strong>up</strong> y <strong>down</strong>, dentro le pones los script que quieres que se
-ejecuten. En el caso de &ldquo;up&rdquo; se ejecutará después de que suba la red.</p>
+<p>Los scripts que radique en <strong>/etc/NetworkManager/dispatcher.d/</strong> se ejecutarán
+sí y solo si, pertenecen al root con permisos 755.</p>
 
-<p>Realmente tiene otros más extrafalarios como pre-up (antes de que le inaterfaz
-se levante) e incluso connectivity-change para cuando cambie cualquier cosa en
-la conectividad, etc&hellip; Puedes ver los detalles en el link anterior.</p>
+<p>Los script reciben como primer argumento, la interfaz y como segundo la acción.
+Las acciones pueden ser up, down, conectivity-change, hostname y en fin, vease
+<strong>man NetworkManager</strong> para más detalles.</p>
 
-<p>A mi me quedó así mi script:</p>
+<p>Mi script quedó así:</p>
 
-<figure class='code'><figcaption><span>&#8220;dispatcher&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>&#8220;/etc/NetworkManager/dispatcher.d/migancho.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema up<span class="o">]</span><span class="c"># cat /etc/NetworkManager/dispatcher.d/up/reiniciaavahi </span>
-</span><span class='line'><span class="c">#!/bin/bash</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
 </span><span class='line'>
-</span><span class='line'>pkill -9 empathy
-</span><span class='line'>pkill -9 telepathy
-</span><span class='line'>systemctl restart avahi-daemon
+</span><span class='line'><span class="c"># la interfaz involucrada</span>
+</span><span class='line'><span class="nv">INTERFAZ</span><span class="o">=</span><span class="nv">$1</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># la acción involucrada</span>
+</span><span class='line'><span class="nv">ACCION</span><span class="o">=</span><span class="nv">$2</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># una función para loguear</span>
+</span><span class='line'><span class="k">function</span> loguear<span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>   logger <span class="k">$(</span>basename <span class="nv">$0</span><span class="k">)</span> <span class="nv">$@</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># un logueo simple, pa saber lo que hay</span>
+</span><span class='line'>loguear <span class="s2">&quot;acción «$ACCION» en la interfaz «$INTERFAZ»&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># según la acción</span>
+</span><span class='line'><span class="k">case</span> <span class="s2">&quot;$ACCION&quot;</span> in
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>   up<span class="o">)</span> <span class="c"># una interfaz que se levanto</span>
+</span><span class='line'>
+</span><span class='line'>      loguear <span class="s1">&#39;tumbando telepathy y compañía&#39;</span>
+</span><span class='line'>      pkill -9 empathy
+</span><span class='line'>      pkill -9 telepathy
+</span><span class='line'>
+</span><span class='line'>      loguear <span class="s1">&#39;reiniciando avahi&#39;</span>
+</span><span class='line'>      systemctl restart avahi-daemon
+</span><span class='line'>
+</span><span class='line'>      loguear <span class="s1">&#39;ajustando la hora&#39;</span>
+</span><span class='line'>      systemctl start systemd-timesyncd
+</span><span class='line'>
+</span><span class='line'>   <span class="p">;;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>   down<span class="o">)</span> <span class="c"># al tumbar una conexión</span>
+</span><span class='line'>
+</span><span class='line'>     loguear <span class="s1">&#39;para el clientico ntp de systemd&#39;</span>
+</span><span class='line'>     systemctl systemd-timesyncd
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>   <span class="p">;;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>   *<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>      loguear <span class="s1">&#39;sin accion&#39;</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="p">;;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">esac</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>No hay problema con detener empathy, ya que el framework telepathy, será
-reiniciado por dbus o por avahi (con suerte).</p>
+<p>Con <strong>journalctl -f</strong> puedes ver como loguea, en este caso el argumento $0 es el
+nombre del script. En fin puedes hacer muchísimas cosas creativas. Con ver en el
+man de NetworkManager las acciones; podrás subsanar muchas necesidades.</p>
 ]]></content>
   </entry>
   
@@ -821,6 +925,54 @@ quieres guardar los cambios. No te preocupes, se entiende mejor cuando lo ves,
 es bastante simple.</p>
 
 <p>Gracias a dios que a <a href="https://es.wikipedia.org/wiki/Bill_Gates">Rico McPato</a> no se le ocurrió meter la contraseña en el registro de windows.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Local ISO en xen]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/08/15/repositorio-de-iso-en-xen/"/>
+    <updated>2016-08-15T22:04:07-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/08/15/repositorio-de-iso-en-xen</id>
+    <content type="html"><![CDATA[<p><img class="left" src="http://uranio-235.github.io/images/openxenmanager.png" width="400"></p>
+
+<p>Aveces se da el caso de que necesitamos aprovisionar un servidor xen desde cero
+y a esa hora no tienes ningún template a mano. Quizás la forma más rápida de
+montar la primera máquina virtual sea instalando desde un iso. No se por qué
+openxenmanager, no tiene la opción de almacenamientos locales como &ldquo;.iso&rdquo; Cuenta
+con NFS y hasta SATA over Ethernet, pero algo tan pedestre como un directorio
+con los ISO, no lo tiene.</p>
+
+<p>Loguéate por ssh para el servidor y usando <strong>xe</strong> crearemos el repositorio.
+Primero designaremos un directorio que contendrá los &ldquo;.iso&rdquo;, elegimos la ruta
+<strong>/var/opt/xen/isos</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;creando el directorio&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -p /var/opt/xen/isos
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Creamos un <strong>Storage Repository</strong> del tipo <strong>iso</strong> y usamos el directorio como
+ubicación.</p>
+
+<figure class='code'><figcaption><span>&#8220;xe&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>xe sr-create name-label<span class="o">=</span>LocalISO <span class="nb">type</span><span class="o">=</span>iso <span class="se">\</span>
+</span><span class='line'>device-config:location<span class="o">=</span>/var/opt/xen/isos <span class="se">\</span>
+</span><span class='line'>device-config:legacy_mode<span class="o">=</span><span class="nb">true </span>content-type<span class="o">=</span>iso
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora con <strong>scp</strong> cópiale los isos a esa ubicación</p>
+
+<figure class='code'><figcaption><span>&#8220;scp&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>scp ~/Downloads/ISO/debian-8.5.0-amd64-CD-1.iso root@tuxen.cu:/var/opt/xen/isos/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si usas openxenmanager, desconéctate y vuélvete a conectar. Verás el repositorio
+de isos locales y en Storage, verás los isos que hallas copiados pal servidor.
+Podrás usarlo como unidad óptica de las máquinas virtuales.</p>
 ]]></content>
   </entry>
   
@@ -1197,7 +1349,7 @@ configuración sería más o menos así en el fichero <strong>/etc/esmtprc</stro
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Listo! El correo <a href="&#109;&#x61;&#x69;&#108;&#x74;&#x6f;&#x3a;&#x72;&#111;&#x6f;&#116;&#64;&#x74;&#117;&#100;&#x6f;&#109;&#105;&#x6e;&#x69;&#111;&#x2e;&#x63;&#117;">&#114;&#x6f;&#x6f;&#116;&#x40;&#116;&#x75;&#x64;&#x6f;&#109;&#x69;&#x6e;&#x69;&#111;&#46;&#99;&#x75;</a> recibirá correos de <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#x3a;&#x63;&#x72;&#111;&#x6e;&#64;&#x74;&#x75;&#100;&#x6f;&#109;&#105;&#110;&#x69;&#111;&#x2e;&#99;&#117;">&#99;&#x72;&#111;&#x6e;&#x40;&#116;&#117;&#100;&#111;&#x6d;&#105;&#x6e;&#x69;&#x6f;&#46;&#99;&#117;</a> con la
+<p>Listo! El correo <a href="&#109;&#x61;&#105;&#108;&#116;&#x6f;&#58;&#x72;&#111;&#x6f;&#x74;&#x40;&#116;&#x75;&#x64;&#x6f;&#x6d;&#105;&#110;&#x69;&#x6f;&#46;&#x63;&#x75;">&#114;&#111;&#111;&#116;&#x40;&#116;&#x75;&#x64;&#x6f;&#x6d;&#105;&#x6e;&#x69;&#111;&#46;&#x63;&#117;</a> recibirá correos de <a href="&#x6d;&#97;&#105;&#108;&#x74;&#111;&#x3a;&#x63;&#114;&#x6f;&#x6e;&#x40;&#116;&#117;&#x64;&#111;&#109;&#x69;&#x6e;&#x69;&#x6f;&#46;&#99;&#117;">&#99;&#114;&#x6f;&#x6e;&#64;&#116;&#x75;&#100;&#x6f;&#x6d;&#105;&#110;&#x69;&#111;&#46;&#99;&#x75;</a> con la
 salida del cron&hellip;</p>
 ]]></content>
   </entry>
@@ -2104,43 +2256,6 @@ timeout.</p>
 
 
 <p>Veremos con que se bajan la próxima vez</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[cargar rvm]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/03/07/cargar-rvm/"/>
-    <updated>2016-03-07T21:25:44-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/03/07/cargar-rvm</id>
-    <content type="html"><![CDATA[<p>De siempre, desplegar Ruby con <a href="https://rvm.io/">RVM</a>, ha sido un método
-catalogado de &ldquo;burdo&rdquo; o &ldquo;sucio&rdquo; aunque sin dudas, es el más rápido.</p>
-
-<p>Un problema que se enfrenta con RVM, es a la hora de integrarlo a entornos que
-no carguen el bashrc modificado por el instalador. Por ejemplo, un script de
-arrancada con el sistema o un script del cron.</p>
-
-<p>He aquí un ejemplo, de un escript.sh que levanta una aplicación de ruby on
-rails, luego de haber cargado el entorno de RVM.</p>
-
-<figure class='code'><figcaption><span>&#8220;startapp.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'><span class="nb">cd</span> /opt/aplicacion
-</span><span class='line'><span class="nb">source</span> /usr/local/rvm/environments/default
-</span><span class='line'>unicorn -l 0:8080 -D
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como vemos, el dichero en <strong>environments</strong> carga todas las variables de entorno
-requerida y de facto; <strong>unicorn</strong> pasa a ser un ejecutable, ya que <strong>$PATH</strong>
-ahora contiene también la ruta bin/ donde se instalaron las gemas&hellip;</p>
-
-<p>Problema <em>resolvido</em>&hellip;</p>
-
-<p>Note en caso de tener varios rubies instalados, en environments, tendrás junto a
-default, los demás script necesarios para cargar dichos rubies.</p>
 ]]></content>
   </entry>
   

@@ -130,11 +130,13 @@ probado.</p>
 <p>Digamos que tu ip pública es <strong>220.110.12.190</strong> Calculamos la ipv6 que te toca:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>   ipv6calc --quiet --action conv6to4 220.110.12.190
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>   ipv6calc --quiet --action conv6to4 220.110.12.190
+</span><span class='line'>2002:dc6e:cbe::
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Digamos que devolvió el prefijo <strong>2002:a00:1::</strong> Ese será nuestro prefijo, para
+<p>Digamos que devolvió el prefijo <strong>2002:dc6e:cbe::</strong> Ese será nuestro prefijo, para
 meter cuantas direcciones querramos.</p>
 
 <figure class='code'><figcaption><span>&#8220;creando el túnel&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -142,22 +144,25 @@ meter cuantas direcciones querramos.</p>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>ip tunnel add tun6to4 mode sit ttl <span class="m">255</span> remote any <span class="nb">local </span>10.0.0.1
 </span><span class='line'>ip link <span class="nb">set </span>tun6to4 up
-</span><span class='line'>ip -6 addr add 2002:a00:1::1/16 dev tun6to4
+</span><span class='line'>ip -6 addr add 2002:dc6e:cbe::1/16 dev tun6to4
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>Una vez levantada la interfaze, levantamos una puerta de enlace que saque todas
-las direcciones ipv6 de el túnel que traduce las ipv4:</p>
+las direcciones ipv6 del túnel que traduce las ipv4:</p>
 
 <figure class='code'><figcaption><span>&#8220;ruta&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -6 route add 2000::/3 via ::192.88.99.1 dev tun6to4 metric 1
 </span></code></pre></td></tr></table></div></figure>
 
 
+<p>Nota que la dirección ::192.88.99.1 es así de palo, es una ruta especial que da
+lugar al túnel 6in4.</p>
+
 <p>Ahora, asignamos la primera dirección ipv6 a la interfaz pública (eth0):</p>
 
 <figure class='code'><figcaption><span>&#8220;ip a&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -6 addr add 2002:a00:1::cafe/64 dev eth0
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -6 addr add 2002:dc6e:cbe::cafe/64 dev eth0
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -173,10 +178,16 @@ debian me quedó así:</p>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iface eth0 inet6 static
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># la asignamos a la publica una ipv6</span>
+</span><span class='line'>iface eth0 inet6 static
 </span><span class='line'>        address 2002:a00:1::cafe
 </span><span class='line'>        netmask 64
 </span><span class='line'>
+</span><span class='line'><span class="c"># y la interfaz de la LAN se asignamos otra</span>
+</span><span class='line'><span class="c"># pero ::cafe será la puerta de enlace</span>
 </span><span class='line'>iface eth1 inet6 static
 </span><span class='line'>        address 2002:a00:1:21c:c0ff:feb2:91c2
 </span><span class='line'>        netmask 64
@@ -227,7 +238,7 @@ Recuerdas?</p>
         <a class="basic-alignment left" href="/blog/2016/10/22/cortafuegos-ipv6-sencillo/" title="Previous Post: cortafuegos ipv6 sencillo">&laquo; cortafuegos ipv6 sencillo</a>
       
       
-        <a class="basic-alignment right" href="/blog/2016/10/22/el-domain-pop/" title="Next Post: recolección domain pop">recolección domain pop &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2016/10/22/el-domain-pop/" title="Next Post: recolección DomainPOP">recolección DomainPOP &raquo;</a>
       
     </p>
   </footer>
@@ -250,7 +261,7 @@ Recuerdas?</p>
 	<ul id="recent_posts">
 		
 		<li class="post">
-			<a href="/blog/2016/10/22/el-domain-pop/">recolección domain pop</a>
+			<a href="/blog/2016/10/22/el-domain-pop/">recolección DomainPOP</a>
 		</li>
 		
 		<li class="post">
@@ -283,6 +294,10 @@ Recuerdas?</p>
 		
 		<li class="post">
 			<a href="/blog/2016/08/16/password-de-windows/">password de windows</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en xen</a>
 		</li>
 		
 		<li class="post">

@@ -9,7 +9,7 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="recolección domain pop 22/10/2016 10:44 pm | Comments Esta entrada ha sido copiada de mi antiguo blog puheroska.
+  <meta name="description" content="recolección DomainPOP 22/10/2016 10:44 pm | Comments Esta entrada ha sido copiada de mi antiguo blog puheroska.
 Vale aclarar que la escribí en el &hellip;">
   
 
@@ -87,7 +87,7 @@ Vale aclarar que la escribí en el &hellip;">
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2016/10/22/el-domain-pop/">recolección domain pop</a></h1>
+      <h1 class="entry-title"><a href="/blog/2016/10/22/el-domain-pop/">recolección DomainPOP</a></h1>
     
     
       <p class="meta">
@@ -112,6 +112,8 @@ Vale aclarar que la escribí en el 2012&hellip;</p>
 <p>Se sabe poco sobre los orígenes de ese aborto de la naturaleza que es conocido
 por algunos como &ldquo;recolección aPOP&rdquo; o por otros como &ldquo;DomainPOP&rdquo;.</p>
 
+<p><img class="right" src="/images/apartado_postal.jpg" width="200" height="300" title="" ></p>
+
 <p>Haciendo referencia al hecho de bajar todo el correo para un dominio de un pop
 remoto. Muchos seguron lo identifican con un popular, potente y hermoso servidor
 de correo, para windows llamado MDeamon (pronunciado por algunos como
@@ -125,11 +127,12 @@ definitiva para las redes conmutadas.</p>
 los cañones tiraban taquitos; ya citmatel usaba un CuciPOP (vean que clase de
 nombre &ldquo;Cubic Circles = CuCiPOP&rdquo;) para depositar el correo de sus clientes por
 lineas conmutadas; una clara implementación de aPOP. Esto resolvió ser la manera
-mas burda pero eficiente de resolver el problema del correo en lineas conmutadas.</p>
+mas burda pero eficiente para resolver el problema del correo en lineas
+conmutadas.</p>
 
 <p>Lo único que perturba este barato panorama, es el hecho de que si el correo
 no tiene un To: bien claro, se jode todo y te ves obligado a usar MDeamon, que
-en ese aspecto se saca todos los premios. Por su puesto, el es una de
+en ese aspecto se saca todos los premios. Por su puesto, él es una de
 la principales implementaciones de este modelo.</p>
 
 <p>A menudo nos encontramos con que al bajar el correo con fetchmail, uno o varios
@@ -224,7 +227,7 @@ destinatario en un encabezado &ldquo;Envelope-To&rdquo;</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -279,11 +282,13 @@ probado.</p>
 <p>Digamos que tu ip pública es <strong>220.110.12.190</strong> Calculamos la ipv6 que te toca:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>   ipv6calc --quiet --action conv6to4 220.110.12.190
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>   ipv6calc --quiet --action conv6to4 220.110.12.190
+</span><span class='line'>2002:dc6e:cbe::
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Digamos que devolvió el prefijo <strong>2002:a00:1::</strong> Ese será nuestro prefijo, para
+<p>Digamos que devolvió el prefijo <strong>2002:dc6e:cbe::</strong> Ese será nuestro prefijo, para
 meter cuantas direcciones querramos.</p>
 
 <figure class='code'><figcaption><span>&#8220;creando el túnel&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -291,22 +296,25 @@ meter cuantas direcciones querramos.</p>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>ip tunnel add tun6to4 mode sit ttl <span class="m">255</span> remote any <span class="nb">local </span>10.0.0.1
 </span><span class='line'>ip link <span class="nb">set </span>tun6to4 up
-</span><span class='line'>ip -6 addr add 2002:a00:1::1/16 dev tun6to4
+</span><span class='line'>ip -6 addr add 2002:dc6e:cbe::1/16 dev tun6to4
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>Una vez levantada la interfaze, levantamos una puerta de enlace que saque todas
-las direcciones ipv6 de el túnel que traduce las ipv4:</p>
+las direcciones ipv6 del túnel que traduce las ipv4:</p>
 
 <figure class='code'><figcaption><span>&#8220;ruta&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -6 route add 2000::/3 via ::192.88.99.1 dev tun6to4 metric 1
 </span></code></pre></td></tr></table></div></figure>
 
 
+<p>Nota que la dirección ::192.88.99.1 es así de palo, es una ruta especial que da
+lugar al túnel 6in4.</p>
+
 <p>Ahora, asignamos la primera dirección ipv6 a la interfaz pública (eth0):</p>
 
 <figure class='code'><figcaption><span>&#8220;ip a&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -6 addr add 2002:a00:1::cafe/64 dev eth0
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -6 addr add 2002:dc6e:cbe::cafe/64 dev eth0
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -322,10 +330,16 @@ debian me quedó así:</p>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iface eth0 inet6 static
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># la asignamos a la publica una ipv6</span>
+</span><span class='line'>iface eth0 inet6 static
 </span><span class='line'>        address 2002:a00:1::cafe
 </span><span class='line'>        netmask 64
 </span><span class='line'>
+</span><span class='line'><span class="c"># y la interfaz de la LAN se asignamos otra</span>
+</span><span class='line'><span class="c"># pero ::cafe será la puerta de enlace</span>
 </span><span class='line'>iface eth1 inet6 static
 </span><span class='line'>        address 2002:a00:1:21c:c0ff:feb2:91c2
 </span><span class='line'>        netmask 64
@@ -340,7 +354,7 @@ Recuerdas?</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -467,7 +481,7 @@ ipv6. Aquí les va uno hipotético y sencillo:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -523,17 +537,17 @@ cada partícula de polvo de tu oficina. Pero ojo:</p>
 <p><strong>esas ip serán visibles desde y hacia internet</strong></p>
 
 <p>Cada ip que delegues de tu prefijo, formará parte del ciberspacio. Visto de otra
-forma. Si asignas 2001:db8::0h1 a una máquina en tu LAN, esa dirección será de
-facto, alcanzable desde internet, como mismo las máquinas en tu LAN la ven.</p>
+forma. Si asignas 2001:db8::a0h1 a una máquina en tu LAN, esa dirección será de
+facto, alcanzable desde internet (si tienes internet claro).</p>
 
 <p>Para lidiar con esta situación, deberás tener bien claro el forward en tu
 router.</p>
 
 <h3>pero yo no tengo una ipv6 real</h3>
 
-<p>No estés tan seguro&hellip; Si tienes una ipv4 pública, tienes algo parecido. Más adelante veremos como
-hacer un túnel 6in4, así que el prefijo de dirección más apropiado para tu LAN
-lo calcularás así:</p>
+<p>No estés tan seguro&hellip; Si tienes una ipv4 pública, tienes algo parecido. Más
+adelante veremos como hacer un túnel 6in4, así que el prefijo de dirección más
+apropiado para tu LAN lo calcularás así:</p>
 
 <figure class='code'><figcaption><span>&#8220;ipv6calc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>ipv6calc --quiet --action conv6to4 tu.ipv4.publica.aqui
@@ -556,7 +570,7 @@ nombre: cafe, caba110, ada, ded0, dad0, 1ce, a5ado</p>
 
 <p>Por cierto, los 0 a la izquierda, se descartan</p>
 
-<p>2002:a00:1::0001 es la misma dirección que 2002:a00:1::1 y de echo, es mucho más
+<p>2002:a00:1::<strong>000</strong>1 es la misma dirección que 2002:a00:1::1 y de echo, es mucho más
 largo, porque tiene una pila de 0 por medio, pero así se expresa de manera más
 corta. Incluso así puede hacer ping y cualquier referencia a la dirección que el
 stack ipv6 se encarga de comprimirla y descomprimirla, sepa usted.</p>
@@ -569,7 +583,7 @@ stack ipv6 se encarga de comprimirla y descomprimirla, sepa usted.</p>
 LAN. La puerta de enlace decide qué será visible o no. Más adelante veremos un
 firewall ipv6 lo más sencillo posible.</p>
 
-<h3>y el dhcp?</h3>
+<h3>¿y el dhcp?</h3>
 
 <p>Hay servidores dhcp para ipv6, pero el mecanismo bacán es SLAAC. Te adelanto que
 dnsmasq tiene SLAAC, pero el pro, es <strong>radvd</strong></p>
@@ -677,9 +691,9 @@ una ip y un registro AAAA para máquina.</p>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>ping -6 proxy.hcg.sld.cu
-</span><span class='line'>PING proxy.hcg.sld.cu<span class="o">(</span>ns01 <span class="o">(</span>2002:a00:1::cafe<span class="o">))</span> <span class="m">56</span> data bytes
-</span><span class='line'><span class="m">64</span> bytes from artema <span class="o">(</span>2002:a00:1::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.100 ms
-</span><span class='line'><span class="m">64</span> bytes from artema <span class="o">(</span>2002:a00:1::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">2</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.174 ms
+</span><span class='line'>PING proxy.hcg.sld.cu<span class="o">(</span>ns01 <span class="o">(</span>2002:c9dc:d582::cafe<span class="o">))</span> <span class="m">56</span> data bytes
+</span><span class='line'><span class="m">64</span> bytes from ns01 <span class="o">(</span>2002:c9dc:d582::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.100 ms
+</span><span class='line'><span class="m">64</span> bytes from ns01 <span class="o">(</span>2002:c9dc:d582::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">2</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.174 ms
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -689,7 +703,7 @@ una ip y un registro AAAA para máquina.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -766,7 +780,7 @@ ES VISIBLE EN INTERNET</strong> y si no tienen cortafuegos pinguísimo <strong>a
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -888,7 +902,7 @@ posibilidad de que amanezcas sin wifi.</p>
 	<ul id="recent_posts">
 		
 		<li class="post">
-			<a href="/blog/2016/10/22/el-domain-pop/">recolección domain pop</a>
+			<a href="/blog/2016/10/22/el-domain-pop/">recolección DomainPOP</a>
 		</li>
 		
 		<li class="post">
@@ -921,6 +935,10 @@ posibilidad de que amanezcas sin wifi.</p>
 		
 		<li class="post">
 			<a href="/blog/2016/08/16/password-de-windows/">password de windows</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en xen</a>
 		</li>
 		
 		<li class="post">

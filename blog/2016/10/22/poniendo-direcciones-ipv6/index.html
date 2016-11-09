@@ -130,17 +130,17 @@ cada partícula de polvo de tu oficina. Pero ojo:</p>
 <p><strong>esas ip serán visibles desde y hacia internet</strong></p>
 
 <p>Cada ip que delegues de tu prefijo, formará parte del ciberspacio. Visto de otra
-forma. Si asignas 2001:db8::0h1 a una máquina en tu LAN, esa dirección será de
-facto, alcanzable desde internet, como mismo las máquinas en tu LAN la ven.</p>
+forma. Si asignas 2001:db8::a0h1 a una máquina en tu LAN, esa dirección será de
+facto, alcanzable desde internet (si tienes internet claro).</p>
 
 <p>Para lidiar con esta situación, deberás tener bien claro el forward en tu
 router.</p>
 
 <h3>pero yo no tengo una ipv6 real</h3>
 
-<p>No estés tan seguro&hellip; Si tienes una ipv4 pública, tienes algo parecido. Más adelante veremos como
-hacer un túnel 6in4, así que el prefijo de dirección más apropiado para tu LAN
-lo calcularás así:</p>
+<p>No estés tan seguro&hellip; Si tienes una ipv4 pública, tienes algo parecido. Más
+adelante veremos como hacer un túnel 6in4, así que el prefijo de dirección más
+apropiado para tu LAN lo calcularás así:</p>
 
 <figure class='code'><figcaption><span>&#8220;ipv6calc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>ipv6calc --quiet --action conv6to4 tu.ipv4.publica.aqui
@@ -163,7 +163,7 @@ nombre: cafe, caba110, ada, ded0, dad0, 1ce, a5ado</p>
 
 <p>Por cierto, los 0 a la izquierda, se descartan</p>
 
-<p>2002:a00:1::0001 es la misma dirección que 2002:a00:1::1 y de echo, es mucho más
+<p>2002:a00:1::<strong>000</strong>1 es la misma dirección que 2002:a00:1::1 y de echo, es mucho más
 largo, porque tiene una pila de 0 por medio, pero así se expresa de manera más
 corta. Incluso así puede hacer ping y cualquier referencia a la dirección que el
 stack ipv6 se encarga de comprimirla y descomprimirla, sepa usted.</p>
@@ -176,7 +176,7 @@ stack ipv6 se encarga de comprimirla y descomprimirla, sepa usted.</p>
 LAN. La puerta de enlace decide qué será visible o no. Más adelante veremos un
 firewall ipv6 lo más sencillo posible.</p>
 
-<h3>y el dhcp?</h3>
+<h3>¿y el dhcp?</h3>
 
 <p>Hay servidores dhcp para ipv6, pero el mecanismo bacán es SLAAC. Te adelanto que
 dnsmasq tiene SLAAC, pero el pro, es <strong>radvd</strong></p>
@@ -284,9 +284,9 @@ una ip y un registro AAAA para máquina.</p>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>ping -6 proxy.hcg.sld.cu
-</span><span class='line'>PING proxy.hcg.sld.cu<span class="o">(</span>ns01 <span class="o">(</span>2002:a00:1::cafe<span class="o">))</span> <span class="m">56</span> data bytes
-</span><span class='line'><span class="m">64</span> bytes from artema <span class="o">(</span>2002:a00:1::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.100 ms
-</span><span class='line'><span class="m">64</span> bytes from artema <span class="o">(</span>2002:a00:1::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">2</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.174 ms
+</span><span class='line'>PING proxy.hcg.sld.cu<span class="o">(</span>ns01 <span class="o">(</span>2002:c9dc:d582::cafe<span class="o">))</span> <span class="m">56</span> data bytes
+</span><span class='line'><span class="m">64</span> bytes from ns01 <span class="o">(</span>2002:c9dc:d582::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.100 ms
+</span><span class='line'><span class="m">64</span> bytes from ns01 <span class="o">(</span>2002:c9dc:d582::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">2</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.174 ms
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -294,7 +294,7 @@ una ip y un registro AAAA para máquina.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -355,7 +355,7 @@ una ip y un registro AAAA para máquina.</p>
 	<ul id="recent_posts">
 		
 		<li class="post">
-			<a href="/blog/2016/10/22/el-domain-pop/">recolección domain pop</a>
+			<a href="/blog/2016/10/22/el-domain-pop/">recolección DomainPOP</a>
 		</li>
 		
 		<li class="post">
@@ -388,6 +388,10 @@ una ip y un registro AAAA para máquina.</p>
 		
 		<li class="post">
 			<a href="/blog/2016/08/16/password-de-windows/">password de windows</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en xen</a>
 		</li>
 		
 		<li class="post">
