@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>autenticador SQL en el proxy - El SysAdmin del 3er Mundo</title>
+  <title>openvpn user+pass - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="autenticador SQL en el proxy 10/06/2014 3:26 pm | Comments De siempre, me ha parecido que los autenticadores de squid son unas
-canchanfletas. &hellip;">
+  <meta name="description" content="openvpn user+pass 14/11/2016 9:41 pm | Comments Si bien, openvpn con una llave estática es algo bastante sencillo de configurar;
+tiene un grave &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ canchanfletas. &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2014/06/10/autenticador-sql-en-el-proxy/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2016/11/14/openvpn-user-plus-pass/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -84,7 +84,7 @@ canchanfletas. &hellip;">
   
   <header>
     
-      <h1 class="entry-title">autenticador SQL en el proxy</h1>
+      <h1 class="entry-title">openvpn user+pass</h1>
     
     
       <p class="meta">
@@ -93,7 +93,7 @@ canchanfletas. &hellip;">
 
 
 
-<time class='entry-date' datetime='2014-06-10T15:26:38-04:00'><span class='date'>10/06/2014</span> <span class='time'>3:26 pm</span></time>
+<time class='entry-date' datetime='2016-11-14T21:41:05-05:00'><span class='date'>14/11/2016</span> <span class='time'>9:41 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -103,81 +103,72 @@ canchanfletas. &hellip;">
   </header>
 
 
-<div class="entry-content"><p>De siempre, me ha parecido que los autenticadores de squid son unas
-canchanfletas. Realmente antes me parecían otra cosa, porque la palabra
-&ldquo;canchanfleta&rdquo; no existía, pero nunca me simpatizaron mucho los autenticadores.</p>
+<div class="entry-content"><p>Si bien, openvpn con una llave estática es algo bastante sencillo de configurar;
+tiene un grave problema: Que solo un cliente puede conectarse a la vez. En un
+escenario donde por ejemplo, queremos crear una vpn para múltiples servidores
+que deben conectarse, usar un clave estática se vuelve un problema. Una
+topología de anillo podría ayudarnos resolverlo, pero cada servidor debería ser
+cliente y servidor a la vez. Una VPN autenticada por usuario y contraseña
+resuelve el problema de la manera más simplificada posible.</p>
 
-<p>El hecho de que para administrar los usuarios se necesite una aplicación aparte
-y por lo general bien estrafalaria; es por si solo una verdadera jodienda.</p>
+<p>Creamos la infraestructura de certificados:</p>
 
-<p>El despliegue aquí en el Calixto fue prácticamente una locura. Todo a la
-carrera. A pesar de eso, escribí un autenticador de lo mas chulo. Al enviarle
-como argumento un usuario, generaba una contraseña firme y creaba un fichero
-bajo el directorio &ldquo;/etc/squid/digest/&rdquo;. El nombre de dicho fichero era el
-nombre de usuario y el contenido: un digest irreversible (el password).</p>
-
-<h3>Problema 1:</h3>
-
-<p>La necesidad de crear usuarios y cambiar contraseñas, pujaba la necesidad de
-una mecanismo más óptimo. El problema era correr ruby on rails en el server
-para manejar los usuarios; matar moscas a cañonazos. El rails podía crear los
-ficheros en mi máquina y luego cotejarlo con el servidor manualmente con &ldquo;scp&rdquo;,
-lo cual seguía siendo un fastidio. Además NO SE POR QUE, después de crear un
-usuario, había que reiniciar el servidor, muy a pesar de que el directorio se
-releía cada vez que se pedía un usaurio.</p>
-
-<p>Sumado a eso, la evidente aparición de un presunto servidor de correo y la
-inspiración que resulta el esquema de infomed; me dejaron caer una vieja escupía
-en la frente; yo que era tan renuente a SQL.</p>
-
-<p>Bueno, todos los usuarios pa una base de datos y problema resuelto.</p>
-
-<p>Además, tengo planificado más de un servicio, así que alé por el típico esquema
-de una cuenta para todos los servicios.</p>
-
-<figure class='code'><figcaption><span>&#8220;consulta SQL para ver el password&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="n">password</span> <span class="k">FROM</span> <span class="n">users</span> <span class="k">WHERE</span> <span class="n">username</span><span class="o">=</span><span class="ss">&quot;fulanito&quot;</span>
+<figure class='code'><figcaption><span>&#8220;aprovisionando easy-rsa&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>mkdir Downloads/vpn
+</span><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span><span class="nb">cd </span>Downloads/vpn
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp -r /etc/easy-rsa/* ./
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>La cantidad de código del autenticador se redujo considerablemente y con ello
-el margen de error. La cuestión quedó sencilla: Una consulta SQL que determina
-si el usuario está en la base de datos y si tiene permisos de navegación. En
-futuro si se requiere un sistema de quotas, saldrá por ahí también.</p>
+<p>Si quieres, si te da la mariconería, edita los parámetros del fichero que acabas
+de copiar, pa que pongas los parámetros bonitillos, si no, espera a que openssl
+los pregunte; a lo mejor ni los pregunta.</p>
 
-<h3>Problema 2:</h3>
+<figure class='code'><figcaption><span>&#8220;aprovisionamiento de certificados&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>easyrsa init-pki
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>easyrsa build-ca nopass
+</span></code></pre></td></tr></table></div></figure>
 
-<p>Pero entonces surgió un nuevo problema. Cuba, tierra de salvajes apagones y
-feroces mosquitos. La luz falla y la máquina del informático se cae. Cuando el
-autenticador comete algún error, squid dice que el autenticador está fallando y
-lo deja de pinchar. Aún si arrancase la base de datos, squid no vuelve a echar a
-andar el autenticador.</p>
 
-<p>Entonces volvemos a lo mismo: -lazarito! no hay internet??! Junto a un nagios
-histérico que manda correos a diestra y siniestra. PÁFATA! De vuelta al
-subdesarrollo, ssh pal servidor y &ldquo;squid -k reconfigure&rdquo;</p>
+<p>Note que la cadena de texto <strong>tuservidor</strong> debe ser remplazada por el nombre de
+tu actor asiático preferido o, por algún nombre de tu agrado para el servidor.</p>
 
-<h3>Solución:</h3>
+<figure class='code'><figcaption><span>&#8220;creando el certificado del servidor&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>easyrsa build-server-full tuservidor nopass
+</span></code></pre></td></tr></table></div></figure>
 
-<p>El autenticador debe seguir en pie, aún cuando la base de datos no sea
-accesible.</p>
 
-<p>La única forma de lograr esto de forma transparente hacia squid; es verificar si
-la conexión a la base de datos está operacional y denegar todas las
-autenticaciones si esta no lo estuviere.</p>
+<p>Ahora el <a href="https://es.wikipedia.org/wiki/Diffie-Hellman">Diffie Hellman</a>, MUY
+importante. Ponte cómodo que va pa largo:</p>
 
-<h3>Implementación:</h3>
+<figure class='code'><figcaption><span>&#8220;creando el diffie hellman&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>easyrsa gen-dh
+</span></code></pre></td></tr></table></div></figure>
 
-<p>Pero un autenticador de squid, es un ciclo infinito que lee stdin y habla por
-stdout. Cargar una subrutina de rescate en cada vuelta, sería caerle a puñaladas
-a la memoria RAM.</p>
 
-<p>Solución: En cada vuelta, se compruebe si la base de datos está en linea. En
-caso de no estarlo, se llama una función que establece la conexión. Este es un
-iterador que intentará establecer la conexión hasta que lo logre. Mientras tanto
-toda la autenticación en el proxy será &ldquo;usuario no válido&rdquo;.</p>
+<p>Tiramos todo eso para /etc/openvpn en un directorio que designaremos con el
+nombre de &ldquo;servidor&rdquo; (por una cuestión de orden).</p>
 
-<figure class='code'><figcaption><span>&#8220;scope del iterador principal, bifurcador de reconexión&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>&#8220;/etc/openvpn/&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>mkdir /etc/openvpn/servidor
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp pki/ca.crt /etc/openvpn/servidor
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp pki/dh.pem /etc/openvpn/servidor
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp -r pki/private/*.* /etc/openvpn/servidor/
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp -r pki/issued/tuservidor.* /etc/openvpn/servidor/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya tenemos todo listo pa armar el muñeco. Ahora vamos a crear la configuración
+del servidor. A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;servidor.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -188,34 +179,187 @@ toda la autenticación en el proxy será &ldquo;usuario no válido&rdquo;.</p>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">if</span> <span class="n">my</span>
-</span><span class='line'>   <span class="vi">@auth</span><span class="o">=</span><span class="kp">false</span>
-</span><span class='line'><span class="k">else</span>
-</span><span class='line'>   <span class="k">begin</span>
-</span><span class='line'>      <span class="n">my</span> <span class="o">=</span> <span class="no">Mysql</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;10.1.1.14&#39;</span><span class="p">,</span> <span class="s1">&#39;usuario&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="s1">&#39;basededatos&#39;</span><span class="p">)</span> <span class="k">rescue</span> <span class="kp">false</span>
-</span><span class='line'>   <span class="k">rescue</span>
-</span><span class='line'>      <span class="no">STDERR</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;ERR Fallo la conexión al servidor SQL </span><span class="si">#{</span><span class="vg">$!</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-</span><span class='line'>      <span class="no">STDERR</span><span class="o">.</span><span class="n">flush</span>
-</span><span class='line'>      <span class="k">next</span>
-</span><span class='line'>   <span class="k">end</span>
-</span><span class='line'><span class="k">end</span> <span class="c1"># if sql</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span><span class="nb">cd</span> /etc/openvpn/
+</span><span class='line'><span class="o">[</span>lazaro@artema openvpn<span class="o">]</span><span class="nv">$ </span>cat servidor.conf
+</span><span class='line'><span class="c"># como y por donde escuhan</span>
+</span><span class='line'>port 1194
+</span><span class='line'>proto udp
+</span><span class='line'>dev tun
+</span><span class='line'>
+</span><span class='line'><span class="c"># los certificados</span>
+</span><span class='line'>ca /etc/openvpn/servidor/ca.crt
+</span><span class='line'>cert  /etc/openvpn/servidor/tuservidor.crt
+</span><span class='line'>key /etc/openvpn/servidor/tuservidor.key
+</span><span class='line'>
+</span><span class='line'><span class="c"># el diffie hellman</span>
+</span><span class='line'>dh /etc/openvpn/servidor/dh.pem
+</span><span class='line'>
+</span><span class='line'><span class="c"># la red que vamos a operar</span>
+</span><span class='line'>server 10.8.0.0 255.255.255.0
+</span><span class='line'>
+</span><span class='line'><span class="c"># manda un ping cada 10 segundos</span>
+</span><span class='line'><span class="c"># y tumba el tunel si a los 120 no hay respuesta</span>
+</span><span class='line'>keepalive <span class="m">10</span> 120
+</span><span class='line'>
+</span><span class='line'><span class="c"># usa la compresión lzo</span>
+</span><span class='line'>comp-lzo
+</span><span class='line'>
+</span><span class='line'><span class="c"># opera con los siguientes privilegios</span>
+</span><span class='line'><span class="c">#user nobody</span>
+</span><span class='line'><span class="c">#group nogroup</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># esto es para reforzarlo</span>
+</span><span class='line'>persist-key
+</span><span class='line'>persist-tun
+</span><span class='line'>
+</span><span class='line'><span class="c"># que tan elocuente será</span>
+</span><span class='line'>verb 3
+</span><span class='line'>
+</span><span class='line'><span class="c"># mándale estos parámetros al cliente</span>
+</span><span class='line'>push <span class="s2">&quot;redirect-gateway def1&quot;</span>
+</span><span class='line'>push <span class="s2">&quot;dhcp-option DNS 8.8.8.8&quot;</span>
+</span><span class='line'>push <span class="s2">&quot;dhcp-option DNS 8.8.4.4&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># y he aquí el truco de la autenticación</span>
+</span><span class='line'>plugin /usr/lib/openvpn/plugins/openvpn-plugin-auth-pam.so login
+</span><span class='line'>client-cert-not-required
+</span><span class='line'>username-as-common-name
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>El iterador principal sigue viendo la variable que hace como semáforo (&ldquo;my&rdquo; en
-este caso) en false y no se toma la molestia de encuestar una base de datos que
-ya sabe; está off-line. La variable &ldquo;my&rdquo; será false mientras no se redeclare con
-la conexión de Mysql.new. No confundir con @auth que en este caso es el valor
-por definicion de la autenticacion. Osea, no se autenticó.</p>
+<p>Con eso tenemos el servidor pinchando. Ahora vamos a hacer un fichero <strong>.ovpn</strong>
+genérico, para dar a entender como sería la configuración de nuestro cliente.</p>
 
-<p>La variable <em>my</em> será true cuando la función logre establecer la conexión con
-la base de datos.</p>
+<p><strong>OJO</strong> El certificado que se le dará al cliente será el <strong>ca.crt</strong></p>
 
-<p>De está forma, falla de manera silente, segura y controlada.</p>
+<p>A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;cliente.ovpn&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema openvpn<span class="o">]</span><span class="nv">$ </span>cat tuservidor.ovpn
+</span><span class='line'>client
+</span><span class='line'>dev tun
+</span><span class='line'>proto udp
+</span><span class='line'>remote 192.168.0.1 1194
+</span><span class='line'>remote-cert-tls server
+</span><span class='line'>auth-user-pass ~/autenticacion.conf
+</span><span class='line'>comp-lzo
+</span><span class='line'>&lt;ca&gt;
+</span><span class='line'>-----BEGIN CERTIFICATE-----
+</span><span class='line'>Lorem ipsum ad his scripta blandit partiendo, eum fastidii
+</span><span class='line'>accumsan euripidis in, eum liber hendrerit an. Qui ut wisi
+</span><span class='line'>vocibus suscipiantur, quo dicit ridens inciderint id. Quo mundi
+</span><span class='line'>lobortis reformidans eu, legimus senserit definiebas an eos. Eu
+</span><span class='line'>sit tincidunt incorrupte definitionem, vis mutat affert
+</span><span class='line'>percipit cu, eirmod consectetuer signiferumque eu per. In usu
+</span><span class='line'>latine equidem dolores. Quo no falli viris intellegam, ut fugit
+</span><span class='line'>veritus placerat per.  Ius id vidit volumus mandamus, vide
+</span><span class='line'>veritus democritum te nec, ei eos debet libris consulatu. No
+</span><span class='line'>mei ferri graeco dicunt, ad cum veri accommodare. Sed at malis
+</span><span class='line'>omnesque delicata, usu et iusto zzril meliore. Dicunt maiorum
+</span><span class='line'>eloquentiam cum cu, sit summo dolor essent te. Ne quodsi
+</span><span class='line'>nusquam legendos has, ea dicit voluptua eloquentiam pro, ad sit
+</span><span class='line'>quas qualisque. Eos vocibus deserunt quaestio ei.
+</span><span class='line'>-----END CERTIFICATE-----
+</span><span class='line'>&lt;/ca&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Cada cliente de OpenVPN tiene su librito&hellip; Pero ese .ovpn genérico, debe ser
+capaz de ser importado sin problema.</p>
+
+<p>Por una cuestión de orden y seguridad, yo borro la base con la que se creó todo:</p>
+
+<figure class='code'><figcaption><span>&#8221;&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>rm -rf Downloads/vpn
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por cierto, cada configuración que pongas en <strong>/etc/openvpn</strong> cuya extensión
+sea <strong>.conf</strong> se puede echar a andar con systemd.</p>
+
+<figure class='code'><figcaption><span>&#8220;systemctl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># systemctl status openvpn@servidor</span>
+</span><span class='line'>● openvpn@servidor.service - OpenVPN connection to servidor
+</span><span class='line'>   Loaded: loaded <span class="o">(</span>/usr/lib/systemd/system/openvpn@.service<span class="p">;</span> disabled<span class="p">;</span> vendor preset: disabled<span class="o">)</span>
+</span><span class='line'>   Active: inactive <span class="o">(</span>dead<span class="o">)</span>
+</span><span class='line'>     Docs: man:openvpn<span class="o">(</span>8<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># file /etc/openvpn/servidor.conf </span>
+</span><span class='line'>/etc/openvpn/servidor.conf: UTF-8 Unicode text
+</span></code></pre></td></tr></table></div></figure>
+
+
+
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -229,7 +373,7 @@ la base de datos.</p>
 
 
 
-<time class='entry-date' datetime='2014-06-10T15:26:38-04:00'><span class='date'>10/06/2014</span> <span class='time'>3:26 pm</span></time>
+<time class='entry-date' datetime='2016-11-14T21:41:05-05:00'><span class='date'>14/11/2016</span> <span class='time'>9:41 pm</span></time>
       
 
 
@@ -237,7 +381,7 @@ la base de datos.</p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2014/06/10/autenticador-sql-en-el-proxy/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2014/06/10/autenticador-sql-en-el-proxy/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2016/11/14/openvpn-user-plus-pass/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2016/11/14/openvpn-user-plus-pass/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -250,10 +394,8 @@ la base de datos.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/06/09/postfix-entrando-en-el-baile/" title="Previous Post: postfix entrando en el baile">&laquo; postfix entrando en el baile</a>
+        <a class="basic-alignment left" href="/blog/2016/10/22/el-domain-pop/" title="Previous Post: recolección DomainPOP">&laquo; recolección DomainPOP</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/06/27/crear-un-chroot-con-debian/" title="Next Post: crear un chroot con debian">crear un chroot con debian &raquo;</a>
       
     </p>
   </footer>
@@ -655,8 +797,8 @@ la base de datos.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2014/06/10/autenticador-sql-en-el-proxy/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2014/06/10/autenticador-sql-en-el-proxy/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2016/11/14/openvpn-user-plus-pass/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2016/11/14/openvpn-user-plus-pass/';
         var disqus_script = 'embed.js';
       
     (function () {

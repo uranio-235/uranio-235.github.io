@@ -130,7 +130,7 @@ cada partícula de polvo de tu oficina. Pero ojo:</p>
 <p><strong>esas ip serán visibles desde y hacia internet</strong></p>
 
 <p>Cada ip que delegues de tu prefijo, formará parte del ciberspacio. Visto de otra
-forma. Si asignas 2001:db8::a0h1 a una máquina en tu LAN, esa dirección será de
+forma. Si asignas 2001:db8::aaa1 a una máquina en tu LAN, esa dirección será de
 facto, alcanzable desde internet (si tienes internet claro).</p>
 
 <p>Para lidiar con esta situación, deberás tener bien claro el forward en tu
@@ -174,7 +174,7 @@ stack ipv6 se encarga de comprimirla y descomprimirla, sepa usted.</p>
 
 <p>El forward de un cortafuegos será lo que controla que será visible dentro de tu
 LAN. La puerta de enlace decide qué será visible o no. Más adelante veremos un
-firewall ipv6 lo más sencillo posible.</p>
+firewall ipv6 lo más sencillo posible. Usaremos ip6tables.</p>
 
 <h3>¿y el dhcp?</h3>
 
@@ -232,8 +232,7 @@ red que tiene conectado el cable de eth0.</p>
 
 <p>Sin embargo, al hacer ping a <strong>ff02::2</strong> solo responderán aquellas ipv6 que sean
 <strong>routers</strong>. Eso es una manera de saber quien es un router o simplemente si hay
-alguno. O sea, una manera de comprobar, si la red tiene salida a la red de
-redes.</p>
+alguno.</p>
 
 <p>Las direcciones <strong>fe80::</strong> son enlaces locales. Podría decirse que las
 direcciones fe80 son como decir &ldquo;arp&rdquo; pero se les puede hacer ping y otras
@@ -260,7 +259,11 @@ una ip y un registro AAAA para máquina.</p>
 </ul>
 
 
-<p>Cuando preguntes por la ipv6 de proxy, resolverá 2001:db8::cafe</p>
+<p>Cuando preguntes por la ipv6 de proxy, resolverá 2001:db8::cafe, de esta manera,
+el sistema operativo preguntará simplemente por &ldquo;proxy&rdquo; y el DNS le resolverá
+ambas direcciones (4 y 6), la configuración de dichos stack, decidirá cual usar.</p>
+
+<p>Esto en bind se escribe así:</p>
 
 <figure class='code'><figcaption><span>&#8220;dominio.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -272,7 +275,7 @@ una ip y un registro AAAA para máquina.</p>
 </span><span class='line'>ns01         IN      A       192.168.0.1
 </span><span class='line'>ns01         IN      AAAA    2001:db8::cafe
 </span><span class='line'>             IN      MX  <span class="m">0</span>   ns01
-</span><span class='line'>router       IN      CNAME   ns01
+</span><span class='line'>ruter        IN      CNAME   ns01
 </span><span class='line'>proxy        IN      CNAME   ns01
 </span></code></pre></td></tr></table></div></figure>
 
@@ -290,11 +293,23 @@ una ip y un registro AAAA para máquina.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
+<h3>¿Qué aprendimos?</h3>
+
+<ul>
+<li> 2001:db8:: es un rango reservado, no se usa</li>
+<li> ipv6 es complejo pero no complicado.</li>
+<li> hay un ip6tables aparte de iptables</li>
+<li> ipv6 NO necesita nateo</li>
+<li> que existen tecnologías transicionales como 6in4</li>
+<li> no es DHCP, si no RA y SLAAC</li>
+<li> no hay ARP, si no link-local</li>
+<li> los punteros AAAA funcionan igualito que los A</li>
+</ul>
 
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -355,7 +370,15 @@ una ip y un registro AAAA para máquina.</p>
 	<ul id="recent_posts">
 		
 		<li class="post">
+			<a href="/blog/2016/11/14/openvpn-user-plus-pass/">openvpn user+pass</a>
+		</li>
+		
+		<li class="post">
 			<a href="/blog/2016/10/22/el-domain-pop/">recolección DomainPOP</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/domainpop-con-postfix/">domainpop con postfix</a>
 		</li>
 		
 		<li class="post">
@@ -684,10 +707,6 @@ una ip y un registro AAAA para máquina.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2013/11/12/domainpop-con-postfix/">domainpop con postfix</a>
 		</li>
 		
 	</ul>

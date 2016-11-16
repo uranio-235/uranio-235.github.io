@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="OpenVPN en Arch 07/06/2015 6:18 pm | Comments En Arch, todo es tan novedoso como complicado. Montar un servidor de VPN, pasa a
-ser una verdadera &hellip;">
+  <meta name="description" content="revocar certificados de OVPN 14/06/2015 6:36 pm | Comments Acá en mi tierra, SSL es algo relativamente novedoso. Hasta el otro día, las
+conexiones &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +81,209 @@ ser una verdadera &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/14/revocar-certificados-de-ovpn/">revocar certificados de OVPN</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-14T18:36:49-04:00'><span class='date'>14/06/2015</span> <span class='time'>6:36 pm</span></time>
+        
+           | <a href="/blog/2015/06/14/revocar-certificados-de-ovpn/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/14/revocar-certificados-de-ovpn/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Acá en mi tierra, SSL es algo relativamente novedoso. Hasta el otro día, las
+conexiones cifradas eran la peste; pero ahora resulta que el SSL es
+prácticamente obligatorio.</p>
+
+<p>En el episodio anterior, hablábamos sobre OpenVPN. Mencionamos que la
+autenticación podría hacerse a nivel de certificados.</p>
+
+<p>Algunos retrógrados preferirían hacerlo con nombre de usuario y contraseña, pero
+realmente emitir un certificado para cada cliente, es un método más seguro y
+simple.</p>
+
+<p>El objetivo es deshacernos de un cliente</p>
+
+<p>En el ejemplo anterior teníamos a &ldquo;cliente1&rdquo;. Por N motivo, no queremos que
+cliente1 se conecte más. El que no sepa lo que es la CRL (Certificate Revocation
+List) me imagino que acabará poniendo disímiles direcciones ip en el cortafuegos.</p>
+
+<p>Primero, revocamos el certificado que le dimos al cliente.</p>
+
+<figure class='code'><figcaption><span>&#8220;revocando certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/openvpn/easy-rsa
+</span><span class='line'><span class="nb">source</span> ./vars
+</span><span class='line'>./revoke-full cliente1
+</span><span class='line'>Using configuration from /etc/openvpn/easy-rsa/openssl-1.0.0.cnf
+</span><span class='line'>Revoking Certificate 02.
+</span><span class='line'>Data Base Updated
+</span><span class='line'>Using configuration from /etc/openvpn/easy-rsa/openssl-1.0.0.cnf
+</span><span class='line'>cliente1.crt: <span class="nv">C</span> <span class="o">=</span> CU, <span class="nv">ST</span> <span class="o">=</span> HAV, <span class="nv">L</span> <span class="o">=</span> Plaza, <span class="nv">O</span> <span class="o">=</span> DOMINIO, <span class="nv">OU</span> <span class="o">=</span> DOMINIO, <span class="nv">CN</span> <span class="o">=</span>
+</span><span class='line'>cliente1, <span class="nv">name</span> <span class="o">=</span> RSA, <span class="nv">emailAddress</span> <span class="o">=</span> vpn@dominio.cu
+</span><span class='line'>error <span class="m">23</span> at <span class="m">0</span> depth lookup:certificate revoked
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ve en la última linea, dice que se ha cometido un error 23, porque no se
+pudo ver la firma. EL certificado ha sido revocado.</p>
+
+<p>Ahora debemos instruir al servidor de que el fichero <strong>keys/crl.pem</strong> contiene
+la lista de certificados revocados. A la configuración del servidor, le
+agregamos la cláusula <strong>crl-verify</strong> y como argumento le damos la ruta absoluta
+al crl.pem</p>
+
+<figure class='code'><figcaption><span>&#8220;crl.pem&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;crl-verify crl.pem&#39;</span> &gt;&gt; /etc/openvpn/servidor.conf
+</span><span class='line'>ln -s /etc/openvpn/easy-rsa/keys/crl.pem
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No se puede especificar una ruta completa porque no pincha, no me preguntes por
+que. El crl.pem debe estar en el mismo directorio que el fichero de
+configuración del servidor.</p>
+
+<p><strong>OJO</strong> No olvide reinciar el servidor!</p>
+
+<p>Probemos como le va a un cliente con su certificado revocado.</p>
+
+<figure class='code'><figcaption><span>&#8220;cliente1 embarcao&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@rasp openvpn<span class="o">]</span><span class="c"># openvpn --config cliente1.conf </span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> OpenVPN 2.3.6 i686-pc-linux-gnu <span class="o">[</span>SSL <span class="o">(</span>OpenSSL<span class="o">)]</span> <span class="o">[</span>LZO<span class="o">]</span> <span class="o">[</span>EPOLL<span class="o">]</span> <span class="o">[</span>MH<span class="o">]</span> <span class="o">[</span>IPv6<span class="o">]</span> built on Dec  <span class="m">2</span> 2014
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> library versions: OpenSSL 1.0.2a <span class="m">19</span> Mar 2015, LZO 2.09
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> WARNING: No server certificate verification method has been enabled.  See http://openvpn.net/howto.html#mitm <span class="k">for</span> more info.
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> Attempting to establish TCP connection with <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443 <span class="o">[</span>nonblock<span class="o">]</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCP connection established with <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCPv4_CLIENT link <span class="nb">local</span>: <span class="o">[</span>undef<span class="o">]</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCPv4_CLIENT link remote: <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> VERIFY OK: <span class="nv">depth</span><span class="o">=</span>1, <span class="nv">C</span><span class="o">=</span>CU, <span class="nv">ST</span><span class="o">=</span>HAV, <span class="nv">L</span><span class="o">=</span>Plaza, <span class="nv">O</span><span class="o">=</span>DOMINIO, <span class="nv">OU</span><span class="o">=</span>DOMINIO, <span class="nv">CN</span><span class="o">=</span>DOMINIO CA, <span class="nv">name</span><span class="o">=</span>RSA, <span class="nv">emailAddress</span><span class="o">=</span>vpn@dominio.cu
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> VERIFY OK: <span class="nv">depth</span><span class="o">=</span>0, <span class="nv">C</span><span class="o">=</span>CU, <span class="nv">ST</span><span class="o">=</span>HAV, <span class="nv">L</span><span class="o">=</span>Plaza, <span class="nv">O</span><span class="o">=</span>DOMINIO, <span class="nv">OU</span><span class="o">=</span>dominio, <span class="nv">CN</span><span class="o">=</span>vpn.dominio.cu, <span class="nv">name</span><span class="o">=</span>RSA, <span class="nv">emailAddress</span><span class="o">=</span>vpn@dominio.cu
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> write TCPv4_CLIENT: Broken pipe <span class="o">(</span><span class="nv">code</span><span class="o">=</span>32<span class="o">)</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> write TCPv4_CLIENT: Broken pipe <span class="o">(</span><span class="nv">code</span><span class="o">=</span>32<span class="o">)</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> Connection reset, restarting <span class="o">[</span>0<span class="o">]</span>
+</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> SIGUSR1<span class="o">[</span>soft,connection-reset<span class="o">]</span> received, process restarting
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ve, el servidor &ldquo;le cuelga&rdquo; y le deja hablando. Porque el certificado que
+el cliente está mandándole, no le cuadra.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/12/systemd-automount/">systemd automount</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-12T12:18:10-04:00'><span class='date'>12/06/2015</span> <span class='time'>12:18 pm</span></time>
+        
+           | <a href="/blog/2015/06/12/systemd-automount/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/12/systemd-automount/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Resulta que el todopoderoso <a href="https://wiki.archlinux.org/index.php/Systemd">systemd</a>
+tiene un soporte para automontar discos.</p>
+
+<p>Aún sigo pensando que nadie inventa un software para auto<strong>des</strong>montar discos.
+No le veo sentido a que algo se monte automáticamente si luego hay que
+desmontarlo de manera manual. Ese <strong>autofs</strong> que te motaba las memorias al
+pararte sobre el punto de montaje y luego te las desmontaba al rato de estar sin
+usa, que tiempo aquellos. Puedo bueno, systemd-automount trata de hacer algo
+similar y casi lo logra.</p>
+
+<p>Pero como te decía, el automount&hellip;</p>
+
+<p>Si en el fstab usas la opción <strong>x-systemd.automount</strong>, las unidades reflejadas
+en el fstab se montarán de manera automática cuando se haga contacto con el
+punto de montaje y el dispositivo esté presente.</p>
+
+<figure class='code'><figcaption><span>&#8220;fstab&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/dev/sdb1   /mnt/sdb1  auto  rw,users,x-systemd.automount,noauto  <span class="m">0</span>  0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al posarte en un directorio que sea punto de montaje, este se montará de manera
+automática. Si quieres que quede escopetón de verdad, usa estas opciones:</p>
+
+<figure class='code'><figcaption><span>&#8220;opciones&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>nofail,x-systemd.automount,x-systemd.device-timeout<span class="o">=</span>2s,sync,rw,user,noauto
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Así, no se monta desde el arranque (y no cuelga el arranque) y si el dispositivo
+tarde 2 segundos en cargarse se rinde; esto es muy bueno para las memorias que
+dan palo o para unidades de red que podrían estar no disponibles en el momento
+que se le solicitan.</p>
+
+<p>Lo único bueno que tiene esto sobre udisk, es que puedes especificar los
+parámetros y opciones con las que montarás el disco, no como en udisk que se
+monta con las opciones que le de la gana a el; te guste o no.</p>
+
+<p>Además, no te imagino instalando udisk es un servidor :D</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -604,7 +807,7 @@ entiendas.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -673,7 +876,7 @@ memorias flash sea más óptimo.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -991,7 +1194,7 @@ ahora ya sabes una parte, te dejo que investigues el resto.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1048,505 +1251,7 @@ todas salen de un supuesto firefox.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/05/26/nic-bonding/">NIC bonding</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-05-26T16:32:02-04:00'><span class='date'>26/05/2015</span> <span class='time'>4:32 pm</span></time>
-        
-           | <a href="/blog/2015/05/26/nic-bonding/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/05/26/nic-bonding/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Recién terminé el servidor de LTSP; pero aún estoy como niño con juguete nuevo,
-viendo que otra gangarrea le puedo poner. En la <a href="http://gutl.jovenclub.cu/">lista de GUTL</a> un colega
-me comentó que sería bueno darle explotación a ambas tarjetas de red. Enseguida
-dijo lo primero en que piensan mis coterráneos, un proxy. Yo le comenté que le
-había hecho un bonding, operación a la cual yo denomíno &ldquo;albóndiga&rdquo; y consiste
-en levantar una interfaz de red especial que usa dos tarjetas de red como si
-fueran una.</p>
-
-<p>Esto; para un servidor de tanto tráfico como es el caso de ltsp, es un verdadero
-batazo. Otros colegas parecieron sorprendidos al ver tal cosa y me pidieron que
-escribiera un tutorial de como hacerlo; sobre todo para que llegase a aquellos
-que no tienen internet.</p>
-
-<p>Instala un paquete llamado  <strong>ifenslave</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;instalando ifenslave&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install ifenslave
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Luego declaras en &ldquo;/etc/network/interfaces&rdquo; una interfaz llamada bond0 en la
-cual declaras que interface quieres unir.</p>
-
-<p>A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/network/interfaces&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@ganker:~# cat /etc/network/interfaces
-</span><span class='line'><span class="c"># This file describes the network interfaces available on your system</span>
-</span><span class='line'><span class="c"># and how to activate them. For more information, see interfaces(5).</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">source</span> /etc/network/interfaces.d/*
-</span><span class='line'>
-</span><span class='line'><span class="c"># The loopback network interface</span>
-</span><span class='line'>auto lo
-</span><span class='line'>iface lo inet loopback
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>auto bond0
-</span><span class='line'>iface bond0 inet static
-</span><span class='line'>    address 10.1.1.3
-</span><span class='line'>    netmask 255.255.255.0
-</span><span class='line'>    network 10.1.1.0
-</span><span class='line'>    gateway 10.1.1.1
-</span><span class='line'>    dns-nameservers 10.1.1.1
-</span><span class='line'>    dns-search hcg.sld.cu
-</span><span class='line'>    slaves eth0 eth1
-</span><span class='line'>    bond_mode active-backup
-</span><span class='line'>    bond_miimon 100
-</span><span class='line'>    bond_downdelay 200
-</span><span class='line'>    bond_updelay 200
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Donde eth0 y eth1 son las interfaces que se unirán. Eso es todo&hellip;</p>
-
-<p>OJO! Si tienes un cortafuegos que involucre reglas de interfaces, ya tienestarea
-pa la casa.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/05/23/ltsp-en-debian8-y-salud/">ltsp en debian8 y salud</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-05-23T01:46:08-04:00'><span class='date'>23/05/2015</span> <span class='time'>1:46 am</span></time>
-        
-           | <a href="/blog/2015/05/23/ltsp-en-debian8-y-salud/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/05/23/ltsp-en-debian8-y-salud/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Problema</h3>
-
-<p>21 de Mayo: La situación de los clientes ligeros en el Calixto no da más. El
-servidor DHCP del ardence dejó pinchar sin previo aviso. El encargado de los
-clientes ligeros, reinstaló todo y siguió sin pinchar. Luego determinó que era
-culpa de un virus. El incha-cojones de Windows vuelve a hacer de la suya.
-Mientras tanto, el caos se ríe de todos y se frota las manos.</p>
-
-<p>A la novena llamada preguntando &ldquo;cuando se arreglan los clientes ligeros&rdquo;
-determiné que la situación llevaba medidas drásticas, siendo hora de pasar el
-servidor al lado oscuro de la fuerza.</p>
-
-<p>Plan de migración: El miembro sobre la mesa.</p>
-
-<p>Tiempo estimado: Menos del que te imaginas.</p>
-
-<p>Por un lado, 6 clientes ligeros con un windows XP que se arrastra en los 128
-megas de RAM y un servidor dongan de manufactura vietnamita. Por el otro, más de
-6 usuarios quejándose porque su sistema funciona lento, cuando le da la gana y
-además deben reiniciar más de 10 veces al día. Eso sin contar que deben tener la
-información en memorias flash, porque no se guardan los cambios en las imágenes.</p>
-
-<h3>Solución</h3>
-
-<p>Linux Terminal Server Project, más conocido como &ldquo;LTSP&rdquo;.</p>
-
-<p>Instalar ltsp es un proceso relativamente fácil, sobre todo cuando tienes un
-tubo de internet a full.</p>
-
-<p>Pero detrás del proxy satánico de infomed; la cosa se vuelve un tanto compleja.</p>
-
-<p>Por suerte, el repo de debian en infomed está bien afinadito y ahora con el tubo
-de 2 megas, la cosa mejora considerablemente.</p>
-
-<p>Hay dos maneras de hacer esto, la fácil y novel; o la difícil y tediosa. En caso
-de la fácil, bastará con instalar el paquete &ldquo;ltsp-server-standalone&rdquo;; el cual
-instalará y configurará todo la orquesta de software requerido para pinchar lo
-que se conoce como ltsp. Entre ellos, el servidor dhcp de ics, el servidor
-tftp-hpa, la maritrónica que sirve la SWAP por nfs y todo el rebortillo de cosas
-que requiere NFS.</p>
-
-<p>Corre esto y ponte cómodo, que va pa largo&hellip;</p>
-
-<figure class='code'><figcaption><span>&#8220;ltsp-build-client&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> ltsp-build-client --http-proxy http://127.0.0.1:3128 <span class="se">\</span>
-</span><span class='line'> --mirror http://ftp.sld.cu/debian <span class="se">\</span>
-</span><span class='line'> --security-mirror http://ftp.sld.cu/debian-security <span class="se">\</span>
-</span><span class='line'> --copy-sourceslist --copy-package-cache --accept-unsigned-packages
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El comando que corriste, generó un fichero de configuración para el servidor
-dhcp de isc. Te sugiero que lo uses como DHCP.</p>
-
-<figure class='code'><figcaption><span>&#8220;ltsp-build-client&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp /etc/ltsp/dhcpd.conf /etc/dhcp/dhcpd.conf
-</span><span class='line'>systemctl restart isc-dhcp-server
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Muy importante NFS. En el fichero <strong>/etc/exports</strong> ponemos esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;contenido de</span><a href='/etc/exports"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/opt/ltsp *<span class="o">(</span>ro,no_root_squash,async,no_subtree_check<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>y reiniciamos el servicio de NFS</p>
-
-<figure class='code'><figcaption><span>&#8220;reiniciando nfs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl restart nfs-kernel-server
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Cuando butees una máquina, el login no te pinchará. Deberás correr esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;crear el squash&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ltsp-update-sshkeys
-</span><span class='line'>ltsp-update-image --config-nbd
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>La imagen que se instaló en /opt no es más que la matriz para crear un squashfs
-que se le sirve a los clientes. Con ese comando, reflejamos los cambios
-volviendo a crear la imagen &ldquo;squashada&rdquo;.</p>
-
-<p>Con eso te digo que si haces un cambio en la imagen, deberás correr ese comando.</p>
-
-<p>Ahora bien. Para que no queden lagunas mentales:</p>
-
-<h3>Todo lo que tendrán los usuarios, ESTÁ EN EL SERVIDOR</h3>
-
-<p>Por tanto, hay que instalar una interfaz visual EN EL SERVIDOR. Será lo que los
-clientes pinchen. Por supuesto, no necesariamente el servidor tiene que correr
-dicha interfaz. En mi caso yo instalé solo sistema base y luego corrí esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;instalar lxde completo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install task-lxde-desktop
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora el servidor está equipado con una interfaz visual, pero no la pincha, ya
-que no le instalamos ningún &ldquo;display manager&rdquo;; por tanto, las X no arrancan. El
-display manager lo tiene la imagen que levantan los clientes; nada menos que
-LDM.</p>
-
-<p>Los clientes levantan un LDM e inician sesión remota en el servidor.</p>
-
-<h2>¿se entendió?</h2>
-
-<p>Toas las instrucciones que cargará esta interfaz gráfica minimalista (el LDM de
-los clientes ligeros), se declaran en el fichero /opt/ltsp/i386/etc/lts.conf a
-mi me quedó así la primera versión de este fichero.</p>
-
-<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>default<span class="o">]</span>
-</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Dice que está configurado, que tiene sonido, que use dispositivos locales, que
-configure las X dinámicamente y que arranque lxde como sesión por defecto.</p>
-
-<p>Y ahí empezaron mis problemas. En mi caso, las canchanfletas que usé como
-clientes ligeros, tenían una tarjeta de video unichrome más extraña que un
-calsoncillo con tirantes. La pantalla se veía con una capa verde delante. Nunca
-había visto cosa igual.</p>
-
-<p>Solución. Levanta un cliente ligero, entra en la consola (con
-Ctrl+Alt+F1) y ejecuta:</p>
-
-<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>X -configure
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Eso te creará el fichero xorg.conf.new EN EL CLIENTE. A ese punto, se habrá
-generado una configuración de X decente. Pero ese fichero hay que ponerlo EN EL
-SERVIDOR:</p>
-
-<figure class='code'><figcaption><span>&#8220;monta que te queda&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>scp xorg.conf root@servidor:/opt/ltsp/i386/etc/X11/xorg.conf
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora además, al servidor hay que especificarle que las X NO se auto-configuren
-y que en cambio, usen el fichero dado. Todo eso lo haremos en /opt/ltsp/i386/etc/lts.conf</p>
-
-<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>default<span class="o">]</span>
-</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
-</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>False
-</span><span class='line'>    <span class="nv">X_CONF</span><span class="o">=</span>/etc/X11/xorg.conf
-</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
-</span><span class='line'>    <span class="nv">MODULE_01</span> <span class="o">=</span> <span class="s2">&quot;usb-storage&quot;</span>
-</span><span class='line'>    <span class="nv">MODULE_02</span> <span class="o">=</span> <span class="s2">&quot;sd_mod&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Dice ahora que: Está configurado, tiene sonido, dispositivos locales (pa que
-pinchen las memorias flash), que levante lxde, que NO configure las X, que use
-el fichero dado, que la resolución de su pantalla 0 (la única) es de 1024x768 y
-además que meta ese par de módulos, pa que pinchen los puertos USB.</p>
-
-<p>Por supuesto, en el chroot que levanta el cliente, la ruta absoluta
-/etc/X11/xorg.conf es completamente válida.</p>
-
-<p>¡¡Ah, y no olvides volver a crear la imagen!!</p>
-
-<h3>pero de vuelta al servidor</h3>
-
-<p>Entre los palos más comunes, vemos uno que al iniciar la sesión dice que el
-usuario &ldquo;fulano&rdquo; no pertenece a netdev y que por tanto, el puñetero data-bus no
-arranca.</p>
-
-<figure class='code'><figcaption><span>&#8220;agregando a netdev&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>adduser fulano netdev
-</span><span class='line'>systemctl restart dbus
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En el fichero <strong>/etc/adduser.conf</strong> puedes especificar los parámetros de los
-nuevos usuarios creados, ahí puedes declarar que se creen con sus pertinentes
-grupos.</p>
-
-<figure class='code'><figcaption><span>&#8220;adduser.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Set this if you want the --add_extra_groups option to adduser to add</span>
-</span><span class='line'><span class="c"># new users to other groups.</span>
-</span><span class='line'><span class="c"># This is the list of groups that new non-system users will be added to</span>
-</span><span class='line'><span class="c"># Default:</span>
-</span><span class='line'><span class="nv">EXTRA_GROUPS</span><span class="o">=</span><span class="s2">&quot;dialout cdrom audio video plugdev users netdev netdev messagebus pulse lpadmin&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El directorio <strong>/etc/skel/</strong> contiene la plantilla para crear el nuevo usuario.
-Crea un usuario, has la configuración que desees y cópialo pa /etc/skel.</p>
-
-<p>Otro palo común es que las memorias NTFS se montan como solo lectura. Solución,
-instala ntfs-3g EN EL CHROOT que está en /opt y vuelve a crear la imagen.</p>
-
-<h3>Nota para los mentequieta:</h3>
-
-<p>Los usuarios se crean EN EL SERVIDOR no en la imagen.</p>
-
-<h3>Sugerencias</h3>
-
-<p>Cada cosa que los clientes ejecuten, lo harán en el servidor, y puedes ponerte a
-mirar con htop que proceso se está metiendo la RAM o el CPU, detener dicho
-proceso y requerir al usuario. Porque verás los procesos y el usuario que lo
-ejecuta. Déjame recordarte que Linux, es un sistema multitarea y multiusuarios
-de verdad.</p>
-
-<p>En mi caso, el servidor (los &ldquo;dongan&rdquo; vietnamitas) tiene dos discos duros. Monté
-uno para el sistema y la swap, el otro lo dejé para el /home.</p>
-
-<p>Mi servidor tiene 512 de RAM y aún con 4 clientes ligeros no ha llenado la mitad
-de la memoria. ¿Dime tu con 1 Giga de RAM?</p>
-
-<p>Por defecto, los homes de los usuarios se crean con permisos que los hace
-visibles entre si. Ejecuta: &ldquo;chmod 770 /home/fulano&rdquo; cada vez que crees un
-usuario. Si no, el home de este usuario será visible por los demás usuarios.</p>
-
-<p>¿Has pensando que ahora es más fácil hacerle salvas a las cosas? Todo está en el
-/home.</p>
-
-<p>No olvides decirle al usuario que ahora pueden hacer y guardar cambios en su
-&ldquo;perfil&rdquo; (como ellos le llaman) pues algunos están acostumbrados a que el
-cliente ligero No guarda cambios.</p>
-
-<p>Puedes decirle a tus usuarios que su perfil puede ser abierto desde cualquier
-cliente ligero de la flota. Lo cual les da cierta &ldquo;movilidad&rdquo;.</p>
-
-<p>Puedes decirle que si su cliente ligero se rompe no se preocupe, que su
-información está a salvo. Incluso, le recuerdas además que puede abrir su perfil
-desde otro cliente ligero que esté en la misma flota.</p>
-
-<p>Puedes hacer configuraciones individuales de cada máquina en el fichero
-<strong>/opt/ltsp/i386/etc/lts.conf</strong></p>
-
-<p>En donde dice <strong>[default]</strong> puedes poner la MAC del
-cliente.</p>
-
-<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># configuración genérica</span>
-</span><span class='line'><span class="o">[</span>default<span class="o">]</span>
-</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
-</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>False
-</span><span class='line'>    <span class="nv">X_CONF</span><span class="o">=</span>/etc/X11/xorg.conf
-</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
-</span><span class='line'>    <span class="nv">MODULE_01</span> <span class="o">=</span> <span class="s2">&quot;usb-storage&quot;</span>
-</span><span class='line'>    <span class="nv">MODULE_02</span> <span class="o">=</span> <span class="s2">&quot;sd_mod&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># configuración de un cliente individual el</span>
-</span><span class='line'><span class="c"># jefe no quiere que oiga música ni use</span>
-</span><span class='line'><span class="c"># memorias flash</span>
-</span><span class='line'><span class="o">[</span>00:90:4b:a2:55:05<span class="o">]</span>
-</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>False
-</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>False
-</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
-</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
-</span><span class='line'>
-</span><span class='line'><span class="c"># EOF</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Una buena idea, es usar un dhcp con las MAC e ip fijas para cada usuario, sería
-una mejor manera de cortar el bacalao. Así el servidor solo le respondería a sus
-clientes. Además, en caso de tener múltiples servidores de clientes ligeros, no
-tendrás otra opción, pues si no, cada cliente ligero buteará por donde mejor la
-parezca y seguro no querrás eso.</p>
-
-<p>En el servidor DHCP central, rechaza las MAC de los clientes si se dirigen al
-puerto 67, para que no reciban dicho servicio, así lo obligas a bootear por el
-servidor de clientes ligeros.</p>
-
-<figure class='code'><figcaption><span>&#8220;iptables&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iptables -A INPUT -p tcp --dport <span class="m">67</span> -m mac --mac-source 00:90:4b:a2:55:05 -j DROP
-</span><span class='line'>iptables -A INPUT -p udp --dport <span class="m">67</span> -m mac --mac-source 00:90:4b:a2:55:05 -j DROP
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lo ideal sería que el DHCP central tuviera las direcciones MAC de los clientes y
-le diera los parámetros de buteo a cada cual, pero eso aún no lo he logrado.
-Hay algo que tiene que ver con el parámetro &ldquo;next server&rdquo;. He logrado que estos
-den con el tftp adecuado, pero luego tratan de contactar al propio servidor DHCP
-como servidor NFS.</p>
-
-<p>También podrías tener un firewall en el servidor de clientes ligeros. Que
-permite el DHCP solo a las MAC de los clientes. Así no le das DHCP a cualquiera.
-Además, podrías decirle también a ese servidor, que solo permite el tráfico de
-las MAC de los clientes ligeros. No me parece que un servidor como ese tenga que
-ser alcanzado por otra máquina.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1569,7 +1274,15 @@ ser alcanzado por otra máquina.</p>
 	<ul id="recent_posts">
 		
 		<li class="post">
+			<a href="/blog/2016/11/14/openvpn-user-plus-pass/">openvpn user+pass</a>
+		</li>
+		
+		<li class="post">
 			<a href="/blog/2016/10/22/el-domain-pop/">recolección DomainPOP</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/domainpop-con-postfix/">domainpop con postfix</a>
 		</li>
 		
 		<li class="post">
@@ -1898,10 +1611,6 @@ ser alcanzado por otra máquina.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2013/11/12/domainpop-con-postfix/">domainpop con postfix</a>
 		</li>
 		
 	</ul>

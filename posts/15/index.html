@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>palo con la wifi - El SysAdmin del 3er Mundo</title>
+  <title>El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="palo con la wifi 16/10/2015 12:40 pm | Comments Vale la pena hacer una entrada de esto, porque podría ser el problema de alguien
-que como yo; se &hellip;">
+  <meta name="description" content="el "calisto" garcía 04/04/2014 9:42 pm | Comments En la punta de loma más temida y respetada por cualquiera que estudie medicina;
+y en lo más alto &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ que como yo; se &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/10/16/palo-con-la-wifi/">
+  <link rel="canonical" href="http://uranio-235.github.io/posts/15/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -79,12 +79,15 @@ que como yo; se &hellip;">
 </nav>
   <div id="main">
     <div id="content">
-      <div>
-<article class="hentry" role="article">
+      <div class="blog-index">
   
+  
+  
+    <article>
+      
   <header>
     
-      <h1 class="entry-title">palo con la wifi</h1>
+      <h1 class="entry-title"><a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a></h1>
     
     
       <p class="meta">
@@ -93,120 +96,61 @@ que como yo; se &hellip;">
 
 
 
-<time class='entry-date' datetime='2015-10-16T12:40:04-04:00'><span class='date'>16/10/2015</span> <span class='time'>12:40 pm</span></time>
+<time class='entry-date' datetime='2014-04-04T21:42:40-04:00'><span class='date'>04/04/2014</span> <span class='time'>9:42 pm</span></time>
         
-           | <a href="#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io">Comments</a>
+           | <a href="/blog/2014/04/04/en-la-cumbre-del-vedado/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/04/04/en-la-cumbre-del-vedado/">Comments</a>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Vale la pena hacer una entrada de esto, porque podría ser el problema de alguien
-que como yo; se cansó de alarse los pelos y buscar en google.</p>
+  <div class="entry-content"><p>En la punta de loma más temida y respetada por cualquiera que estudie medicina;
+y en lo más alto de la educación Cubana, se encuentra:</p>
 
-<p>Recién no se cuando me bajé una versión de algo que involucra al networkmanager
-y BUN! La wifi, cada vez que levantaba al susodicho, se bloqueaba.</p>
+<h3>El Hospital Universitario Calixto García</h3>
 
-<p>El problema parecía estar en el fichero:</p>
+<p>Se yergue sobre el resto de las instituciones de salud, por su altura sobre el
+nivel del mar; en comparación con el resto de otros hospital.</p>
 
-<p><strong>/var/lib/NetworkManager/NetworkManager.state</strong></p>
+<p>Hace poco respondí con mucho estupor a la pregunta &ldquo;¿donde estás trabajando?&rdquo; y
+no fue hasta que escuche mi propia voz diciendo &ldquo;en el calisto&rdquo;; cuando hice
+consciencia del asunto. Al otro día me paré al fondo de la oficina y pensé:
+&ldquo;¿que hago yo aquí?&rdquo;. Salud para mi siempre había sido una asíntota. Estaba
+seguro que por cosas del destino, debía mantenerme al margen del MINSAP &ldquo;donde
+se come no se caga&rdquo;. Además, siempre dije que salud era el último lugar en el
+que trabajaría, quizás porque tantas personas me lo recomendaban.</p>
 
-<p>No se porque, decía tener la wifi deshabilitada. El fichero contiene algo como
-esto:</p>
+<p>Tanto tiempo proveyéndole ayuda a los usuarios de infomed, sin imaginarme lo que
+me reservaba el destino. Nunca me imaginé que me sentiría TAN BIEN en algún
+lugar, me gusta como pasa el tiempo aquí.</p>
 
-<figure class='code'><figcaption><span>NetworkManager.state</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>main<span class="o">]</span>
-</span><span class='line'><span class="nv">NetworkingEnabled</span><span class="o">=</span><span class="nb">true</span>
-</span><span class='line'><span class="nv">WirelessEnabled</span><span class="o">=</span><span class="nb">true</span>
-</span><span class='line'><span class="nv">WWANEnabled</span><span class="o">=</span><span class="nb">true</span>
-</span><span class='line'><span class="nv">WimaxEnabled</span><span class="o">=</span><span class="nb">true</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>Creo que el Calixto será un antes y un después en mi vida profesional.</p>
 
+<p>Detrás del proxy de infomed, la vida es dura. Enferntaré las miserias
+tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
 
-<p>No se por qué, la clave <strong>NetworkingEnabled</strong> estaba con valor <strong>false</strong> y al
-arrancar NetworkManager, bloqueaba la wifi, al punto que al levantarla
-manualmente, me decía que tenía que desbloquearla con rfkill. Para el que no lo
-sepa, con rfkill se pueden bloquear los radios.</p>
+<p>Esta primera entrada, marca el último día de mi antiguo blog: <a href="http://otherlinuxblog.blogspot.com">puheroska</a></p>
 
-<p>Si por casualidad tienes alguno bloqueado, ejecuta:</p>
-
-<p>rfkill unblock all</p>
-
-<p>Cosa que tenía que ejecutar cada vez que arrancaba el dichóso NetworkManager</p>
-
-<p>Probé apagar la wifi y arrancar el networkmanager con la wifi apagada, para ver
-si eso cambiaba algo en el fichero antes mencionado; pero no. Lo cual me llevó a
-la conclusión de que no fue una metedura de pata mía si no, un bug.</p>
-
-<p>Ponerle atributo inmutable a ese fichero podría ser una solución, pero todo lo
-que está en /var suele ser un dato volátil que señala el estado de algo, así que
-ponerle inmutable podría causar fallos en la aplicación.</p>
-
-<p>Si ese fichero está en /var es porque el network manager dumpea ahí su estado,
-fíjese que está junto a los lease del DHCP. No tengo certeza de que modificando
-esa configuración manualmente esta persista; pero ya llevo una semana con el
-problema resuelto.</p>
+<p>   <blockquote><p>Los ricos que viven de su patrimonio<br/>   no pueden hablar de &ldquo;su trabajo&rdquo;.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
 </div>
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-  <footer>
-    <p class="meta">
-      
+  
   
 
-<span class="byline author vcard">Posted by <span class="fn">låzaro</span></span>
 
-      
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
-
-
-
-<time class='entry-date' datetime='2015-10-16T12:40:04-04:00'><span class='date'>16/10/2015</span> <span class='time'>12:40 pm</span></time>
-      
-
-
-    </p>
+    </article>
+  
+  <div class="pagination">
     
-      <div class="sharing">
-  
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/10/16/palo-con-la-wifi/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/10/16/palo-con-la-wifi/" >Tweet</a>
-  
-  
-  <div class="g-plusone" data-size="medium"></div>
-  
-  
-    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
-  
-</div>
-
+    <a href="/blog/archives">Blog Archives</a>
     
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/blog/2015/10/15/repo-de-fdroid/" title="Previous Post: repo de fdroid">&laquo; repo de fdroid</a>
-      
-      
-        <a class="basic-alignment right" href="/blog/2015/10/18/systemd-timesyncd/" title="Next Post: systemd-timesyncd">systemd-timesyncd &raquo;</a>
-      
-    </p>
-  </footer>
-</article>
-
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a class="next" href="/posts/14">Newer &rarr;</a>
+    
+  </div>
 </div>
-  </section>
-
-</div>
-
 <aside class="sidebar">
   
     <section>
@@ -579,7 +523,6 @@ problema resuelto.</p>
   
 </aside>
 
-
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -594,10 +537,7 @@ problema resuelto.</p>
       var disqus_shortname = 'uranio-235';
       
         
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2015/10/16/palo-con-la-wifi/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2015/10/16/palo-con-la-wifi/';
-        var disqus_script = 'embed.js';
+        var disqus_script = 'count.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

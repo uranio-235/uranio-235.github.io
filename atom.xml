@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-11-08T21:47:21-05:00</updated>
+  <updated>2016-11-16T10:36:48-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,267 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[openvpn user+pass]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/11/14/openvpn-user-plus-pass/"/>
+    <updated>2016-11-14T21:41:05-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/11/14/openvpn-user-plus-pass</id>
+    <content type="html"><![CDATA[<p>Si bien, openvpn con una llave estática es algo bastante sencillo de configurar;
+tiene un grave problema: Que solo un cliente puede conectarse a la vez. En un
+escenario donde por ejemplo, queremos crear una vpn para múltiples servidores
+que deben conectarse, usar un clave estática se vuelve un problema. Una
+topología de anillo podría ayudarnos resolverlo, pero cada servidor debería ser
+cliente y servidor a la vez. Una VPN autenticada por usuario y contraseña
+resuelve el problema de la manera más simplificada posible.</p>
+
+<p>Creamos la infraestructura de certificados:</p>
+
+<figure class='code'><figcaption><span>&#8220;aprovisionando easy-rsa&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>mkdir Downloads/vpn
+</span><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span><span class="nb">cd </span>Downloads/vpn
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp -r /etc/easy-rsa/* ./
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si quieres, si te da la mariconería, edita los parámetros del fichero que acabas
+de copiar, pa que pongas los parámetros bonitillos, si no, espera a que openssl
+los pregunte; a lo mejor ni los pregunta.</p>
+
+<figure class='code'><figcaption><span>&#8220;aprovisionamiento de certificados&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>easyrsa init-pki
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>easyrsa build-ca nopass
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note que la cadena de texto <strong>tuservidor</strong> debe ser remplazada por el nombre de
+tu actor asiático preferido o, por algún nombre de tu agrado para el servidor.</p>
+
+<figure class='code'><figcaption><span>&#8220;creando el certificado del servidor&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>easyrsa build-server-full tuservidor nopass
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora el <a href="https://es.wikipedia.org/wiki/Diffie-Hellman">Diffie Hellman</a>, MUY
+importante. Ponte cómodo que va pa largo:</p>
+
+<figure class='code'><figcaption><span>&#8220;creando el diffie hellman&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>easyrsa gen-dh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Tiramos todo eso para /etc/openvpn en un directorio que designaremos con el
+nombre de &ldquo;servidor&rdquo; (por una cuestión de orden).</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/openvpn/&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>mkdir /etc/openvpn/servidor
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp pki/ca.crt /etc/openvpn/servidor
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp pki/dh.pem /etc/openvpn/servidor
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp -r pki/private/*.* /etc/openvpn/servidor/
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp -r pki/issued/tuservidor.* /etc/openvpn/servidor/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya tenemos todo listo pa armar el muñeco. Ahora vamos a crear la configuración
+del servidor. A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;servidor.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span><span class="nb">cd</span> /etc/openvpn/
+</span><span class='line'><span class="o">[</span>lazaro@artema openvpn<span class="o">]</span><span class="nv">$ </span>cat servidor.conf
+</span><span class='line'><span class="c"># como y por donde escuhan</span>
+</span><span class='line'>port 1194
+</span><span class='line'>proto udp
+</span><span class='line'>dev tun
+</span><span class='line'>
+</span><span class='line'><span class="c"># los certificados</span>
+</span><span class='line'>ca /etc/openvpn/servidor/ca.crt
+</span><span class='line'>cert  /etc/openvpn/servidor/tuservidor.crt
+</span><span class='line'>key /etc/openvpn/servidor/tuservidor.key
+</span><span class='line'>
+</span><span class='line'><span class="c"># el diffie hellman</span>
+</span><span class='line'>dh /etc/openvpn/servidor/dh.pem
+</span><span class='line'>
+</span><span class='line'><span class="c"># la red que vamos a operar</span>
+</span><span class='line'>server 10.8.0.0 255.255.255.0
+</span><span class='line'>
+</span><span class='line'><span class="c"># manda un ping cada 10 segundos</span>
+</span><span class='line'><span class="c"># y tumba el tunel si a los 120 no hay respuesta</span>
+</span><span class='line'>keepalive <span class="m">10</span> 120
+</span><span class='line'>
+</span><span class='line'><span class="c"># usa la compresión lzo</span>
+</span><span class='line'>comp-lzo
+</span><span class='line'>
+</span><span class='line'><span class="c"># opera con los siguientes privilegios</span>
+</span><span class='line'><span class="c">#user nobody</span>
+</span><span class='line'><span class="c">#group nogroup</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># esto es para reforzarlo</span>
+</span><span class='line'>persist-key
+</span><span class='line'>persist-tun
+</span><span class='line'>
+</span><span class='line'><span class="c"># que tan elocuente será</span>
+</span><span class='line'>verb 3
+</span><span class='line'>
+</span><span class='line'><span class="c"># mándale estos parámetros al cliente</span>
+</span><span class='line'>push <span class="s2">&quot;redirect-gateway def1&quot;</span>
+</span><span class='line'>push <span class="s2">&quot;dhcp-option DNS 8.8.8.8&quot;</span>
+</span><span class='line'>push <span class="s2">&quot;dhcp-option DNS 8.8.4.4&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># y he aquí el truco de la autenticación</span>
+</span><span class='line'>plugin /usr/lib/openvpn/plugins/openvpn-plugin-auth-pam.so login
+</span><span class='line'>client-cert-not-required
+</span><span class='line'>username-as-common-name
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso tenemos el servidor pinchando. Ahora vamos a hacer un fichero <strong>.ovpn</strong>
+genérico, para dar a entender como sería la configuración de nuestro cliente.</p>
+
+<p><strong>OJO</strong> El certificado que se le dará al cliente será el <strong>ca.crt</strong></p>
+
+<p>A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;cliente.ovpn&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema openvpn<span class="o">]</span><span class="nv">$ </span>cat tuservidor.ovpn
+</span><span class='line'>client
+</span><span class='line'>dev tun
+</span><span class='line'>proto udp
+</span><span class='line'>remote 192.168.0.1 1194
+</span><span class='line'>remote-cert-tls server
+</span><span class='line'>auth-user-pass ~/autenticacion.conf
+</span><span class='line'>comp-lzo
+</span><span class='line'>&lt;ca&gt;
+</span><span class='line'>-----BEGIN CERTIFICATE-----
+</span><span class='line'>Lorem ipsum ad his scripta blandit partiendo, eum fastidii
+</span><span class='line'>accumsan euripidis in, eum liber hendrerit an. Qui ut wisi
+</span><span class='line'>vocibus suscipiantur, quo dicit ridens inciderint id. Quo mundi
+</span><span class='line'>lobortis reformidans eu, legimus senserit definiebas an eos. Eu
+</span><span class='line'>sit tincidunt incorrupte definitionem, vis mutat affert
+</span><span class='line'>percipit cu, eirmod consectetuer signiferumque eu per. In usu
+</span><span class='line'>latine equidem dolores. Quo no falli viris intellegam, ut fugit
+</span><span class='line'>veritus placerat per.  Ius id vidit volumus mandamus, vide
+</span><span class='line'>veritus democritum te nec, ei eos debet libris consulatu. No
+</span><span class='line'>mei ferri graeco dicunt, ad cum veri accommodare. Sed at malis
+</span><span class='line'>omnesque delicata, usu et iusto zzril meliore. Dicunt maiorum
+</span><span class='line'>eloquentiam cum cu, sit summo dolor essent te. Ne quodsi
+</span><span class='line'>nusquam legendos has, ea dicit voluptua eloquentiam pro, ad sit
+</span><span class='line'>quas qualisque. Eos vocibus deserunt quaestio ei.
+</span><span class='line'>-----END CERTIFICATE-----
+</span><span class='line'>&lt;/ca&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Cada cliente de OpenVPN tiene su librito&hellip; Pero ese .ovpn genérico, debe ser
+capaz de ser importado sin problema.</p>
+
+<p>Por una cuestión de orden y seguridad, yo borro la base con la que se creó todo:</p>
+
+<figure class='code'><figcaption><span>&#8221;&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>rm -rf Downloads/vpn
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por cierto, cada configuración que pongas en <strong>/etc/openvpn</strong> cuya extensión
+sea <strong>.conf</strong> se puede echar a andar con systemd.</p>
+
+<figure class='code'><figcaption><span>&#8220;systemctl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># systemctl status openvpn@servidor</span>
+</span><span class='line'>● openvpn@servidor.service - OpenVPN connection to servidor
+</span><span class='line'>   Loaded: loaded <span class="o">(</span>/usr/lib/systemd/system/openvpn@.service<span class="p">;</span> disabled<span class="p">;</span> vendor preset: disabled<span class="o">)</span>
+</span><span class='line'>   Active: inactive <span class="o">(</span>dead<span class="o">)</span>
+</span><span class='line'>     Docs: man:openvpn<span class="o">(</span>8<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># file /etc/openvpn/servidor.conf </span>
+</span><span class='line'>/etc/openvpn/servidor.conf: UTF-8 Unicode text
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[recolección DomainPOP]]></title>
@@ -138,6 +399,51 @@ destinatario en un encabezado &ldquo;Envelope-To&rdquo;</p>
   </entry>
   
   <entry>
+    <title type="html"><![CDATA[domainpop con postfix]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/10/22/domainpop-con-postfix/"/>
+    <updated>2016-10-22T17:35:46-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/10/22/domainpop-con-postfix</id>
+    <content type="html"><![CDATA[<p>Otra importante entrada que decidí migrar de <a href="http://otherlinuxblog.blogspot.com">puheroska</a></p>
+
+<p>Es tan sencillo como crear un dominio virtual y asignarle usuarios reales. Para
+no volverte loco pon el nombre del usaurio igual que el del dominoio.</p>
+
+<p>Por ejemplo, crea dos usuarios, uno llamado <em>subdom</em> y un segndo llamado <em>otro</em>.
+Luego crea el fichero /etc/postfix/virtual y ponle esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/postfix/virtual&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>@subdom.tudomionio.cu   subdom
+</span><span class='line'>@otro.tudominio.cu      otro
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>postmap</strong> que tú conoces y <strong>postfix reload</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;postmap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>postmap /etc/postfix/virtual
+</span><span class='line'>postfix reload
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya hemos declarado que <em>subdom</em> y <em>otro</em>, serán usuarios y que todo lo que se envíe
+a los dominios virtuales @otro.tudominio.cu será almacenado en /var/mail/otro</p>
+
+<p>Finalmente en el /etc/main.cf pones:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/postfix/main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">virtual_alias_domains</span> <span class="o">=</span> subdom.tudominio.cu otro.tudominio.cu
+</span><span class='line'><span class="nv">virtual_alias_maps</span> <span class="o">=</span> <span class="nb">hash</span>:/etc/postfix/virtual
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>OJO no olvides que en <strong>mydestination</strong> y debes incluir ambos dominios virtuales.</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[túnel 6in4]]></title>
     <link href="http://uranio-235.github.io/blog/2016/10/22/tunel-6in4/"/>
     <updated>2016-10-22T03:18:11-04:00</updated>
@@ -149,7 +455,7 @@ no me ha dado una ipv6</p>
 
 <p>Existe una tecnología transisional poco recomendada que se conoce como <a href="https://es.wikipedia.org/wiki/6to4?">6in4</a>,
 consiste en levantar un túnel especial que te permite hacerte con un rango ipv6
-pa jugar y comer mierda, porque no es ipv6 puro. Supuestamente interner debe
+pa jugar y comer mierda, porque no es ipv6 puro. Supuestamente internet debe
 tener servididores que hagan relay hacia ipv6 real pero hoy en día son cada vez
 menos.</p>
 
@@ -374,7 +680,7 @@ cada partícula de polvo de tu oficina. Pero ojo:</p>
 <p><strong>esas ip serán visibles desde y hacia internet</strong></p>
 
 <p>Cada ip que delegues de tu prefijo, formará parte del ciberspacio. Visto de otra
-forma. Si asignas 2001:db8::a0h1 a una máquina en tu LAN, esa dirección será de
+forma. Si asignas 2001:db8::aaa1 a una máquina en tu LAN, esa dirección será de
 facto, alcanzable desde internet (si tienes internet claro).</p>
 
 <p>Para lidiar con esta situación, deberás tener bien claro el forward en tu
@@ -418,7 +724,7 @@ stack ipv6 se encarga de comprimirla y descomprimirla, sepa usted.</p>
 
 <p>El forward de un cortafuegos será lo que controla que será visible dentro de tu
 LAN. La puerta de enlace decide qué será visible o no. Más adelante veremos un
-firewall ipv6 lo más sencillo posible.</p>
+firewall ipv6 lo más sencillo posible. Usaremos ip6tables.</p>
 
 <h3>¿y el dhcp?</h3>
 
@@ -476,8 +782,7 @@ red que tiene conectado el cable de eth0.</p>
 
 <p>Sin embargo, al hacer ping a <strong>ff02::2</strong> solo responderán aquellas ipv6 que sean
 <strong>routers</strong>. Eso es una manera de saber quien es un router o simplemente si hay
-alguno. O sea, una manera de comprobar, si la red tiene salida a la red de
-redes.</p>
+alguno.</p>
 
 <p>Las direcciones <strong>fe80::</strong> son enlaces locales. Podría decirse que las
 direcciones fe80 son como decir &ldquo;arp&rdquo; pero se les puede hacer ping y otras
@@ -504,7 +809,11 @@ una ip y un registro AAAA para máquina.</p>
 </ul>
 
 
-<p>Cuando preguntes por la ipv6 de proxy, resolverá 2001:db8::cafe</p>
+<p>Cuando preguntes por la ipv6 de proxy, resolverá 2001:db8::cafe, de esta manera,
+el sistema operativo preguntará simplemente por &ldquo;proxy&rdquo; y el DNS le resolverá
+ambas direcciones (4 y 6), la configuración de dichos stack, decidirá cual usar.</p>
+
+<p>Esto en bind se escribe así:</p>
 
 <figure class='code'><figcaption><span>&#8220;dominio.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -516,7 +825,7 @@ una ip y un registro AAAA para máquina.</p>
 </span><span class='line'>ns01         IN      A       192.168.0.1
 </span><span class='line'>ns01         IN      AAAA    2001:db8::cafe
 </span><span class='line'>             IN      MX  <span class="m">0</span>   ns01
-</span><span class='line'>router       IN      CNAME   ns01
+</span><span class='line'>ruter        IN      CNAME   ns01
 </span><span class='line'>proxy        IN      CNAME   ns01
 </span></code></pre></td></tr></table></div></figure>
 
@@ -534,6 +843,18 @@ una ip y un registro AAAA para máquina.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
+<h3>¿Qué aprendimos?</h3>
+
+<ul>
+<li> 2001:db8:: es un rango reservado, no se usa</li>
+<li> ipv6 es complejo pero no complicado.</li>
+<li> hay un ip6tables aparte de iptables</li>
+<li> ipv6 NO necesita nateo</li>
+<li> que existen tecnologías transicionales como 6in4</li>
+<li> no es DHCP, si no RA y SLAAC</li>
+<li> no hay ARP, si no link-local</li>
+<li> los punteros AAAA funcionan igualito que los A</li>
+</ul>
 
 ]]></content>
   </entry>
@@ -605,7 +926,7 @@ que el driver opensource <strong>brcm80211</strong> no pinchaba bien del todo co
 bluetooth. Al punto que no podía alejarme ni un metro del dispositivo, además,
 que el mero echo de moverme, hacía que el audio se cortara.</p>
 
-<p>Usar el blob (driver propietario) parecía una variante atractiva, pero el existe
+<p>Usar el blob (driver propietario) parecía una variante atractiva, pero existe
 el driver <strong>b43</strong> (QUE TAMBIÉN es opensource) y se jacta de ser creado con
 ingeniería inversa. De un principio esto no me pareció algo atractivo; pero ya
 lo había dicho el célebre comunistón Chino:</p>
@@ -638,6 +959,8 @@ opensource por defecto.</p>
 
 <p>y reinicia</p>
 
+<h3>Ahora, la comparación:</h3>
+
 <h4>brcm80211</h4>
 
 <p>La wifi pincha DE PINGA. Dentro de la banda de los 2.4Ghz, hace de todo, desde
@@ -663,6 +986,9 @@ excelente. La wifi se porta muy bien los primeros días. <strong>PERO</strong> E
 amanezca con el moño virao la wifi se desparece, corriendo depmod AVEEECEES
 aparece. O sea, la mismas miserias del propietario, pero con la aleatoria
 posibilidad de que amanezcas sin wifi.</p>
+
+<p>Al final, fui a un taller, di 5 pesos mi tarjeta y adquirí una Atheros&hellip;
+Solución PERFECTA.</p>
 ]]></content>
   </entry>
   
@@ -714,7 +1040,7 @@ pero no pincha. Hay que deshabilitarlo con systemd. Ejecuta esto <strong>como ro
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Reinicia y al conectar los audífonos, el al hacerle click al dipositivo, debe
+<p>Reinicia y al conectar los audífonos; y, al hacerle click al dipositivo, debe
 darte una opción que conduce a la configuración de audio. Ahí mismo cambias el
 modo y seleccionas el dispositivo de salida de audio por defecto.</p>
 
@@ -859,7 +1185,7 @@ Las acciones pueden ser up, down, conectivity-change, hostname y en fin, vease
 </span><span class='line'>   down<span class="o">)</span> <span class="c"># al tumbar una conexión</span>
 </span><span class='line'>
 </span><span class='line'>     loguear <span class="s1">&#39;para el clientico ntp de systemd&#39;</span>
-</span><span class='line'>     systemctl systemd-timesyncd
+</span><span class='line'>     systemctl stop systemd-timesyncd
 </span><span class='line'>
 </span><span class='line'>
 </span><span class='line'>   <span class="p">;;</span>
@@ -1349,7 +1675,7 @@ configuración sería más o menos así en el fichero <strong>/etc/esmtprc</stro
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Listo! El correo <a href="&#109;&#x61;&#105;&#108;&#116;&#x6f;&#58;&#x72;&#111;&#x6f;&#x74;&#x40;&#116;&#x75;&#x64;&#x6f;&#x6d;&#105;&#110;&#x69;&#x6f;&#46;&#x63;&#x75;">&#114;&#111;&#111;&#116;&#x40;&#116;&#x75;&#x64;&#x6f;&#x6d;&#105;&#x6e;&#x69;&#111;&#46;&#x63;&#117;</a> recibirá correos de <a href="&#x6d;&#97;&#105;&#108;&#x74;&#111;&#x3a;&#x63;&#114;&#x6f;&#x6e;&#x40;&#116;&#117;&#x64;&#111;&#109;&#x69;&#x6e;&#x69;&#x6f;&#46;&#99;&#117;">&#99;&#114;&#x6f;&#x6e;&#64;&#116;&#x75;&#100;&#x6f;&#x6d;&#105;&#110;&#x69;&#111;&#46;&#99;&#x75;</a> con la
+<p>Listo! El correo <a href="&#x6d;&#97;&#x69;&#x6c;&#116;&#111;&#x3a;&#x72;&#111;&#111;&#116;&#x40;&#x74;&#117;&#100;&#x6f;&#x6d;&#105;&#110;&#105;&#x6f;&#x2e;&#99;&#117;">&#x72;&#111;&#x6f;&#x74;&#x40;&#116;&#117;&#100;&#111;&#x6d;&#x69;&#110;&#x69;&#111;&#x2e;&#99;&#117;</a> recibirá correos de <a href="&#109;&#x61;&#x69;&#108;&#116;&#111;&#x3a;&#99;&#x72;&#111;&#110;&#64;&#116;&#117;&#x64;&#x6f;&#x6d;&#105;&#110;&#x69;&#x6f;&#46;&#99;&#117;">&#x63;&#114;&#111;&#x6e;&#64;&#116;&#x75;&#100;&#x6f;&#109;&#105;&#x6e;&#105;&#x6f;&#46;&#x63;&#x75;</a> con la
 salida del cron&hellip;</p>
 ]]></content>
   </entry>
@@ -1996,266 +2322,6 @@ manera automática.</p>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>mysql &lt; dumpeo.sql
 </span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[WPA2 con freeradius]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/04/01/wpa2-con-freeradius/"/>
-    <updated>2016-04-01T13:13:59-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/04/01/wpa2-con-freeradius</id>
-    <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/wireless_defense.png" width="190" height="290"></p>
-
-<p>Ahora con el bun de la WiFi, comienzan las necesidades básicas, como cifrado de
-red y protección de acceso. Todavía el cubano no sabe la diferencia entre
-<a href="https://es.wikipedia.org/wiki/Wired_Equivalent_Privacy">WEP</a> y
-<a href="https://es.wikipedia.org/wiki/Wi-Fi_Protected_Access">WPA</a> pero bueno, para el
-que lea esto, el tutorial va por el camino duro pero correcto.</p>
-
-<p>¿Qué haremos?</p>
-
-<p>Configurar <a href="http://w1.fi/hostapd/">hostapd</a> con <a href="http://freeradius.org/">freeradius</a> para proveer una WiFi con WPA2</p>
-
-<p>Si no sabes que cosa es <a href="http://lmgtfy.com/?q=como+funciona+WPA2">WPA2 míralo aquí</a></p>
-
-<p>Para la ocasión, usaremos ArchLinux y requeriremos los paquetes siguientes
-<strong>hostapd</strong> y <strong>freeradius</strong>. ¿No tengo que decirte como instalarlos verdad?
-Entonces, supongamos que tienes la WiFi en <strong>wlan0</strong>.</p>
-
-<p>Vamos a empezar de atrás pa alante, el AP. Como no tenemos un ap profesional muy
-de pinga, vamos a usar hostapd. A mi la configuración me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/hostapd/hostapd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">ssid</span><span class="o">=</span>APconLinux
-</span><span class='line'><span class="nv">interface</span><span class="o">=</span>wlp2s0b1
-</span><span class='line'><span class="nv">driver</span><span class="o">=</span>nl80211
-</span><span class='line'><span class="nv">ieee8021x</span><span class="o">=</span>1
-</span><span class='line'><span class="nv">hw_mode</span><span class="o">=</span>g
-</span><span class='line'><span class="nv">channel</span><span class="o">=</span>1
-</span><span class='line'><span class="nv">wpa</span><span class="o">=</span>2
-</span><span class='line'><span class="nv">wpa_key_mgmt</span><span class="o">=</span>WPA-EAP
-</span><span class='line'><span class="nv">rsn_pairwise</span><span class="o">=</span>CCMP
-</span><span class='line'><span class="nv">auth_algs</span><span class="o">=</span>1
-</span><span class='line'><span class="nv">auth_server_addr</span><span class="o">=</span>127.0.0.1
-</span><span class='line'><span class="nv">auth_server_port</span><span class="o">=</span>1812
-</span><span class='line'><span class="nv">auth_server_shared_secret</span><span class="o">=</span>mifortalezaimperial
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora localizamos el fichero donde se configura el EAP, en el caso de archlinux,
-este fichero está en <strong>/etc/raddb/mods-enabled/eap</strong> ahí localizamos una linea
-que dice <strong>default_eap_type</strong> y donde dice <strong>md5</strong> y le ponemos <strong>peap</strong>. A mi
-me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/raddb/mods-enabled/eap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>   eap <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="nv">default_eap_type</span> <span class="o">=</span> peap
-</span><span class='line'>
-</span><span class='line'>   <span class="c"># (el resto del fichero)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Esa cláusula está por la línea 27&hellip; Bueno ahora vamos a declarar los usaurios
-en el fichero <strong>users</strong> el mio está en <strong>/etc/raddb/users</strong>, ahí le pones al
-fondo el usuario y el password, a mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/raddb/users&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>  <span class="c"># (la parte de arriba del fichero)</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c"># el usaurio secretísimo</span>
-</span><span class='line'>  usuario Cleartext-Password :<span class="o">=</span> <span class="s2">&quot;secretisimo&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora declararemos la dirección IP del AP, que en este caso, sería un cliente
-radius eso está en el fichero <strong>clients.conf</strong>.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/raddb/clients.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>client 127.0.0.1 <span class="o">{</span>
-</span><span class='line'>   <span class="nv">secret</span> <span class="o">=</span> mifortalezaimperial
-</span><span class='line'>   <span class="nv">shortname</span> <span class="o">=</span> hostapd
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Le declaramos que el cliente que se conecte desde la 127.0.0.1 usando como
-secreto la cadena de texto &ldquo;mifortalezaimperial&rdquo; será hostapd.</p>
-
-<p>Bueno, vamos a empezar la conga, instrumento por instrumento. Primero el AP</p>
-
-<p><strong>hostapd /etc/hostapd/hostapd.conf</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;hostapd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Configuration file: /etc/raddb/hostapd.conf
-</span><span class='line'>Using interface wlp2s0b1 with hwaddr 4c:ed:de:df:ad:f1 and ssid <span class="s2">&quot;APconLinux&quot;</span>
-</span><span class='line'>RADIUS: socket<span class="o">[</span>PF_INET6,SOCK_DGRAM<span class="o">]</span>: Address family not supported by protocol
-</span><span class='line'>wlan0: RADIUS Authentication server 127.0.0.1:1812
-</span><span class='line'>wlan0: interface state UNINITIALIZED-&gt;ENABLED
-</span><span class='line'>wlan0: AP-ENABLED
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora el radius:</p>
-
-<p><strong>raduisd -X</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;radiusd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Listening on auth address 127.0.0.1 port <span class="m">1812</span> bound to server default
-</span><span class='line'>Listening on acct address * port <span class="m">1813</span> bound to server default
-</span><span class='line'>Listening on auth address 127.0.0.1 port <span class="m">18120</span> bound to server inner-tunnel
-</span><span class='line'>Listening on proxy address * port 38055
-</span><span class='line'>Ready to process requests
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Y el toque final, dnsmasq como DHCP</p>
-
-<figure class='code'><figcaption><span>&#8220;dnsmasq&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip a a 10.0.0.1/24 dev wlan0
-</span><span class='line'>
-</span><span class='line'><span class="c"># OJO linea larga</span>
-</span><span class='line'>dnsmasq -a 10.0.0.1 -F 10.0.0.2,10.0.0.100 -i wlan0 -K --log-dhcp  -R -d --log-queries --log-dhcp
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Te recuerdo, que si android, al conectarse a una WiFi, no recibe ip, considera
-que hubo error de autenticación&hellip;</p>
-
-<p>Al escanear verás algo como esto.</p>
-
-<p><img class="center" src="http://uranio-235.github.io/images/wpa2-1.png"></p>
-
-<p>Note como dice que APconLinux, está asegurada con 802.1x y al intentar
-conectarte, verás algo como esto:</p>
-
-<p><img class="center" src="http://uranio-235.github.io/images/wpa2-2.png"></p>
-
-<p>Desliza el menú ese, para que veas lo que está al fondo. Ahí es donde va la
-burumba. Donde dice <strong>identity</strong> pones el usuario, donde dice <strong>Anonymous
-Identity</strong>, LO DEJAS EN BLANCO y donde dice <strong>password</strong> pones el precio actual
-de la libra de papa.</p>
-
-<p><img class="center" src="http://uranio-235.github.io/images/wpa2-3.png"></p>
-
-<p>Se quedará un ratico en <strong>Authenticating&hellip;</strong></p>
-
-<p>Mientras tanto, <strong>hostapd</strong> mostrará algo como esto</p>
-
-<figure class='code'><figcaption><span>&#8220;salida de hostapd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad IEEE 802.11: authenticated
-</span><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad IEEE 802.11: associated <span class="o">(</span>aid 1<span class="o">)</span>
-</span><span class='line'>wlan0: CTRL-EVENT-EAP-STARTED 78:9e:d0:f2:9e:ad
-</span><span class='line'>wlan0: CTRL-EVENT-EAP-PROPOSED-METHOD <span class="nv">vendor</span><span class="o">=</span><span class="m">0</span> <span class="nv">method</span><span class="o">=</span>1
-</span><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad WPA: pairwise key handshake completed <span class="o">(</span>RSN<span class="o">)</span>
-</span><span class='line'>wlan0: AP-STA-CONNECTED 78:9e:d0:f2:9e:ad
-</span><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad RADIUS: starting accounting session EFB68C31-00000000
-</span><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad IEEE 802.1X: authenticated - EAP <span class="nb">type</span>: <span class="m">25</span> <span class="o">(</span>PEAP<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Y radius dirá algo como esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;salida de freeradius&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">(</span>9<span class="o">)</span> eap: Sending EAP Success <span class="o">(</span>code 3<span class="o">)</span> ID <span class="m">112</span> length 4
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span> eap: Freeing handler
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span>     <span class="o">[</span>eap<span class="o">]</span> <span class="o">=</span> ok
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   <span class="o">}</span> <span class="c"># authenticate = ok</span>
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span> <span class="c"># Executing section post-auth from file /etc/raddb/sites-enabled/default</span>
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span> Sent Access-Accept Id <span class="m">9</span> from 127.0.0.1:1812 to 127.0.0.1:58792 length 0
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   MS-MPPE-Recv-Key <span class="o">=</span> 0x486910b6930c3d5beae2e5831a3d15545066fcd8964d4a396d9950f1d2142b59
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   MS-MPPE-Send-Key <span class="o">=</span> 0xcfbf7ae337d7bd5c9e747c2a6f5864746b308523d7a4fb261bc1b32a5cdafce2
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   EAP-Message <span class="o">=</span> 0x03700004
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   Message-Authenticator <span class="o">=</span> 0x00000000000000000000000000000000
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   User-Name <span class="o">=</span> <span class="s2">&quot;username&quot;</span>
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span> Finished request
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>La salida de dnsmasq quizás estes aburrido de verla, nada nuevo, le dio la ip,
-etc&hellip; dnsmasq es necesario en este caso para completar la autenticación ya que
-nuestro hostapd no tiene un dhcp incluído. Más adelante, veremos que radius
-puede asignar una ip a cada usaurio e incluso se tira contra mysql, pero ahora
-mismo esto es un experimento para familiarizarnos con radius, así que con eso
-bastará.</p>
-
-<p>Pasamos a comerciales y próximamente veremos como hace con MySQL, no te prometo
-nada, solo lo haré si logro vender el producto; ya que aquí somos partidarios de
-que &ldquo;la wifi sin contraseña es más fácil&rdquo; sin pensar en riesgos&hellip;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[misterio con ethernet foxconn]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/03/14/misterio-con-ethernet-foxconn/"/>
-    <updated>2016-03-14T14:52:46-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/03/14/misterio-con-ethernet-foxconn</id>
-    <content type="html"><![CDATA[<p>Para nadie es un secreto que foxconn, no le descarga a Linux. Hacen mil mierdas
-para entorpecerlo cuando corre sobre su hardware.</p>
-
-<p>Uno de los misterios, es cuando las tajetas de red permiten conexiones, pues dan
-ping sin problema. Pero al intentar transferir grandes bloques de red, da
-timeout.</p>
-
-<p>Problema, el tamaño del MTU por defecto en sus putas tarjetas</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ip l set dev eth0 mtu 1492</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Veremos con que se bajan la próxima vez</p>
 ]]></content>
   </entry>
   
