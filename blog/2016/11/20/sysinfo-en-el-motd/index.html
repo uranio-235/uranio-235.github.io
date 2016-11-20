@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>postfix entrando en el baile - El SysAdmin del 3er Mundo</title>
+  <title>sysinfo en el motd - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="postfix entrando en el baile 09/06/2014 3:19 pm | Comments En el episodio anterior, vimos como dovecot se sumaba al esquema mysql. Faltaría &hellip;">
+  <meta name="description" content="sysinfo en el motd 20/11/2016 5:13 pm | Comments Desde que lo vi en unbuntu server, había querido hacer que mi servidores
+mostraran un overview en &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2014/06/09/postfix-entrando-en-el-baile/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2016/11/20/sysinfo-en-el-motd/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -83,7 +84,7 @@
   
   <header>
     
-      <h1 class="entry-title">postfix entrando en el baile</h1>
+      <h1 class="entry-title">sysinfo en el motd</h1>
     
     
       <p class="meta">
@@ -92,7 +93,7 @@
 
 
 
-<time class='entry-date' datetime='2014-06-09T15:19:03-04:00'><span class='date'>09/06/2014</span> <span class='time'>3:19 pm</span></time>
+<time class='entry-date' datetime='2016-11-20T17:13:27-05:00'><span class='date'>20/11/2016</span> <span class='time'>5:13 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -102,76 +103,134 @@
   </header>
 
 
-<div class="entry-content"><p>En el episodio anterior, vimos como dovecot se sumaba al esquema mysql. Faltaría
-solamente postfix, para tener entonces un &ldquo;completo servidor MySQL&rdquo;</p>
+<div class="entry-content"><p><img class="right" src="/images/sysinfo.png" width="400" height="500" title="" ></p>
 
-<p>Cabe reconocer que el futuro de MySQL es incierto, pero meintras PostGres sea la
-gran basura que es, que conmigo ni cuenten.</p>
+<p>Desde que lo vi en unbuntu server, había querido hacer que mi servidores
+mostraran un overview en el <a href="https://en.wikipedia.org/wiki/Motd_(Unix">MOTD</a>)</p>
 
-<p>Normalmente postfix, entrega a través de procmail, pero ahora, nuestro dovecot
-con sus flamantes características, tendrá una manera más compleja de entregar.
-Por tanto, debemos usar el LDA (Local Deliver Agent) de Dovecot como el MDA por
-defecto de postfix.</p>
+<p>Al menos debian, tiene una manera de cambiar el MOTD dinamicamente. Para sazonar
+bien el MOTD, vamos a usar figlet, una aplicación que genera letras en ascii-art a
+partir de una palabra dada.</p>
 
-<p>Al fichero <em>/etc/postfix/main.cf</em> le agregamos en el fondo un nuevo transport.</p>
-
-<figure class='code'><figcaption><span>/etc/postfix/master.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">dovecot</span> <span class="err">unix</span> <span class="err">-</span> <span class="err">n</span> <span class="err">n</span> <span class="err">-</span> <span class="err">-</span> <span class="err">pipe</span>
-</span><span class='line'>  <span class="na">flags</span><span class="o">=</span><span class="s">DRhu user=vmail:vmail argv=/usr/lib/dovecot/deliver -f ${sender} -d ${user}@${domain} -m ${extension}</span>
+<figure class='code'><figcaption><span>&#8220;instalando todo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo apt-get install figlet
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Además de lo usual, al main.cf le declaramos que su nuevo transporte es  un tal
-&ldquo;dovecot&rdquo; y le agregaremos unas cuantas gangarreas extras que ya explicaré.</p>
+<p>El directorio <strong>/etc/update-motd.d/</strong> ejecutará en orden alfabético (o numérico
+en nuestro caso) aquellos script cuya salida estandard, compondrán nuestro MOTD.</p>
 
-<figure class='code'><figcaption><span>/etc/postfix/main.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>&#8220;aprovisionando el update-motd.d&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir /etc/update-motd.d/
+</span><span class='line'><span class="nb">cd</span> /etc/update-motd.d/
+</span><span class='line'>touch 00-header <span class="o">&amp;&amp;</span> touch 10-sysinfo <span class="o">&amp;&amp;</span> touch 90-footer
+</span><span class='line'>chmod +x /etc/update-motd.d/*
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finalmente, nos echamos el MOTD de debian por defecto; que no deja de
+restregarnos en cara la falta de garantía.</p>
+
+<p>Además, el fichero <strong>/var/run/motd</strong> contendrá nuestro motd resultante, así que
+lo lincamos con el que borramos.</p>
+
+<figure class='code'><figcaption><span>&#8220;aprovisionando el update-motd.d&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rm /etc/motd
+</span><span class='line'>ln -s /var/run/motd /etc/motd
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por una cuestión de organización, usaremos 3 ficheros:</p>
+
+<p><strong>00-header</strong> con lo que queremos poner primero. En este caso, el nombre y
+version de la distribución, además de un mensajito de bienvenida.</p>
+
+<figure class='code'><figcaption><span>&#8220;00-header&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="c1"># el resto de u confuiguracion arriba</span>
-</span><span class='line'><span class="na">virtual_transport</span><span class="o">=</span><span class="s">dovecot</span>
-</span><span class='line'><span class="na">mailbox_command</span> <span class="o">=</span> <span class="s">/usr/lib/dovecot/deliver</span>
-</span><span class='line'><span class="na">mydestination</span> <span class="o">=</span> <span class="s">localhost, blackjack</span>
-</span><span class='line'><span class="na">virtual_mailbox_domains</span> <span class="o">=</span> <span class="s">hcg.sld.cu</span>
-</span><span class='line'><span class="na">virtual_mailbox_maps</span> <span class="o">=</span> <span class="s">$virtual_mailbox_domains</span>
-</span><span class='line'><span class="na">virtual_alias_maps</span> <span class="o">=</span> <span class="s">hash:/etc/aliases</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="o">[</span> -r /etc/lsb-release <span class="o">]</span> <span class="o">&amp;&amp;</span> . /etc/lsb-release
+</span><span class='line'><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;$DISTRIB_DESCRIPTION&quot;</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">[</span> -x /usr/bin/lsb_release <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span><span class='line'>        <span class="nv">DISTRIB_DESCRIPTION</span><span class="o">=</span><span class="k">$(</span>lsb_release -s -d<span class="k">)</span>
+</span><span class='line'><span class="k">fi</span>
+</span><span class='line'>figlet <span class="k">$(</span>hostname<span class="k">)</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;\n&quot;</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Welcome to %s (%s).\n&quot;</span> <span class="s2">&quot;$DISTRIB_DESCRIPTION&quot;</span> <span class="s2">&quot;$(uname -r)&quot;</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;\n&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<ol>
-<li>Un comentario a prueba de imbéciles.</li>
-<li>Declaramos el nuevo transporte para el dominio virtual.</li>
-<li>Declaramos además, que se use el LDA de dovecot.</li>
-<li>Declaramos que solo localhost y blackjack son destinos locales.</li>
-<li>El dominio virtual será &ldquo;hcg.sld.cu&rdquo;.</li>
-<li>Y lo mapeamos igual.</li>
-<li>Por último, lo alias se quedan en el fichero tradicional.</li>
-</ol>
+<p>Yo instalo los sistemas en inglés, así que para mantener todo parejo, escribimos
+<em>güelcome</em> y lo hacemos con <strong>printf</strong> para procesar mejor los &ldquo;\n&rdquo; y que pinche
+sin importar la shell que se esté usando.</p>
+
+<p>El segundo fichero será <strong>01-sysinfo</strong> y contendrá la parte linda, de la memoria
+RAM en uso, el CPU, la carga y la dirección ip de la primera interfaz.</p>
+
+<p>Este script lo copié por ahí, ni me acuerdo donde, no em gusta que usa
+<strong>ifconfig</strong>, ya lo modificaré con más calma.</p>
+
+<figure class='code'><figcaption><span>&#8220;01-sysinfo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="nv">date</span><span class="o">=</span><span class="sb">`</span>date<span class="sb">`</span>
+</span><span class='line'><span class="nv">load</span><span class="o">=</span><span class="sb">`</span>cat /proc/loadavg <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="nv">root_usage</span><span class="o">=</span><span class="sb">`</span>df -h / <span class="p">|</span> awk <span class="s1">&#39;/\// {print $(NF-1)}&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="nv">memory_usage</span><span class="o">=</span><span class="sb">`</span>free -m <span class="p">|</span> awk <span class="s1">&#39;/Mem:/ { total=$2 } /buffers\/cache/ { used=$3 } END { printf(&quot;%3.1f%%&quot;, used/total*100)}&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="nv">swap_usage</span><span class="o">=</span><span class="sb">`</span>free -m <span class="p">|</span> awk <span class="s1">&#39;/Swap/ { printf(&quot;%3.1f%%&quot;, &quot;exit !$2;$3/$2*100&quot;) }&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="nv">users</span><span class="o">=</span><span class="sb">`</span>users <span class="p">|</span> wc -w<span class="sb">`</span>
+</span><span class='line'><span class="nb">time</span><span class="o">=</span><span class="sb">`</span>uptime <span class="p">|</span> grep -ohe <span class="s1">&#39;up .*&#39;</span> <span class="p">|</span> sed <span class="s1">&#39;s/,/\ hours/g&#39;</span> <span class="p">|</span> awk <span class="s1">&#39;{ printf $2&quot; &quot;$3 }&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="nv">processes</span><span class="o">=</span><span class="sb">`</span>ps aux <span class="p">|</span> wc -l<span class="sb">`</span>
+</span><span class='line'><span class="nv">ip</span><span class="o">=</span><span class="sb">`</span>ifconfig <span class="k">$(</span>route <span class="p">|</span> grep default <span class="p">|</span> awk <span class="s1">&#39;{ print $8 }&#39;</span><span class="k">)</span> <span class="p">|</span> grep <span class="s2">&quot;inet addr&quot;</span> <span class="p">|</span> awk -F: <span class="s1">&#39;{print $2}&#39;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;System information as of: $date&quot;</span>
+</span><span class='line'><span class="nb">echo</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;System load:\t%s\tIP Address:\t%s\n&quot;</span> <span class="nv">$load</span> <span class="nv">$ip</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Memory usage:\t%s\tSystem uptime:\t%s\n&quot;</span> <span class="nv">$memory_usage</span> <span class="s2">&quot;$time&quot;</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Usage on /:\t%s\tSwap usage:\t%s\n&quot;</span> <span class="nv">$root_usage</span> <span class="nv">$swap_usage</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Local Users:\t%s\tProcesses:\t%s\n&quot;</span> <span class="nv">$users</span> <span class="nv">$processes</span>
+</span><span class='line'><span class="nb">echo</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Ahora si creamos un usaurio llamado &ldquo;usuario&rdquo; en la base de datos;
-usuario@localhost no será válido porque solo existe en el domino virtual.</p>
+<p>Por último <strong>02-footer</strong> será la parte de abajo. Contendrá cualquier cosa que
+quieras poner en el fichero <strong>/etc/modt.tail</strong> por ejemplo, una anotación que
+quieras hacer específica para ese servidor. Se mostrará si existe el fichero.</p>
 
-<p>Además, le agregamos que los alisas, son un hash en /etc/alisas, al estilo
-antiguo. No vamos a cargar la base de datos con los alisases. Sobre todo
-teniendo en cuenta lo pocos que son. De esta forma, cuando por ejemplo, se manda
-un correo a root que es una alias de lazaro, postfix preguntara quien es lazaro
-y responderá un usaurio del dominio virtual. Genial eh?</p>
+<figure class='code'><figcaption><span>&#8220;02-footer&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="o">[</span> -f /etc/motd.tail <span class="o">]</span> <span class="o">&amp;&amp;</span> cat /etc/motd.tail <span class="o">||</span> <span class="nb">true</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>Tanto los alisas como los dominios virtuales, podrían ser tablas de MySQL, pero
-como mi aplicación no maneja eso, lo haces al estilo tradicional. En caso de que
-más adelante desarrollase algún esquema tipo proveedor de servicios; otro gallo
-cantaría.</p>
-
-<p>No olvidemos &ldquo;postfix reload&rdquo;</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -185,7 +244,7 @@ cantaría.</p>
 
 
 
-<time class='entry-date' datetime='2014-06-09T15:19:03-04:00'><span class='date'>09/06/2014</span> <span class='time'>3:19 pm</span></time>
+<time class='entry-date' datetime='2016-11-20T17:13:27-05:00'><span class='date'>20/11/2016</span> <span class='time'>5:13 pm</span></time>
       
 
 
@@ -193,7 +252,7 @@ cantaría.</p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2014/06/09/postfix-entrando-en-el-baile/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2014/06/09/postfix-entrando-en-el-baile/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2016/11/20/sysinfo-en-el-motd/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2016/11/20/sysinfo-en-el-motd/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -206,10 +265,8 @@ cantaría.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/06/09/dovecot-entra-en-el-baile/" title="Previous Post: dovecot entra en el baile">&laquo; dovecot entra en el baile</a>
+        <a class="basic-alignment left" href="/blog/2016/11/14/openvpn-user-plus-pass/" title="Previous Post: openvpn user+pass">&laquo; openvpn user+pass</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/06/10/autenticador-sql-en-el-proxy/" title="Next Post: autenticador SQL en el proxy">autenticador SQL en el proxy &raquo;</a>
       
     </p>
   </footer>
@@ -615,8 +672,8 @@ cantaría.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2014/06/09/postfix-entrando-en-el-baile/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2014/06/09/postfix-entrando-en-el-baile/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2016/11/20/sysinfo-en-el-motd/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2016/11/20/sysinfo-en-el-motd/';
         var disqus_script = 'embed.js';
       
     (function () {

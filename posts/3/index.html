@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="kiwix como servicio 31/07/2016 5:40 pm | Comments Dos pájaros de un tiro. Como crear unit de usuario y como usar kiwix como
-servicio: La idea es &hellip;">
+  <meta name="description" content="Local ISO en xen 15/08/2016 10:04 pm | Comments Aveces se da el caso de que necesitamos aprovisionar un servidor xen desde cero
+y a esa hora no &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +81,79 @@ servicio: La idea es &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en xen</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-15T22:04:07-04:00'><span class='date'>15/08/2016</span> <span class='time'>10:04 pm</span></time>
+        
+           | <a href="/blog/2016/08/15/repositorio-de-iso-en-xen/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/08/15/repositorio-de-iso-en-xen/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="left" src="/images/openxenmanager.png" width="400"></p>
+
+<p>Aveces se da el caso de que necesitamos aprovisionar un servidor xen desde cero
+y a esa hora no tienes ningún template a mano. Quizás la forma más rápida de
+montar la primera máquina virtual sea instalando desde un iso. No se por qué
+openxenmanager, no tiene la opción de almacenamientos locales como &ldquo;.iso&rdquo; Cuenta
+con NFS y hasta SATA over Ethernet, pero algo tan pedestre como un directorio
+con los ISO, no lo tiene.</p>
+
+<p>Loguéate por ssh para el servidor y usando <strong>xe</strong> crearemos el repositorio.
+Primero designaremos un directorio que contendrá los &ldquo;.iso&rdquo;, elegimos la ruta
+<strong>/var/opt/xen/isos</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;creando el directorio&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -p /var/opt/xen/isos
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Creamos un <strong>Storage Repository</strong> del tipo <strong>iso</strong> y usamos el directorio como
+ubicación.</p>
+
+<figure class='code'><figcaption><span>&#8220;xe&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>xe sr-create name-label<span class="o">=</span>LocalISO <span class="nb">type</span><span class="o">=</span>iso <span class="se">\</span>
+</span><span class='line'>device-config:location<span class="o">=</span>/var/opt/xen/isos <span class="se">\</span>
+</span><span class='line'>device-config:legacy_mode<span class="o">=</span><span class="nb">true </span>content-type<span class="o">=</span>iso
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora con <strong>scp</strong> cópiale los isos a esa ubicación</p>
+
+<figure class='code'><figcaption><span>&#8220;scp&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>scp ~/Downloads/ISO/debian-8.5.0-amd64-CD-1.iso root@tuxen.cu:/var/opt/xen/isos/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si usas openxenmanager, desconéctate y vuélvete a conectar. Verás el repositorio
+de isos locales y en Storage, verás los isos que hallas copiados pal servidor.
+Podrás usarlo como unidad óptica de las máquinas virtuales.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -229,7 +302,7 @@ librería, así que nada de ~/, le pones /home/fulanito.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -392,7 +465,7 @@ necesito. En este caso, asumiré que para al hibernar y enciende al despertar.</
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -549,7 +622,7 @@ configuración sería más o menos así en el fichero <strong>/etc/esmtprc</stro
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Listo! El correo <a href="&#x6d;&#x61;&#105;&#x6c;&#116;&#111;&#x3a;&#114;&#111;&#x6f;&#x74;&#64;&#116;&#117;&#100;&#x6f;&#109;&#105;&#x6e;&#105;&#x6f;&#46;&#99;&#x75;">&#114;&#111;&#111;&#x74;&#64;&#x74;&#117;&#x64;&#x6f;&#109;&#105;&#x6e;&#105;&#x6f;&#46;&#99;&#117;</a> recibirá correos de <a href="&#x6d;&#97;&#105;&#x6c;&#116;&#x6f;&#58;&#99;&#x72;&#111;&#110;&#x40;&#116;&#x75;&#x64;&#111;&#x6d;&#105;&#110;&#x69;&#111;&#x2e;&#99;&#117;">&#x63;&#x72;&#111;&#110;&#x40;&#116;&#x75;&#100;&#111;&#x6d;&#105;&#110;&#x69;&#111;&#x2e;&#99;&#117;</a> con la
+<p>Listo! El correo <a href="&#x6d;&#97;&#105;&#108;&#x74;&#x6f;&#x3a;&#x72;&#111;&#111;&#x74;&#x40;&#x74;&#117;&#x64;&#x6f;&#x6d;&#x69;&#x6e;&#x69;&#111;&#x2e;&#99;&#x75;">&#114;&#x6f;&#111;&#x74;&#64;&#x74;&#117;&#x64;&#x6f;&#109;&#x69;&#x6e;&#x69;&#x6f;&#46;&#x63;&#x75;</a> recibirá correos de <a href="&#x6d;&#97;&#x69;&#x6c;&#116;&#111;&#x3a;&#x63;&#x72;&#111;&#x6e;&#64;&#116;&#117;&#x64;&#111;&#109;&#105;&#110;&#105;&#111;&#x2e;&#x63;&#117;">&#x63;&#114;&#x6f;&#110;&#64;&#x74;&#x75;&#x64;&#x6f;&#109;&#x69;&#x6e;&#105;&#111;&#46;&#99;&#117;</a> con la
 salida del cron&hellip;</p>
 </div>
   
@@ -1106,98 +1179,7 @@ TXT será <strong>dkim=all</strong>. A mi me quedó así:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/06/desacelerar-mouse/">desacelerar mouse</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-06-06T23:41:44-04:00'><span class='date'>06/06/2016</span> <span class='time'>11:41 pm</span></time>
-        
-           | <a href="/blog/2016/06/06/desacelerar-mouse/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/06/06/desacelerar-mouse/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>El reducido espacio de trabajo que tengo en la casa para colocar la laptop; me
-hace sentir como si viviera en el apartamento más pequeño de Tokio. Tanto así,
-que no tengo ni donde desplazar el mouse y los cables me la ponen aún más
-difícil. Comprar una casa más grande no es una opción; sin embargo, reducir el
-mouse es más viable. Se me ocurrió adquirir un mouse inalámbrico, ya que son
-pequeñitos.</p>
-
-<p>Pero un mouse pequeño liviano, resulta que se desplaza mucho más rápido, que mi
-antiguo <em>General Electric Pixart Inc. Optical Mouse</em>. Lo que más me molesta es;
-no solo lo rápido que se desplaza, si no el <em>picor</em> que tiene en la aceleración.</p>
-
-<p>La solución: Desacelerar el mouse</p>
-
-<figure class='code'><figcaption><span>&#8220;slowmouse.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Constant Deceleration&quot;</span> 0.5
-</span><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Velocity Scaling&quot;</span> 1
-</span><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Profile&quot;</span> -1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con eso, el mouse pequeñito, se desplaza tal como lo hace el grande. Ya que el
-grande, es más pesado y por ende, se desplaza un tín mas lento.</p>
-
-<p><strong>¡¡¡Tardé bastante en quedar complacido probando números!!!</strong></p>
-
-<p>Por cierto, el <strong>10</strong> es la id del dispositivo. Puedes verlo corriendo el
-comando <strong>xinput &ndash;list &ndash;short</strong> a mi se me ve así:</p>
-
-<figure class='code'><figcaption><span>&#8220;xinput &#8211;list &#8211;short&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@samsung ~&gt; xinput --list --short
-</span><span class='line'>⎡ Virtual core pointer                      <span class="nv">id</span><span class="o">=</span>2 <span class="o">[</span>master pointer  <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>⎜   ↳ Virtual core XTEST pointer                  <span class="nv">id</span><span class="o">=</span>4 <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
-</span><span class='line'>⎜   ↳ PixArt USB Optical Mouse                    <span class="nv">id</span><span class="o">=</span>10    <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
-</span><span class='line'>⎜   ↳ ETPS/2 Elantech Touchpad                    <span class="nv">id</span><span class="o">=</span>12    <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
-</span><span class='line'>⎣ Virtual core keyboard                     <span class="nv">id</span><span class="o">=</span>3 <span class="o">[</span>master keyboard <span class="o">(</span>2<span class="o">)]</span>
-</span><span class='line'>    ↳ Virtual core XTEST keyboard               <span class="nv">id</span><span class="o">=</span>5 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>    ↳ Power Button                              <span class="nv">id</span><span class="o">=</span>6 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>    ↳ Video Bus                                 <span class="nv">id</span><span class="o">=</span>7 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>    ↳ Power Button                              <span class="nv">id</span><span class="o">=</span>8 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>    ↳ Sleep Button                              <span class="nv">id</span><span class="o">=</span>9 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>    ↳ AT Translated Set <span class="m">2</span> keyboard
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ve, el <em>PixArt USB Optical Mouse</em> dice que <strong>id=10</strong></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1218,6 +1200,10 @@ comando <strong>xinput &ndash;list &ndash;short</strong> a mi se me ve así:</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/11/20/sysinfo-en-el-motd/">sysinfo en el motd</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/11/14/openvpn-user-plus-pass/">openvpn user+pass</a>

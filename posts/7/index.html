@@ -9,9 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="compartir la wifi 20/10/2015 11:36 pm | Comments Cada vez que paso por
-23, me cuentro mil y una
-red cuyo ESSID tiene el sufijo Conectify delante. &hellip;">
+  <meta name="description" content="tls y ssl en postfix 03/11/2015 9:13 pm | Comments Acá en salud, ahora se están cayendo de la mata y dándose cuenta de los
+peligroso que son las &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +81,296 @@ red cuyo ESSID tiene el sufijo Conectify delante. &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/03/tls-y-ssl-en-postfix/">tls y ssl en postfix</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-03T21:13:44-05:00'><span class='date'>03/11/2015</span> <span class='time'>9:13 pm</span></time>
+        
+           | <a href="/blog/2015/11/03/tls-y-ssl-en-postfix/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/03/tls-y-ssl-en-postfix/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Acá en salud, ahora <em>se están cayendo de la mata</em> y dándose cuenta de los
+peligroso que son las conexiones planas.</p>
+
+<p>Aún no logro hacerle entender a la gente, la diferencia entre un certificado
+autofirmado y un certificado emitido por una <a href="https://es.wikipedia.org/wiki/Autoridad_de_certificaci%C3%B3n">autoridad de certificación</a>
+; pero que más les vamos a pedir, si el certificado de nauta es autofirmado.</p>
+
+<p>De momento con darle la muela del candadito y las letricas verdes en el
+navegador, van cogiendo algo.</p>
+
+<p>Pero volviendo al tema <strong>postfix con SSL</strong>. Vamos a crear un certificado
+autofirmado, por tanto, regla de oro:</p>
+
+<h4>el hostname que provees en el certificado, debe ser machear al del servicio</h4>
+
+<p>En letra de molde. Si proveemos un certificado autofirmado, para conectarnos a
+<strong>smtp.hcg.sld.cu</strong> no puedes decir en el cliente de correo, que el servidor
+smtp es <strong>192.168.0.1</strong> porque no será válido.</p>
+
+<p>Aún cuando el certificado no sea válido, déjame recodarte que debemos ir
+haciéndole cultura de seguridad informática, si no&hellip; bueno&hellip; no me voy a meter
+en un lío diciendo las barbaridades que se logran suplantando identidades.</p>
+
+<p>Bueno entremos en materia. Lo Primero que haremos será generar la clave privada
+para el servidor.</p>
+
+<p>Donde dice <strong>smtp.tudominio.cu</strong> tu pondrás el hostname de que apunta para tu
+servidor smtp. Si eres un desastre y no tiene DNS. Pon la IP de tu servidor de
+correo.</p>
+
+<h4>REPITO</h4>
+
+<p>Donde dice <strong>FQDN or YOUR name</strong> debe decir la dirección del servidor SMTP. La
+dirección tal cual la pones en los clientes.</p>
+
+<p>Cuando lo hagas, te pedirá un password.</p>
+
+<figure class='code'><figcaption><span>&#8220;generando clave privada del servidor&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl genrsa -des3 -out smtp.tudominio.cu.key 2048
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora creamos el certificado. Te pedirá hasta la talla de calzoncillos que usas.
+<strong>NO respondas a lo locoi</strong>, recuerda el <strong>FQDN</strong>. Te acuerdas del password
+que pusiste?</p>
+
+<figure class='code'><figcaption><span>&#8220;creando el certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl req -new -key smtp.tudominio.cu.key -out smtp.tudominio.cu.csr
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Debes ver algo como esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;ceremonia de creación de certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Enter pass phrase <span class="k">for</span> smtp.tudominio.cu.key:
+</span><span class='line'>You are about to be asked to enter information that will be incorporated
+</span><span class='line'>into your certificate request.
+</span><span class='line'>What you are about to enter is what is called a Distinguished Name or a DN.
+</span><span class='line'>There are quite a few fields but you can leave some blank
+</span><span class='line'>For some fields there will be a default value,
+</span><span class='line'>If you enter <span class="s1">&#39;.&#39;</span>, the field will be left blank.
+</span><span class='line'>-----
+</span><span class='line'>Country Name <span class="o">(</span><span class="m">2</span> letter code<span class="o">)</span> <span class="o">[</span>AU<span class="o">]</span>:CU
+</span><span class='line'>State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>Some-State<span class="o">]</span>:Havana
+</span><span class='line'>Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[]</span>:Plaza
+</span><span class='line'>Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>Internet Widgits Pty Ltd<span class="o">]</span>:Calixto
+</span><span class='line'>Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[]</span>:Informatica
+</span><span class='line'>Common Name <span class="o">(</span>e.g. server FQDN or YOUR name<span class="o">)</span> <span class="o">[]</span>:smtp.tudominio.cu
+</span><span class='line'>Email Address <span class="o">[]</span>:ssl@tudominio.cu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Bites verdad? Bueno, ya hicimos lo más importante, pero no hemos terminado.
+Vamos a firmar el certificado con la la llave emisora.</p>
+
+<figure class='code'><figcaption><span>&#8220;cri-cra firmando el certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl x509 -req -days <span class="m">365</span> -in smtp.tudominio.cu.csr -signkey smtp.tudominio.cu.key -out smtp.tudominio.cu.crt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora vamos a dar un paso <strong>cuestionable</strong>.</p>
+
+<p>Cada vez que un servicio con con un certificado SSL valla a ser iniciado.
+Debería pedir un password, para así asegurar que el legítimo operador de
+servicio ha sido quien le dio la arrancada. Pero poner un password cada vez que
+arranca postfix, no es ninguna gracia. Por tanto, quitamos el password.
+Obviamente, te lo pedirá una última vez.</p>
+
+<figure class='code'><figcaption><span>&#8220;quitando el password&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl rsa -in smtp.tudominio.cu.key -out smtp.tudominio.cu.key.sinpassword
+</span><span class='line'>mv smtp.tudominio.cu.key.sinpassword smtp.tudominio.cu.key
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Emitimos una autoridad de raíz (de pacotilla)</p>
+
+<figure class='code'><figcaption><span>&#8220;la CA del chiste&#8221; </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl req -new -x509 -extensions v3_ca -keyout cakey.pem -out cacert.pem -days 3650
+</span><span class='line'><span class="c"># aqui te pedirá la misma rutina, ojo con lo que pones en el campo FQDN or YOUR name</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Bueno, con el disi y con el mulo, ya tenemos una CA loca, que la podemos reusar
+para otros servicios, por tanto, tratemosla como tal.</p>
+
+<figure class='code'><figcaption><span>&#8220;los puntos sobre las ies&#8221; </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>chmod <span class="m">600</span> smtp.tudominio.cu.key
+</span><span class='line'>chmod <span class="m">600</span> cakey.pem
+</span><span class='line'>mv smtp.tudominio.cu.key /etc/ssl/private/
+</span><span class='line'>mv smtp.tudominio.cu.crt /etc/ssl/certs/
+</span><span class='line'>mv cakey.pem /etc/ssl/private/
+</span><span class='line'>mv cacert.pem /etc/ssl/certs/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora viene el turno de postfix. Haremos dos cosas</p>
+
+<ul>
+<li>habilitar el tranporte ssl/tls por el puerto 465</li>
+<li>habilitar las funciones ssl</li>
+</ul>
+
+
+<p>Ve al <strong>master.cf</strong> y busca la cadena de texto <strong>smtps</strong> debes ver algo como
+esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;parte del master.cf ANTES&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>smtp      inet  n       -       -       -       -       smtpd
+</span><span class='line'><span class="c">#smtp      inet  n       -       -       -       1       postscreen</span>
+</span><span class='line'><span class="c">#smtpd     pass  -       -       -       -       -       smtpd</span>
+</span><span class='line'><span class="c">#dnsblog   unix  -       -       -       -       0       dnsblog</span>
+</span><span class='line'><span class="c">#tlsproxy  unix  -       -       -       -       0       tlsproxy</span>
+</span><span class='line'><span class="c">#submission inet n       -       -       -       -       smtpd</span>
+</span><span class='line'><span class="c">#  -o syslog_name=postfix/submission</span>
+</span><span class='line'><span class="c">#  -o smtpd_tls_security_level=encrypt</span>
+</span><span class='line'><span class="c">#  -o smtpd_sasl_auth_enable=yes</span>
+</span><span class='line'><span class="c">#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject</span>
+</span><span class='line'><span class="c">#  -o milter_macro_daemon_name=ORIGINATING</span>
+</span><span class='line'><span class="c">#smtps     inet  n       -       -       -       -       smtpd</span>
+</span><span class='line'><span class="c">#  -o syslog_name=postfix/smtps</span>
+</span><span class='line'><span class="c">#  -o smtpd_tls_wrappermode=yes</span>
+</span><span class='line'><span class="c">#  -o smtpd_sasl_auth_enable=yes</span>
+</span><span class='line'><span class="c">#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject</span>
+</span><span class='line'><span class="c">#  -o milter_macro_daemon_name=ORIGINATING</span>
+</span><span class='line'><span class="c">#628       inet  n       -       -       -       -       qmqpd</span>
+</span><span class='line'>pickup    fifo  n       -       -       <span class="m">60</span>      <span class="m">1</span>       pickup
+</span><span class='line'>cleanup   unix  n       -       -       -       <span class="m">0</span>       cleanup
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Descomentamos todo lo que tenga que ver con <strong>smtps</strong> debe quedarte más o menos
+así:</p>
+
+<figure class='code'><figcaption><span>&#8220;parte del master.cf DESPUES&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>smtp      inet  n       -       -       -       -       smtpd
+</span><span class='line'><span class="c">#smtp      inet  n       -       -       -       1       postscreen</span>
+</span><span class='line'><span class="c">#smtpd     pass  -       -       -       -       -       smtpd</span>
+</span><span class='line'><span class="c">#dnsblog   unix  -       -       -       -       0       dnsblog</span>
+</span><span class='line'><span class="c">#tlsproxy  unix  -       -       -       -       0       tlsproxy</span>
+</span><span class='line'><span class="c">#submission inet n       -       -       -       -       smtpd</span>
+</span><span class='line'><span class="c">#  -o syslog_name=postfix/submission</span>
+</span><span class='line'><span class="c">#  -o smtpd_tls_security_level=encrypt</span>
+</span><span class='line'><span class="c">#  -o smtpd_sasl_auth_enable=yes</span>
+</span><span class='line'><span class="c">#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject</span>
+</span><span class='line'><span class="c">#  -o milter_macro_daemon_name=ORIGINATING</span>
+</span><span class='line'>smtps     inet  n       -       -       -       -       smtpd
+</span><span class='line'>  -o <span class="nv">syslog_name</span><span class="o">=</span>postfix/smtps
+</span><span class='line'>  -o <span class="nv">smtpd_tls_wrappermode</span><span class="o">=</span>yes
+</span><span class='line'>  -o <span class="nv">smtpd_sasl_auth_enable</span><span class="o">=</span>yes
+</span><span class='line'>  -o <span class="nv">smtpd_client_restrictions</span><span class="o">=</span>permit_sasl_authenticated,reject
+</span><span class='line'>  -o <span class="nv">milter_macro_daemon_name</span><span class="o">=</span>ORIGINATING
+</span><span class='line'><span class="c">#628       inet  n       -       -       -       -       qmqpd</span>
+</span><span class='line'>pickup    fifo  n       -       -       <span class="m">60</span>      <span class="m">1</span>       pickup
+</span><span class='line'>cleanup   unix  n       -       -       -       <span class="m">0</span>       cleanup
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora trabajemos con el <strong>main.cf</strong>, habilitamos las funciones que tengan que
+ver con SSL, declarando esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;tope del main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">smtpd_use_tls</span> <span class="o">=</span> yes
+</span><span class='line'><span class="nv">smtpd_tls_auth_only</span> <span class="o">=</span> no
+</span><span class='line'><span class="nv">smtpd_tls_key_file</span> <span class="o">=</span> /etc/ssl/private/smtp.tudominio.cu.key
+</span><span class='line'><span class="nv">smtpd_tls_cert_file</span> <span class="o">=</span> /etc/ssl/certs/smtp.tudominio.cu.crt
+</span><span class='line'><span class="nv">smtpd_tls_CAfile</span> <span class="o">=</span> /etc/ssl/certs/cacert.pem
+</span><span class='line'><span class="nv">tls_random_source</span> <span class="o">=</span> dev:/dev/urandom
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No olvides correr <strong>postfix reload</strong></p>
+
+<p>   <blockquote><p>Te voy a coser el culo con un alambre finito.<br/>   No te quedará bonito, pero te quedará seguro.</p><footer><strong>Décima popular</strong></footer></blockquote></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -289,7 +578,7 @@ NetworkManager.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -403,7 +692,7 @@ hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.or
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -485,7 +774,7 @@ problema resuelto.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -645,7 +934,7 @@ como lo estoy haciendo yo ahora.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -842,190 +1131,7 @@ crudo. Podrías también tirarlo pa un fichero así:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/05/assets-por-controlador/">assets por controlador</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-10-05T21:45:45-04:00'><span class='date'>05/10/2015</span> <span class='time'>9:45 pm</span></time>
-        
-           | <a href="/blog/2015/10/05/assets-por-controlador/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/05/assets-por-controlador/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>NUNCA</strong>, he logrado entender, porque el asset pipeline de Rails carga
-<strong>TODAS</strong> las porquerías de todos los controladores en todas las vistas.</p>
-
-<p>¡¡¡Como si fuese poco tener que cargar el mismo javascript por controlador!!!</p>
-
-<p>La documentación dice que puedes cargar solamente el del controlador; pero
-cuando la sigues al pie de la letra; Rails te da tremendo palo, diciendo que una
-asset se escapó sin compilar. La &ldquo;una&rdquo; suele ser la del controlador que estés
-cargando, o sea, todas.</p>
-
-<p>La solución que plantea la documentación, es un Proc asqueroso que tampoco
-pincha.</p>
-
-<p>Te cuento como lo hice:</p>
-
-<p>Primero tienes que quitar la cláusula &ldquo;<strong>require_tree .</strong>&rdquo; del <strong>application.js</strong></p>
-
-<p>A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>application.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">// This is a manifest file that&#39;ll be compiled into application.js, which will include all the files</span>
-</span><span class='line'><span class="c1">// listed below.</span>
-</span><span class='line'><span class="c1">//</span>
-</span><span class='line'><span class="c1">// Any JavaScript/Coffee file within this directory, lib/assets/javascripts, vendor/assets/javascripts,</span>
-</span><span class='line'><span class="c1">// or any plugin&#39;s vendor/assets/javascripts directory can be referenced here using a relative path.</span>
-</span><span class='line'><span class="c1">//</span>
-</span><span class='line'><span class="c1">// It&#39;s not advisable to add code directly here, but if you do, it&#39;ll appear at the bottom of the</span>
-</span><span class='line'><span class="c1">// compiled file.</span>
-</span><span class='line'><span class="c1">//</span>
-</span><span class='line'><span class="c1">// Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details</span>
-</span><span class='line'><span class="c1">// about supported directives.</span>
-</span><span class='line'><span class="c1">//</span>
-</span><span class='line'><span class="c1">//= require jquery</span>
-</span><span class='line'><span class="c1">//= require jquery_ujs</span>
-</span><span class='line'><span class="c1">//= require turbolinks</span>
-</span><span class='line'><span class="c1">//  require_tree . fíjate que quitamos el =</span>
-</span><span class='line'><span class="nx">Turbolinks</span><span class="p">.</span><span class="nx">enableProgressBar</span><span class="p">();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora vamos a dar un toque mágico para que las assets se compilen de manera
-dinámica, sin tener que colocarle manualmente al arreglo los nuevos .js
-generados. El fichero <strong>config/initializers/assets.rb</strong> me quedó así; <strong>OJO</strong> que es
-una linea bien larga:</p>
-
-<figure class='code'><figcaption><span>&#8220;assets.rb - ojo con la linea larga&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Be sure to restart your server when you modify this file.</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Version of your assets, change this if you want to expire all your assets.</span>
-</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;1.0&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Add additional assets to the asset load path</span>
-</span><span class='line'><span class="c1"># Rails.application.config.assets.paths &lt;&lt; Emoji.images_path</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Precompile additional assets.</span>
-</span><span class='line'><span class="c1"># application.js, application.css, and all non-JS/CSS in app/assets folder are already added.</span>
-</span><span class='line'><span class="c1"># Rails.application.config.assets.precompile += %w( search.js )</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># compila todo lo que te encuentres por el camino</span>
-</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">precompile</span> <span class="o">+=</span> <span class="no">Dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">to_path</span><span class="p">,</span><span class="s1">&#39;app/assets/javascripts/*.j*&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">1</span><span class="o">].</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># activa el debug de la asset pipeline, solo en entorno de desarrollo</span>
-</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RAILS_ENV&#39;</span><span class="o">]</span> <span class="ow">and</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RAILS_ENV&#39;</span><span class="o">].</span><span class="n">include?</span> <span class="s1">&#39;development&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Podría hacer lo mismo con las CSS si usa un poquito la células grises. Note como
-además, agregamos que se debugue la asset pipeline si y solo si estamos en
-development.</p>
-
-<p>Pero no hemos terminado, la vista lleva unos toques&hellip; pues debemos decirle lo
-más importante, que cargue solo las .js de su controlador. A mi me quedó así:</p>
-
-<p>  &lt;%= javascript_include_tag params[:controller] %></p>
-
-<figure class='code'><figcaption><span>&#8220;app/views/layouts/application.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
-</span><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;title&gt;</span>El Título<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'>  <span class="err">&lt;</span>%= stylesheet_link_tag    &#39;application&#39;, media: &#39;all&#39;, &#39;data-turbolinks-track&#39; =&gt; true %&gt;
-</span><span class='line'>  <span class="err">&lt;</span>%= javascript_include_tag &#39;application&#39;, &#39;data-turbolinks-track&#39; =&gt; true %&gt;
-</span><span class='line'>  <span class="c">&lt;!-- carga solo las .js del controlador dado --&gt;</span>
-</span><span class='line'>  <span class="err">&lt;</span>%= javascript_include_tag params[:controller] %&gt;
-</span><span class='line'>  <span class="err">&lt;</span>%= csrf_meta_tags %&gt;
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">&lt;</span>%= yield %&gt;
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahí te das cuenta que el que carga todo, es el manifest (application.js) con su
-&ldquo;requiere_tree .&rdquo; pero la cláusula en la línea 8 le dice que cargue la .js del
-controlador especificado en <strong>params[:controller]</strong></p>
-
-<p>Bueno así debe pinchar con javascript y con CoffeScript, al menos a mi me pinchó
-con ambos. Veamos que trae rails 5 con esto, porque la mejora urge&hellip;</p>
-
-<p>Si la cosa sigue así en la versión 5, me estoy mudando para Volt</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1046,6 +1152,10 @@ con ambos. Veamos que trae rails 5 con esto, porque la mejora urge&hellip;</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/11/20/sysinfo-en-el-motd/">sysinfo en el motd</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/11/14/openvpn-user-plus-pass/">openvpn user+pass</a>

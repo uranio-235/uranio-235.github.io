@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-11-17T15:30:35-05:00</updated>
+  <updated>2016-11-20T17:46:13-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,138 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[sysinfo en el motd]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/11/20/sysinfo-en-el-motd/"/>
+    <updated>2016-11-20T17:13:27-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/11/20/sysinfo-en-el-motd</id>
+    <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/sysinfo.png" width="400" height="500" title="" ></p>
+
+<p>Desde que lo vi en unbuntu server, había querido hacer que mi servidores
+mostraran un overview en el <a href="https://en.wikipedia.org/wiki/Motd_(Unix">MOTD</a>)</p>
+
+<p>Al menos debian, tiene una manera de cambiar el MOTD dinamicamente. Para sazonar
+bien el MOTD, vamos a usar figlet, una aplicación que genera letras en ascii-art a
+partir de una palabra dada.</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando todo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo apt-get install figlet
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El directorio <strong>/etc/update-motd.d/</strong> ejecutará en orden alfabético (o numérico
+en nuestro caso) aquellos script cuya salida estandard, compondrán nuestro MOTD.</p>
+
+<figure class='code'><figcaption><span>&#8220;aprovisionando el update-motd.d&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir /etc/update-motd.d/
+</span><span class='line'><span class="nb">cd</span> /etc/update-motd.d/
+</span><span class='line'>touch 00-header <span class="o">&amp;&amp;</span> touch 10-sysinfo <span class="o">&amp;&amp;</span> touch 90-footer
+</span><span class='line'>chmod +x /etc/update-motd.d/*
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finalmente, nos echamos el MOTD de debian por defecto; que no deja de
+restregarnos en cara la falta de garantía.</p>
+
+<p>Además, el fichero <strong>/var/run/motd</strong> contendrá nuestro motd resultante, así que
+lo lincamos con el que borramos.</p>
+
+<figure class='code'><figcaption><span>&#8220;aprovisionando el update-motd.d&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rm /etc/motd
+</span><span class='line'>ln -s /var/run/motd /etc/motd
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por una cuestión de organización, usaremos 3 ficheros:</p>
+
+<p><strong>00-header</strong> con lo que queremos poner primero. En este caso, el nombre y
+version de la distribución, además de un mensajito de bienvenida.</p>
+
+<figure class='code'><figcaption><span>&#8220;00-header&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="o">[</span> -r /etc/lsb-release <span class="o">]</span> <span class="o">&amp;&amp;</span> . /etc/lsb-release
+</span><span class='line'><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;$DISTRIB_DESCRIPTION&quot;</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">[</span> -x /usr/bin/lsb_release <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span><span class='line'>        <span class="nv">DISTRIB_DESCRIPTION</span><span class="o">=</span><span class="k">$(</span>lsb_release -s -d<span class="k">)</span>
+</span><span class='line'><span class="k">fi</span>
+</span><span class='line'>figlet <span class="k">$(</span>hostname<span class="k">)</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;\n&quot;</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Welcome to %s (%s).\n&quot;</span> <span class="s2">&quot;$DISTRIB_DESCRIPTION&quot;</span> <span class="s2">&quot;$(uname -r)&quot;</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;\n&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Yo instalo los sistemas en inglés, así que para mantener todo parejo, escribimos
+<em>güelcome</em> y lo hacemos con <strong>printf</strong> para procesar mejor los &ldquo;\n&rdquo; y que pinche
+sin importar la shell que se esté usando.</p>
+
+<p>El segundo fichero será <strong>01-sysinfo</strong> y contendrá la parte linda, de la memoria
+RAM en uso, el CPU, la carga y la dirección ip de la primera interfaz.</p>
+
+<p>Este script lo copié por ahí, ni me acuerdo donde, no em gusta que usa
+<strong>ifconfig</strong>, ya lo modificaré con más calma.</p>
+
+<figure class='code'><figcaption><span>&#8220;01-sysinfo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="nv">date</span><span class="o">=</span><span class="sb">`</span>date<span class="sb">`</span>
+</span><span class='line'><span class="nv">load</span><span class="o">=</span><span class="sb">`</span>cat /proc/loadavg <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="nv">root_usage</span><span class="o">=</span><span class="sb">`</span>df -h / <span class="p">|</span> awk <span class="s1">&#39;/\// {print $(NF-1)}&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="nv">memory_usage</span><span class="o">=</span><span class="sb">`</span>free -m <span class="p">|</span> awk <span class="s1">&#39;/Mem:/ { total=$2 } /buffers\/cache/ { used=$3 } END { printf(&quot;%3.1f%%&quot;, used/total*100)}&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="nv">swap_usage</span><span class="o">=</span><span class="sb">`</span>free -m <span class="p">|</span> awk <span class="s1">&#39;/Swap/ { printf(&quot;%3.1f%%&quot;, &quot;exit !$2;$3/$2*100&quot;) }&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="nv">users</span><span class="o">=</span><span class="sb">`</span>users <span class="p">|</span> wc -w<span class="sb">`</span>
+</span><span class='line'><span class="nb">time</span><span class="o">=</span><span class="sb">`</span>uptime <span class="p">|</span> grep -ohe <span class="s1">&#39;up .*&#39;</span> <span class="p">|</span> sed <span class="s1">&#39;s/,/\ hours/g&#39;</span> <span class="p">|</span> awk <span class="s1">&#39;{ printf $2&quot; &quot;$3 }&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="nv">processes</span><span class="o">=</span><span class="sb">`</span>ps aux <span class="p">|</span> wc -l<span class="sb">`</span>
+</span><span class='line'><span class="nv">ip</span><span class="o">=</span><span class="sb">`</span>ifconfig <span class="k">$(</span>route <span class="p">|</span> grep default <span class="p">|</span> awk <span class="s1">&#39;{ print $8 }&#39;</span><span class="k">)</span> <span class="p">|</span> grep <span class="s2">&quot;inet addr&quot;</span> <span class="p">|</span> awk -F: <span class="s1">&#39;{print $2}&#39;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;System information as of: $date&quot;</span>
+</span><span class='line'><span class="nb">echo</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;System load:\t%s\tIP Address:\t%s\n&quot;</span> <span class="nv">$load</span> <span class="nv">$ip</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Memory usage:\t%s\tSystem uptime:\t%s\n&quot;</span> <span class="nv">$memory_usage</span> <span class="s2">&quot;$time&quot;</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Usage on /:\t%s\tSwap usage:\t%s\n&quot;</span> <span class="nv">$root_usage</span> <span class="nv">$swap_usage</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Local Users:\t%s\tProcesses:\t%s\n&quot;</span> <span class="nv">$users</span> <span class="nv">$processes</span>
+</span><span class='line'><span class="nb">echo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por último <strong>02-footer</strong> será la parte de abajo. Contendrá cualquier cosa que
+quieras poner en el fichero <strong>/etc/modt.tail</strong> por ejemplo, una anotación que
+quieras hacer específica para ese servidor. Se mostrará si existe el fichero.</p>
+
+<figure class='code'><figcaption><span>&#8220;02-footer&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="o">[</span> -f /etc/motd.tail <span class="o">]</span> <span class="o">&amp;&amp;</span> cat /etc/motd.tail <span class="o">||</span> <span class="nb">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[openvpn user+pass]]></title>
@@ -1675,7 +1807,7 @@ configuración sería más o menos así en el fichero <strong>/etc/esmtprc</stro
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Listo! El correo <a href="&#x6d;&#x61;&#105;&#x6c;&#116;&#111;&#x3a;&#114;&#111;&#x6f;&#x74;&#64;&#116;&#117;&#100;&#x6f;&#109;&#105;&#x6e;&#105;&#x6f;&#46;&#99;&#x75;">&#114;&#111;&#111;&#x74;&#64;&#x74;&#117;&#x64;&#x6f;&#109;&#105;&#x6e;&#105;&#x6f;&#46;&#99;&#117;</a> recibirá correos de <a href="&#x6d;&#97;&#105;&#x6c;&#116;&#x6f;&#58;&#99;&#x72;&#111;&#110;&#x40;&#116;&#x75;&#x64;&#111;&#x6d;&#105;&#110;&#x69;&#111;&#x2e;&#99;&#117;">&#x63;&#x72;&#111;&#110;&#x40;&#116;&#x75;&#100;&#111;&#x6d;&#105;&#110;&#x69;&#111;&#x2e;&#99;&#117;</a> con la
+<p>Listo! El correo <a href="&#x6d;&#97;&#105;&#108;&#x74;&#x6f;&#x3a;&#x72;&#111;&#111;&#x74;&#x40;&#x74;&#117;&#x64;&#x6f;&#x6d;&#x69;&#x6e;&#x69;&#111;&#x2e;&#99;&#x75;">&#114;&#x6f;&#111;&#x74;&#64;&#x74;&#117;&#x64;&#x6f;&#109;&#x69;&#x6e;&#x69;&#x6f;&#46;&#x63;&#x75;</a> recibirá correos de <a href="&#x6d;&#97;&#x69;&#x6c;&#116;&#111;&#x3a;&#x63;&#x72;&#111;&#x6e;&#64;&#116;&#117;&#x64;&#111;&#109;&#105;&#110;&#105;&#111;&#x2e;&#x63;&#117;">&#x63;&#114;&#x6f;&#110;&#64;&#x74;&#x75;&#x64;&#x6f;&#109;&#x69;&#x6e;&#105;&#111;&#46;&#99;&#117;</a> con la
 salida del cron&hellip;</p>
 ]]></content>
   </entry>
@@ -2289,39 +2421,6 @@ puede llegar a ser un problema???</p>
 
 <p>La próxima vez que etres, la función historial será deshabilitada. OJO!!! <strong>LA
 PRÓXIMA VEZ</strong> esta sesión aún salva historial&hellip; Sale y vuelve a entrar.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[reparar archivos de innodb]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/04/29/reparar-archivos-de-innodb/"/>
-    <updated>2016-04-29T23:22:33-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/04/29/reparar-archivos-de-innodb</id>
-    <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/hypno.png"></p>
-
-<p>Los archivos binarios que almacenan las bases de datos de mysql (percona o
-mariadb) suelen acabar corruptos o dañados por fallos eléctricos. Al mirar el
-log, podemos ver que, a pesar de que la base de datos funciona; por un motivo u
-otro, hay miles de warning y los ficheros binarios se vuelven cada vez más
-frágiles.</p>
-
-<p>Solución, exportar TODAS las bases de datos un fichero &ldquo;.sql&rdquo;, reinstalar mysql
-e importar las bases de datos. Tenga en cuenta que también se crean los
-usuarios y sus debidos permisos. Por tanto, su usuario de root se configurará de
-manera automática.</p>
-
-<figure class='code'><figcaption><span>&#8220;mysqldump&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mysqldump --all-databases &gt; dumpeo.sql
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Desinstalar mySQL y eliminar los ficheros binarios, generalmente están en
-/var/lib/mysql Por último, instala mySQL y restaura las bases de datos.</p>
-
-<figure class='code'><figcaption><span>&#8220;mysqldump&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mysql &lt; dumpeo.sql
-</span></code></pre></td></tr></table></div></figure>
-
 ]]></content>
   </entry>
   
