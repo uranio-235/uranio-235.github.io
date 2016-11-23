@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-11-20T18:04:41-05:00</updated>
+  <updated>2016-11-23T13:21:10-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,102 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[redimensionar lvm]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/11/22/redimensionar-lvm/"/>
+    <updated>2016-11-22T21:00:22-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/11/22/redimensionar-lvm</id>
+    <content type="html"><![CDATA[<p>Este post es a método de memorando, ya que SIEMPRE se me olvida como hacerlo.</p>
+
+<p>En materia de virtualización, el sistema de plantillas nunca me ha gustado,
+<strong>porque NO SÉ quién instala esos sistemas operativos ni como.</strong></p>
+
+<p><strong>Yo prefiero</strong> por ejemplo, instalar un debian, acomodarle todo a mi manera y
+usar esa instalación para generar nuevas máquinas, con todo ya listo. Por
+ejemplo, un prototipod e firewall, las configuraciones de interfaz puesta con
+dhcp, pero una configuración estática bien comentada, etc..</p>
+
+<p>Mantengo esa máquina detenida y la arranco de vez en cuando para actualizar.
+Cuando voy a hacer una nueva, <strong>simplemente clono esa máquina</strong>.</p>
+
+<p>Prefiero llamarlo <strong>matriz</strong> que <em>plantilla</em>. El resto del tiempo, dicha máquina
+permanece detenida (apagada) evitando así desgaste, envejecimiento, generación
+de logs, etc&hellip;</p>
+
+<p>Eso en la práctica, es lo mismo que una plantilla (para los criticones y amantes
+de la moda).</p>
+
+<p>Un inconveniente que afronté al principio con esto, fue &ldquo;el tamaño asignado al
+disco duro&rdquo;. Por ejemplo, el servidor de correo que me lleva 500 gigas, mientras
+que en el sistema de monitoreo (nagios) solo se lleva 5 gigas.</p>
+
+<p>La matriz tiene un disco de 5 gigas donde se instaló todo. Sobre espacio, ya que
+borrando /usr/share/doc/ y la cache de apt, se quedo en menos de un giga. El
+problema (con Xen) viene a la hora de agrandar el disco.</p>
+
+<p>No se como proxmox maneja esa situación y sinceramente, <strong>no me interesa</strong>, ya
+que:</p>
+
+<p><strong>LVM resuelve el problema!</strong></p>
+
+<p>Si no tienes la costumbre de instalar sobre LVM, deberías hacértela&hellip; Es muy
+versátil.</p>
+
+<p>BTRfs es otra buena opción, pero su rendimiento decae mucho con el tiempo (<strong>mi
+experiencia</strong>).</p>
+
+<p>Añadir un disco al volumen lógico y aumentar su tamaño resuelve el problema.</p>
+
+<p>Claro, el sistema de archivos que instalaste, debe soportar tal operación, pero
+por suerte, ext4 lo hace perfectamente y es sin tener que desmontar el sistema
+de archivos.</p>
+
+<p>El problema es que <strong>NUNCA ME ACUERDO</strong> de los comandos para redimensionar el
+volumen lógico.</p>
+
+<figure class='code'><figcaption><span>&#8220;la nota&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pvcreate /dev/xvdb
+</span><span class='line'>vgextend lvm /dev/xvdb
+</span><span class='line'>lvm lvextend -l +100%FREE /dev/lvm/lv1
+</span><span class='line'>resize2fs -p /dev/lvm/lv1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note que mi grupo de volúmenes se llama <strong>lvm</strong> y que el volumen lógico se llama
+<strong>lv1</strong> (no soy muy creativo con nombres para lvm). O sea, el disco quedaría
+así:</p>
+
+<h4>/dev/mapper/lvm-lv1</h4>
+
+<p><strong>Nota para los retardados:</strong> <em>El dispositivo /dev/xvdb es OTRO disco que se le
+añadió a la máquina para aumentar su espacio. Tenía /dev/xvda con 5 gigas y se
+le añádió otro disco, el llamado /dev/xvdb, con más espacio. Oséase colocaste
+otro disco en la máquina virtual o simplemente conectaste otro disco duro en el
+canal sata de una máquina física</em></p>
+
+<p>Entonces, linea por linea, en cámara lenta:</p>
+
+<p>1- Convierte el disco /dev/xvdb en un volumen físico (mete el disco pal saco de
+LVM) En mi caso, el  grupo de volúmenes se llama <strong>lvm</strong>, así que:</p>
+
+<p>2- Extenderemos el grupo llamado <strong>lvm</strong> añadiendo el volumen físico
+<strong>/dev/xvdb</strong> al volumen lógico <strong>lv1</strong>.</p>
+
+<p>3- La parte que siempre se me olvida (el parámetro está raro con cojone)
+Redimensionar el volumen lógico <strong>lv1</strong> a su máxima capacidad.</p>
+
+<p>4- Por último, redimensionar el ext4 en <strong>/dev/lvm/lv1</strong> a su máxima capacidad.</p>
+
+<p>Y listo! Ya tienes tu disco del tamaño que te de la gana ;-)</p>
+
+<p>Puedes correr <strong>lvmdiskscan -l</strong> para cerciorarte de que todo esté como esperas,
+no sea que hallas metido la delicada.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[sysinfo en el motd]]></title>
@@ -92,9 +188,6 @@ sin importar la shell que se esté usando.</p>
 <p>El segundo fichero será <strong>01-sysinfo</strong> y contendrá la parte linda, de la memoria
 RAM en uso, el CPU, la carga y la dirección ip de la primera interfaz.</p>
 
-<p>Este script lo copié por ahí, ni me acuerdo donde, no em gusta que usa
-<strong>ifconfig</strong>, ya lo modificaré con más calma.</p>
-
 <figure class='code'><figcaption><span>&#8220;01-sysinfo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -111,7 +204,6 @@ RAM en uso, el CPU, la carga y la dirección ip de la primera interfaz.</p>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
-<span class='line-number'>17</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
 </span><span class='line'><span class="nv">date</span><span class="o">=</span><span class="sb">`</span>date<span class="sb">`</span>
 </span><span class='line'><span class="nv">load</span><span class="o">=</span><span class="sb">`</span>cat /proc/loadavg <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span><span class="sb">`</span>
@@ -121,19 +213,18 @@ RAM en uso, el CPU, la carga y la dirección ip de la primera interfaz.</p>
 </span><span class='line'><span class="nv">users</span><span class="o">=</span><span class="sb">`</span>users <span class="p">|</span> wc -w<span class="sb">`</span>
 </span><span class='line'><span class="nb">time</span><span class="o">=</span><span class="sb">`</span>uptime <span class="p">|</span> grep -ohe <span class="s1">&#39;up .*&#39;</span> <span class="p">|</span> sed <span class="s1">&#39;s/,/\ hours/g&#39;</span> <span class="p">|</span> awk <span class="s1">&#39;{ printf $2&quot; &quot;$3 }&#39;</span><span class="sb">`</span>
 </span><span class='line'><span class="nv">processes</span><span class="o">=</span><span class="sb">`</span>ps aux <span class="p">|</span> wc -l<span class="sb">`</span>
-</span><span class='line'><span class="nv">ip</span><span class="o">=</span><span class="sb">`</span>ifconfig <span class="k">$(</span>route <span class="p">|</span> grep default <span class="p">|</span> awk <span class="s1">&#39;{ print $8 }&#39;</span><span class="k">)</span> <span class="p">|</span> grep <span class="s2">&quot;inet addr&quot;</span> <span class="p">|</span> awk -F: <span class="s1">&#39;{print $2}&#39;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span><span class="sb">`</span>
-</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;System information as of: $date&quot;</span>
-</span><span class='line'><span class="nb">echo</span>
+</span><span class='line'><span class="nv">ip</span><span class="o">=</span><span class="sb">`</span>ip a  s dev eth0<span class="p">|</span>grep inet<span class="p">|</span>awk <span class="s1">&#39;{print $2}&#39;</span><span class="p">|</span>cut -d <span class="s1">&#39;/&#39;</span> -f 1<span class="sb">`</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;System information as of: $date\n&quot;</span>
 </span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;System load:\t%s\tIP Address:\t%s\n&quot;</span> <span class="nv">$load</span> <span class="nv">$ip</span>
 </span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Memory usage:\t%s\tSystem uptime:\t%s\n&quot;</span> <span class="nv">$memory_usage</span> <span class="s2">&quot;$time&quot;</span>
 </span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Usage on /:\t%s\tSwap usage:\t%s\n&quot;</span> <span class="nv">$root_usage</span> <span class="nv">$swap_usage</span>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Local Users:\t%s\tProcesses:\t%s\n&quot;</span> <span class="nv">$users</span> <span class="nv">$processes</span>
-</span><span class='line'><span class="nb">echo</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Local Users:\t%s\tProcesses:\t%s\n\n&quot;</span> <span class="nv">$users</span> <span class="nv">$processes</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>Por último <strong>02-footer</strong> será la parte de abajo. Contendrá cualquier cosa que
-quieras poner en el fichero <strong>/etc/modt.tail</strong> por ejemplo, una anotación que
+quieras poner en el fichero <strong>/etc/motd.tail</strong> por ejemplo, una anotación que
 quieras hacer específica para ese servidor. Se mostrará si existe el fichero.</p>
 
 <figure class='code'><figcaption><span>&#8220;02-footer&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -375,7 +466,7 @@ capaz de ser importado sin problema.</p>
 
 <p>Por una cuestión de orden y seguridad, yo borro la base con la que se creó todo:</p>
 
-<figure class='code'><figcaption><span>&#8221;&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>&#8220;clear area&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>rm -rf Downloads/vpn
 </span></code></pre></td></tr></table></div></figure>
 
@@ -388,17 +479,11 @@ sea <strong>.conf</strong> se puede echar a andar con systemd.</p>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># systemctl status openvpn@servidor</span>
 </span><span class='line'>● openvpn@servidor.service - OpenVPN connection to servidor
 </span><span class='line'>   Loaded: loaded <span class="o">(</span>/usr/lib/systemd/system/openvpn@.service<span class="p">;</span> disabled<span class="p">;</span> vendor preset: disabled<span class="o">)</span>
 </span><span class='line'>   Active: inactive <span class="o">(</span>dead<span class="o">)</span>
 </span><span class='line'>     Docs: man:openvpn<span class="o">(</span>8<span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># file /etc/openvpn/servidor.conf </span>
-</span><span class='line'>/etc/openvpn/servidor.conf: UTF-8 Unicode text
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -1807,7 +1892,7 @@ configuración sería más o menos así en el fichero <strong>/etc/esmtprc</stro
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Listo! El correo <a href="&#109;&#97;&#x69;&#x6c;&#116;&#x6f;&#58;&#114;&#x6f;&#111;&#116;&#64;&#116;&#x75;&#100;&#x6f;&#109;&#x69;&#x6e;&#x69;&#111;&#46;&#99;&#117;">&#114;&#x6f;&#x6f;&#116;&#64;&#x74;&#x75;&#x64;&#x6f;&#109;&#105;&#x6e;&#x69;&#111;&#46;&#99;&#117;</a> recibirá correos de <a href="&#109;&#x61;&#x69;&#x6c;&#x74;&#111;&#x3a;&#99;&#x72;&#111;&#110;&#x40;&#x74;&#117;&#x64;&#111;&#x6d;&#x69;&#x6e;&#105;&#111;&#46;&#x63;&#117;">&#99;&#x72;&#x6f;&#110;&#x40;&#116;&#x75;&#x64;&#x6f;&#109;&#105;&#110;&#105;&#111;&#46;&#x63;&#117;</a> con la
+<p>Listo! El correo <a href="&#109;&#97;&#105;&#x6c;&#x74;&#111;&#x3a;&#x72;&#x6f;&#x6f;&#116;&#x40;&#x74;&#117;&#100;&#111;&#x6d;&#x69;&#110;&#x69;&#x6f;&#46;&#99;&#x75;">&#x72;&#111;&#111;&#116;&#64;&#116;&#117;&#100;&#111;&#109;&#x69;&#x6e;&#105;&#111;&#x2e;&#99;&#x75;</a> recibirá correos de <a href="&#x6d;&#x61;&#105;&#x6c;&#x74;&#x6f;&#58;&#x63;&#x72;&#x6f;&#110;&#x40;&#116;&#x75;&#x64;&#111;&#109;&#x69;&#110;&#105;&#x6f;&#x2e;&#99;&#117;">&#99;&#114;&#111;&#x6e;&#x40;&#116;&#117;&#100;&#111;&#x6d;&#x69;&#x6e;&#105;&#111;&#46;&#x63;&#x75;</a> con la
 salida del cron&hellip;</p>
 ]]></content>
   </entry>
@@ -2193,9 +2278,7 @@ potentes. Quizás dentro de un par de años, sea 4096.</p>
 
 <h2>El DNS</h2>
 
-<p>El patico feo de internet, el DNS. El remedio que se inventó pa ir tirando y
-acabó quedándose con su pésimo diseño y su horrible arquitectura que hasta el
-sol de hoy, pretende llamarse &ldquo;distribuida&rdquo;.</p>
+<p>   <blockquote><p>El patico feo de internet, el DNS. El remedio que se inventó pa ir tirando y acabó quedándose con su pésimo diseño y su horrible arquitectura que hasta el sol de hoy, pretende llamarse &ldquo;distribuida&rdquo;</p><footer><strong>Lázaro Armando</strong> <cite>Mi Criterio Sobre DNS</cite></footer></blockquote></p>
 
 <p>Agregamos le registro TXT con la clave. Te cuento que el fichero &ldquo;.txt&rdquo; contiene
 el tabaco base64 que usualmente vemos en el encabezado DKIM-Signature, pues
@@ -2400,27 +2483,6 @@ comando <strong>xinput &ndash;list &ndash;short</strong> a mi se me ve así:</p>
 
 
 <p>Como ve, el <em>PixArt USB Optical Mouse</em> dice que <strong>id=10</strong></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[deshabilitar historial de bash]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/05/12/deshabilitar-historial-de-bash/"/>
-    <updated>2016-05-12T14:34:13-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/05/12/deshabilitar-historial-de-bash</id>
-    <content type="html"><![CDATA[<p>Alguna vez han pensado, que en algunos servidores o estaciones, en las cual
-trabajan múltiples personas remotamente via consola; el historial de comandos
-puede llegar a ser un problema???</p>
-
-<p>Pues deshabilítalo. En el fichero <strong>/etc/environment</strong> ponle</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/environment&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>   <span class="nb">export </span><span class="nv">HISTFILE</span><span class="o">=</span>/dev/null
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>La próxima vez que etres, la función historial será deshabilitada. OJO!!! <strong>LA
-PRÓXIMA VEZ</strong> esta sesión aún salva historial&hellip; Sale y vuelve a entrar.</p>
 ]]></content>
   </entry>
   

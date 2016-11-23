@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>certificado autofirmado - El SysAdmin del 3er Mundo</title>
+  <title>redimensionar lvm - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="certificado autofirmado 22/11/2015 7:33 pm | Comments Ya hemos visto en varios post, que para hacer un servicio con SSL, requerimos un
-certificado &hellip;">
+  <meta name="description" content="redimensionar lvm 22/11/2016 9:00 pm | Comments Este post es a método de memorando, ya que SIEMPRE se me olvida como hacerlo. En materia de &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@ certificado &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/11/22/certificado-autofirmado/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2016/11/22/redimensionar-lvm/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -84,7 +83,7 @@ certificado &hellip;">
   
   <header>
     
-      <h1 class="entry-title">certificado autofirmado</h1>
+      <h1 class="entry-title">redimensionar lvm</h1>
     
     
       <p class="meta">
@@ -93,7 +92,7 @@ certificado &hellip;">
 
 
 
-<time class='entry-date' datetime='2015-11-22T19:33:54-05:00'><span class='date'>22/11/2015</span> <span class='time'>7:33 pm</span></time>
+<time class='entry-date' datetime='2016-11-22T21:00:22-05:00'><span class='date'>22/11/2016</span> <span class='time'>9:00 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -103,157 +102,98 @@ certificado &hellip;">
   </header>
 
 
-<div class="entry-content"><p>Ya hemos visto en varios post, que para hacer un servicio con SSL, requerimos un
-certificado autofirmado. De ahora en lo adelante, no pienso repetir ese proceso,
-por el contrario, pondré un link a este post.</p>
+<div class="entry-content"><p>Este post es a método de memorando, ya que SIEMPRE se me olvida como hacerlo.</p>
 
-<p>Una vez creado tu propio certificado, no tendrás que volver a crear uno para
-cada servicio, simplemente uno para cada host. Por tanto, vamos a crear y
-almacenar nuestro certificado en <strong>/etc/ssl/private/</strong> para usarlo con todos los
-servicios.</p>
+<p>En materia de virtualización, el sistema de plantillas nunca me ha gustado,
+<strong>porque NO SÉ quién instala esos sistemas operativos ni como.</strong></p>
 
-<p>De facto, asumo que tienes el paquete <strong>openssl</strong> instalado.</p>
+<p><strong>Yo prefiero</strong> por ejemplo, instalar un debian, acomodarle todo a mi manera y
+usar esa instalación para generar nuevas máquinas, con todo ya listo. Por
+ejemplo, un prototipod e firewall, las configuraciones de interfaz puesta con
+dhcp, pero una configuración estática bien comentada, etc..</p>
 
-<figure class='code'><figcaption><span>&#8220;/etc/ssl/private&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/ssl/private/
-</span></code></pre></td></tr></table></div></figure>
+<p>Mantengo esa máquina detenida y la arranco de vez en cuando para actualizar.
+Cuando voy a hacer una nueva, <strong>simplemente clono esa máquina</strong>.</p>
 
+<p>Prefiero llamarlo <strong>matriz</strong> que <em>plantilla</em>. El resto del tiempo, dicha máquina
+permanece detenida (apagada) evitando así desgaste, envejecimiento, generación
+de logs, etc&hellip;</p>
 
-<p>Primeros debemo generar una <a href="https://es.wikipedia.org/wiki/RSA">Clave RSA Privada</a>. La clave RSA es la que genera los
-certificados autofirmados como tal.</p>
+<p>Eso en la práctica, es lo mismo que una plantilla (para los criticones y amantes
+de la moda).</p>
 
-<figure class='code'><figcaption><span>&#8220;generando la RSA&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl genrsa -des3 -out privado.key 1024
-</span></code></pre></td></tr></table></div></figure>
+<p>Un inconveniente que afronté al principio con esto, fue &ldquo;el tamaño asignado al
+disco duro&rdquo;. Por ejemplo, el servidor de correo que me lleva 500 gigas, mientras
+que en el sistema de monitoreo (nagios) solo se lleva 5 gigas.</p>
 
+<p>La matriz tiene un disco de 5 gigas donde se instaló todo. Sobre espacio, ya que
+borrando /usr/share/doc/ y la cache de apt, se quedo en menos de un giga. El
+problema (con Xen) viene a la hora de agrandar el disco.</p>
 
-<p>Te pide un password. Debes ver algo como esto:</p>
+<p>No se como proxmox maneja esa situación y sinceramente, <strong>no me interesa</strong>, ya
+que:</p>
 
-<figure class='code'><figcaption><span>&#8220;salida&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p><strong>LVM resuelve el problema!</strong></p>
+
+<p>Si no tienes la costumbre de instalar sobre LVM, deberías hacértela&hellip; Es muy
+versátil.</p>
+
+<p>BTRfs es otra buena opción, pero su rendimiento decae mucho con el tiempo (<strong>mi
+experiencia</strong>).</p>
+
+<p>Añadir un disco al volumen lógico y aumentar su tamaño resuelve el problema.</p>
+
+<p>Claro, el sistema de archivos que instalaste, debe soportar tal operación, pero
+por suerte, ext4 lo hace perfectamente y es sin tener que desmontar el sistema
+de archivos.</p>
+
+<p>El problema es que <strong>NUNCA ME ACUERDO</strong> de los comandos para redimensionar el
+volumen lógico.</p>
+
+<figure class='code'><figcaption><span>&#8220;la nota&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>.++++++
-</span><span class='line'>..............................++++++
-</span><span class='line'>e is <span class="m">65537</span> <span class="o">(</span>0x10001<span class="o">)</span>
-</span><span class='line'>Enter pass phrase <span class="k">for</span> privado.key:
-</span><span class='line'>Verifying - Enter pass phrase <span class="k">for</span> privado.key:
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pvcreate /dev/xvdb
+</span><span class='line'>vgextend lvm /dev/xvdb
+</span><span class='line'>lvm lvextend -l +100%FREE /dev/lvm/lv1
+</span><span class='line'>resize2fs -p /dev/lvm/lv1
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Ah! El password no se ve mientras los escribes&hellip;</p>
+<p>Note que mi grupo de volúmenes se llama <strong>lvm</strong> y que el volumen lógico se llama
+<strong>lv1</strong> (no soy muy creativo con nombres para lvm). O sea, el disco quedaría
+así:</p>
 
-<p>Bueno, ahora generamos el CSR (Certificate Signing Request). Esto se usa para
-dos cosas: El CSR, es lo que se le envía a una autoridad certificadora (CA) para
-identificarnos con ella o como es el caso para simplemente, generar certificados
-autofirmados.</p>
+<h4>/dev/mapper/lvm-lv1</h4>
 
-<p>En este proceso, que ya lo hemos visto repetidamente, te preguntarán por
-aquellos datos que identifican a tu servicio de manera fideligna.</p>
+<p><strong>Nota para los retardados:</strong> <em>El dispositivo /dev/xvdb es OTRO disco que se le
+añadió a la máquina para aumentar su espacio. Tenía /dev/xvda con 5 gigas y se
+le añádió otro disco, el llamado /dev/xvdb, con más espacio. Oséase colocaste
+otro disco en la máquina virtual o simplemente conectaste otro disco duro en el
+canal sata de una máquina física</em></p>
 
-<p><strong>OJO</strong> El servidor que especifiques en el FQDN debe machear al hostname que se
-pida en las peticiones DNS.</p>
+<p>Entonces, linea por linea, en cámara lenta:</p>
 
-<figure class='code'><figcaption><span>&#8220;generando el CSR&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl req -new -key privado.key -out privado.csr
-</span></code></pre></td></tr></table></div></figure>
+<p>1- Convierte el disco /dev/xvdb en un volumen físico (mete el disco pal saco de
+LVM) En mi caso, el  grupo de volúmenes se llama <strong>lvm</strong>, así que:</p>
 
+<p>2- Extenderemos el grupo llamado <strong>lvm</strong> añadiendo el volumen físico
+<strong>/dev/xvdb</strong> al volumen lógico <strong>lv1</strong>.</p>
 
-<p>Debes ver algo como esto:</p>
+<p>3- La parte que siempre se me olvida (el parámetro está raro con cojone)
+Redimensionar el volumen lógico <strong>lv1</strong> a su máxima capacidad.</p>
 
-<figure class='code'><figcaption><span>&#8220;salida&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Enter pass phrase <span class="k">for</span> privado.key:
-</span><span class='line'>You are about to be asked to enter information that will be incorporated
-</span><span class='line'>into your certificate request.
-</span><span class='line'>What you are about to enter is what is called a Distinguished Name or a DN.
-</span><span class='line'>There are quite a few fields but you can leave some blank
-</span><span class='line'>For some fields there will be a default value,
-</span><span class='line'>If you enter <span class="s1">&#39;.&#39;</span>, the field will be left blank.
-</span><span class='line'>-----
-</span><span class='line'>Country Name <span class="o">(</span><span class="m">2</span> letter code<span class="o">)</span> <span class="o">[</span>AU<span class="o">]</span>:CU
-</span><span class='line'>State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>Some-State<span class="o">]</span>:Havana
-</span><span class='line'>Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[]</span>:Plaza
-</span><span class='line'>Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>Internet Widgits Pty Ltd<span class="o">]</span>:
-</span><span class='line'>Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[]</span>:
-</span><span class='line'>Common Name <span class="o">(</span>e.g. server FQDN or YOUR name<span class="o">)</span> <span class="o">[]</span>:tuservidor.cu
-</span><span class='line'>Email Address <span class="o">[]</span>:
-</span><span class='line'>
-</span><span class='line'>Please enter the following <span class="s1">&#39;extra&#39;</span> attributes
-</span><span class='line'>to be sent with your certificate request
-</span><span class='line'>A challenge password <span class="o">[]</span>:
-</span><span class='line'>An optional company name <span class="o">[]</span>:Calixto Garcia
-</span></code></pre></td></tr></table></div></figure>
+<p>4- Por último, redimensionar el ext4 en <strong>/dev/lvm/lv1</strong> a su máxima capacidad.</p>
 
+<p>Y listo! Ya tienes tu disco del tamaño que te de la gana ;-)</p>
 
-<p><strong>REPITO</strong> Donde dice: &ldquo;Common Name (eg, your name or your server&rsquo;s hostname)&rdquo;
-Debes poner el hostname por el que será llamado tu server. Por esta razón, los
-pop3 y los SMTP, suelen generar certificados aparte.</p>
-
-<p>Otra jodedera de los certificados autofirmados, es que siempre piden un password
-cuando van a ser usados. Para evitar este fenómeno, debemos hacer una burumba y
-quitarle el password.</p>
-
-<figure class='code'><figcaption><span>&#8220;quitando el password&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp privado.key privado.key.org
-</span><span class='line'>openssl rsa -in privado.key.org -out privado.key
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ya puedes borrar el fichero &ldquo;privado.key.org&rdquo; tranquilamente, pero bueno, si lo
-guardas, nadie se pondrá bravo.</p>
-
-<p>Ahora por fin vamos a generar el dichoso certificado autofirmado. Para
-generarlo, necesitaremos usar una CA, en este caso, nosotros mismos.</p>
-
-<figure class='code'><figcaption><span>&#8220;generando el certificados&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl x509 -req -days <span class="m">365</span> -in privado.csr -signkey privado.key -out privado.crt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Debes ver algo como esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;salida&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Signature ok
-</span><span class='line'><span class="nv">subject</span><span class="o">=</span>/C<span class="o">=</span>CU/ST<span class="o">=</span>Havana/L<span class="o">=</span>Plaza/O<span class="o">=</span>Internet Widgits Pty Ltd/CN<span class="o">=</span>tuservidor.cu
-</span><span class='line'>Getting Private key
-</span><span class='line'>Enter pass phrase <span class="k">for</span> privado.key:
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El parámetros <strong>-days</strong> puede saltarse si no quiere que el certificado caduque.
-Pero en ambientes muy hostiles, donde de verdad se quiere cifrado, es necesario
-que el ceritificado caduque. Uno nunca sabe que mariconá están planificando los
-hackers por ahí.</p>
-
-<p>Ahí tienes tu certificado autofirmado ;)</p>
+<p>Puedes correr <strong>lvmdiskscan -l</strong> para cerciorarte de que todo esté como esperas,
+no sea que hallas metido la delicada.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -267,7 +207,7 @@ hackers por ahí.</p>
 
 
 
-<time class='entry-date' datetime='2015-11-22T19:33:54-05:00'><span class='date'>22/11/2015</span> <span class='time'>7:33 pm</span></time>
+<time class='entry-date' datetime='2016-11-22T21:00:22-05:00'><span class='date'>22/11/2016</span> <span class='time'>9:00 pm</span></time>
       
 
 
@@ -275,7 +215,7 @@ hackers por ahí.</p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/11/22/certificado-autofirmado/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/11/22/certificado-autofirmado/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2016/11/22/redimensionar-lvm/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2016/11/22/redimensionar-lvm/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -288,10 +228,8 @@ hackers por ahí.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/11/12/rc-dot-local-en-systemd/" title="Previous Post: rc.local en systemd">&laquo; rc.local en systemd</a>
+        <a class="basic-alignment left" href="/blog/2016/11/20/sysinfo-en-el-motd/" title="Previous Post: sysinfo en el motd">&laquo; sysinfo en el motd</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2015/11/23/desmume-ultralento/" title="Next Post: desmume ultralento">desmume ultralento &raquo;</a>
       
     </p>
   </footer>
@@ -701,8 +639,8 @@ hackers por ahí.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2015/11/22/certificado-autofirmado/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2015/11/22/certificado-autofirmado/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2016/11/22/redimensionar-lvm/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2016/11/22/redimensionar-lvm/';
         var disqus_script = 'embed.js';
       
     (function () {

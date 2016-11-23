@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://uranio-235.github.io/blog/2016/11/22/redimensionar-lvm/</loc>
+<lastmod>2016-11-22T21:00:22-05:00</lastmod>
+</url>
+<url>
 <loc>http://uranio-235.github.io/blog/2016/11/20/sysinfo-en-el-motd/</loc>
 <lastmod>2016-11-20T17:13:27-05:00</lastmod>
 </url>

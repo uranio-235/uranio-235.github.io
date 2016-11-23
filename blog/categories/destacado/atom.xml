@@ -4,7 +4,7 @@
   <title><![CDATA[Category: destacado | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/destacado/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-11-20T18:04:41-05:00</updated>
+  <updated>2016-11-23T13:21:10-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -316,9 +316,7 @@ systemctl status -l opendkim
 
 <h2>El DNS</h2>
 
-<p>El patico feo de internet, el DNS. El remedio que se inventó pa ir tirando y
-acabó quedándose con su pésimo diseño y su horrible arquitectura que hasta el
-sol de hoy, pretende llamarse &ldquo;distribuida&rdquo;.</p>
+<p>   <blockquote><p>El patico feo de internet, el DNS. El remedio que se inventó pa ir tirando y acabó quedándose con su pésimo diseño y su horrible arquitectura que hasta el sol de hoy, pretende llamarse &ldquo;distribuida&rdquo;</p><footer><strong>Lázaro Armando</strong> <cite>Mi Criterio Sobre DNS</cite></footer></blockquote></p>
 
 <p>Agregamos le registro TXT con la clave. Te cuento que el fichero &ldquo;.txt&rdquo; contiene
 el tabaco base64 que usualmente vemos en el encabezado DKIM-Signature, pues

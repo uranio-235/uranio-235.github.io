@@ -177,9 +177,6 @@ sin importar la shell que se esté usando.</p>
 <p>El segundo fichero será <strong>01-sysinfo</strong> y contendrá la parte linda, de la memoria
 RAM en uso, el CPU, la carga y la dirección ip de la primera interfaz.</p>
 
-<p>Este script lo copié por ahí, ni me acuerdo donde, no em gusta que usa
-<strong>ifconfig</strong>, ya lo modificaré con más calma.</p>
-
 <figure class='code'><figcaption><span>&#8220;01-sysinfo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -196,7 +193,6 @@ RAM en uso, el CPU, la carga y la dirección ip de la primera interfaz.</p>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
-<span class='line-number'>17</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
 </span><span class='line'><span class="nv">date</span><span class="o">=</span><span class="sb">`</span>date<span class="sb">`</span>
 </span><span class='line'><span class="nv">load</span><span class="o">=</span><span class="sb">`</span>cat /proc/loadavg <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span><span class="sb">`</span>
@@ -206,19 +202,18 @@ RAM en uso, el CPU, la carga y la dirección ip de la primera interfaz.</p>
 </span><span class='line'><span class="nv">users</span><span class="o">=</span><span class="sb">`</span>users <span class="p">|</span> wc -w<span class="sb">`</span>
 </span><span class='line'><span class="nb">time</span><span class="o">=</span><span class="sb">`</span>uptime <span class="p">|</span> grep -ohe <span class="s1">&#39;up .*&#39;</span> <span class="p">|</span> sed <span class="s1">&#39;s/,/\ hours/g&#39;</span> <span class="p">|</span> awk <span class="s1">&#39;{ printf $2&quot; &quot;$3 }&#39;</span><span class="sb">`</span>
 </span><span class='line'><span class="nv">processes</span><span class="o">=</span><span class="sb">`</span>ps aux <span class="p">|</span> wc -l<span class="sb">`</span>
-</span><span class='line'><span class="nv">ip</span><span class="o">=</span><span class="sb">`</span>ifconfig <span class="k">$(</span>route <span class="p">|</span> grep default <span class="p">|</span> awk <span class="s1">&#39;{ print $8 }&#39;</span><span class="k">)</span> <span class="p">|</span> grep <span class="s2">&quot;inet addr&quot;</span> <span class="p">|</span> awk -F: <span class="s1">&#39;{print $2}&#39;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span><span class="sb">`</span>
-</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;System information as of: $date&quot;</span>
-</span><span class='line'><span class="nb">echo</span>
+</span><span class='line'><span class="nv">ip</span><span class="o">=</span><span class="sb">`</span>ip a  s dev eth0<span class="p">|</span>grep inet<span class="p">|</span>awk <span class="s1">&#39;{print $2}&#39;</span><span class="p">|</span>cut -d <span class="s1">&#39;/&#39;</span> -f 1<span class="sb">`</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;System information as of: $date\n&quot;</span>
 </span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;System load:\t%s\tIP Address:\t%s\n&quot;</span> <span class="nv">$load</span> <span class="nv">$ip</span>
 </span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Memory usage:\t%s\tSystem uptime:\t%s\n&quot;</span> <span class="nv">$memory_usage</span> <span class="s2">&quot;$time&quot;</span>
 </span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Usage on /:\t%s\tSwap usage:\t%s\n&quot;</span> <span class="nv">$root_usage</span> <span class="nv">$swap_usage</span>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Local Users:\t%s\tProcesses:\t%s\n&quot;</span> <span class="nv">$users</span> <span class="nv">$processes</span>
-</span><span class='line'><span class="nb">echo</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Local Users:\t%s\tProcesses:\t%s\n\n&quot;</span> <span class="nv">$users</span> <span class="nv">$processes</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>Por último <strong>02-footer</strong> será la parte de abajo. Contendrá cualquier cosa que
-quieras poner en el fichero <strong>/etc/modt.tail</strong> por ejemplo, una anotación que
+quieras poner en el fichero <strong>/etc/motd.tail</strong> por ejemplo, una anotación que
 quieras hacer específica para ese servidor. Se mostrará si existe el fichero.</p>
 
 <figure class='code'><figcaption><span>&#8220;02-footer&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -230,7 +225,7 @@ quieras hacer específica para ese servidor. Se mostrará si existe el fichero.<
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -268,6 +263,8 @@ quieras hacer específica para ese servidor. Se mostrará si existe el fichero.<
         <a class="basic-alignment left" href="/blog/2016/11/14/openvpn-user-plus-pass/" title="Previous Post: openvpn user+pass">&laquo; openvpn user+pass</a>
       
       
+        <a class="basic-alignment right" href="/blog/2016/11/22/redimensionar-lvm/" title="Next Post: redimensionar lvm">redimensionar lvm &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -287,6 +284,10 @@ quieras hacer específica para ese servidor. Se mostrará si existe el fichero.<
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/11/22/redimensionar-lvm/">redimensionar lvm</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/11/20/sysinfo-en-el-motd/">sysinfo en el motd</a>

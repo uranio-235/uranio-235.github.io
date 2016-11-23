@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="data confirm en un boton 22/02/2016 2:20 pm | Comments Usualmente, tenemos un botón en un formulario y nos gustaría que al pulsar este,
-nos &hellip;">
+  <meta name="description" content="cargar rvm 07/03/2016 9:25 pm | Comments De siempre, desplegar Ruby con RVM, ha sido un método
+catalogado de &ldquo;burdo&rdquo; o &ldquo;sucio& &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -87,6 +87,68 @@ nos &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/03/07/cargar-rvm/">cargar rvm</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-03-07T21:25:44-05:00'><span class='date'>07/03/2016</span> <span class='time'>9:25 pm</span></time>
+        
+           | <a href="/blog/2016/03/07/cargar-rvm/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/03/07/cargar-rvm/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>De siempre, desplegar Ruby con <a href="https://rvm.io/">RVM</a>, ha sido un método
+catalogado de &ldquo;burdo&rdquo; o &ldquo;sucio&rdquo; aunque sin dudas, es el más rápido.</p>
+
+<p>Un problema que se enfrenta con RVM, es a la hora de integrarlo a entornos que
+no carguen el bashrc modificado por el instalador. Por ejemplo, un script de
+arrancada con el sistema o un script del cron.</p>
+
+<p>He aquí un ejemplo, de un escript.sh que levanta una aplicación de ruby on
+rails, luego de haber cargado el entorno de RVM.</p>
+
+<figure class='code'><figcaption><span>&#8220;startapp.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="nb">cd</span> /opt/aplicacion
+</span><span class='line'><span class="nb">source</span> /usr/local/rvm/environments/default
+</span><span class='line'>unicorn -l 0:8080 -D
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como vemos, el fichero en <strong>environments</strong> carga todas las variables de entorno
+requerida y de facto; <strong>unicorn</strong> pasa a ser un ejecutable, ya que <strong>$PATH</strong>
+ahora contiene también la ruta bin/ donde se instalaron las gemas&hellip;</p>
+
+<p>Problema <em>resolvido</em>&hellip;</p>
+
+<p>Note en caso de tener varios rubies instalados, en environments, tendrás junto a
+default, los demás script necesarios para cargar dichos rubies.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2016/02/22/data-confirm-en-un-boton/">data confirm en un boton</a></h1>
     
     
@@ -132,7 +194,7 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -458,7 +520,7 @@ una source como esta:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -561,7 +623,7 @@ tiempo.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -644,112 +706,7 @@ burumba a freshclam. Decirle que no busque scripts, así me quedó el freshclam.
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/01/14/clamav-en-windows/">clamav en windows</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-01-14T21:39:45-05:00'><span class='date'>14/01/2016</span> <span class='time'>9:39 pm</span></time>
-        
-           | <a href="/blog/2016/01/14/clamav-en-windows/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/01/14/clamav-en-windows/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Síiiii, por loco que suene&hellip;</p>
-
-<p>Una compañía llamada Source Fire, desarrolló un producto llamado &ldquo;immunet&rdquo;, Por
-lo que vi, es una herramienta de &ldquo;cloud security&rdquo;. En teoría; un antivirus que
-no necesita ser actualizado, una especie de community driven (reescribió la
-rueda y le quedó bien).</p>
-
-<p>Esto en cuba es un chiste, por el ancho de banda. No obstante, pasarle todos tus
-archivos a un servidor para que este los verifique, no me parece un buen
-negocio. Aunque sabe dios que hace windows con tus archivos&hellip;</p>
-
-<p>No obstante, estos señores, incluyeron el motor de clamav y frontend para
-escanear en tiempo real usando clamav y <strong>QUE PINCHA</strong>. Se la comieron!</p>
-
-<p>Quiero advertirte que: Mis conocimientos de windows son BIEN REDUCIDOS, así que
-veré como me hago entender. Trataré de escribir de memoria lo que hice, antes de
-que se me olvide.</p>
-
-<p>Primero llégate a <a href="http://www.immunet.com/free/index.html">www.immunet.com</a> y
-manda a descargar el antivirus. Te dará un ficherito triste de unos kilobytes.
-Este es el downloader.</p>
-
-<p>Ve a una máquina con windows y ejecuta el downloader. Pulsa un botón que dice
-&ldquo;detalles&rdquo;, para que veas que está instalando.</p>
-
-<p>Antes de que se cierre el dialogo del instalador, o sea, antes de pulsar el
-botón &ldquo;Finalizar&rdquo;, mira en las rutas, el directorio temporal donde se está
-descargando y localiza un fichero llamado <strong>protect-latest.exe</strong></p>
-
-<p>No he logrado capturar la URL!!! Sería bueno, así te evitas el ritual anterior.
-No es algo que puedas trazar con squid, ya que la descarga es una conexión SSL.</p>
-
-<p>Una vez que tengas <strong>protect-latest.exe</strong> en la mano, podrás instalarlo donde
-quieras.</p>
-
-<p>Cuando termines, te puso el ícono de immunet en el escritorio. Ejecútalo y
-dirígete a <strong>settings</strong>, ahí le pones el botón <strong>on</strong> a un chucho que dice
-<strong>Enable Clamav Engine</strong>.</p>
-
-<p><img class="center" src="/images/immunenet_config.png"></p>
-
-<p>Cierra esa interfaz y has click secundario en el acceso directo del escritorio.</p>
-
-<p>Verás una opción en el menú que dice &ldquo;Abrir directorio que lo contiene&rdquo; o algo
-por el estilo, no recuerdo bien.</p>
-
-<p>Una vez en el directorio de Immunet, sube un nivel y verás el directorio
-<strong>clamav</strong>. Entra ahí.</p>
-
-<p><img class="center" src="/images/segui.png"></p>
-
-<p>Ejecuta el fichero <strong>sigui.exe</strong>(1) y en la pestaña derecha, verás una opción
-que dice &ldquo;Local Signature Management&rdquo;.</p>
-
-<p>Toca el boton &ldquo;Add&rdquo;(2) y te dará un browser de ficheros. Localiza el directorio
-donde tiene los *.cvd de clamav. Puedes seleccionar los tres ficheros de un
-palo, incluso, pincha por carpeta compartida.</p>
-
-<p>Cuando estén en la caja de arriba, has click en &ldquo;Verify and Install
-signatures&rdquo;(3).</p>
-
-<p>ANDANDO! Ya lo tienes configurado.</p>
-
-<p>En la máquina que lo probé. Restuaré la cuarentena de nod32 y el clamav se
-despacho los virus. A los 5 segundos, nod32 pedía reinicio para desinfectar
-amenazas. Simplemente lo desinstalé.</p>
-
-<p>Como muchos saben, el motor de clamav cambia constantemente. No se si será
-necesario la descarga y reinstalación del antivirus. Pero un compañero me
-planteaba que eso significaría un buen negocio.</p>
-
-<p>Suerte&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -770,6 +727,10 @@ planteaba que eso significaría un buen negocio.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/11/22/redimensionar-lvm/">redimensionar lvm</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/11/20/sysinfo-en-el-motd/">sysinfo en el motd</a>
