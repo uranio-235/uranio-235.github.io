@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="password de windows 16/08/2016 12:13 am | Comments Resulta que en el puesto de mando, uno de los tantos que se sientan ahí; le
-cambió el password a &hellip;">
+  <meta name="description" content="dispatcher script 16/09/2016 10:53 am | Comments El network-manager, el sistema de 2 clicasos para configurar la interfaz de red.
+Resulta que cuando &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -87,6 +87,164 @@ cambió el password a &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/09/16/dispatcher-script/">dispatcher script</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-16T10:53:51-04:00'><span class='date'>16/09/2016</span> <span class='time'>10:53 am</span></time>
+        
+           | <a href="/blog/2016/09/16/dispatcher-script/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/09/16/dispatcher-script/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>El network-manager, el sistema de 2 clicasos para configurar la interfaz de red.
+Resulta que cuando levanta la red, no se por qué, telepathy-salut se queda
+mariado y el chat &ldquo;gente cerca&rdquo; no ve a los usuarios. Al reiniciar avahi se le
+quita el mareo. Entonces la talla sería que el avahi se reiniciara solo.</p>
+
+<p>Resulta que NetworkManger, tiene los llamados dispatcher. Puedes ver
+<a href="https://developer.gnome.org/NetworkManager/stable/NetworkManager.html">la documentación aquí</a></p>
+
+<p>Los scripts que radique en <strong>/etc/NetworkManager/dispatcher.d/</strong> se ejecutarán
+sí y solo si, pertenecen al root con permisos 755.</p>
+
+<p>Los script reciben como primer argumento, la interfaz y como segundo la acción.
+Las acciones pueden ser up, down, conectivity-change, hostname y en fin, vease
+<strong>man NetworkManager</strong> para más detalles.</p>
+
+<p>Mi script quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/NetworkManager/dispatcher.d/migancho.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># la interfaz involucrada</span>
+</span><span class='line'><span class="nv">INTERFAZ</span><span class="o">=</span><span class="nv">$1</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># la acción involucrada</span>
+</span><span class='line'><span class="nv">ACCION</span><span class="o">=</span><span class="nv">$2</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># una función para loguear</span>
+</span><span class='line'><span class="k">function</span> loguear<span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>   logger <span class="k">$(</span>basename <span class="nv">$0</span><span class="k">)</span> <span class="nv">$@</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># un logueo simple, pa saber lo que hay</span>
+</span><span class='line'>loguear <span class="s2">&quot;acción «$ACCION» en la interfaz «$INTERFAZ»&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># según la acción</span>
+</span><span class='line'><span class="k">case</span> <span class="s2">&quot;$ACCION&quot;</span> in
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>   up<span class="o">)</span> <span class="c"># una interfaz que se levanto</span>
+</span><span class='line'>
+</span><span class='line'>      loguear <span class="s1">&#39;tumbando telepathy y compañía&#39;</span>
+</span><span class='line'>      pkill -9 empathy
+</span><span class='line'>      pkill -9 telepathy
+</span><span class='line'>
+</span><span class='line'>      loguear <span class="s1">&#39;reiniciando avahi&#39;</span>
+</span><span class='line'>      systemctl restart avahi-daemon
+</span><span class='line'>
+</span><span class='line'>      loguear <span class="s1">&#39;ajustando la hora&#39;</span>
+</span><span class='line'>      systemctl start systemd-timesyncd
+</span><span class='line'>
+</span><span class='line'>   <span class="p">;;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>   down<span class="o">)</span> <span class="c"># al tumbar una conexión</span>
+</span><span class='line'>
+</span><span class='line'>     loguear <span class="s1">&#39;para el clientico ntp de systemd&#39;</span>
+</span><span class='line'>     systemctl stop systemd-timesyncd
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>   <span class="p">;;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>   *<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>      loguear <span class="s1">&#39;sin accion&#39;</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="p">;;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">esac</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con <strong>journalctl -f</strong> puedes ver como loguea, en este caso el argumento $0 es el
+nombre del script. En fin puedes hacer muchísimas cosas creativas. Con ver en el
+man de NetworkManager las acciones; podrás subsanar muchas necesidades.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2016/08/16/password-de-windows/">password de windows</a></h1>
     
     
@@ -150,7 +308,7 @@ es bastante simple.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -223,7 +381,7 @@ Podrás usarlo como unidad óptica de las máquinas virtuales.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -537,7 +695,7 @@ necesito. En este caso, asumiré que para al hibernar y enciende al despertar.</
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -616,92 +774,7 @@ solamente los fichero <strong>.gz</strong></p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/20/correos-del-cron/">correos del cron</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-06-20T14:14:06-04:00'><span class='date'>20/06/2016</span> <span class='time'>2:14 pm</span></time>
-        
-           | <a href="/blog/2016/06/20/correos-del-cron/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/06/20/correos-del-cron/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Conflictivísima tarea, lograr que el cron mande correos adecuadamente&hellip; En este
-caso, cronie, da la solución al problema. Aunque me imagino que dicha
-configuración sea estándar para el cron.</p>
-
-<p>Así es la cosa, declaramos <strong>MAILTO</strong> y <strong>MAILFROM</strong> como unas variables en el
-fichero crontab.</p>
-
-<figure class='code'><figcaption><span>crontab</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="c1"># DO NOT EDIT THIS FILE - edit the master and reinstall.</span>
-</span><span class='line'><span class="c1"># (/tmp/crontab.f36hiB/crontab installed on Tue May  5 08:48:38 2015)</span>
-</span><span class='line'><span class="c1"># (Cron version -- $Id: crontab.c,v 2.13 1994/01/17 03:20:37 vixie Exp $)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># añadimos las variables</span>
-</span><span class='line'><span class="na">MAILTO</span><span class="o">=</span><span class="s">root@tudominio.cu</span>
-</span><span class='line'><span class="na">MAILFROM</span><span class="o">=</span><span class="s">cron@tudominio.cu</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># m h  dom mon dow   command</span>
-</span><span class='line'><span class="err">00</span> <span class="err">00</span> <span class="err">*</span> <span class="err">*</span> <span class="err">*</span> <span class="err">/bin/bash</span> <span class="err">/home/fulanito/script.sh</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora faltaría un MTA. Pues la solución más sensilla es <strong>esmtp</strong> y su
-configuración sería más o menos así en el fichero <strong>/etc/esmtprc</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/esmtprc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">identity</span> <span class="err">micuenta</span>
-</span><span class='line'>   <span class="err">hostname</span> <span class="err">smtp.tudominio.cu</span>
-</span><span class='line'>   <span class="err">username</span> <span class="err">&quot;cron&quot;</span>
-</span><span class='line'>   <span class="err">password</span> <span class="err">&quot;pinpanpun&quot;</span>
-</span><span class='line'>   <span class="err">starttls</span> <span class="err">enabled</span>
-</span><span class='line'>   <span class="err">default</span>
-</span><span class='line'><span class="err">mda</span> <span class="err">&quot;/usr/bin/procmail</span> <span class="err">-d</span> <span class="err">%T&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Listo! El correo <a href="&#109;&#97;&#105;&#x6c;&#x74;&#111;&#x3a;&#x72;&#x6f;&#x6f;&#116;&#x40;&#x74;&#117;&#100;&#111;&#x6d;&#x69;&#110;&#x69;&#x6f;&#46;&#99;&#x75;">&#x72;&#111;&#111;&#116;&#64;&#116;&#117;&#100;&#111;&#109;&#x69;&#x6e;&#105;&#111;&#x2e;&#99;&#x75;</a> recibirá correos de <a href="&#x6d;&#x61;&#105;&#x6c;&#x74;&#x6f;&#58;&#x63;&#x72;&#x6f;&#110;&#x40;&#116;&#x75;&#x64;&#111;&#109;&#x69;&#110;&#105;&#x6f;&#x2e;&#99;&#117;">&#99;&#114;&#111;&#x6e;&#x40;&#116;&#117;&#100;&#111;&#x6d;&#x69;&#x6e;&#105;&#111;&#46;&#x63;&#x75;</a> con la
-salida del cron&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -722,6 +795,10 @@ salida del cron&hellip;</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/11/24/squid3-bloquear-user-agent/">squid3 bloquear user-agent</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/11/22/redimensionar-lvm/">redimensionar lvm</a>

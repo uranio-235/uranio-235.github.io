@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="asset pipeline en production 05/07/2015 8:57 pm | Comments La más resipingante característica de Ruby on Rails, amada por unos y odiada por
-otros; &hellip;">
+  <meta name="description" content="añadir verbo a un scaffold 05/07/2015 9:35 pm | Comments Cualquiera que sepa como usar debidamente los scaffolds, o sea, cualquiera que
+sepa como &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -87,6 +87,111 @@ otros; &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/">añadir verbo a un scaffold</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-07-05T21:35:54-04:00'><span class='date'>05/07/2015</span> <span class='time'>9:35 pm</span></time>
+        
+           | <a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/07/05/anadir-verbo-a-un-scaffold/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Cualquiera que sepa como usar debidamente los scaffolds, o sea, cualquiera que
+sepa como hacerle la paja a ruby on rails para que haga lo que queremos; seguro
+habrá intentado en algún momento, añadir un nuevo método a un scaffold. Además,
+de seguro quisiste luego poder llamarlo con los métodos &ldquo;metodo_user_path&rdquo; y que
+la ruta se cree de manera automática.</p>
+
+<p>Por ejemplo, en este caso, tengo el scaffold <strong>user</strong> y le agregué el método
+<strong>cambiar</strong> aparte de los clásicos PUT y DELETE.</p>
+
+<figure class='code'><figcaption><span>&#8220;scope de users_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="c1"># cambia el estado de habilitación del usuarios</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">cambiar</span>
+</span><span class='line'>     <span class="vi">@user</span><span class="o">.</span><span class="n">enabled</span><span class="o">=!</span><span class="vi">@user</span><span class="o">.</span><span class="n">enabled</span>
+</span><span class='line'>     <span class="vi">@user</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>     <span class="n">redirect_to</span> <span class="ss">:back</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># GET /users</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
+</span><span class='line'>    <span class="vi">@users</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">all</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero el método cambiar no aparece en rails hasta que no hagas lo siguiente en el
+fichero de las rutas.</p>
+
+<figure class='code'><figcaption><span>&#8220;config/routes.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>   <span class="c1"># el scaffold de los usuarios</span>
+</span><span class='line'>   <span class="n">resources</span> <span class="ss">:users</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># agregamos el verbo cambiar usado para</span>
+</span><span class='line'>      <span class="c1"># @user.enabled=!@user.enabled</span>
+</span><span class='line'>      <span class="c1"># para que exista: cambiar_user_path</span>
+</span><span class='line'>      <span class="n">member</span> <span class="k">do</span>
+</span><span class='line'>         <span class="n">get</span> <span class="s1">&#39;cambiar&#39;</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora existirá el método <strong>cambiar_user_path</strong> que toma como argumento el
+usuario.</p>
+
+<p>   cambiar_user_path(user)</p>
+
+<p>De esta manera, se le manda el objeto usuario y genera una URL como</p>
+
+<p>   /users/345/cambiar</p>
+
+<p>Dicha ruta macheará el método User#cambiar</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2015/07/05/asset-pipeline-en-production/">asset pipeline en production</a></h1>
     
     
@@ -154,7 +259,7 @@ enlaces a las assets.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -341,7 +446,7 @@ declarando los componentes en los controladores.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -544,7 +649,7 @@ monta con las opciones que le de la gana a el; te guste o no.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1070,76 +1175,7 @@ entiendas.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-03T23:08:27-04:00'><span class='date'>03/06/2015</span> <span class='time'>11:08 pm</span></time>
-        
-           | <a href="/blog/2015/06/03/transando-a-ext4/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/03/transando-a-ext4/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Una de mis grandes testarudeces (profesionales) siempre ha sido la negativa a
-usar ext4. Acostumbrado a los discos IDE, siempre me pareció que el journal
-escribía demasiado en el disco. Además, solía verse ext4dev y eso me sonaba a
-que se usaría mi sistema como ratón de laboratorio.</p>
-
-<p>Tanta fue mi fobia, que hoy en día aún uso discos montados en ext2. Por ejemplo,
-mi laptop estaba montada en ext2 hasta ahora mismo; también la partición /home
-del servidor LTSP.</p>
-
-<p>Un fallo eléctrico reciente, me demostró que el journal es un mal necesario. En
-discos de tanta escritura, como es el caso del /home de los clientes ligeros, la
-integridad de los datos es definitivamente una clave para el sistema. Además,
-todo el que usó ext4dev no se quejó nunca.</p>
-
-<figure class='code'><figcaption><span>&#8220;tune2fs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>tune2fs -O extents,uninit_bg,dir_index /dev/sda2
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con eso, le pones a tu ext2 todas las gangarreas del 4. A este punto, reza
-porque no se valla luz! Hay que dar otro paso y es pasar un fsck.</p>
-
-<figure class='code'><figcaption><span>&#8220;tune2fs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>tune2fs -c <span class="m">0</span> /dev/sda <span class="o">&amp;&amp;</span> reboot
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Marca el disco para chequear y reinicia. Cuando levante, verás que da unos palos
-raros ahí pero tú tranquilo.</p>
-
-<p>Las memorias si las dejo con ext2. Pues no necesitan un journal escribiendo
-tanto y acortando su vida útil.</p>
-
-<p>Lo próximo que instale, lo haré con BtrFS que está <em>más mejoL en todavía</em>. Dice
-tener un soporte especial para discos SSD con lo cual me imagino que para las
-memorias flash sea más óptimo.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1160,6 +1196,10 @@ memorias flash sea más óptimo.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/11/24/squid3-bloquear-user-agent/">squid3 bloquear user-agent</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/11/22/redimensionar-lvm/">redimensionar lvm</a>

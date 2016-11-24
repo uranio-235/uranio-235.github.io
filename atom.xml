@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-11-23T13:21:10-05:00</updated>
+  <updated>2016-11-24T15:01:21-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,56 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[squid3 bloquear user-agent]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/11/24/squid3-bloquear-user-agent/"/>
+    <updated>2016-11-24T14:36:13-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/11/24/squid3-bloquear-user-agent</id>
+    <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/noiexplore.png" width="400" height="500" title="" ></p>
+
+<p>Recién, he tenido algunos problemas con descargadores multi-hilos que se chupan
+el ancho de banda y se cagan en los delay_pools, buscando como bloquear dichos
+descargadores, el colega Agustín Ybarra me recomienda bloquear los user_agent.</p>
+
+<p>Pero pensándolo bien, resolví unos cuantos problemas. Pues por ejemplo, google
+play service de los teléfonos android, consume muchísimo y resuelve poco, de
+forma que el que navega en un delay_pool, ve afectado su ancho de banda por
+cosas que ignora.</p>
+
+<p>Solución, bloquear los User-Agent. La idea suena bien, pero primero hay que
+loguear los user agent. Para ellos usaremos un custom_log de squid, loguearemos
+los usuarios y los user-agent. A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># loguea los user-agent</span>
+</span><span class='line'>logformat useragent  %un <span class="s2">&quot;%{User-Agent}&gt;h&quot;</span>
+</span><span class='line'>access_log daemon:/var/log/squid3/user_agent.log useragent
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora tenemos el fichero <em>user_agent.log</em>, logueando usuario y user_agent; claro
+está, podría loguear, usuario, user-agent y url, pero la linea queda muy larga.</p>
+
+<p>Una vez que hallas encontrado el user-agent que te moleste, crea una ACL
+<strong>arriba</strong> de la ACL que autorize la navegación.</p>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># por ejemplo, blqueamos zapya y se fana</span>
+</span><span class='line'>acl zapya browser ^com<span class="se">\.</span>dewmobile
+</span><span class='line'>http_access deny zapya
+</span><span class='line'>http_reply_access deny zapya
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[redimensionar lvm]]></title>
@@ -1892,7 +1942,7 @@ configuración sería más o menos así en el fichero <strong>/etc/esmtprc</stro
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Listo! El correo <a href="&#109;&#97;&#105;&#x6c;&#x74;&#111;&#x3a;&#x72;&#x6f;&#x6f;&#116;&#x40;&#x74;&#117;&#100;&#111;&#x6d;&#x69;&#110;&#x69;&#x6f;&#46;&#99;&#x75;">&#x72;&#111;&#111;&#116;&#64;&#116;&#117;&#100;&#111;&#109;&#x69;&#x6e;&#105;&#111;&#x2e;&#99;&#x75;</a> recibirá correos de <a href="&#x6d;&#x61;&#105;&#x6c;&#x74;&#x6f;&#58;&#x63;&#x72;&#x6f;&#110;&#x40;&#116;&#x75;&#x64;&#111;&#109;&#x69;&#110;&#105;&#x6f;&#x2e;&#99;&#117;">&#99;&#114;&#111;&#x6e;&#x40;&#116;&#117;&#100;&#111;&#x6d;&#x69;&#x6e;&#105;&#111;&#46;&#x63;&#x75;</a> con la
+<p>Listo! El correo <a href="&#109;&#97;&#105;&#108;&#x74;&#111;&#x3a;&#x72;&#111;&#111;&#116;&#64;&#116;&#x75;&#x64;&#111;&#x6d;&#105;&#110;&#105;&#x6f;&#46;&#99;&#x75;">&#114;&#x6f;&#x6f;&#x74;&#x40;&#x74;&#x75;&#100;&#111;&#109;&#105;&#x6e;&#105;&#x6f;&#46;&#99;&#117;</a> recibirá correos de <a href="&#x6d;&#97;&#105;&#108;&#x74;&#111;&#58;&#x63;&#114;&#111;&#x6e;&#64;&#116;&#117;&#x64;&#x6f;&#x6d;&#105;&#x6e;&#x69;&#x6f;&#x2e;&#x63;&#x75;">&#x63;&#114;&#x6f;&#x6e;&#64;&#x74;&#x75;&#x64;&#111;&#x6d;&#105;&#x6e;&#105;&#111;&#x2e;&#99;&#117;</a> con la
 salida del cron&hellip;</p>
 ]]></content>
   </entry>
@@ -2417,72 +2467,6 @@ TXT será <strong>dkim=all</strong>. A mi me quedó así:</p>
 <p>Con eso, tus correos no caerán más en la bandeja SPAM de gmail.</p>
 
 <p>Otra cosa importante, asegúrate de tener el reverse lookup de tu MX bien puesto.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[desacelerar mouse]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/06/06/desacelerar-mouse/"/>
-    <updated>2016-06-06T23:41:44-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/06/06/desacelerar-mouse</id>
-    <content type="html"><![CDATA[<p>El reducido espacio de trabajo que tengo en la casa para colocar la laptop; me
-hace sentir como si viviera en el apartamento más pequeño de Tokio. Tanto así,
-que no tengo ni donde desplazar el mouse y los cables me la ponen aún más
-difícil. Comprar una casa más grande no es una opción; sin embargo, reducir el
-mouse es más viable. Se me ocurrió adquirir un mouse inalámbrico, ya que son
-pequeñitos.</p>
-
-<p>Pero un mouse pequeño liviano, resulta que se desplaza mucho más rápido, que mi
-antiguo <em>General Electric Pixart Inc. Optical Mouse</em>. Lo que más me molesta es;
-no solo lo rápido que se desplaza, si no el <em>picor</em> que tiene en la aceleración.</p>
-
-<p>La solución: Desacelerar el mouse</p>
-
-<figure class='code'><figcaption><span>&#8220;slowmouse.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Constant Deceleration&quot;</span> 0.5
-</span><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Velocity Scaling&quot;</span> 1
-</span><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Profile&quot;</span> -1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con eso, el mouse pequeñito, se desplaza tal como lo hace el grande. Ya que el
-grande, es más pesado y por ende, se desplaza un tín mas lento.</p>
-
-<p><strong>¡¡¡Tardé bastante en quedar complacido probando números!!!</strong></p>
-
-<p>Por cierto, el <strong>10</strong> es la id del dispositivo. Puedes verlo corriendo el
-comando <strong>xinput &ndash;list &ndash;short</strong> a mi se me ve así:</p>
-
-<figure class='code'><figcaption><span>&#8220;xinput &#8211;list &#8211;short&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@samsung ~&gt; xinput --list --short
-</span><span class='line'>⎡ Virtual core pointer                      <span class="nv">id</span><span class="o">=</span>2 <span class="o">[</span>master pointer  <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>⎜   ↳ Virtual core XTEST pointer                  <span class="nv">id</span><span class="o">=</span>4 <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
-</span><span class='line'>⎜   ↳ PixArt USB Optical Mouse                    <span class="nv">id</span><span class="o">=</span>10    <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
-</span><span class='line'>⎜   ↳ ETPS/2 Elantech Touchpad                    <span class="nv">id</span><span class="o">=</span>12    <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
-</span><span class='line'>⎣ Virtual core keyboard                     <span class="nv">id</span><span class="o">=</span>3 <span class="o">[</span>master keyboard <span class="o">(</span>2<span class="o">)]</span>
-</span><span class='line'>    ↳ Virtual core XTEST keyboard               <span class="nv">id</span><span class="o">=</span>5 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>    ↳ Power Button                              <span class="nv">id</span><span class="o">=</span>6 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>    ↳ Video Bus                                 <span class="nv">id</span><span class="o">=</span>7 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>    ↳ Power Button                              <span class="nv">id</span><span class="o">=</span>8 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>    ↳ Sleep Button                              <span class="nv">id</span><span class="o">=</span>9 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
-</span><span class='line'>    ↳ AT Translated Set <span class="m">2</span> keyboard
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ve, el <em>PixArt USB Optical Mouse</em> dice que <strong>id=10</strong></p>
 ]]></content>
   </entry>
   
