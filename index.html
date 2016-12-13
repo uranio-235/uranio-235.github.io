@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="squid3 bloquear user-agent 24/11/2016 2:36 pm | Comments Recién, he tenido algunos problemas con descargadores multi-hilos que se chupan
-el ancho de &hellip;">
+  <meta name="description" content="rails en alpine 09/12/2016 8:14 pm | Comments Finalmente el boom de docker llegó a Cuba. En mi caso personal, hace rato lo uso
+para desplegar &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,7 @@ el ancho de &hellip;">
 <ul class="main-navigation">
   <li><a href="/blog/archives">Archivo</a></li>
   <li><a href="/blog/categories/rails/">Ruby on Rails</a></li>
+  <li><a href="/blog/categories/islam/">Islam</a></li>
   <li><a href="/blog/categories/destacado/">Destacado</a></li>
   <li><a href="/blog/categories/razonemos/">Razonemos</a></li>
 </ul>
@@ -81,6 +82,111 @@ el ancho de &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/12/09/rails-en-alpine/">rails en alpine</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-09T20:14:28-05:00'><span class='date'>09/12/2016</span> <span class='time'>8:14 pm</span></time>
+        
+           | <a href="/blog/2016/12/09/rails-en-alpine/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/12/09/rails-en-alpine/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="right" src="/images/shinkasen.jpg" width="400" height="500" title="" ></p>
+
+<p>Finalmente el boom de docker llegó a Cuba. En mi caso personal, hace rato lo uso
+para desplegar aplicaciones de Ruby on Rails. Siempre me pareció que debian era
+la mejor base para hacer una imagen. Si bien, hay containers de rails, eso de
+usar en producción, con una distro hecha por un cualquiera, como que me da cosa.
+Hacer una a partir de la oficial, es más sencillo que verificar la integridad de
+una ya hecha.</p>
+
+<p>AlpineLinux para docker es un batazo, eso es in-negable. Pero instalar rails en
+alpine, resultó ser más complicado de lo que yo pensaba.</p>
+
+<figure class='code'><figcaption><span>&#8220;docker y alpine&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker pull alpine
+</span><span class='line'>docker run -ti alpine /bin/sh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ante todo necesitamos instalar las librerías requeridas para compilar, sobre
+todo las dependencias de nokogiri. Instalaremos los paquetes: build-base,
+nodejs, tzdata, libxml2-dev,  libxslt-dev, sqlite-dev y claro, ruby</p>
+
+<p>En este caso, usaremos sqlite como ejemplo, pero a ti quizás te cuadre más con
+<strong>mariadb-dev</strong> (mysql) o <strong>postgresql-dev</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;apk add&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>apk update
+</span><span class='line'>apk add build-base nodejs tzdata libxml2-dev  libxslt-dev
+</span><span class='line'>apk add sqlite-dev mariadb-dev postgresql-dev
+</span><span class='line'>apk add ruby ruby-dev ca-certificates libffi libffi-dev
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como nokogiri es un caso tan peculiar, le diremos que compile usando las
+librerías del sistema, para ellos lo instalaremos aparte. Alpine <strong>no</strong> usa
+glibc, usa musl-libc y nokogiri NO compila, por tanto, hay que usar las
+librerías del sistema, en vez de las que provee nokogiri.</p>
+
+<figure class='code'><figcaption><span>&#8220;nokogiri&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>gem inst --no-document nokogiri -- --use-system-libraries
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso ya tenemos los cimientos echados. Nuestra imagen habrá crecido 200
+megas. Ahora vamos instalar rails.</p>
+
+<figure class='code'><figcaption><span>&#8220;gem&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>gem inst --no-document rails io-console
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El paso de instalar rails como gema del sistema es cuestionable para una pila de
+gente; pero ten en cuenta que es la manera de saber si rails funciona, recuerda
+que esto es un ejemplo. La primera vez me topé con que debía instalar
+<strong>io-console</strong>, ya que a pesar de ser dependencia, nadie la requería. Bueno a
+ver&hellip;</p>
+
+<figure class='code'><figcaption><span>&#8220;rails&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/ <span class="c"># rails -v</span>
+</span><span class='line'>Rails 5.0.0.1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Tengo una imagen llamada &ldquo;alpine_ruby&rdquo; en la que tengo todo lo necesario para
+instalar y no tengo la gema de rails instalada. Entonces, con cada versión de
+rails, por ejemplo, derivar de &ldquo;alpine_ruby&rdquo; la imagen alpine_rails50 , así
+cuando salga el rails 5.1 le llamaré alpine_rails51</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -109,7 +215,7 @@ el ancho de &hellip;">
   <div class="entry-content"><p><img class="right" src="/images/noiexplore.png" width="400" height="500" title="" ></p>
 
 <p>Recién, he tenido algunos problemas con descargadores multi-hilos que se chupan
-el ancho de banda y se cagan en los delay_pools, buscando como bloquear dichos
+el ancho de banda y se cagan en los delay_pools. Buscando como bloquear dichos
 descargadores, el colega Agustín Ybarra me recomienda bloquear los user_agent.</p>
 
 <p>Pero pensándolo bien, resolví unos cuantos problemas. Pues por ejemplo, google
@@ -153,7 +259,7 @@ está, podría loguear, usuario, user-agent y url, pero la linea queda muy larga
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -188,7 +294,7 @@ está, podría loguear, usuario, user-agent y url, pero la linea queda muy larga
 
 <p><strong>Yo prefiero</strong> por ejemplo, instalar un debian, acomodarle todo a mi manera y
 usar esa instalación para generar nuevas máquinas, con todo ya listo. Por
-ejemplo, un prototipod e firewall, las configuraciones de interfaz puesta con
+ejemplo, un prototipo de firewall, las configuraciones de interfaz puesta con
 dhcp, pero una configuración estática bien comentada, etc..</p>
 
 <p>Mantengo esa máquina detenida y la arranco de vez en cuando para actualizar.
@@ -223,8 +329,8 @@ experiencia</strong>).</p>
 <p>Añadir un disco al volumen lógico y aumentar su tamaño resuelve el problema.</p>
 
 <p>Claro, el sistema de archivos que instalaste, debe soportar tal operación, pero
-por suerte, ext4 lo hace perfectamente y es sin tener que desmontar el sistema
-de archivos.</p>
+por suerte, ext4 lo hace perfectamente y sin tener que desmontar el sistema de
+archivos.</p>
 
 <p>El problema es que <strong>NUNCA ME ACUERDO</strong> de los comandos para redimensionar el
 volumen lógico.</p>
@@ -274,7 +380,7 @@ no sea que hallas metido la delicada.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -426,7 +532,7 @@ quieras hacer específica para ese servidor. Se mostrará si existe el fichero.<
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -855,77 +961,7 @@ destinatario en un encabezado &ldquo;Envelope-To&rdquo;</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/10/22/domainpop-con-postfix/">domainpop con postfix</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-10-22T17:35:46-04:00'><span class='date'>22/10/2016</span> <span class='time'>5:35 pm</span></time>
-        
-           | <a href="/blog/2016/10/22/domainpop-con-postfix/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/10/22/domainpop-con-postfix/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Otra importante entrada que decidí migrar de <a href="http://otherlinuxblog.blogspot.com">puheroska</a></p>
-
-<p>Es tan sencillo como crear un dominio virtual y asignarle usuarios reales. Para
-no volverte loco pon el nombre del usaurio igual que el del dominoio.</p>
-
-<p>Por ejemplo, crea dos usuarios, uno llamado <em>subdom</em> y un segndo llamado <em>otro</em>.
-Luego crea el fichero /etc/postfix/virtual y ponle esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/postfix/virtual&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>@subdom.tudomionio.cu   subdom
-</span><span class='line'>@otro.tudominio.cu      otro
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>postmap</strong> que tú conoces y <strong>postfix reload</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;postmap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>postmap /etc/postfix/virtual
-</span><span class='line'>postfix reload
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ya hemos declarado que <em>subdom</em> y <em>otro</em>, serán usuarios y que todo lo que se envíe
-a los dominios virtuales @otro.tudominio.cu será almacenado en /var/mail/otro</p>
-
-<p>Finalmente en el /etc/main.cf pones:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/postfix/main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">virtual_alias_domains</span> <span class="o">=</span> subdom.tudominio.cu otro.tudominio.cu
-</span><span class='line'><span class="nv">virtual_alias_maps</span> <span class="o">=</span> <span class="nb">hash</span>:/etc/postfix/virtual
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>OJO no olvides que en <strong>mydestination</strong> y debes incluir ambos dominios virtuales.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -944,6 +980,10 @@ a los dominios virtuales @otro.tudominio.cu será almacenado en /var/mail/otro</
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/12/09/rails-en-alpine/">rails en alpine</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/11/24/squid3-bloquear-user-agent/">squid3 bloquear user-agent</a>
@@ -1150,6 +1190,10 @@ a los dominios virtuales @otro.tudominio.cu será almacenado en /var/mail/otro</
 		</li>
 		
 		<li class="post">
+			<a href="/blog/2015/07/24/transliteracion-del-coran/">transliteración del corán</a>
+		</li>
+		
+		<li class="post">
 			<a href="/blog/2015/07/19/will-paginate/">will_paginate</a>
 		</li>
 		
@@ -1171,6 +1215,10 @@ a los dominios virtuales @otro.tudominio.cu será almacenado en /var/mail/otro</
 		
 		<li class="post">
 			<a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
 		</li>
 		
 		<li class="post">

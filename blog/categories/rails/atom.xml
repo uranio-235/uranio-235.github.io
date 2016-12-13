@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-11-24T15:08:45-05:00</updated>
+  <updated>2016-12-13T13:11:58-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,71 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[rails en alpine]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/12/09/rails-en-alpine/"/>
+    <updated>2016-12-09T20:14:28-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/12/09/rails-en-alpine</id>
+    <content type="html"><![CDATA[<p><img class="right" src="/images/shinkasen.jpg" width="400" height="500" title="" ></p>
+
+<p>Finalmente el boom de docker llegó a Cuba. En mi caso personal, hace rato lo uso
+para desplegar aplicaciones de Ruby on Rails. Siempre me pareció que debian era
+la mejor base para hacer una imagen. Si bien, hay containers de rails, eso de
+usar en producción, con una distro hecha por un cualquiera, como que me da cosa.
+Hacer una a partir de la oficial, es más sencillo que verificar la integridad de
+una ya hecha.</p>
+
+<p>AlpineLinux para docker es un batazo, eso es in-negable. Pero instalar rails en
+alpine, resultó ser más complicado de lo que yo pensaba.</p>
+
+<pre><code class="bash "docker y alpine"">docker pull alpine
+docker run -ti alpine /bin/sh
+</code></pre>
+
+<p>Ante todo necesitamos instalar las librerías requeridas para compilar, sobre
+todo las dependencias de nokogiri. Instalaremos los paquetes: build-base,
+nodejs, tzdata, libxml2-dev,  libxslt-dev, sqlite-dev y claro, ruby</p>
+
+<p>En este caso, usaremos sqlite como ejemplo, pero a ti quizás te cuadre más con
+<strong>mariadb-dev</strong> (mysql) o <strong>postgresql-dev</strong></p>
+
+<pre><code class="bash "apk add"">apk update
+apk add build-base nodejs tzdata libxml2-dev  libxslt-dev
+apk add sqlite-dev mariadb-dev postgresql-dev
+apk add ruby ruby-dev ca-certificates libffi libffi-dev
+</code></pre>
+
+<p>Como nokogiri es un caso tan peculiar, le diremos que compile usando las
+librerías del sistema, para ellos lo instalaremos aparte. Alpine <strong>no</strong> usa
+glibc, usa musl-libc y nokogiri NO compila, por tanto, hay que usar las
+librerías del sistema, en vez de las que provee nokogiri.</p>
+
+<pre><code class="bash "nokogiri"">gem inst --no-document nokogiri -- --use-system-libraries
+</code></pre>
+
+<p>Con eso ya tenemos los cimientos echados. Nuestra imagen habrá crecido 200
+megas. Ahora vamos instalar rails.</p>
+
+<pre><code class="bash "gem"">gem inst --no-document rails io-console
+</code></pre>
+
+<p>El paso de instalar rails como gema del sistema es cuestionable para una pila de
+gente; pero ten en cuenta que es la manera de saber si rails funciona, recuerda
+que esto es un ejemplo. La primera vez me topé con que debía instalar
+<strong>io-console</strong>, ya que a pesar de ser dependencia, nadie la requería. Bueno a
+ver&hellip;</p>
+
+<pre><code class="bash "rails"">/ # rails -v
+Rails 5.0.0.1
+</code></pre>
+
+<p>Tengo una imagen llamada &ldquo;alpine_ruby&rdquo; en la que tengo todo lo necesario para
+instalar y no tengo la gema de rails instalada. Entonces, con cada versión de
+rails, por ejemplo, derivar de &ldquo;alpine_ruby&rdquo; la imagen alpine_rails50 , así
+cuando salga el rails 5.1 le llamaré alpine_rails51</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[data confirm en un boton]]></title>
@@ -360,64 +425,6 @@ documentación de la API (que es casi lo mismo).</p>
 <p>Si buscas en la misma ruta, pero con <em>model</em> donde dice <em>support</em> verás el YAML
 que utiliza ActiveRecord para generar los errores de validación. Ahí puedes
 ponerlos a tu manera. Osea, el contenido de ese YAML se lo adicionas al tuyo.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[añadir verbo a un scaffold]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/07/05/anadir-verbo-a-un-scaffold/"/>
-    <updated>2015-07-05T21:35:54-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/07/05/anadir-verbo-a-un-scaffold</id>
-    <content type="html"><![CDATA[<p>Cualquiera que sepa como usar debidamente los scaffolds, o sea, cualquiera que
-sepa como hacerle la paja a ruby on rails para que haga lo que queremos; seguro
-habrá intentado en algún momento, añadir un nuevo método a un scaffold. Además,
-de seguro quisiste luego poder llamarlo con los métodos &ldquo;metodo_user_path&rdquo; y que
-la ruta se cree de manera automática.</p>
-
-<p>Por ejemplo, en este caso, tengo el scaffold <strong>user</strong> y le agregué el método
-<strong>cambiar</strong> aparte de los clásicos PUT y DELETE.</p>
-
-<pre><code class="ruby "scope de users_controller.rb"">
-  # cambia el estado de habilitación del usuarios
-  def cambiar
-     @user.enabled=!@user.enabled
-     @user.save
-     redirect_to :back
-  end
-
-  # GET /users
-  def index
-    @users = User.all
-  end
-</code></pre>
-
-<p>Pero el método cambiar no aparece en rails hasta que no hagas lo siguiente en el
-fichero de las rutas.</p>
-
-<pre><code class="ruby "config/routes.rb"">
-   # el scaffold de los usuarios
-   resources :users do
-
-      # agregamos el verbo cambiar usado para
-      # @user.enabled=!@user.enabled
-      # para que exista: cambiar_user_path
-      member do 
-         get 'cambiar'
-      end
-
-   end
-</code></pre>
-
-<p>Ahora existirá el método <strong>cambiar_user_path</strong> que toma como argumento el
-usuario.</p>
-
-<p>   cambiar_user_path(user)</p>
-
-<p>De esta manera, se le manda el objeto usuario y genera una URL como</p>
-
-<p>   /users/345/cambiar</p>
-
-<p>Dicha ruta macheará el método User#cambiar</p>
 ]]></content>
   </entry>
   

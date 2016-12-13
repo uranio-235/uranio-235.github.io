@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://uranio-235.github.io/blog/2016/12/09/rails-en-alpine/</loc>
+<lastmod>2016-12-09T20:14:28-05:00</lastmod>
+</url>
+<url>
 <loc>http://uranio-235.github.io/blog/2016/11/24/squid3-bloquear-user-agent/</loc>
 <lastmod>2016-11-24T14:36:13-05:00</lastmod>
 </url>
@@ -205,6 +209,10 @@
 <lastmod>2015-08-28T12:21:58-04:00</lastmod>
 </url>
 <url>
+<loc>http://uranio-235.github.io/blog/2015/07/24/transliteracion-del-coran/</loc>
+<lastmod>2015-07-24T23:31:12-04:00</lastmod>
+</url>
+<url>
 <loc>http://uranio-235.github.io/blog/2015/07/19/will-paginate/</loc>
 <lastmod>2015-07-19T14:58:30-04:00</lastmod>
 </url>
@@ -227,6 +235,10 @@
 <url>
 <loc>http://uranio-235.github.io/blog/2015/06/30/bootstrap-en-rails-4/</loc>
 <lastmod>2015-06-30T12:19:42-04:00</lastmod>
+</url>
+<url>
+<loc>http://uranio-235.github.io/blog/2015/06/21/se-dice-dios-no-ala/</loc>
+<lastmod>2015-06-21T22:27:03-04:00</lastmod>
 </url>
 <url>
 <loc>http://uranio-235.github.io/blog/2015/06/14/revocar-certificados-de-ovpn/</loc>
@@ -366,6 +378,9 @@
 </url>
 <url>
 <loc>http://uranio-235.github.io/blog/categories/rails/</loc>
+</url>
+<url>
+<loc>http://uranio-235.github.io/blog/categories/islam/</loc>
 </url>
 <url>
 <loc>http://uranio-235.github.io/doc/Available%20lexers%20%E2%80%94%20Pygments.htm</loc>

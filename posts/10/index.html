@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="añadir verbo a un scaffold 05/07/2015 9:35 pm | Comments Cualquiera que sepa como usar debidamente los scaffolds, o sea, cualquiera que
-sepa como &hellip;">
+  <meta name="description" content="date_select en español 12/07/2015 3:14 pm | Comments Algunos componentes de Ruby on Rails, se pueden usar
+de manera independiente, como es el caso &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,7 @@ sepa como &hellip;">
 <ul class="main-navigation">
   <li><a href="/blog/archives">Archivo</a></li>
   <li><a href="/blog/categories/rails/">Ruby on Rails</a></li>
+  <li><a href="/blog/categories/islam/">Islam</a></li>
   <li><a href="/blog/categories/destacado/">Destacado</a></li>
   <li><a href="/blog/categories/razonemos/">Razonemos</a></li>
 </ul>
@@ -81,6 +82,342 @@ sepa como &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/12/date-select-en-espanol/">date_select en español</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-07-12T15:14:12-04:00'><span class='date'>12/07/2015</span> <span class='time'>3:14 pm</span></time>
+        
+           | <a href="/blog/2015/07/12/date-select-en-espanol/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/07/12/date-select-en-espanol/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Algunos componentes de <a href="http://rubyonrails.org/">Ruby on Rails</a>, se pueden usar
+de manera independiente, como es el caso de
+<a href="https://github.com/rails/rails/tree/master/activerecord">active_record</a> (sin
+dudas es el más potente). Pero otro que no se queda atrás, es active_support.
+Lleno de sorpresas y de joyas poco documentadas.</p>
+
+<p>Para el que no lo conozca, en ruby on rails, hay un método muy cómodo que genera
+un <a href="https://www.w3.org/wiki/HTML/Elements/select"><strong>select</strong></a> cuyas <em>option</em> son nada menos que la fecha. Los usuarios
+mononeuronales, encuentran más cómodo introducir una fecha así, que con un
+datepicker.</p>
+
+<p>El método <a href="http://apidock.com/rails/ActionView/Helpers/DateHelper/select_date"><strong>select_date</strong></a> genera una cosa similar a esta:</p>
+
+<p><select id="caudocidad_day" name="caudocidad[day]">
+<option value="12" selected="selected">12</option>
+</select>
+<select id="caudocidad_month" name="caudocidad[month]">
+<option value="8" selected="selected">Agosto</option>
+</select>
+<select id="caudocidad_year" name="caudocidad[year]">
+<option value="2015" selected="selected">2015</option>
+</select></p>
+
+<p>Pero con todos los meses y sus días claro. Ahí soló te puse un pedazito. Para
+generar esto, se supone que solo necesites poner algo como:</p>
+
+<figure class='code'><figcaption><span>&#8220;select_date&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="cp">&lt;%=</span> <span class="n">select_date</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="p">,</span> <span class="ss">prefix</span><span class="p">:</span> <span class="ss">:caudocidad</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Luego en el controlador, generas la fecha, procesando el dato. Hay mil y una
+forma de hacerlo. Más mágica y menos mágica, yo lo hago de una manera bien
+rudimentaria:</p>
+
+<figure class='code'><figcaption><span>&#8220;Time.mktime en el controller&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@cuando</span><span class="o">=</span><span class="no">Time</span><span class="o">.</span><span class="n">mktime</span> <span class="n">params</span><span class="o">[</span><span class="ss">:caudocidad</span><span class="o">][</span><span class="ss">:year</span><span class="o">]</span><span class="p">,</span><span class="n">params</span><span class="o">[</span><span class="ss">:caudocidad</span><span class="o">][</span><span class="ss">:month</span><span class="o">]</span><span class="p">,</span><span class="n">params</span><span class="o">[</span><span class="ss">:caudocidad</span><span class="o">][</span><span class="ss">:day</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como vez, a <strong>prefix:</strong> se le mandó un símbolo, que pasó a ser el valor del HTML
+generado, <strong>name=&ldquo;caudocidad&rdquo;</strong>. En mi caso, se llama &ldquo;cadocidad&rdquo; usted le pone
+como le de la gana. Sería :prefix=>&lsquo;nombre_que_quieras&rsquo; o prefix: &lsquo;nombre&rsquo; en su
+versión corta.</p>
+
+<p>En el controlador, <strong>params[:caudocidad]</strong>, contiene un Hash, donde las claves
+<strong>:year</strong>, <strong>:month</strong> y <strong>:day</strong> tendrán los valores numéricos listos para ser
+procesados.</p>
+
+<figure class='code'><figcaption><span>params[:caudocidad]</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">{</span><span class="ss">:year</span><span class="o">=&gt;</span><span class="mi">2015</span><span class="p">,</span> <span class="ss">:month</span><span class="o">=&gt;</span><span class="mi">8</span><span class="p">,</span> <span class="ss">:day</span><span class="o">=&gt;</span><span class="mi">12</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Todo eso está muy bonito, pero lo jodido del caso, es que los meses vienen en
+inglés.</p>
+
+<p>Llevarlo a español, requiere estar un poco familiarizado con el
+<a href="http://guides.rubyonrails.org/i18n.html">i18n</a> de Ruby on rails.</p>
+
+<p>Para el que no lo conozca, el i18n, es un sistema que nos permite crear
+aplicaciones en múltiples idiomas. De forma tal que nuestra aplicación le hable
+al navegador en el idioma que este soporta. Lo malo del caso es que no lo hace
+solo. Serás tu quien deba indicarle cuando usar que idioma. Una buena manera de
+hacer eso, es parseando el encabezado &ldquo;content-&rdquo; para ver que idioma soporta el
+navegador. Métodos hay miles, pero no se porque rails no lo hace solo.</p>
+
+<p>Si nuestra aplicación fuera canadiense, le diría que cree un fichero para cada
+idioma. Pero como nuestra aplicación es Cubana, con ponerlo todo en el
+<strong>en.yml</strong> resolvemos el problema.</p>
+
+<p>Al principio me fajaba con el <strong>en.yml</strong> y trataba de ponerle cosas, pero luego
+descubrí que hay una especie de esqueleto en la gema de active_support.</p>
+
+<p>En vez de escribir un en.yml desde cero, podemos usar el que está en
+active_support. Ejecuta este comando:</p>
+
+<figure class='code'><figcaption><span>&#8220;buscando el en.yml&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> gem  cont activesupport<span class="p">|</span>grep en.yml
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Copia dicho fichero a tu <strong>config/locales/en.yml</strong> y comencemos a editarlo.</p>
+
+<p>En la linea 30 y pico. Hay una cláusula llamada <strong>month_names</strong>, ahí le pones
+los meses. A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;month_names, cerca de la linea 30&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>    <span class="c1"># Don&#39;t forget the nil at the beginning; there&#39;s no such thing as a 0th month</span>
+</span><span class='line'>    <span class="ss">month_names</span><span class="p">:</span> <span class="o">[~</span><span class="p">,</span> <span class="no">Enero</span><span class="p">,</span> <span class="no">Febrero</span><span class="p">,</span> <span class="no">Marzo</span><span class="p">,</span> <span class="no">Abril</span><span class="p">,</span> <span class="no">Mayo</span><span class="p">,</span> <span class="no">Junio</span><span class="p">,</span> <span class="no">Julio</span><span class="p">,</span> <span class="no">Agosto</span><span class="p">,</span> <span class="no">Septiembre</span><span class="p">,</span> <span class="no">Octubre</span><span class="p">,</span> <span class="no">Novimebre</span><span class="p">,</span> <span class="no">Diciembre</span><span class="o">]</span>
+</span><span class='line'>    <span class="ss">abbr_month_names</span><span class="p">:</span> <span class="o">[~</span><span class="p">,</span> <span class="no">Ene</span><span class="p">,</span> <span class="no">Feb</span><span class="p">,</span> <span class="no">Mar</span><span class="p">,</span> <span class="no">Abr</span><span class="p">,</span> <span class="no">May</span><span class="p">,</span> <span class="no">Jun</span><span class="p">,</span> <span class="no">Jul</span><span class="p">,</span> <span class="no">Aug</span><span class="p">,</span> <span class="no">Sep</span><span class="p">,</span> <span class="no">Oct</span><span class="p">,</span> <span class="no">Nov</span><span class="p">,</span> <span class="no">Dec</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Además, más abajo, por la linea 40, tienes el orden en el que se muestra la
+fecha.</p>
+
+<figure class='code'><figcaption><span>&#8220;order: bajo la linea 40&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Used in date_select and datetime_select.</span>
+</span><span class='line'><span class="ss">order</span><span class="p">:</span>
+</span><span class='line'>  <span class="o">-</span> <span class="n">day</span>
+</span><span class='line'>  <span class="o">-</span> <span class="n">month</span>
+</span><span class='line'>  <span class="o">-</span> <span class="n">year</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A mi me quedó así, porque los yumas ponen el mes delante y el día detrás.</p>
+
+<p>Si miras más abajo, verás que tiene incluso la moneda (currency) y los
+separadores, por ejemplo, usar coma en vez de punto para separar los decimales.
+También están los numerales (millones, millares, centenas, etc&hellip;)</p>
+
+<p>Hay un método muy curioso que yo uso mucho. Convierte un array en una oración
+delimitada por coma; pero pone una conjunción &ldquo;y&rdquo; en el último elemento.</p>
+
+<figure class='code'><figcaption><span>&#8216;to_sentence&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="ss">:&gt;</span> <span class="sx">%w[perros gatos]</span><span class="o">.</span><span class="n">to_sentence</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;perros y gatos&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="ss">:&gt;</span> <span class="sx">%w[papas malangas calabazas]</span><span class="o">.</span><span class="n">to_sentence</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;papas, malangas y calabazas&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El separador se configura ahí también. Por defecto dice &ldquo;<strong>and</strong>&rdquo; en vez de &ldquo;<strong>y</strong>&rdquo;</p>
+
+<p>Conclusión:</p>
+
+<p>La instrumentación de active_support (ese nombre tan suigeneris se lo pusieron
+ellos) es bastante rica. Deberían verla bien de cerca. La guia es bastante
+escueta; te recomiendo que mires un poco el código fuente de active_support o la
+documentación de la API (que es casi lo mismo).</p>
+
+<p>Si buscas en la misma ruta, pero con <em>model</em> donde dice <em>support</em> verás el YAML
+que utiliza ActiveRecord para generar los errores de validación. Ahí puedes
+ponerlos a tu manera. Osea, el contenido de ese YAML se lo adicionas al tuyo.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/11/openvas-en-archlinux/">OpenVAS en Archlinux</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-07-11T19:19:59-04:00'><span class='date'>11/07/2015</span> <span class='time'>7:19 pm</span></time>
+        
+           | <a href="/blog/2015/07/11/openvas-en-archlinux/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/07/11/openvas-en-archlinux/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="left" src="/images/greenbone.png" title="Login del Greenbone" alt="Login del Greenbone"></p>
+
+<p>Recientemente, un &ldquo;Webmaster&rdquo; usó en uno de los servidores que patrocino; un
+escaner de vulnerabilidades. El administrador de red del lugar, le dio acceso al
+servidor; claro está. El informe reveló un cartapaso de vulnerabilidades. Por
+ejemplo, la ausencia de una partición swap; podría dar lugar a un kernel-panic
+por falta de memoria RAM; en un servidor de correo con 4 Gigas de RAM. Además,
+advertía que la versión de bash (con sus parches puestos) era muy vieja y
+recomendaba usar una reciente. Como si instalar software reciente en debian
+fuese jamón.</p>
+
+<p>No vi nada con respecto a postfix o dovecot pero de inmediato me llamaron para
+que explicara como era posible que mi servidor tuviera semejantes
+vulnerabilidades. Claro, con acceso a root cualquiera busca vulnerabilidades.</p>
+
+<p>Soy de los que pasa HORAS, intentando penetrar mi propia seguridad; pero el caso
+llevaba un contra ataque más elaborado.</p>
+
+<p>El sosftware por excelencia para probar la seguridad: <a href="http://es.wikipedia.org/wiki/OpenVAS">OpenVAS</a></p>
+
+<h3>No solo identifica el problema, también te dice como arreglarlo.</h3>
+
+<p>Funciona de manera similar a un antivirus. Una base de datos se actualiza y ala
+las vulnerabilidades conocidas. Luego, una interfaz web, de lo más cómoda;
+permite llevar a cabo un análisis tanto ligero como exhaustivo del sistema
+seleccionado como objetivo. Además, se pueden programar análisis de manera
+automatizada.</p>
+
+<p>Su interfaz web, el llamado &ldquo;Greenbone Security Assistant&rdquo;, nos hará la vida muy
+fácil una vez instalado.</p>
+
+<p>En archlinux todo es un rollo, así que empezemos:</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando openvas&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S openvas
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La interfaz web de openvas (el greenbone) debe ser contactada por SSL (obligao).
+Como siempre, crear los certificados es todo una ceremonia.</p>
+
+<figure class='code'><figcaption><span>&#8220;creando certificados&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvas-mkcert
+</span><span class='line'>openvas-mkcert-client -n -i
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora lo más importante. Descargarnos la base de datos con las amenazas, o sea,
+con las vulnerabilidades.</p>
+
+<figure class='code'><figcaption><span>&#8220;actualizando las bases&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvas-nvt-sync
+</span><span class='line'>openvas-scapdata-sync
+</span><span class='line'>openvas-certdata-sync
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El escaner, es un servicio, que en producción, está supuestamente corriendo y
+realizando escaneos bajo demanda. Lo echamos a andar:</p>
+
+<figure class='code'><figcaption><span>&#8220;el servicio&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl start openvas-scanner
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Una vez que tenemos las bases de datos descargadas, las instalamos en openvas</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando las bases&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvasmd --rebuild --progress
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y hasta aquí es donde la wiki de arch está bien. Pues para crear el usuario de
+openvas y echar a andar el greenbone, se forma la moña.</p>
+
+<p>Primero debemos crear el usuario de openvas. En este caso de ejemplo, el
+usuario será <strong>admin</strong> con password <strong>admin</strong>.</p>
+
+<figure class='code'><figcaption><span>&#8220;creando usuarios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvasmd --create-user<span class="o">=</span>admin --role<span class="o">=</span>Admin
+</span><span class='line'>openvasmd --user<span class="o">=</span>admin --new-password<span class="o">=</span>admin
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por último, echamos a andar la interfaz web:</p>
+
+<figure class='code'><figcaption><span>&#8220;iniciando gsad&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>gsad --http-only --listen<span class="o">=</span>127.0.0.1 -p 9392
+</span><span class='line'>openvasmd -p <span class="m">9390</span> -a 127.0.0.1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Abre un navegador y apunta para <a href="http://127.0.0.1:9392">http://127.0.0.1:9392</a></p>
+
+<p>Una vez dentro, verás la página donde se almacenan los escaneos. Ahí localiza un
+botón morado con una barita mágica. Vea la imagen de abajo</p>
+
+<p><img class="center" src="/images/openvas_wiz.png" title="Botón del Wizard" alt="Botón del Wizard"></p>
+
+<p>En la pantalla que le sigue, especificamos el host al que queremos escanear.</p>
+
+<p><img class="center" src="/images/openvas_scan.png" title="Seleccionar Objetivo" alt="Seleccionar objetivo"></p>
+
+<p>Apto seguido, comenzará el escaneo. Es posible que el servidor deje de prestar
+servicios; pues openvas le da con todo.</p>
+
+<p>Finalmente, cuando el escaneo esté terminado, en vez de un tanto por ciento,
+verás; como en la primera imagen, un letrero que dice &ldquo;<strong>done</strong>&rdquo; sobre la barra
+azul.</p>
+
+<p><img class="center" src="/images/openvas_result.png" title="resultado del escaneo" alt="resultado de escaneo"></p>
+
+<p>La imagen muestra, el resultado del webmaster que le tiró piedras al tejado del
+vecino con el suyo de vidrio. Al hacer click en la vulnerabilidad, nos muestra
+la solución, como es el ejemplo de esta:</p>
+
+<p><img class="center" src="/images/openvas_sol.png" title="solución" alt="solución"></p>
+
+<p>Hermosa pareja; el problema y la solución junticos&hellip;</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -183,7 +520,7 @@ usuario.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -259,7 +596,7 @@ enlaces a las assets.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -455,7 +792,7 @@ declarando los componentes en los controladores.</p>
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2015/06/14/revocar-certificados-de-ovpn/">revocar certificados de OVPN</a></h1>
+      <h1 class="entry-title"><a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a></h1>
     
     
       <p class="meta">
@@ -464,712 +801,63 @@ declarando los componentes en los controladores.</p>
 
 
 
-<time class='entry-date' datetime='2015-06-14T18:36:49-04:00'><span class='date'>14/06/2015</span> <span class='time'>6:36 pm</span></time>
+<time class='entry-date' datetime='2015-06-21T22:27:03-04:00'><span class='date'>21/06/2015</span> <span class='time'>10:27 pm</span></time>
         
-           | <a href="/blog/2015/06/14/revocar-certificados-de-ovpn/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/14/revocar-certificados-de-ovpn/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Acá en mi tierra, SSL es algo relativamente novedoso. Hasta el otro día, las
-conexiones cifradas eran la peste; pero ahora resulta que el SSL es
-prácticamente obligatorio.</p>
-
-<p>En el episodio anterior, hablábamos sobre OpenVPN. Mencionamos que la
-autenticación podría hacerse a nivel de certificados.</p>
-
-<p>Algunos retrógrados preferirían hacerlo con nombre de usuario y contraseña, pero
-realmente emitir un certificado para cada cliente, es un método más seguro y
-simple.</p>
-
-<p>El objetivo es deshacernos de un cliente</p>
-
-<p>En el ejemplo anterior teníamos a &ldquo;cliente1&rdquo;. Por N motivo, no queremos que
-cliente1 se conecte más. El que no sepa lo que es la CRL (Certificate Revocation
-List) me imagino que acabará poniendo disímiles direcciones ip en el cortafuegos.</p>
-
-<p>Primero, revocamos el certificado que le dimos al cliente.</p>
-
-<figure class='code'><figcaption><span>&#8220;revocando certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/openvpn/easy-rsa
-</span><span class='line'><span class="nb">source</span> ./vars
-</span><span class='line'>./revoke-full cliente1
-</span><span class='line'>Using configuration from /etc/openvpn/easy-rsa/openssl-1.0.0.cnf
-</span><span class='line'>Revoking Certificate 02.
-</span><span class='line'>Data Base Updated
-</span><span class='line'>Using configuration from /etc/openvpn/easy-rsa/openssl-1.0.0.cnf
-</span><span class='line'>cliente1.crt: <span class="nv">C</span> <span class="o">=</span> CU, <span class="nv">ST</span> <span class="o">=</span> HAV, <span class="nv">L</span> <span class="o">=</span> Plaza, <span class="nv">O</span> <span class="o">=</span> DOMINIO, <span class="nv">OU</span> <span class="o">=</span> DOMINIO, <span class="nv">CN</span> <span class="o">=</span>
-</span><span class='line'>cliente1, <span class="nv">name</span> <span class="o">=</span> RSA, <span class="nv">emailAddress</span> <span class="o">=</span> vpn@dominio.cu
-</span><span class='line'>error <span class="m">23</span> at <span class="m">0</span> depth lookup:certificate revoked
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ve en la última linea, dice que se ha cometido un error 23, porque no se
-pudo ver la firma. EL certificado ha sido revocado.</p>
-
-<p>Ahora debemos instruir al servidor de que el fichero <strong>keys/crl.pem</strong> contiene
-la lista de certificados revocados. A la configuración del servidor, le
-agregamos la cláusula <strong>crl-verify</strong> y como argumento le damos la ruta absoluta
-al crl.pem</p>
-
-<figure class='code'><figcaption><span>&#8220;crl.pem&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;crl-verify crl.pem&#39;</span> &gt;&gt; /etc/openvpn/servidor.conf
-</span><span class='line'>ln -s /etc/openvpn/easy-rsa/keys/crl.pem
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>No se puede especificar una ruta completa porque no pincha, no me preguntes por
-que. El crl.pem debe estar en el mismo directorio que el fichero de
-configuración del servidor.</p>
-
-<p><strong>OJO</strong> No olvide reinciar el servidor!</p>
-
-<p>Probemos como le va a un cliente con su certificado revocado.</p>
-
-<figure class='code'><figcaption><span>&#8220;cliente1 embarcao&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@rasp openvpn<span class="o">]</span><span class="c"># openvpn --config cliente1.conf </span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> OpenVPN 2.3.6 i686-pc-linux-gnu <span class="o">[</span>SSL <span class="o">(</span>OpenSSL<span class="o">)]</span> <span class="o">[</span>LZO<span class="o">]</span> <span class="o">[</span>EPOLL<span class="o">]</span> <span class="o">[</span>MH<span class="o">]</span> <span class="o">[</span>IPv6<span class="o">]</span> built on Dec  <span class="m">2</span> 2014
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> library versions: OpenSSL 1.0.2a <span class="m">19</span> Mar 2015, LZO 2.09
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> WARNING: No server certificate verification method has been enabled.  See http://openvpn.net/howto.html#mitm <span class="k">for</span> more info.
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> Attempting to establish TCP connection with <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443 <span class="o">[</span>nonblock<span class="o">]</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCP connection established with <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCPv4_CLIENT link <span class="nb">local</span>: <span class="o">[</span>undef<span class="o">]</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCPv4_CLIENT link remote: <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> VERIFY OK: <span class="nv">depth</span><span class="o">=</span>1, <span class="nv">C</span><span class="o">=</span>CU, <span class="nv">ST</span><span class="o">=</span>HAV, <span class="nv">L</span><span class="o">=</span>Plaza, <span class="nv">O</span><span class="o">=</span>DOMINIO, <span class="nv">OU</span><span class="o">=</span>DOMINIO, <span class="nv">CN</span><span class="o">=</span>DOMINIO CA, <span class="nv">name</span><span class="o">=</span>RSA, <span class="nv">emailAddress</span><span class="o">=</span>vpn@dominio.cu
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> VERIFY OK: <span class="nv">depth</span><span class="o">=</span>0, <span class="nv">C</span><span class="o">=</span>CU, <span class="nv">ST</span><span class="o">=</span>HAV, <span class="nv">L</span><span class="o">=</span>Plaza, <span class="nv">O</span><span class="o">=</span>DOMINIO, <span class="nv">OU</span><span class="o">=</span>dominio, <span class="nv">CN</span><span class="o">=</span>vpn.dominio.cu, <span class="nv">name</span><span class="o">=</span>RSA, <span class="nv">emailAddress</span><span class="o">=</span>vpn@dominio.cu
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> write TCPv4_CLIENT: Broken pipe <span class="o">(</span><span class="nv">code</span><span class="o">=</span>32<span class="o">)</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> write TCPv4_CLIENT: Broken pipe <span class="o">(</span><span class="nv">code</span><span class="o">=</span>32<span class="o">)</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> Connection reset, restarting <span class="o">[</span>0<span class="o">]</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> SIGUSR1<span class="o">[</span>soft,connection-reset<span class="o">]</span> received, process restarting
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ve, el servidor &ldquo;le cuelga&rdquo; y le deja hablando. Porque el certificado que
-el cliente está mandándole, no le cuadra.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/12/systemd-automount/">systemd automount</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-12T12:18:10-04:00'><span class='date'>12/06/2015</span> <span class='time'>12:18 pm</span></time>
-        
-           | <a href="/blog/2015/06/12/systemd-automount/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/12/systemd-automount/">Comments</a>
+           | <a href="/blog/2015/06/21/se-dice-dios-no-ala/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/21/se-dice-dios-no-ala/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>Resulta que el todopoderoso <a href="https://wiki.archlinux.org/index.php/Systemd">systemd</a>
-tiene un soporte para automontar discos.</p>
+  <div class="entry-content"><p><img class="right" src="/images/ala.png" width="300" height="400" title="" ></p>
 
-<p>Aún sigo pensando que nadie inventa un software para auto<strong>des</strong>montar discos.
-No le veo sentido a que algo se monte automáticamente si luego hay que
-desmontarlo de manera manual. Ese <strong>autofs</strong> que te motaba las memorias al
-pararte sobre el punto de montaje y luego te las desmontaba al rato de estar sin
-usa, que tiempo aquellos. Puedo bueno, systemd-automount trata de hacer algo
-similar y casi lo logra.</p>
+<p>Aunque el islam es algo poco común en cuba, cada día en el mundo, va tomando más
+fuerza. Nunca falta un curioso que se cree culto y te dice.</p>
 
-<p>Pero como te decía, el automount&hellip;</p>
+<p>&ldquo;yo creo en dios, no en alá&rdquo;.</p>
 
-<p>Si en el fstab usas la opción <strong>x-systemd.automount</strong>, las unidades reflejadas
-en el fstab se montarán de manera automática cuando se haga contacto con el
-punto de montaje y el dispositivo esté presente.</p>
+<p>Sin darse cuenta el disparate que están diciendo.</p>
 
-<figure class='code'><figcaption><span>&#8220;fstab&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/dev/sdb1   /mnt/sdb1  auto  rw,users,x-systemd.automount,noauto  <span class="m">0</span>  0
-</span></code></pre></td></tr></table></div></figure>
+<p>   <blockquote><p>Alá es la hispanización de la palabra árabe Al-lāh (الله), que en español significa <strong>Dios</strong>.</p><footer><strong>Wikipedia</strong></footer></blockquote></p>
 
+<p>De hecho, los cristianos árabes (que hay) llaman a dios Alá, porque repito,
+<strong>significa dios LITERALMENTE</strong></p>
 
-<p>Al posarte en un directorio que sea punto de montaje, este se montará de manera
-automática. Si quieres que quede escopetón de verdad, usa estas opciones:</p>
+<p>Claro, como en todas las religiones, siempre hay extremistas y aquí los hay, que
+andan por la habana, disfrazados de árabes y dicen Alá en vez de dios.</p>
 
-<figure class='code'><figcaption><span>&#8220;opciones&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>nofail,x-systemd.automount,x-systemd.device-timeout<span class="o">=</span>2s,sync,rw,user,noauto
-</span></code></pre></td></tr></table></div></figure>
+<p>Por otra parte, el <a href="https://es.wikipedia.org/wiki/Lengua_lit%C3%BArgica">idioma litúrgico</a>
+del islam es el árabe, razón por la cual el término suena más o menos como <em>al
+laaj</em> y mucha gente lo agarra por el mango.</p>
 
+<p>Existen dos grandes traducciones del corán al español, la Julio Cortés y la Isa
+García. La primera, en mi opinión, es bastante mala; comparada con la segunda,
+que es más completa, ya que incluye una interpretación contextual [entre
+corchetes] de las oraciones más complejas. Esto nos da la medida que la
+traducción es más fiel. En esta traducción, se usa el término Dios en lugar de
+Alá (casi siempre con inicial mayúscula).</p>
 
-<p>Así, no se monta desde el arranque (y no cuelga el arranque) y si el dispositivo
-tarde 2 segundos en cargarse se rinde; esto es muy bueno para las memorias que
-dan palo o para unidades de red que podrían estar no disponibles en el momento
-que se le solicitan.</p>
+<p>Por esta razón, mucha gente hablando en español dice &ldquo;alá&rdquo;. Y yo pregunto:</p>
 
-<p>Lo único bueno que tiene esto sobre udisk, es que puedes especificar los
-parámetros y opciones con las que montarás el disco, no como en udisk que se
-monta con las opciones que le de la gana a el; te guste o no.</p>
+<h3>¿Has visto algún testigo de Jehová diciendo GOD?</h3>
 
-<p>Además, no te imagino instalando udisk es un servidor :D</p>
-</div>
-  
-  
+<p>Claro que no, todos dicen <strong>dios</strong>. Porque cuando la religión salió de Estados
+Unidos, medio mundo sabía inglés.</p>
 
+<p>Sin embargo, cuando el islam salió del mundo árabe, la palabra Alá empezó a
+sonar en España, donde no convenía que Alá y Dios fueran la misma cosa. A los
+Españoles había que convencerlos de que adorar a alá era adorar a un dios
+diferente. Problemas políticos <strong>de aquel entonces</strong>, por una bobería ahí
+llamada <a href="https://es.wikipedia.org/wiki/Reconquista">reconquista</a>.</p>
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Hoy, en el siglo XXI, sabemos que <strong>dios</strong> en árabe se dice &ldquo;al laj&rdquo; (Al-Lāh o الله).</p>
 
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/07/openvpn-en-arch/">OpenVPN en Arch</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-07T18:18:17-04:00'><span class='date'>07/06/2015</span> <span class='time'>6:18 pm</span></time>
-        
-           | <a href="/blog/2015/06/07/openvpn-en-arch/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/07/openvpn-en-arch/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>En Arch, todo es tan novedoso como complicado. Montar un servidor de VPN, pasa a
-ser una verdadera complicación. Pero todo empieza por el primer paso y termina
-cuando menos te lo esperas o más embullado estás.</p>
-
-<figure class='code'><figcaption><span>&#8220;el viejo pacman&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S openvpn easy-rsa
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Aspectos legales</h4>
-
-<p>Antes de comenzar. Déjeme recordarle que transmitir cifrados en algunos países
-es algo complicado desde el punto de vista legal.</p>
-
-<p>En cuba, te aclaro, que necesitas anexar un permiso de la FAR a tu Licencia de
-Red. En casi ningún país las redes VPN son &ldquo;al flai&rdquo;, ya que las mismas, siempre
-tienen un punto en alguna entidad, lo cual compromete mucho a esa red; así que
-mi recomendación: Póngase al tanto de las leyes antes de hacer una VPN.</p>
-
-<p>Para esta prueba, usaré una red compuesta por un solo cable. En un extremo está
-mi laptop y en el otro, el RaspBerry Pi; secuaz de todos mis más beligerantes
-experimentos.</p>
-
-<h3>Empezando</h3>
-
-<p>Lo primero es crear el llamado &ldquo;Master Certificate Authority&rdquo; (por sus siglas &ldquo;CA&rdquo;)</p>
-
-<p>La herramienta easy-rsa ha evolucionado tanto, que ya ni su madre la reconoce.
-Razón por la cual toda la documentación parece estar escrita con una herramienta
-totalmente diferente.</p>
-
-<p>Los escript se encuentran en /usr/share así que los traeremos a nuestro
-zoológico.</p>
-
-<figure class='code'><figcaption><span>&#8220;easy-rsa&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/openvpn/
-</span><span class='line'>cp -ru /usr/share/easy-rsa/ ./
-</span><span class='line'><span class="nb">cd </span>easy-rsa
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lo último que copiamos, el ficherito <strong>vars</strong>; es la materia prima de esta obra.
-Ahí pondremos los parámetros de nuestro certificado. Abre el fichero <strong>vars</strong> y
-edítale los parámetros obvios, están al fondo y comienzan por <strong>KEY_</strong></p>
-
-<p>Cuando hallas terminado, ejecuta esto:</p>
-
-<figure class='code'><figcaption><span>&#8221;./vars&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">source</span> ./vars
-</span><span class='line'>./clean-all
-</span><span class='line'>./build-ca
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Verás como se genera el certificado y aunque te pregunta por los parámetros, los
-tiene ya por defecto. Solo es cuestión de presionar Enter y listo.</p>
-
-<p>Ahora usando el CA, generamos el certificado del servidor.</p>
-
-<figure class='code'><figcaption><span>&#8220;el certificado del servidor&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>./build-key-server vpn.dominio.cu
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Te preguntará lo mismo y un password; ponle cualquier <em>mierda entrópica</em> y sigue
-pa alante.</p>
-
-<h3>OJO!! No toques enter a lo loco. Firma todos los certificados</h3>
-
-<p>A este punto el directorio <strong>keys/</strong> contiene más de lo que te imaginas. Pero el
-servidor necesita los parámetros de un tal <a href="http://www.rsasecurity.com/rsalabs/node.asp?id=2248">Diffie Hellman</a>
-para pinchar. Ponte cómodo y ejecuta:</p>
-
-<figure class='code'><figcaption><span>&#8220;Deffie Hellman&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>./build-dh
-</span><span class='line'>Generating DH parameters, <span class="m">2048</span> bit long safe prime, generator 2
-</span><span class='line'>This is going to take a long <span class="nb">time</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Una vez que la pantalla se halla llenado de punticos, te quedará editar el
-fichero de configuración a tu antojo. El mío me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/openvpn/servidor.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># la ip en la que esucha el servidor</span>
-</span><span class='line'><span class="nb">local </span>0.0.0.0
-</span><span class='line'>
-</span><span class='line'><span class="c"># puerto https</span>
-</span><span class='line'>port 443
-</span><span class='line'>
-</span><span class='line'><span class="c"># protocolo</span>
-</span><span class='line'>proto tcp
-</span><span class='line'><span class="c">#proto udp</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># el tipo de interfaz de tunel</span>
-</span><span class='line'><span class="p">;</span>dev tap
-</span><span class='line'>dev tun
-</span><span class='line'>
-</span><span class='line'><span class="c"># los certificados del servidor</span>
-</span><span class='line'>ca /etc/openvpn/easy-rsa/keys/ca.crt
-</span><span class='line'>cert /etc/openvpn/easy-rsa/keys/vpn.dominio.cu.crt
-</span><span class='line'>
-</span><span class='line'><span class="c"># ATENCIÓN!!</span>
-</span><span class='line'><span class="c"># mantén este fichero en secreto absoluto</span>
-</span><span class='line'>key /etc/openvpn/easy-rsa/keys/vpn.dominio.cu.key
-</span><span class='line'>
-</span><span class='line'><span class="c"># Diffie Hellman</span>
-</span><span class='line'>dh /etc/openvpn/easy-rsa/keys/dh2048.pem
-</span><span class='line'>
-</span><span class='line'><span class="c"># nuestra red es una subnet</span>
-</span><span class='line'>topology subnet
-</span><span class='line'>
-</span><span class='line'><span class="c"># configuramos la red que tendrá nuestra VPN</span>
-</span><span class='line'><span class="c"># dándole este rango, el servidor coge la 1,</span>
-</span><span class='line'><span class="c"># usamos un rango raro, pa que no choque</span>
-</span><span class='line'>server 10.8.0.0 255.255.255.0
-</span><span class='line'>
-</span><span class='line'><span class="c"># mantiene la misma ip para cada cliente</span>
-</span><span class='line'><span class="c"># aún después de reiniciado el servidor</span>
-</span><span class='line'>ifconfig-pool-persist ipp.txt
-</span><span class='line'>
-</span><span class='line'><span class="c"># con esta opción, los clientes se ven entre ellos</span>
-</span><span class='line'><span class="c"># sin esta opción, cada cliente es individual hacia el server</span>
-</span><span class='line'>client-to-client
-</span><span class='line'>
-</span><span class='line'><span class="c"># si esto está habilitado, varios cliente se conectarán</span>
-</span><span class='line'><span class="c"># usando un mismo certificado. Muy bueno si tienes un</span>
-</span><span class='line'><span class="c"># certificado para cada grupo de clientes, o el mismo</span>
-</span><span class='line'><span class="c"># certificado para todos los clientes.</span>
-</span><span class='line'>duplicate-cn
-</span><span class='line'>
-</span><span class='line'><span class="c"># Preguntale &quot;¿estás ahí?&quot; cada 10 segundos</span>
-</span><span class='line'>keepalive <span class="m">10</span> 120
-</span><span class='line'>
-</span><span class='line'><span class="c"># habilita la compresión de datos</span>
-</span><span class='line'>comp-lzo
-</span><span class='line'>
-</span><span class='line'><span class="c"># el máximo número de clientes permitidos</span>
-</span><span class='line'>max-clients 1
-</span><span class='line'>
-</span><span class='line'><span class="c"># corre como nobody, menos privilegios</span>
-</span><span class='line'>user nobody
-</span><span class='line'>group nobody
-</span><span class='line'>persist-key
-</span><span class='line'>persist-tun
-</span><span class='line'>
-</span><span class='line'><span class="c"># este fichero NO se llena</span>
-</span><span class='line'><span class="c"># ya que se reescribe constantemente</span>
-</span><span class='line'><span class="c"># mostrando el estado de la VPN</span>
-</span><span class='line'>status openvpn-status.log
-</span><span class='line'>
-</span><span class='line'><span class="c"># esto si se pone gordo, así que no logueamos</span>
-</span><span class='line'><span class="p">;</span>log         openvpn.log
-</span><span class='line'><span class="p">;</span>log-append  openvpn.log
-</span><span class='line'>
-</span><span class='line'><span class="c"># Que loguear?</span>
-</span><span class='line'><span class="c"># 0 solo errores fatales</span>
-</span><span class='line'><span class="c"># 4 cuentame que hay</span>
-</span><span class='line'><span class="c"># 5 y 6 muy últil para depurar problemas de conexión</span>
-</span><span class='line'><span class="c"># 9 solo los desarrolladores usarían esta escandalera</span>
-</span><span class='line'>verb 3
-</span><span class='line'>
-</span><span class='line'><span class="c"># no muestres repetidos</span>
-</span><span class='line'><span class="c">#mute 20</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>OJO!</strong> Mira a ver donde metes el fichero <strong>servidor.conf</strong>, no sea que los
-crees dentro del directorio easy-rsa y luego no lo encuentres.</p>
-
-<p>Corre <strong>openvpn &ndash;config servidor.conf</strong> COMO ROOT, vamos a probarlo a ver como
-suena:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema openvpn<span class="o">]</span><span class="c"># openvpn --config servidor.conf</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> OpenVPN 2.3.6 i686-pc-linux-gnu <span class="o">[</span>SSL <span class="o">(</span>OpenSSL<span class="o">)]</span> <span class="o">[</span>LZO<span class="o">]</span> <span class="o">[</span>EPOLL<span class="o">]</span> <span class="o">[</span>MH<span class="o">]</span> <span class="o">[</span>IPv6<span class="o">]</span> built on Dec  <span class="m">2</span> 2014
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> library versions: OpenSSL 1.0.2a <span class="m">19</span> Mar 2015, LZO 2.09
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> WARNING: --ifconfig-pool-persist will not work with --duplicate-cn
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> Diffie-Hellman initialized with <span class="m">2048</span> bit key
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> Socket Buffers: <span class="nv">R</span><span class="o">=[</span>87380-&gt;131072<span class="o">]</span> <span class="nv">S</span><span class="o">=[</span>16384-&gt;131072<span class="o">]</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> TUN/TAP device tun0 opened
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> TUN/TAP TX queue length <span class="nb">set </span>to 100
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> do_ifconfig, tt-&gt;ipv6<span class="o">=</span>0, tt-&gt;did_ifconfig_ipv6_setup<span class="o">=</span>0
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:12 <span class="m">2015</span> /usr/bin/ip link <span class="nb">set </span>dev tun0 up mtu 1500
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> /usr/bin/ip addr add dev tun0 10.8.0.1/24 broadcast 10.8.0.255
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> GID <span class="nb">set </span>to nobody
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> UID <span class="nb">set </span>to nobody
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> Listening <span class="k">for</span> incoming TCP connection on <span class="o">[</span>undef<span class="o">]</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> TCPv4_SERVER link <span class="nb">local</span> <span class="o">(</span>bound<span class="o">)</span>: <span class="o">[</span>undef<span class="o">]</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> TCPv4_SERVER link remote: <span class="o">[</span>undef<span class="o">]</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> MULTI: multi_init called, <span class="nv">r</span><span class="o">=</span><span class="m">256</span> <span class="nv">v</span><span class="o">=</span>256
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> IFCONFIG POOL: <span class="nv">base</span><span class="o">=</span>10.8.0.2 <span class="nv">size</span><span class="o">=</span>252, <span class="nv">ipv6</span><span class="o">=</span>0
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> IFCONFIG POOL LIST
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> MULTI: TCP INIT <span class="nv">maxclients</span><span class="o">=</span><span class="m">1</span> <span class="nv">maxevents</span><span class="o">=</span>5
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:00:13 <span class="m">2015</span> Initialization Sequence Completed
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>BELLO!</strong></p>
-
-<p>Note como en este ejemplo, se usó la opción duplicate-cn y este dice que no
-podrá mentener una ip por cliente, porque lógicamente, un mismo certificado será
-usado por dicímiles cliente (en este ejemplo). En producción, le recomiendo que
-emita un certificado para cada cliente.</p>
-
-<p>A partir de este momento, habrá una Unit con el nombre del fichero &ldquo;.conf&rdquo;
-detrás de la arroba:</p>
-
-<p><strong>openvpn@CONFIGURACION.service</strong></p>
-
-<p>Osea, como el fichero se llama <strong>servidor.conf</strong> la unit se llama
-<strong>openvpn@servidor.service</strong></p>
-
-<p>¿Se etendió?</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl start openvpn@servidor.service
-</span><span class='line'>systemctl <span class="nb">enable </span>openvpn@servidor.service
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Ahora los clientes</h3>
-
-<p>Como ya vimos, los clientes pueden tener un certificado para cada uno o bien un
-por cada cliente. En este caso, generaremos un certificado para un cliente.</p>
-
-<p>El cliente necesitará un fichero de configuración y sus pertinentes
-certificados.</p>
-
-<figure class='code'><figcaption><span>&#8220;certificados para cliente1&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/openvpn/easy-rsa
-</span><span class='line'>./build-key cliente1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>OJO!</strong> No aprietes enter a lo loco! Presiona &ldquo;y&rdquo; en el momento de autofirmar
-los certificados.</p>
-
-<p>Ya tenemos sus certficados, ahora le hacemos el fichero de configuración. En mi
-caso, prefiero tener un directorio para cada cliente. Así es solo cuestión de
-empaquetar y mandarle todo. A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;cliente1/&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/openvpn/
-</span><span class='line'>mkdir cliente1
-</span><span class='line'><span class="nb">cd </span>cliente1
-</span><span class='line'>cp /etc/openvpn/easy-rsa/keys/ca.crt ./
-</span><span class='line'>cp /etc/openvpn/easy-rsa/keys/cliente1.crt ./
-</span><span class='line'>cp /etc/openvpn/easy-rsa/keys/cliente1.key ./
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>MUCHO CUIDADO</strong> con lo que copias! Por nada del mundo copies el fichero &ldquo;.key&rdquo;
-<strong>DEL SERVIDOR</strong> Si no tu VPN se volverá un ballú y cualquier podría montar un
-servidor, engañando a tus cliente.</p>
-
-<p>El fichero <strong>servidor.key</strong> es la identificación mediante la cual openvpn
-garantiza ser legítimamente quien dice ser.</p>
-
-<p>Finalmente creamos el fichero de configuración <strong>DEL CLIENTE</strong>. En windows y en
-android, un fichero cuya extensión sea <strong>.ovpn</strong> es una configuración de VPN.
-Por tanto, es conveniente nombrarlo así. Claro, al no ser &ldquo;.conf&rdquo;, no podrá ser
-disparado desde systemcl, o al menos yo, no he hecho la prueba.</p>
-
-<p>A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/openvpn/cliente1/cliente1.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>client
-</span><span class='line'>remote 10.1.1.1 443
-</span><span class='line'>dev tun
-</span><span class='line'>proto tcp
-</span><span class='line'>resolv-retry infinite
-</span><span class='line'>nobind
-</span><span class='line'>persist-key
-</span><span class='line'>persist-tun
-</span><span class='line'>verb 2
-</span><span class='line'>ca ca.crt
-</span><span class='line'>cert ./cliente1.crt
-</span><span class='line'>key ./cliente1.key
-</span><span class='line'>comp-lzo
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Empaquetamos y le mandamos al cliente la configuración, por correo o por como
-sea, en este caso, lo copié por ssh para el raspberry.</p>
-
-<figure class='code'><figcaption><span>&#8220;cliente1.zip&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema openvpn<span class="o">]</span><span class="c"># zip cliente1.zip cliente1/*</span>
-</span><span class='line'>  adding: cliente1/ca.crt <span class="o">(</span>deflated 35%<span class="o">)</span>
-</span><span class='line'>  adding: cliente1/cliente1.conf <span class="o">(</span>deflated 28%<span class="o">)</span>
-</span><span class='line'>  adding: cliente1/cliente1.crt <span class="o">(</span>deflated 47%<span class="o">)</span>
-</span><span class='line'>  adding: cliente1/cliente1.key <span class="o">(</span>deflated 23%<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Del otro lado lo levanté y quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;cliente1.zip&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@rasp cliente1<span class="o">]</span><span class="c"># openvpn --config cliente1.conf </span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> OpenVPN 2.3.6 i686-pc-linux-gnu <span class="o">[</span>SSL <span class="o">(</span>OpenSSL<span class="o">)]</span> <span class="o">[</span>LZO<span class="o">]</span> <span class="o">[</span>EPOLL<span class="o">]</span> <span class="o">[</span>MH<span class="o">]</span> <span class="o">[</span>IPv6<span class="o">]</span> built on Dec  <span class="m">2</span> 2014
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> library versions: OpenSSL 1.0.2a <span class="m">19</span> Mar 2015, LZO 2.09
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> WARNING: No server certificate verification method has been enabled.  See http://openvpn.net/howto.html#mitm <span class="k">for</span> more info.
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> Attempting to establish TCP connection with <span class="o">[</span>AF_INET<span class="o">]</span>127.0.0.1:443 <span class="o">[</span>nonblock<span class="o">]</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> TCP connection established with <span class="o">[</span>AF_INET<span class="o">]</span>127.0.0.1:443
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> TCPv4_CLIENT link <span class="nb">local</span>: <span class="o">[</span>undef<span class="o">]</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> TCPv4_CLIENT link remote: <span class="o">[</span>AF_INET<span class="o">]</span>127.0.0.1:443
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> VERIFY OK: <span class="nv">depth</span><span class="o">=</span>1, <span class="nv">C</span><span class="o">=</span>CU, <span class="nv">ST</span><span class="o">=</span>HAV, <span class="nv">L</span><span class="o">=</span>Plaza, <span class="nv">O</span><span class="o">=</span>UNAICC, <span class="nv">OU</span><span class="o">=</span>UNAICC, <span class="nv">CN</span><span class="o">=</span>UNAICC CA, <span class="nv">name</span><span class="o">=</span>RSA, <span class="nv">emailAddress</span><span class="o">=</span>vpn@unaicc.cu
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> VERIFY OK: <span class="nv">depth</span><span class="o">=</span>0, <span class="nv">C</span><span class="o">=</span>CU, <span class="nv">ST</span><span class="o">=</span>HAV, <span class="nv">L</span><span class="o">=</span>Plaza, <span class="nv">O</span><span class="o">=</span>UNAICC, <span class="nv">OU</span><span class="o">=</span>UNAICC, <span class="nv">CN</span><span class="o">=</span>vpn.unaicc.cu, <span class="nv">name</span><span class="o">=</span>RSA, <span class="nv">emailAddress</span><span class="o">=</span>vpn@unaicc.cu
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> Data Channel Encrypt: Cipher <span class="s1">&#39;BF-CBC&#39;</span> initialized with <span class="m">128</span> bit key
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> Data Channel Encrypt: Using <span class="m">160</span> bit message <span class="nb">hash</span> <span class="s1">&#39;SHA1&#39;</span> <span class="k">for</span> HMAC authentication
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> Data Channel Decrypt: Cipher <span class="s1">&#39;BF-CBC&#39;</span> initialized with <span class="m">128</span> bit key
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> Data Channel Decrypt: Using <span class="m">160</span> bit message <span class="nb">hash</span> <span class="s1">&#39;SHA1&#39;</span> <span class="k">for</span> HMAC authentication
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> Control Channel: TLSv1, cipher TLSv1/SSLv3 DHE-RSA-AES256-SHA, <span class="m">2048</span> bit RSA
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:36 <span class="m">2015</span> <span class="o">[</span>vpn.unaicc.cu<span class="o">]</span> Peer Connection Initiated with <span class="o">[</span>AF_INET<span class="o">]</span>127.0.0.1:443
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:39 <span class="m">2015</span> TUN/TAP device tun1 opened
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:39 <span class="m">2015</span> do_ifconfig, tt-&gt;ipv6<span class="o">=</span>0, tt-&gt;did_ifconfig_ipv6_setup<span class="o">=</span>0
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:39 <span class="m">2015</span> /usr/bin/ip link <span class="nb">set </span>dev tun1 up mtu 1500
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:39 <span class="m">2015</span> /usr/bin/ip addr add dev tun1 10.8.0.2/24 broadcast 10.8.0.255
-</span><span class='line'>Sun Jun <span class="m">14</span> 14:34:39 <span class="m">2015</span> Initialization Sequence Completed
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Al descomprimir el zip, copia todo en /etc/openvpn/ y usa systemctl para que
-arranque.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp cliente1/* /etc/openvpn/
-</span><span class='line'>systemctl start openvpn@cliente1.service
-</span><span class='line'>systemctl <span class="nb">enable </span>openvpn@cliente1.service
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>y entonces iptables?</h3>
-
-<p>Si tus cliente se conectarán por la interfaz eth0, solo necesitarás el puerto
-443 abierto. En este caso, la VPN pincha por el 443. Si tienes un servidor web
-público el brinco es diferente. Te recomiendo que uses una máquina solamente
-para servidor OpenVPN y dejes es único puerto abierto.</p>
-
-<p>La interfaz de la VPN es tun0, así que ahí le dejas abierto los servicios que
-entiendas.</p>
-
-<p>   <blockquote><p>La seguridad informática no es secreta, pero si discreta.</p></blockquote></p>
+<p>Dios y Alá, son la misma cosa, solo cambia la manera en que las vemos&hellip; Dios es
+uno solo, onmipotente y omnisapiente; nosotros los mortales, dadas nuestras
+diferencias políticas, culturales e idiomáticas, necesitamos ponerle nombre a
+dios para poder comprenderlo.</p>
 </div>
   
   
@@ -1196,6 +884,10 @@ entiendas.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/12/09/rails-en-alpine/">rails en alpine</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/11/24/squid3-bloquear-user-agent/">squid3 bloquear user-agent</a>
@@ -1402,6 +1094,10 @@ entiendas.</p>
 		</li>
 		
 		<li class="post">
+			<a href="/blog/2015/07/24/transliteracion-del-coran/">transliteración del corán</a>
+		</li>
+		
+		<li class="post">
 			<a href="/blog/2015/07/19/will-paginate/">will_paginate</a>
 		</li>
 		
@@ -1423,6 +1119,10 @@ entiendas.</p>
 		
 		<li class="post">
 			<a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
 		</li>
 		
 		<li class="post">
