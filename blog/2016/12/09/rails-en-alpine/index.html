@@ -107,7 +107,7 @@ para desplegar &hellip;">
 <div class="entry-content"><p><img class="right" src="/images/shinkasen.jpg" width="400" height="500" title="" ></p>
 
 <p>Finalmente el boom de docker llegó a Cuba. En mi caso personal, hace rato lo uso
-para desplegar aplicaciones de Ruby on Rails. Siempre me pareció que debian era
+para desplegar aplicaciones de Ruby on Rails y siempre me pareció que debian era
 la mejor base para hacer una imagen. Si bien, hay containers de rails, eso de
 usar en producción, con una distro hecha por un cualquiera, como que me da cosa.
 Hacer una a partir de la oficial, es más sencillo que verificar la integridad de
@@ -144,7 +144,7 @@ nodejs, tzdata, libxml2-dev,  libxslt-dev, sqlite-dev y claro, ruby</p>
 <p>Como nokogiri es un caso tan peculiar, le diremos que compile usando las
 librerías del sistema, para ellos lo instalaremos aparte. Alpine <strong>no</strong> usa
 glibc, usa musl-libc y nokogiri NO compila, por tanto, hay que usar las
-librerías del sistema, en vez de las que provee nokogiri.</p>
+librerías del sistema; en vez de las que provee nokogiri.</p>
 
 <figure class='code'><figcaption><span>&#8220;nokogiri&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>gem inst --no-document nokogiri -- --use-system-libraries
@@ -173,13 +173,13 @@ ver&hellip;</p>
 
 
 <p>Tengo una imagen llamada &ldquo;alpine_ruby&rdquo; en la que tengo todo lo necesario para
-instalar y no tengo la gema de rails instalada. Entonces, con cada versión de
+instalar y No tengo la gema de rails instalada. Entonces, con cada versión de
 rails, por ejemplo, derivar de &ldquo;alpine_ruby&rdquo; la imagen alpine_rails50 , así
 cuando salga el rails 5.1 le llamaré alpine_rails51</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -223,6 +223,8 @@ cuando salga el rails 5.1 le llamaré alpine_rails51</p>
         <a class="basic-alignment left" href="/blog/2016/11/24/squid3-bloquear-user-agent/" title="Previous Post: squid3 bloquear user-agent">&laquo; squid3 bloquear user-agent</a>
       
       
+        <a class="basic-alignment right" href="/blog/2016/12/19/iptables-y-ftp/" title="Next Post: iptables y ftp">iptables y ftp &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -242,6 +244,10 @@ cuando salga el rails 5.1 le llamaré alpine_rails51</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/12/19/iptables-y-ftp/">iptables y ftp</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/12/09/rails-en-alpine/">rails en alpine</a>

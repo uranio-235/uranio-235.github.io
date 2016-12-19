@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-12-13T13:11:58-05:00</updated>
+  <updated>2016-12-19T11:45:16-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -21,7 +21,7 @@
     <content type="html"><![CDATA[<p><img class="right" src="/images/shinkasen.jpg" width="400" height="500" title="" ></p>
 
 <p>Finalmente el boom de docker llegó a Cuba. En mi caso personal, hace rato lo uso
-para desplegar aplicaciones de Ruby on Rails. Siempre me pareció que debian era
+para desplegar aplicaciones de Ruby on Rails y siempre me pareció que debian era
 la mejor base para hacer una imagen. Si bien, hay containers de rails, eso de
 usar en producción, con una distro hecha por un cualquiera, como que me da cosa.
 Hacer una a partir de la oficial, es más sencillo que verificar la integridad de
@@ -50,7 +50,7 @@ apk add ruby ruby-dev ca-certificates libffi libffi-dev
 <p>Como nokogiri es un caso tan peculiar, le diremos que compile usando las
 librerías del sistema, para ellos lo instalaremos aparte. Alpine <strong>no</strong> usa
 glibc, usa musl-libc y nokogiri NO compila, por tanto, hay que usar las
-librerías del sistema, en vez de las que provee nokogiri.</p>
+librerías del sistema; en vez de las que provee nokogiri.</p>
 
 <pre><code class="bash "nokogiri"">gem inst --no-document nokogiri -- --use-system-libraries
 </code></pre>
@@ -72,7 +72,7 @@ Rails 5.0.0.1
 </code></pre>
 
 <p>Tengo una imagen llamada &ldquo;alpine_ruby&rdquo; en la que tengo todo lo necesario para
-instalar y no tengo la gema de rails instalada. Entonces, con cada versión de
+instalar y No tengo la gema de rails instalada. Entonces, con cada versión de
 rails, por ejemplo, derivar de &ldquo;alpine_ruby&rdquo; la imagen alpine_rails50 , así
 cuando salga el rails 5.1 le llamaré alpine_rails51</p>
 ]]></content>

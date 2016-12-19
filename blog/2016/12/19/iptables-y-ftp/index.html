@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>empíricos - El SysAdmin del 3er Mundo</title>
+  <title>iptables y ftp - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="empíricos 05/07/2014 9:18 am | Comments ¿Sabes tú qué es un &ldquo;empírico&rdquo;? Una persona que desarrolla habilidades de manera autodidacta en &hellip;">
+  <meta name="description" content="iptables y ftp 19/12/2016 11:34 am | Comments Instalé un proftpd y le puse un cortafuegos a dicho servidor. Al instante,
+nagios reportó que el FTP &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2014/07/05/empirico/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2016/12/19/iptables-y-ftp/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -84,7 +85,7 @@
   
   <header>
     
-      <h1 class="entry-title">empíricos</h1>
+      <h1 class="entry-title">iptables y ftp</h1>
     
     
       <p class="meta">
@@ -93,7 +94,7 @@
 
 
 
-<time class='entry-date' datetime='2014-07-05T09:18:42-04:00'><span class='date'>05/07/2014</span> <span class='time'>9:18 am</span></time>
+<time class='entry-date' datetime='2016-12-19T11:34:13-05:00'><span class='date'>19/12/2016</span> <span class='time'>11:34 am</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -103,57 +104,24 @@
   </header>
 
 
-<div class="entry-content"><p>¿Sabes tú qué es un &ldquo;empírico&rdquo;?</p>
+<div class="entry-content"><p>Instalé un proftpd y le puse un cortafuegos a dicho servidor. Al instante,
+nagios reportó que el FTP pinchaba, así que di por terminada la tarea. Sin
+embargo, a las dos horas un usuario me pregunta si &ldquo;el ftp está caído&rdquo;.</p>
 
-<p>Una persona que desarrolla habilidades de manera autodidacta en un oficio o
-campo de la ciencia y que llega a ser tanto o más bueno que un catedrático.</p>
+<p>Resulta que los puertos pasivos, se comportan de una manera &ldquo;inesperada&rdquo;. Una
+solución común es abrir el rango de puertos que se configuran como pasivos, pero
+eso no me cuadra.</p>
 
-<p>Generalmente estamos graduados de algo que no ejercemos.</p>
+<p>Por suerte, linux cuenta con un módulo especial llamado <strong>ip_conntrack_ftp</strong>,
+especial para el tema.</p>
 
-<p>Guardamos con devoción en nuestra casa, el libro que nos darían si llegáramos al
-tercer año de la carrera universitaria que deberíamos estudiar.</p>
+<p>Si quieres ver más detalles y otras soluciones, llégate aquí:</p>
 
-<p>No leemos los libros que nos obligan. Leemos los que nos interesan.</p>
-
-<p>No podemos ir a la universidad porque suspendemos las pruebas en las que nos
-preguntan cosas que hace 6 años leímos o cosas que No nos interesan.</p>
-
-<p>Cuando llegamos a preescolar sabíamos las vocales, los colores y contar del uno
-al diez. Odiábamos a la profesora por obligarnos a atender su aburrida clase.</p>
-
-<p>Somos gente que pensamos diferentes y no encajamos en el montón. Algunos nos
-llaman &ldquo;rosca izquierda&rdquo; otros nos llaman &ldquo;originales&rdquo;.</p>
-
-<p>Sabemos que colar un café es una reacción exotérmica porque dimos química en
-noveno grado.</p>
-
-<p>Sabemos que de día sopla la brisa y de noche el terral, porque dimos &ldquo;mundo en
-que vivimos&rdquo; en 5to grado.</p>
-
-<p>VAMOS A LA ESCUELA A APRENDER, no a sacar buenas notas.</p>
-
-<p>No nos expliques nada, solo déjanos ver como lo haces.</p>
-
-<p>Sabemos hacer muy pocas cosas pero no tenemos rivales en las pocas que hacemos.</p>
-
-<p>Si hay un camino a la derecha y otro a la izquierda, hacemos uno nuevo por el
-medio; con la esperanza de hacerlo mejor.</p>
-
-<p>No somos mejores ni peores que nadie porque no nos comparamos.</p>
-
-<p>Tenemos una ortografía terrible porque escribimos en cualquier idioma menos en
-el nuestro.</p>
-
-<p>Sabemos un montón de cosas y no nos acordamos cuando o porque lo aprendimos.</p>
-
-<p>Los que nos aprecian o admiran nos llaman &ldquo;geniales&rdquo; o &ldquo;inteligentes&rdquo;. Los que
-nos repudian o envidian nos llaman &ldquo;autosuficientes&rdquo; o &ldquo;excéntricos&rdquo;.</p>
-
-<p>Solo somos &ldquo;empíricos&rdquo;</p>
+<p><a href="http://unix.stackexchange.com/questions/93554/iptables-to-allow-incoming-ftp">http://unix.stackexchange.com/questions/93554/iptables-to-allow-incoming-ftp</a></p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -167,21 +135,15 @@ nos repudian o envidian nos llaman &ldquo;autosuficientes&rdquo; o &ldquo;excén
 
 
 
-<time class='entry-date' datetime='2014-07-05T09:18:42-04:00'><span class='date'>05/07/2014</span> <span class='time'>9:18 am</span></time>
+<time class='entry-date' datetime='2016-12-19T11:34:13-05:00'><span class='date'>19/12/2016</span> <span class='time'>11:34 am</span></time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/razonemos/'>razonemos</a>
-  
-</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2014/07/05/empirico/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2014/07/05/empirico/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2016/12/19/iptables-y-ftp/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2016/12/19/iptables-y-ftp/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -194,10 +156,8 @@ nos repudian o envidian nos llaman &ldquo;autosuficientes&rdquo; o &ldquo;excén
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/06/27/crear-un-chroot-con-debian/" title="Previous Post: crear un chroot con debian">&laquo; crear un chroot con debian</a>
+        <a class="basic-alignment left" href="/blog/2016/12/09/rails-en-alpine/" title="Previous Post: rails en alpine">&laquo; rails en alpine</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/07/08/select-en-bootstrap/" title="Next Post: select en bootstrap">select en bootstrap &raquo;</a>
       
     </p>
   </footer>
@@ -627,8 +587,8 @@ nos repudian o envidian nos llaman &ldquo;autosuficientes&rdquo; o &ldquo;excén
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2014/07/05/empirico/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2014/07/05/empirico/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2016/12/19/iptables-y-ftp/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2016/12/19/iptables-y-ftp/';
         var disqus_script = 'embed.js';
       
     (function () {

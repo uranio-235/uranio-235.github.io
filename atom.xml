@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-12-13T13:11:58-05:00</updated>
+  <updated>2016-12-19T11:45:16-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -14,6 +14,28 @@
 
   
   <entry>
+    <title type="html"><![CDATA[iptables y ftp]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/12/19/iptables-y-ftp/"/>
+    <updated>2016-12-19T11:34:13-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/12/19/iptables-y-ftp</id>
+    <content type="html"><![CDATA[<p>Instalé un proftpd y le puse un cortafuegos a dicho servidor. Al instante,
+nagios reportó que el FTP pinchaba, así que di por terminada la tarea. Sin
+embargo, a las dos horas un usuario me pregunta si &ldquo;el ftp está caído&rdquo;.</p>
+
+<p>Resulta que los puertos pasivos, se comportan de una manera &ldquo;inesperada&rdquo;. Una
+solución común es abrir el rango de puertos que se configuran como pasivos, pero
+eso no me cuadra.</p>
+
+<p>Por suerte, linux cuenta con un módulo especial llamado <strong>ip_conntrack_ftp</strong>,
+especial para el tema.</p>
+
+<p>Si quieres ver más detalles y otras soluciones, llégate aquí:</p>
+
+<p><a href="http://unix.stackexchange.com/questions/93554/iptables-to-allow-incoming-ftp">http://unix.stackexchange.com/questions/93554/iptables-to-allow-incoming-ftp</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[rails en alpine]]></title>
     <link href="http://uranio-235.github.io/blog/2016/12/09/rails-en-alpine/"/>
     <updated>2016-12-09T20:14:28-05:00</updated>
@@ -21,7 +43,7 @@
     <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/shinkasen.jpg" width="400" height="500" title="" ></p>
 
 <p>Finalmente el boom de docker llegó a Cuba. En mi caso personal, hace rato lo uso
-para desplegar aplicaciones de Ruby on Rails. Siempre me pareció que debian era
+para desplegar aplicaciones de Ruby on Rails y siempre me pareció que debian era
 la mejor base para hacer una imagen. Si bien, hay containers de rails, eso de
 usar en producción, con una distro hecha por un cualquiera, como que me da cosa.
 Hacer una a partir de la oficial, es más sencillo que verificar la integridad de
@@ -58,7 +80,7 @@ nodejs, tzdata, libxml2-dev,  libxslt-dev, sqlite-dev y claro, ruby</p>
 <p>Como nokogiri es un caso tan peculiar, le diremos que compile usando las
 librerías del sistema, para ellos lo instalaremos aparte. Alpine <strong>no</strong> usa
 glibc, usa musl-libc y nokogiri NO compila, por tanto, hay que usar las
-librerías del sistema, en vez de las que provee nokogiri.</p>
+librerías del sistema; en vez de las que provee nokogiri.</p>
 
 <figure class='code'><figcaption><span>&#8220;nokogiri&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>gem inst --no-document nokogiri -- --use-system-libraries
@@ -87,7 +109,7 @@ ver&hellip;</p>
 
 
 <p>Tengo una imagen llamada &ldquo;alpine_ruby&rdquo; en la que tengo todo lo necesario para
-instalar y no tengo la gema de rails instalada. Entonces, con cada versión de
+instalar y No tengo la gema de rails instalada. Entonces, con cada versión de
 rails, por ejemplo, derivar de &ldquo;alpine_ruby&rdquo; la imagen alpine_rails50 , así
 cuando salga el rails 5.1 le llamaré alpine_rails51</p>
 ]]></content>
@@ -1964,66 +1986,6 @@ copia:</p>
 
 <p>En ese ejemplo, usamos los parámetros <strong>&ndash;include</strong> y <strong>&ndash;exclude</strong>, para copiar
 solamente los fichero <strong>.gz</strong></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[correos del cron]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/06/20/correos-del-cron/"/>
-    <updated>2016-06-20T14:14:06-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/06/20/correos-del-cron</id>
-    <content type="html"><![CDATA[<p>Conflictivísima tarea, lograr que el cron mande correos adecuadamente&hellip; En este
-caso, cronie, da la solución al problema. Aunque me imagino que dicha
-configuración sea estándar para el cron.</p>
-
-<p>Así es la cosa, declaramos <strong>MAILTO</strong> y <strong>MAILFROM</strong> como unas variables en el
-fichero crontab.</p>
-
-<figure class='code'><figcaption><span>crontab</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="c1"># DO NOT EDIT THIS FILE - edit the master and reinstall.</span>
-</span><span class='line'><span class="c1"># (/tmp/crontab.f36hiB/crontab installed on Tue May  5 08:48:38 2015)</span>
-</span><span class='line'><span class="c1"># (Cron version -- $Id: crontab.c,v 2.13 1994/01/17 03:20:37 vixie Exp $)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># añadimos las variables</span>
-</span><span class='line'><span class="na">MAILTO</span><span class="o">=</span><span class="s">root@tudominio.cu</span>
-</span><span class='line'><span class="na">MAILFROM</span><span class="o">=</span><span class="s">cron@tudominio.cu</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># m h  dom mon dow   command</span>
-</span><span class='line'><span class="err">00</span> <span class="err">00</span> <span class="err">*</span> <span class="err">*</span> <span class="err">*</span> <span class="err">/bin/bash</span> <span class="err">/home/fulanito/script.sh</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora faltaría un MTA. Pues la solución más sensilla es <strong>esmtp</strong> y su
-configuración sería más o menos así en el fichero <strong>/etc/esmtprc</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/esmtprc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">identity</span> <span class="err">micuenta</span>
-</span><span class='line'>   <span class="err">hostname</span> <span class="err">smtp.tudominio.cu</span>
-</span><span class='line'>   <span class="err">username</span> <span class="err">&quot;cron&quot;</span>
-</span><span class='line'>   <span class="err">password</span> <span class="err">&quot;pinpanpun&quot;</span>
-</span><span class='line'>   <span class="err">starttls</span> <span class="err">enabled</span>
-</span><span class='line'>   <span class="err">default</span>
-</span><span class='line'><span class="err">mda</span> <span class="err">&quot;/usr/bin/procmail</span> <span class="err">-d</span> <span class="err">%T&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Listo! El correo <a href="&#x6d;&#x61;&#105;&#108;&#x74;&#x6f;&#58;&#114;&#111;&#x6f;&#116;&#x40;&#x74;&#117;&#x64;&#111;&#109;&#105;&#110;&#x69;&#x6f;&#x2e;&#x63;&#x75;">&#x72;&#111;&#111;&#x74;&#64;&#116;&#x75;&#x64;&#x6f;&#109;&#x69;&#110;&#x69;&#x6f;&#x2e;&#x63;&#117;</a> recibirá correos de <a href="&#x6d;&#97;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#99;&#114;&#x6f;&#x6e;&#x40;&#116;&#117;&#100;&#x6f;&#109;&#105;&#x6e;&#105;&#x6f;&#46;&#x63;&#x75;">&#x63;&#114;&#x6f;&#110;&#x40;&#116;&#117;&#100;&#x6f;&#109;&#x69;&#x6e;&#x69;&#x6f;&#x2e;&#x63;&#117;</a> con la
-salida del cron&hellip;</p>
 ]]></content>
   </entry>
   

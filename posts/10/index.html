@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="date_select en español 12/07/2015 3:14 pm | Comments Algunos componentes de Ruby on Rails, se pueden usar
-de manera independiente, como es el caso &hellip;">
+  <meta name="description" content="will_paginate 19/07/2015 2:58 pm | Comments De siempre, en materia de web la paginación ha sido tremendo rollo. A mi en lo
+personal no me gustan los &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,146 @@ de manera independiente, como es el caso &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/19/will-paginate/">will_paginate</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-07-19T14:58:30-04:00'><span class='date'>19/07/2015</span> <span class='time'>2:58 pm</span></time>
+        
+           | <a href="/blog/2015/07/19/will-paginate/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/07/19/will-paginate/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>De siempre, en materia de web la paginación ha sido tremendo rollo. A mi en lo
+personal no me gustan los paginadores; pienso que nadie los usa. Pero siempre
+hay un cliente que pide con mucho fervor detallitos que consideran importantes.</p>
+
+<p>Una de las cosas que me gusta de MongoMapper es que viene con un paginador
+integrado, pero este no es el caso.</p>
+
+<p>No entiendo porque carajo ActiveRecords, que se jacta (con razón) de ser la ORM
+definitiva; no tiene un puñetero soporte nativo para la paginación. O porque
+esta subestimada gema, llamada
+<a href="https://github.com/mislav/will_paginate/">will_paginate</a> no viene incluida en
+el Gemfile que trae RoR por defecto. Se harían un buen favor.</p>
+
+<p>La cuestión es que will_paginate hace muy simple la tediosa tarea de paginar.</p>
+
+<figure class='code'><figcaption><span>&#8216;instalando will_paginate&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;gem &quot;will_paginate&quot;&#39;</span> &gt;&gt; Gemfile
+</span><span class='line'>bundle update
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora veamos como se pagina un modelo. Tengamos el ejemplo típico, el
+controlador &ldquo;User&rdquo; con los 1500 usuarios.</p>
+
+<figure class='code'><figcaption><span>&#8220;controlador del scaffold users&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="vi">@users</span><span class="o">=</span><span class="no">User</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">all</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">paginate</span><span class="p">(</span><span class="ss">:page</span> <span class="o">=&gt;</span> <span class="n">params</span><span class="o">[</span><span class="ss">:page</span><span class="o">]</span><span class="p">,</span> <span class="ss">:per_page</span> <span class="o">=&gt;</span> <span class="mi">15</span><span class="p">)</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="s1">&#39;updated_at asc&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>OJO! De la 3ra linea, te puedes tomar el atrevimiento de modificar el 15 y poner
+el número que te de la gana; pero NO toques al símbolo :page y su valor. En este
+caso, el 15 representa la cantidad de elementos que mostraremos por página.</p>
+
+<p>Te digo que no toques el params[:page] porque will_paginate lo hace todo solo.
+En la vista solo tienes que poner esto</p>
+
+<figure class='code'><figcaption><span>&#8220;app/views/users/index.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="x">   &lt;div class=&quot;text-center&quot;&gt;</span>
+</span><span class='line'><span class="x">      </span><span class="cp">&lt;%=</span> <span class="n">will_paginate</span> <span class="vi">@users</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">   &lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finalmente queda algo de lo más discreto pero 100% funcional:</p>
+
+<div class="text-center">
+<div class="pagination">
+<span class="previous_page disabled">&#8592; Anterior</span>
+<em class="current">1</em>
+<a rel="next" href="#">2</a> <a href="#">3</a>
+<a href="#">4</a>
+<a href="#">5</a>
+<a href="#">6</a> <a href="#">7</a>
+<a href="#">8</a> <a href="#">9</a>
+<span class="gap">&hellip;</span>
+<a href="#">28</a>
+<a href="#">29</a>
+<a class="next_page" rel="next" href="#">Próximo &#8594;</a>
+</div></div>
+
+
+<p>¡COOOOÑOóOOO! En español y todo. Por supuesto,  no es magia. Lo que pasa que el
+que hizo la gema, la hizo con tremendo cariño y parece conocer muy bien la API
+de ruby on rails; con lo cual tuvo muy en cuenta, la parte del i18n.</p>
+
+<p>Ejecute lo siguiente:</p>
+
+<figure class='code'><figcaption><span>&#8220;contenido de la gema&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>gem cont will_paginate<span class="p">|</span>grep en.yml
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Guíate por ese fichero y añádele a tu locale la traducción relacionada con
+will_paginate, en mi caso, quedo así:</p>
+
+<figure class='code'><figcaption><span>&#8220;en.yml&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">en</span><span class="p-Indicator">:</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># el locales de will_paginate</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">will_paginate</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">previous_label</span><span class="p-Indicator">:</span> <span class="s">&quot;&amp;#8592;</span><span class="nv"> </span><span class="s">Anterior&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">next_label</span><span class="p-Indicator">:</span> <span class="s">&quot;Próximo</span><span class="nv"> </span><span class="s">&amp;#8594;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">page_gap</span><span class="p-Indicator">:</span> <span class="s">&quot;&amp;hellip;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¡¡A paginar se ha dicho!!</p>
+
+<p>Thanks to <strong>Mislav Marohnić</strong> for you good job; developing will_paginate</p>
+
+<p>Si te ha gustado will_paginate, escríbele un <a href="mailto:mislav.marohnic@gmail.com">correo al autor</a>
+y muéstrale tu agradecimiento. Yo ya lo hize ;)</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -258,7 +398,7 @@ ponerlos a tu manera. Osea, el contenido de ese YAML se lo adicionas al tuyo.</p
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -415,7 +555,7 @@ la solución, como es el ejemplo de esta:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -596,7 +736,7 @@ enlaces a las assets.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -783,87 +923,7 @@ declarando los componentes en los controladores.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-21T22:27:03-04:00'><span class='date'>21/06/2015</span> <span class='time'>10:27 pm</span></time>
-        
-           | <a href="/blog/2015/06/21/se-dice-dios-no-ala/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/21/se-dice-dios-no-ala/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="right" src="/images/ala.png" width="300" height="400" title="" ></p>
-
-<p>Aunque el islam es algo poco común en cuba, cada día en el mundo, va tomando más
-fuerza. Nunca falta un curioso que se cree culto y te dice.</p>
-
-<p>&ldquo;yo creo en dios, no en alá&rdquo;.</p>
-
-<p>Sin darse cuenta el disparate que están diciendo.</p>
-
-<p>   <blockquote><p>Alá es la hispanización de la palabra árabe Al-lāh (الله), que en español significa <strong>Dios</strong>.</p><footer><strong>Wikipedia</strong></footer></blockquote></p>
-
-<p>De hecho, los cristianos árabes (que hay) llaman a dios Alá, porque repito,
-<strong>significa dios LITERALMENTE</strong></p>
-
-<p>Claro, como en todas las religiones, siempre hay extremistas y aquí los hay, que
-andan por la habana, disfrazados de árabes y dicen Alá en vez de dios.</p>
-
-<p>Por otra parte, el <a href="https://es.wikipedia.org/wiki/Lengua_lit%C3%BArgica">idioma litúrgico</a>
-del islam es el árabe, razón por la cual el término suena más o menos como <em>al
-laaj</em> y mucha gente lo agarra por el mango.</p>
-
-<p>Existen dos grandes traducciones del corán al español, la Julio Cortés y la Isa
-García. La primera, en mi opinión, es bastante mala; comparada con la segunda,
-que es más completa, ya que incluye una interpretación contextual [entre
-corchetes] de las oraciones más complejas. Esto nos da la medida que la
-traducción es más fiel. En esta traducción, se usa el término Dios en lugar de
-Alá (casi siempre con inicial mayúscula).</p>
-
-<p>Por esta razón, mucha gente hablando en español dice &ldquo;alá&rdquo;. Y yo pregunto:</p>
-
-<h3>¿Has visto algún testigo de Jehová diciendo GOD?</h3>
-
-<p>Claro que no, todos dicen <strong>dios</strong>. Porque cuando la religión salió de Estados
-Unidos, medio mundo sabía inglés.</p>
-
-<p>Sin embargo, cuando el islam salió del mundo árabe, la palabra Alá empezó a
-sonar en España, donde no convenía que Alá y Dios fueran la misma cosa. A los
-Españoles había que convencerlos de que adorar a alá era adorar a un dios
-diferente. Problemas políticos <strong>de aquel entonces</strong>, por una bobería ahí
-llamada <a href="https://es.wikipedia.org/wiki/Reconquista">reconquista</a>.</p>
-
-<p>Hoy, en el siglo XXI, sabemos que <strong>dios</strong> en árabe se dice &ldquo;al laj&rdquo; (Al-Lāh o الله).</p>
-
-<p>Dios y Alá, son la misma cosa, solo cambia la manera en que las vemos&hellip; Dios es
-uno solo, onmipotente y omnisapiente; nosotros los mortales, dadas nuestras
-diferencias políticas, culturales e idiomáticas, necesitamos ponerle nombre a
-dios para poder comprenderlo.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -884,6 +944,10 @@ dios para poder comprenderlo.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/12/19/iptables-y-ftp/">iptables y ftp</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/12/09/rails-en-alpine/">rails en alpine</a>

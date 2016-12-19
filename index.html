@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="rails en alpine 09/12/2016 8:14 pm | Comments Finalmente el boom de docker llegó a Cuba. En mi caso personal, hace rato lo uso
-para desplegar &hellip;">
+  <meta name="description" content="iptables y ftp 19/12/2016 11:34 am | Comments Instalé un proftpd y le puse un cortafuegos a dicho servidor. Al instante,
+nagios reportó que el FTP &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +88,53 @@ para desplegar &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/12/19/iptables-y-ftp/">iptables y ftp</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-19T11:34:13-05:00'><span class='date'>19/12/2016</span> <span class='time'>11:34 am</span></time>
+        
+           | <a href="/blog/2016/12/19/iptables-y-ftp/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/12/19/iptables-y-ftp/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Instalé un proftpd y le puse un cortafuegos a dicho servidor. Al instante,
+nagios reportó que el FTP pinchaba, así que di por terminada la tarea. Sin
+embargo, a las dos horas un usuario me pregunta si &ldquo;el ftp está caído&rdquo;.</p>
+
+<p>Resulta que los puertos pasivos, se comportan de una manera &ldquo;inesperada&rdquo;. Una
+solución común es abrir el rango de puertos que se configuran como pasivos, pero
+eso no me cuadra.</p>
+
+<p>Por suerte, linux cuenta con un módulo especial llamado <strong>ip_conntrack_ftp</strong>,
+especial para el tema.</p>
+
+<p>Si quieres ver más detalles y otras soluciones, llégate aquí:</p>
+
+<p><a href="http://unix.stackexchange.com/questions/93554/iptables-to-allow-incoming-ftp">http://unix.stackexchange.com/questions/93554/iptables-to-allow-incoming-ftp</a></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2016/12/09/rails-en-alpine/">rails en alpine</a></h1>
     
     
@@ -110,7 +157,7 @@ para desplegar &hellip;">
   <div class="entry-content"><p><img class="right" src="/images/shinkasen.jpg" width="400" height="500" title="" ></p>
 
 <p>Finalmente el boom de docker llegó a Cuba. En mi caso personal, hace rato lo uso
-para desplegar aplicaciones de Ruby on Rails. Siempre me pareció que debian era
+para desplegar aplicaciones de Ruby on Rails y siempre me pareció que debian era
 la mejor base para hacer una imagen. Si bien, hay containers de rails, eso de
 usar en producción, con una distro hecha por un cualquiera, como que me da cosa.
 Hacer una a partir de la oficial, es más sencillo que verificar la integridad de
@@ -147,7 +194,7 @@ nodejs, tzdata, libxml2-dev,  libxslt-dev, sqlite-dev y claro, ruby</p>
 <p>Como nokogiri es un caso tan peculiar, le diremos que compile usando las
 librerías del sistema, para ellos lo instalaremos aparte. Alpine <strong>no</strong> usa
 glibc, usa musl-libc y nokogiri NO compila, por tanto, hay que usar las
-librerías del sistema, en vez de las que provee nokogiri.</p>
+librerías del sistema; en vez de las que provee nokogiri.</p>
 
 <figure class='code'><figcaption><span>&#8220;nokogiri&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>gem inst --no-document nokogiri -- --use-system-libraries
@@ -176,7 +223,7 @@ ver&hellip;</p>
 
 
 <p>Tengo una imagen llamada &ldquo;alpine_ruby&rdquo; en la que tengo todo lo necesario para
-instalar y no tengo la gema de rails instalada. Entonces, con cada versión de
+instalar y No tengo la gema de rails instalada. Entonces, con cada versión de
 rails, por ejemplo, derivar de &ldquo;alpine_ruby&rdquo; la imagen alpine_rails50 , así
 cuando salga el rails 5.1 le llamaré alpine_rails51</p>
 </div>
@@ -184,7 +231,7 @@ cuando salga el rails 5.1 le llamaré alpine_rails51</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -259,7 +306,7 @@ está, podría loguear, usuario, user-agent y url, pero la linea queda muy larga
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -380,7 +427,7 @@ no sea que hallas metido la delicada.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -532,7 +579,7 @@ quieras hacer específica para ese servidor. Se mostrará si existe el fichero.<
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -816,155 +863,6 @@ sea <strong>.conf</strong> se puede echar a andar con systemd.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/10/22/el-domain-pop/">recolección DomainPOP</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-10-22T22:44:36-04:00'><span class='date'>22/10/2016</span> <span class='time'>10:44 pm</span></time>
-        
-           | <a href="/blog/2016/10/22/el-domain-pop/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/10/22/el-domain-pop/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Esta entrada ha sido copiada de mi antiguo blog <a href="http://otherlinuxblog.blogspot.com">puheroska</a>.
-Vale aclarar que la escribí en el 2012&hellip;</p>
-
-<p>Se sabe poco sobre los orígenes de ese aborto de la naturaleza que es conocido
-por algunos como &ldquo;recolección aPOP&rdquo; o por otros como &ldquo;DomainPOP&rdquo;.</p>
-
-<p><img class="right" src="/images/apartado_postal.jpg" width="200" height="300" title="" ></p>
-
-<p>Haciendo referencia al hecho de bajar todo el correo para un dominio de un pop
-remoto. Muchos seguron lo identifican con un popular, potente y hermoso servidor
-de correo, para windows llamado MDeamon (pronunciado por algunos como
-&ldquo;emodimons&rdquo; y por otro como &ldquo;emdaimons&rdquo;). Muy conocido por su simple pero
-elegante cliente web, el World Client. Entre sus <em>features</em>, podemos ver el
-almacenamiento de TODO el correo de un dominio en un mismo buzón. Esto, sumado a
-que en cuba todo el software es gratis :D lo convirtió en la herramienta
-definitiva para las redes conmutadas.</p>
-
-<p>Por otra parte, no todo se le impugna windows. Cuando aún el morro era de palo y
-los cañones tiraban taquitos; ya citmatel usaba un CuciPOP (vean que clase de
-nombre &ldquo;Cubic Circles = CuCiPOP&rdquo;) para depositar el correo de sus clientes por
-lineas conmutadas; una clara implementación de aPOP. Esto resolvió ser la manera
-mas burda pero eficiente para resolver el problema del correo en lineas
-conmutadas.</p>
-
-<p>Lo único que perturba este barato panorama, es el hecho de que si el correo
-no tiene un To: bien claro, se jode todo y te ves obligado a usar MDeamon, que
-en ese aspecto se saca todos los premios. Por su puesto, él es una de
-la principales implementaciones de este modelo.</p>
-
-<p>A menudo nos encontramos con que al bajar el correo con fetchmail, uno o varios
-correos no van a su destino, y, por el contrario, van al postmaster sin tener
-coincidencias de usuarios locales.</p>
-
-<p>Hay quien esta acostumbrado a que el postmaster este LLENO de correos y eso
-le parece normal, cuando el buen funcionamiento de un servidor, se mide por el
-postmaster vacío.</p>
-
-<p>Si un correo tiene un To: o un Cc: fetchmail lo parsea (del infintivo &ldquo;parsear&rdquo;)
-y localiza una dirección de nuestro dominio basándose en que tiene el dominio en
-la configuración. Como le dijimos &lsquo;is * here&rsquo; buscará cual nombre que este
-delante de lo que se parezca a nuestro dominio y lo entregara.</p>
-
-<p>Pero: Qué pasa si el To: o el Cc: NO tienen una dirección de nuestro dominio?</p>
-
-<p>Supongamos que el correo viene Bcc: (blink carbon copy)</p>
-
-<p>Como por ejemplo, los correos de listas de distribuciones, etc&hellip; En ese caso
-los destinos se especifican en la orden RCPTO durante la sesión SMTP. Algunos
-servidores incluyen encabezados como: &ldquo;Delivery-To&rdquo;,&ldquo;Envelope-To&rdquo; o
-&ldquo;X-Orignial-To&rdquo; En mi opinión todos están de más, porque el Received: tiene esta
-información; pero bueno, podríamos decirle a fetchmail que ademas de esos,
-parsee encabezados Received: Eso parecería una solución, el único problema es
-que no pincha :-P</p>
-
-<h4>Hasta aquí la entrada de puheroska.</h4>
-
-<p>En aquel momento consideraba eso &ldquo;un problema sin solución&rdquo;</p>
-
-<p>Cuando llegué a salud, me encontré nuevamente con los DomainPOP, pero <strong>por
-suerte</strong>, los exim de infomed hacen bien esa pincha y dejan plasmado el
-destinatario en un encabezado &ldquo;Envelope-To&rdquo;</p>
-
-<p>He aquí el fetchmailrc que tengo en el calixto:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/fetchmailrc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Fichero de configuración de fethcmail, adecuado para los MultiPOP de infomed</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">set </span>daemon 60
-</span><span class='line'><span class="nb">set </span>postmaster <span class="s2">&quot;root&quot;</span>
-</span><span class='line'><span class="nb">set </span>no bouncemail
-</span><span class='line'><span class="nb">set </span>no spambounce
-</span><span class='line'><span class="nb">set </span>logfile .fetchmail.log
-</span><span class='line'><span class="nb">set </span>no syslog
-</span><span class='line'>
-</span><span class='line'>defaults
-</span><span class='line'>    timeout 10
-</span><span class='line'>    no keep
-</span><span class='line'>    fetchall
-</span><span class='line'>    expunge 5
-</span><span class='line'>    dropstatus
-</span><span class='line'>
-</span><span class='line'>poll multipop.sld.cu port <span class="m">110</span> protocol pop3 localdomains tudominio.sld.cu
-</span><span class='line'>    envelope <span class="m">1</span> <span class="s2">&quot;Envelope-to:&quot;</span>
-</span><span class='line'>    no dns
-</span><span class='line'>    username tuusuario
-</span><span class='line'>    password tupassword
-</span><span class='line'>    to * here
-</span><span class='line'>    limitflush
-</span><span class='line'>    smtphost localhost
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -980,6 +878,10 @@ destinatario en un encabezado &ldquo;Envelope-To&rdquo;</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/12/19/iptables-y-ftp/">iptables y ftp</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/12/09/rails-en-alpine/">rails en alpine</a>
