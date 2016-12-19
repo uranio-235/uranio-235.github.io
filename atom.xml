@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-12-19T11:45:16-05:00</updated>
+  <updated>2016-12-19T15:19:50-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,126 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[phpmyadmin múltiples servidores]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/12/19/phpmyadmin-multiples-servidores/"/>
+    <updated>2016-12-19T14:50:26-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/12/19/phpmyadmin-multiples-servidores</id>
+    <content type="html"><![CDATA[<p>Cuando tienes que manejar múltiples servidores SQL, no da la talla tener un
+phpmyadmin por cada servidor. Opté por tener un phpmyadmin instalado en mi
+laptop.</p>
+
+<p>Una manera muy sencilla de hacer la pincha, es mapear con SSH el puerto de mysql
+y conectar a todo el mundo como si fuera localhost.</p>
+
+<figure class='code'><figcaption><span>&#8220;ssh y mysql&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ssh root@192.168.0.9 -L 3306:127.0.0.1:3306 -N
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero en algunos casos, no hay SSH, el servidor no escucha por TCP, etc&hellip; En tal
+caso, podrías permitir que el root se administre remotamente.</p>
+
+<p>Para lograrlo hay que decirle a mysql que escuche por la dirección ip además de
+por el socket local. En infraestructuras grandes, por lo general, ya está hecho.
+Localiza en <strong>/etc/mysql/my.cnf</strong> el parámetro llamado <strong>bind-address</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/mysql/my.cnf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># Instead of skip-networking the default is now to listen only on</span>
+</span><span class='line'><span class="c"># localhost which is more compatible and is not less secure.</span>
+</span><span class='line'><span class="nb">bind</span>-address      <span class="o">=</span> 0.0.0.0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y reinicia el mysql, claro está&hellip;</p>
+
+<p>Ahora hacemos una consulta SQL, en la cual le daremos al usuario root, el
+permiso para conectarse de una ip dada. Por ejemplo, la computadora del sysadmin
+está en 192.168.0.222</p>
+
+<figure class='code'><figcaption><span>&#8220;grant root&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">ON</span> <span class="o">*</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="n">root</span><span class="o">@</span><span class="s1">&#39;192.168.0.222&#39;</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">&#39;tupassword&#39;</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora viene el truco mágico en la configuración de phpmyadmin. El fichero de
+configuración de phpmyadmin, en el caso de arch, está en
+/etc/webapps/phpmyadmin/config.inc.php en otras distros, no sé, pero siempre se
+llama <strong>config.inc.php</strong></p>
+
+<p>En ese fichero, localiza la cadena de texto &ldquo;First Server&rdquo;, debes ver algo como
+esto pero con muchos comentarios:</p>
+
+<figure class='code'><figcaption><span>&#8220;config.inc.php&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$i</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;auth_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;cookie&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;connect_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tcp&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;compress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;AllowNoPassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Solo tienes que añadirle otra <strong>$i++;</strong> y poner los parámetros en el array $cfg</p>
+
+<figure class='code'><figcaption><span>&#8220;ejemplo de múltiples servidores&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$i</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;auth_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;cookie&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;connect_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tcp&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;compress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;AllowNoPassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$i</span><span class="o">++</span><span class="p">;</span> <span class="c1">// otro servidor</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;verbose&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;otro servidor&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;192.168.1.9&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;connect_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tcp&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;compress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;AllowNoPassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$i</span><span class="o">++</span><span class="p">;</span> <span class="c1">// el leviatand de los mares</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;verbose&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;otro servidor mas&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;192.168.2.9&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;connect_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tcp&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;compress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;AllowNoPassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Cuantos servidores quieras añadirle&hellip; Cuando vallas a loguearte en el
+phpmyadmin verás debajo de la caja de login, un select, con el servidor que
+quieres acceder.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[iptables y ftp]]></title>
@@ -1932,60 +2052,6 @@ necesito. En este caso, asumiré que para al hibernar y enciende al despertar.</
 
 
 <p>Todo lo que necesitas está en el artículo de la wiki de archlinux: <a href="https://wiki.archlinux.org/index.php/Power_management">Power Management</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[rsync básico]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/07/17/rsync-basico/"/>
-    <updated>2016-07-17T16:49:25-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/07/17/rsync-basico</id>
-    <content type="html"><![CDATA[<p>Este es el tipo de cosas que uno hace cada 120 días y claro, cuando lo vas hacer
-ya se te olvidó; así que para el blog:</p>
-
-<p>Como compartir un directorio vía rsyncd. En el siguiente ejemplo, usaré mi
-directorio de Downloads, donde tengo cosas que copiar por SSH requiere mucha
-entropía y la copia se vuelve lenta, por ejemplo, los ficheros con la wikipedia
-(kiwix)</p>
-
-<p>La configuración de <strong>rsyncd</strong> radica en un lugar bastante obvio:
-<strong>/etc/rsyncd.conf</strong> a mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/rsyncd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">max connections</span> <span class="o">=</span> <span class="s">2</span>
-</span><span class='line'><span class="na">log file</span> <span class="o">=</span> <span class="s">/var/log/rsync.log</span>
-</span><span class='line'><span class="na">timeout</span> <span class="o">=</span> <span class="s">300</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">[descargas]</span>
-</span><span class='line'>   <span class="na">comment</span> <span class="o">=</span> <span class="s">las cosas que descargué</span>
-</span><span class='line'><span class="s">   path = /home/lazaro/Download/</span>
-</span><span class='line'><span class="s">   read only = yes</span>
-</span><span class='line'><span class="s">   list = yes </span>
-</span><span class='line'><span class="s">   uid = lazaro</span>
-</span><span class='line'><span class="s">   gid = nobody</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahí tenemos el directorio <strong>descargas</strong> servido por rsyncd. Vamos a efectuar una
-copia:</p>
-
-<figure class='code'><figcaption><span>&#8220;rsync&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rsync --include<span class="o">=</span><span class="s1">&#39;*.gz&#39;</span> --exclude<span class="o">=</span><span class="s1">&#39;*&#39;</span>  -aPv rsync://pub@10.1.1.187/descargas/ ./
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En ese ejemplo, usamos los parámetros <strong>&ndash;include</strong> y <strong>&ndash;exclude</strong>, para copiar
-solamente los fichero <strong>.gz</strong></p>
 ]]></content>
   </entry>
   

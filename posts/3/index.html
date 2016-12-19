@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="driver broadcom 04/10/2016 2:53 pm | Comments Cuando tienes un dispositivo inalámbrico de Broadcom, por lo general tienes un
-bluetooth y una wifi. &hellip;">
+  <meta name="description" content="la resolución 185/2016 22/10/2016 12:51 am | Comments El otro día, me doy por enterado que que lanzaron la resolución 185/2016 nada
+menos que sobre &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,83 @@ bluetooth y una wifi. &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/10/22/ipv6/">la resolución 185/2016</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-10-22T00:51:14-04:00'><span class='date'>22/10/2016</span> <span class='time'>12:51 am</span></time>
+        
+           | <a href="/blog/2016/10/22/ipv6/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/10/22/ipv6/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>El otro día, me doy por enterado que que lanzaron la resolución 185/2016 nada
+menos que sobre la implementación de ipv6. Como todo en cuba; llega tarde pero
+bien recibido. Me reí muchísimo cuando la leí. No con la ley, si no imaginándome
+la puesta en vigor de la ley.</p>
+
+<p>Me imaginé:</p>
+
+<ul>
+<li>la gente poniendo ipv6 en su LAN con el prefijo 2001:db8::</li>
+<li>los cortafuegos sin configurar</li>
+<li>los que no leen preguntando como hacer un forward o un nateo</li>
+</ul>
+
+
+<p>Y la mierda estaba por llover, cuando vi mi vaticinio materializándose ante mis
+ojos.</p>
+
+<h3>Podría ser este tu caso</h3>
+
+<p>Luego de entablar un diálogo técnico, una persona a la que consideraba buena en
+este asunto de los servidores y redes, me dice que implementó ipv6 hace como un
+mes, pero que tenía &ldquo;un problema&rdquo;, ya que no lograba hacer un NAT para que el
+servidor de correo dentro de la LAN, recibiera los correos desde afuera.</p>
+
+<p>Cuando le dije que me mandara su cortafuegos, me dijo que no tenía un
+cortafuegos aún para ipv6.</p>
+
+<p>Me insistió que por favor le explicara <strong>cómo hacer el singao nateo</strong>.</p>
+
+<p>Le pedí que me mostrara como tenía ipv6 desplegado y me dijo que la puerta de
+enlace era 2001:db8::1 y el servidor de correo ::2</p>
+
+<p>Llegado a ese punto, lo mandé a fumarse un peo, pero volvió a llamar; pasando
+por alto el collar de insultos que le había puesto antes de tirar el teléfono.</p>
+
+<h3>Sobre el &ldquo;nateo de ipv6&rdquo;</h3>
+
+<p><strong>ipv6 NO lleva nateo. El nateo fue una solución que mandó a la mierda ipv6</strong></p>
+
+<p>Si tienes una ip pública con máscara /64 es visible desde y hacia internet. O
+sea, que si tu servidor de correo tiene una dirección como 2001:db8::2/64 <strong>YA
+ES VISIBLE EN INTERNET</strong> y si no tienen cortafuegos pinguísimo <strong>aprepárate</strong>.</p>
+
+<p>Más detalles en la siguiente entrada&hellip;</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -185,7 +262,7 @@ Solución PERFECTA.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -292,7 +369,7 @@ pulseaudio al directorio de usuario:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -450,7 +527,7 @@ man de NetworkManager las acciones; podrás subsanar muchas necesidades.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -595,158 +672,7 @@ Podrás usarlo como unidad óptica de las máquinas virtuales.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/07/31/kiwix-como-servicio/">kiwix como servicio</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-07-31T17:40:02-04:00'><span class='date'>31/07/2016</span> <span class='time'>5:40 pm</span></time>
-        
-           | <a href="/blog/2016/07/31/kiwix-como-servicio/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/07/31/kiwix-como-servicio/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Dos pájaros de un tiro. Como crear unit de usuario y como usar kiwix como
-servicio:</p>
-
-<p>La idea es correr un kiwix en segundo plano, como mi usuario sin que el root
-lance dicha unit, ya que ésto me huele a la posibilidad de escaladas de
-permisos.</p>
-
-<p>Ante todo, vamos a crear el zoológico de systemd en el directorio de usuario.
-Si mal no recuerdo, esto fue lo que hice.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -p /home/lazaro/.config/systemd/user
-</span><span class='line'><span class="nb">cd</span>  /home/lazaro/.config/systemd/user
-</span><span class='line'>loginctl <span class="nb">enable</span>-linger <span class="nv">$USER</span>
-</span><span class='line'>systemctl --user daemon-reload
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Claro, el daemon-reload ahí no es necesario, pero para que te quede claro, que
-todas las operaciones de systemd, relacionadas con el usuario, se deben preceder
-del argumento &ndash;user</p>
-
-<p>Crea el la unit, en mi caso se llama <strong>kiwix.service</strong> pero tu la puedes nombrar
-<strong>comotedelagana.service</strong> Trata de usar minúsculas y debes terminar con la
-extensión <strong>.service</strong> A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;kiwix.service&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Unit]</span>
-</span><span class='line'><span class="na">Description</span><span class="o">=</span><span class="s">el kiwix como daemon en http://localhost:9091</span>
-</span><span class='line'><span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">[Service]</span>
-</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">forking</span>
-</span><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/opt/kiwix/bin/kiwix-serve --daemon --port=9091 --library /home/lazaro/.www.kiwix.org/kiwix/c2oklrcd.default/data/library/library.xml </span>
-</span><span class='line'>
-</span><span class='line'><span class="k">[Install]</span>
-</span><span class='line'><span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora si mete un <strong>daemon-reload</strong></p>
-
-<p>Por cierto, fíjate bien en la linea <strong>ExecStart</strong> que es bien larga, nota que el
-parámetro <strong>&ndash;library</strong> se le envía como argumento el <strong>.xml</strong> que se genera al
-añadir fichero zim a tu librería. O sea, una vez abierto en la aplicación
-visual. Por tanto, Si vas a hacer un servidor, mejor será que le eches un
-vistazo a <strong>library.xml</strong>; el cual contiene los metadatos que apuntan a los
-&ldquo;ficheros.zim&rdquo;</p>
-
-<p>Más o menos así luce un <strong>library.xml</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;library.xml&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot;?&gt;</span>
-</span><span class='line'><span class="nt">&lt;library</span> <span class="na">current=</span><span class="s">&quot;b0e8b25e-1c6e-c354-21da-ceff3607de21&quot;</span> <span class="na">version=</span><span class="s">&quot;20110515&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;3b448cdb-6b20-73ed-421f-fdef87f80167&quot;</span> <span class="na">path=</span><span class="s">&quot;/opt/kiwix/data/wikipedia_es_all.zim&quot;</span> <span class="na">last=</span><span class="s">&quot;1470535686&quot;</span> <span class="na">title=</span><span class="s">&quot;Wikipedia ESP&quot;</span> <span class="na">description=</span><span class="s">&quot;Wikipedia en Español&quot;</span> <span class="na">language=</span><span class="s">&quot;spa&quot;</span> <span class="na">creator=</span><span class="s">&quot;Wikipedia&quot;</span> <span class="na">publisher=</span><span class="s">&quot;Kiwix&quot;</span> <span class="na">favicon=</span><span class="s">&quot;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&quot;</span> <span class="na">faviconMimeType=</span><span class="s">&quot;image/png&quot;</span> <span class="na">date=</span><span class="s">&quot;2015-10-12&quot;</span> <span class="na">articleCount=</span><span class="s">&quot;1206089&quot;</span> <span class="na">mediaCount=</span><span class="s">&quot;1111559&quot;</span> <span class="na">size=</span><span class="s">&quot;12988257&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;b0e8b25e-1c6e-c354-21da-ceff3607de21&quot;</span> <span class="na">path=</span><span class="s">&quot;/opt/kiwix/data/wikipedia_en_all_nopic.zim&quot;</span> <span class="na">last=</span><span class="s">&quot;1470535759&quot;</span> <span class="na">title=</span><span class="s">&quot;Wikipedia ENG&quot;</span> <span class="na">description=</span><span class="s">&quot;Wikipedia en Inglés (sin imágenes)&quot;</span> <span class="na">language=</span><span class="s">&quot;eng&quot;</span> <span class="na">creator=</span><span class="s">&quot;Wikipedia&quot;</span> <span class="na">publisher=</span><span class="s">&quot;Kiwix&quot;</span> <span class="na">favicon=</span><span class="s">&quot;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&quot;</span> <span class="na">faviconMimeType=</span><span class="s">&quot;image/png&quot;</span> <span class="na">date=</span><span class="s">&quot;2015-05-17&quot;</span> <span class="na">articleCount=</span><span class="s">&quot;4858372&quot;</span> <span class="na">mediaCount=</span><span class="s">&quot;325904&quot;</span> <span class="na">size=</span><span class="s">&quot;16024312&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'><span class="nt">&lt;/library&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Por ejemplo, a mi el valor de las etiquetas <em>title</em> y <em>description</em>, me gusta cambiarlo.</p>
-
-<p>Para que se gener ese XML, abre la aplicación <strong>una vez</strong> para que se cree la biblioteca. O sea, en abrir
-archivos, añadimos a nuestra librería, todos los .zim que queramos.</p>
-
-<p><img class="center" src="/images/kiwix-open.png" width="500"></p>
-
-<p>Llegado a este punto, se habrá creado el perfil de kiwix en nuestro $HOME y
-contendrá el importantísimo <strong>library.xml</strong>. Si ya añadiste a tu biblioteca
-todos los <strong>.zim</strong> que quieres, terminamos con el kiwix. Ciérralo.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>file .www.kiwix.org/kiwix/*.default
-</span><span class='line'>.www.kiwix.org/kiwix/c2oklrcd.default: directory
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Usamos el comando <strong>file</strong> para determinar cual fue. En mi caso se llama
-<strong>~/.www.kiwix.org/kiwix/c2oklrcd.default</strong></p>
-
-<p>Al argumento <strong>ExecStart</strong> de la unit, debes darle la ruta absoluta de la
-librería, así que nada de ~/, le pones /home/fulanito.</p>
-
-<p>Bueno, volviendo a la unit, veamos más de cerca el <strong>ExecStart</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;scope de kiwix.service&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/opt/kiwix/bin/kiwix-serve --daemon --port=9091 --library /home/lazaro/.www.kiwix.org/kiwix/c2oklrcd.default/data/library/library.xml </span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>La ruta el binario de <strong>kiwix-serve</strong> en modo daemon <strong>&ndash;daemon</strong> por el puerto
-9091 <strong>&ndash;port 9091</strong> y siendo la librería <strong>&ndash;library (ruta absoluta)</strong></p>
-
-<p>Salva y ejecuta un daemon-reload. Luego, lánzalo:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl --user start kiwix.service
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Abre un navegador y apunta para <a href="http://localhost:9091">http://localhost:9091</a></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -767,6 +693,10 @@ librería, así que nada de ~/, le pones /home/fulanito.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/12/19/phpmyadmin-multiples-servidores/">phpmyadmin múltiples servidores</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/12/19/iptables-y-ftp/">iptables y ftp</a>

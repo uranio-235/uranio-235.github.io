@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>domainpop con postfix - El SysAdmin del 3er Mundo</title>
+  <title>phpmyadmin múltiples servidores - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="domainpop con postfix 22/10/2016 5:35 pm | Comments Otra importante entrada que decidí migrar de puheroska Es tan sencillo como crear un dominio &hellip;">
+  <meta name="description" content="phpmyadmin múltiples servidores 19/12/2016 2:50 pm | Comments Cuando tienes que manejar múltiples servidores SQL, no da la talla tener un
+phpmyadmin &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2016/10/22/domainpop-con-postfix/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2016/12/19/phpmyadmin-multiples-servidores/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -84,7 +85,7 @@
   
   <header>
     
-      <h1 class="entry-title">domainpop con postfix</h1>
+      <h1 class="entry-title">phpmyadmin múltiples servidores</h1>
     
     
       <p class="meta">
@@ -93,7 +94,7 @@
 
 
 
-<time class='entry-date' datetime='2016-10-22T17:35:46-04:00'><span class='date'>22/10/2016</span> <span class='time'>5:35 pm</span></time>
+<time class='entry-date' datetime='2016-12-19T14:50:26-05:00'><span class='date'>19/12/2016</span> <span class='time'>2:50 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -103,47 +104,122 @@
   </header>
 
 
-<div class="entry-content"><p>Otra importante entrada que decidí migrar de <a href="http://otherlinuxblog.blogspot.com">puheroska</a></p>
+<div class="entry-content"><p>Cuando tienes que manejar múltiples servidores SQL, no da la talla tener un
+phpmyadmin por cada servidor. Opté por tener un phpmyadmin instalado en mi
+laptop.</p>
 
-<p>Es tan sencillo como crear un dominio virtual y asignarle usuarios reales. Para
-no volverte loco pon el nombre del usaurio igual que el del dominoio.</p>
+<p>Una manera muy sencilla de hacer la pincha, es mapear con SSH el puerto de mysql
+y conectar a todo el mundo como si fuera localhost.</p>
 
-<p>Por ejemplo, crea dos usuarios, uno llamado <em>subdom</em> y un segndo llamado <em>otro</em>.
-Luego crea el fichero /etc/postfix/virtual y ponle esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/postfix/virtual&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>@subdom.tudomionio.cu   subdom
-</span><span class='line'>@otro.tudominio.cu      otro
+<figure class='code'><figcaption><span>&#8220;ssh y mysql&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ssh root@192.168.0.9 -L 3306:127.0.0.1:3306 -N
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>postmap</strong> que tú conoces y <strong>postfix reload</strong></p>
+<p>Pero en algunos casos, no hay SSH, el servidor no escucha por TCP, etc&hellip; En tal
+caso, podrías permitir que el root se administre remotamente.</p>
 
-<figure class='code'><figcaption><span>&#8220;postmap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>Para lograrlo hay que decirle a mysql que escuche por la dirección ip además de
+por el socket local. En infraestructuras grandes, por lo general, ya está hecho.
+Localiza en <strong>/etc/mysql/my.cnf</strong> el parámetro llamado <strong>bind-address</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/mysql/my.cnf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>postmap /etc/postfix/virtual
-</span><span class='line'>postfix reload
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># Instead of skip-networking the default is now to listen only on</span>
+</span><span class='line'><span class="c"># localhost which is more compatible and is not less secure.</span>
+</span><span class='line'><span class="nb">bind</span>-address      <span class="o">=</span> 0.0.0.0
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Ya hemos declarado que <em>subdom</em> y <em>otro</em>, serán usuarios y que todo lo que se envíe
-a los dominios virtuales @otro.tudominio.cu será almacenado en /var/mail/otro</p>
+<p>y reinicia el mysql, claro está&hellip;</p>
 
-<p>Finalmente en el /etc/main.cf pones:</p>
+<p>Ahora hacemos una consulta SQL, en la cual le daremos al usuario root, el
+permiso para conectarse de una ip dada. Por ejemplo, la computadora del sysadmin
+está en 192.168.0.222</p>
 
-<figure class='code'><figcaption><span>&#8220;/etc/postfix/main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">virtual_alias_domains</span> <span class="o">=</span> subdom.tudominio.cu otro.tudominio.cu
-</span><span class='line'><span class="nv">virtual_alias_maps</span> <span class="o">=</span> <span class="nb">hash</span>:/etc/postfix/virtual
+<figure class='code'><figcaption><span>&#8220;grant root&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">ON</span> <span class="o">*</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="n">root</span><span class="o">@</span><span class="s1">&#39;192.168.0.222&#39;</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">&#39;tupassword&#39;</span><span class="p">;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>OJO no olvides que en <strong>mydestination</strong> y debes incluir ambos dominios virtuales.</p>
+<p>Ahora viene el truco mágico en la configuración de phpmyadmin. El fichero de
+configuración de phpmyadmin, en el caso de arch, está en
+/etc/webapps/phpmyadmin/config.inc.php en otras distros, no sé, pero siempre se
+llama <strong>config.inc.php</strong></p>
+
+<p>En ese fichero, localiza la cadena de texto &ldquo;First Server&rdquo;, debes ver algo como
+esto pero con muchos comentarios:</p>
+
+<figure class='code'><figcaption><span>&#8220;config.inc.php&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$i</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;auth_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;cookie&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;connect_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tcp&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;compress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;AllowNoPassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Solo tienes que añadirle otra <strong>$i++;</strong> y poner los parámetros en el array $cfg</p>
+
+<figure class='code'><figcaption><span>&#8220;ejemplo de múltiples servidores&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$i</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;auth_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;cookie&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;connect_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tcp&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;compress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;AllowNoPassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$i</span><span class="o">++</span><span class="p">;</span> <span class="c1">// otro servidor</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;verbose&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;otro servidor&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;192.168.1.9&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;connect_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tcp&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;compress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;AllowNoPassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$i</span><span class="o">++</span><span class="p">;</span> <span class="c1">// el leviatand de los mares</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;verbose&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;otro servidor mas&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;192.168.2.9&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;connect_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tcp&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;compress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;AllowNoPassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Cuantos servidores quieras añadirle&hellip; Cuando vallas a loguearte en el
+phpmyadmin verás debajo de la caja de login, un select, con el servidor que
+quieres acceder.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -157,7 +233,7 @@ a los dominios virtuales @otro.tudominio.cu será almacenado en /var/mail/otro</
 
 
 
-<time class='entry-date' datetime='2016-10-22T17:35:46-04:00'><span class='date'>22/10/2016</span> <span class='time'>5:35 pm</span></time>
+<time class='entry-date' datetime='2016-12-19T14:50:26-05:00'><span class='date'>19/12/2016</span> <span class='time'>2:50 pm</span></time>
       
 
 
@@ -165,7 +241,7 @@ a los dominios virtuales @otro.tudominio.cu será almacenado en /var/mail/otro</
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2016/10/22/domainpop-con-postfix/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2016/10/22/domainpop-con-postfix/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2016/12/19/phpmyadmin-multiples-servidores/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2016/12/19/phpmyadmin-multiples-servidores/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -178,10 +254,8 @@ a los dominios virtuales @otro.tudominio.cu será almacenado en /var/mail/otro</
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2016/10/22/tunel-6in4/" title="Previous Post: túnel 6in4">&laquo; túnel 6in4</a>
+        <a class="basic-alignment left" href="/blog/2016/12/19/iptables-y-ftp/" title="Previous Post: iptables y ftp">&laquo; iptables y ftp</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2016/10/22/el-domain-pop/" title="Next Post: recolección DomainPOP">recolección DomainPOP &raquo;</a>
       
     </p>
   </footer>
@@ -615,8 +689,8 @@ a los dominios virtuales @otro.tudominio.cu será almacenado en /var/mail/otro</
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2016/10/22/domainpop-con-postfix/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2016/10/22/domainpop-con-postfix/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2016/12/19/phpmyadmin-multiples-servidores/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2016/12/19/phpmyadmin-multiples-servidores/';
         var disqus_script = 'embed.js';
       
     (function () {
