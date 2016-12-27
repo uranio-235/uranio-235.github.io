@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="pacman bajo el microscopio 01/06/2015 9:13 pm | Comments En este post, me propongo mostrarle algunas de las bondades de pacman. Cualquier
-que &hellip;">
+  <meta name="description" content="transando a ext4 03/06/2015 11:08 pm | Comments Una de mis grandes testarudeces (profesionales) siempre ha sido la negativa a
+usar ext4. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,75 @@ que &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-03T23:08:27-04:00'><span class='date'>03/06/2015</span> <span class='time'>11:08 pm</span></time>
+        
+           | <a href="/blog/2015/06/03/transando-a-ext4/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/03/transando-a-ext4/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Una de mis grandes testarudeces (profesionales) siempre ha sido la negativa a
+usar ext4. Acostumbrado a los discos IDE, siempre me pareció que el journal
+escribía demasiado en el disco. Además, solía verse ext4dev y eso me sonaba a
+que se usaría mi sistema como ratón de laboratorio.</p>
+
+<p>Tanta fue mi fobia, que hoy en día aún uso discos montados en ext2. Por ejemplo,
+mi laptop estaba montada en ext2 hasta ahora mismo; también la partición /home
+del servidor LTSP.</p>
+
+<p>Un fallo eléctrico reciente, me demostró que el journal es un mal necesario. En
+discos de tanta escritura, como es el caso del /home de los clientes ligeros, la
+integridad de los datos es definitivamente una clave para el sistema. Además,
+todo el que usó ext4dev no se quejó nunca.</p>
+
+<figure class='code'><figcaption><span>&#8220;tune2fs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>tune2fs -O extents,uninit_bg,dir_index /dev/sda2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso, le pones a tu ext2 todas las gangarreas del 4. A este punto, reza
+porque no se valla luz! Hay que dar otro paso y es pasar un fsck.</p>
+
+<figure class='code'><figcaption><span>&#8220;tune2fs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>tune2fs -c <span class="m">0</span> /dev/sda <span class="o">&amp;&amp;</span> reboot
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Marca el disco para chequear y reinicia. Cuando levante, verás que da unos palos
+raros ahí pero tú tranquilo.</p>
+
+<p>Las memorias si las dejo con ext2. Pues no necesitan un journal escribiendo
+tanto y acortando su vida útil.</p>
+
+<p>Lo próximo que instale, lo haré con BtrFS que está <em>más mejoL en todavía</em>. Dice
+tener un soporte especial para discos SSD con lo cual me imagino que para las
+memorias flash sea más óptimo.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -397,7 +466,7 @@ ahora ya sabes una parte, te dejo que investigues el resto.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -454,7 +523,7 @@ todas salen de un supuesto firefox.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -561,7 +630,7 @@ pa la casa.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -946,7 +1015,7 @@ ser alcanzado por otra máquina.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1335,64 +1404,6 @@ carece de nodejs. Por ejemplo, algunos de mis clientes usan Ubuntu del año 4.</
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-02-21T14:16:49-05:00'><span class='date'>21/02/2015</span> <span class='time'>2:16 pm</span></time>
-        
-           | <a href="/blog/2015/02/21/sasl-homeclub-only/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/21/sasl-homeclub-only/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>De siempre, me ha molestado que los hacker de hipatia.net, hagan ataquitos para
-autenticarse por fuerza bruta.</p>
-
-<p>Mis paisanos suelen resolver ese problema poniendo una pasarela de correo
-&ldquo;relay-only&rdquo; delante de su servidor principal o simplemente con fail2ban.</p>
-
-<p>fail2ban tiene sus ventajas, pues bloqueas a un atacante que podría hacer eso y
-otras muchas cosas que no imaginamos.</p>
-
-<p>Pero por suerte, <a href="http://www.postfix.org/postconf.5.html#smtpd_sasl_exceptions_networks">postfix tiene su método para deshacerse del problema&hellip;</a></p>
-
-<p>Como no tengo nada en mynetworks, a mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;scope del main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># sasl solo para nuestra red local</span>
-</span><span class='line'><span class="nv">smtpd_sasl_exceptions_networks</span> <span class="o">=</span> !10.1.1.0/24
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Osea: &ldquo;a lo que NO este en esa red, no se le ofrece autenticación&rdquo;</p>
-
-<h4>Se acabó la autenticación pa afuera</h4>
-
-<p>   <blockquote><p>Te das cuenta que NO todo se resuelve con violencia,<br/>   cuando se te pusa un mosquito en los testículos.</p></blockquote></p>
-</div>
-  
-  
-
-
 <p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
@@ -1414,6 +1425,10 @@ otras muchas cosas que no imaginamos.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2016/12/27/cambiar-mac-a-un-nano/">cambiar mac a un nano</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/12/19/phpmyadmin-multiples-servidores/">phpmyadmin múltiples servidores</a>

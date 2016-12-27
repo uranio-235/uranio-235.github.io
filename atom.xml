@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2016-12-19T15:19:50-05:00</updated>
+  <updated>2016-12-27T09:52:16-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,75 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[cambiar mac a un nano]]></title>
+    <link href="http://uranio-235.github.io/blog/2016/12/27/cambiar-mac-a-un-nano/"/>
+    <updated>2016-12-27T09:39:44-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2016/12/27/cambiar-mac-a-un-nano</id>
+    <content type="html"><![CDATA[<p>Un socio me preguntó hace poquito si yo podía cambiarle la MAC a un nano. Me
+pareció muy estrafalaria la necesidad de él, pero según me contó, en la red
+criolla que está suscrito, suelen banear los nanos cuando los usuarios se portan
+mal.</p>
+
+<p>Tras una búsqueda en internet vi unos post en un forum pero ninguno me funcionó.
+La idea es, correr un fichero al iniciar el sistema, que corra ifconfig y le
+cambie la MAC a las interfaces.</p>
+
+<p>La problemática radica, que a la interfaz &ldquo;ath0&rdquo;, no se le puede cambiar la MAC,
+ya que aún estando down, te dice dispositivo ocupado. Por esa razón, parecía no
+pinchar la solución de los post. Sin embargo, si bajas las 3 interfaces
+involucradas en la conexión, luego cambias dichas mac, <strong>sí pincha</strong>.</p>
+
+<p>Para ello crearemos el fichero <strong>/etc/persistent/rc.poststart</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/persistent/rc.poststart&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/sh</span>
+</span><span class='line'>
+</span><span class='line'>ifconfig br0 down
+</span><span class='line'>ifconfig wifi0 down
+</span><span class='line'>ifconfig ath0 down
+</span><span class='line'>
+</span><span class='line'>ifconfig wifi0 hw ether 5e:53:84:bc:a3:54
+</span><span class='line'>ifconfig ath0 hw ether 5e:53:84:bc:a3:54
+</span><span class='line'>
+</span><span class='line'>ifconfig ath0 up
+</span><span class='line'>ifconfig wifi0 up
+</span><span class='line'>ifconfig br0 up
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A ese fichero le ponemos el ejecutable, si no, no pinchará.</p>
+
+<figure class='code'><figcaption><span>&#8220;ejecutable&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>XW.v5.6.2# chmod a+rx /etc/persistent/rc.poststart
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finalmente, le decimos al firmware que modifique los cambios y que reinicie.</p>
+
+<figure class='code'><figcaption><span>&#8220;salva y reinicia&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>XW.v5.6.2# cfgmtd -w -p /etc/
+</span><span class='line'>XW.v5.6.2# reboot
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Todavía hay quien cree que las MAC son una medida segura para crear reglas de
+control de acceso&hellip;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[phpmyadmin múltiples servidores]]></title>
@@ -1914,144 +1983,6 @@ librería, así que nada de ~/, le pones /home/fulanito.</p>
 
 
 <p>Abre un navegador y apunta para <a href="http://localhost:9091">http://localhost:9091</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[hibernar en archlinux]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/07/17/hibernar-en-archlinux/"/>
-    <updated>2016-07-17T23:17:17-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/07/17/hibernar-en-archlinux</id>
-    <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/Hibernacion_by_Zetabox.jpg" width="250"></p>
-
-<p>Hablando de cosas olvidables. Siempre que instalo archlinux, se me olvida que
-hay que hacer una ceremonia para que la hibernación pinche.</p>
-
-<p>De más está que te diga que necesitarás una <strong>particion</strong> swap, con al menos el
-mismo tamaño de la RAM que tienes. No pincha con swapfiles.</p>
-
-<p>En mi caso, yo hice una swap del tamaño de la RAM, lo cual me jode a la hora de
-hibernar, ya que se demora mucho descartando los datos que hay en la swap (si
-hay) en el momento de hibernar.</p>
-
-<p>Bueno entrando en materia:</p>
-
-<p>En el GRUB, le daremos el parámetros <strong>resume</strong> y usaremos como argumento, el
-disco de donde se resume, o sea <strong>la swap</strong>. Veamos cual es el UUID de la swap:</p>
-
-<figure class='code'><figcaption><span>fstab</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>cat /etc/fstab <span class="p">|</span>grep swap
-</span><span class='line'><span class="nv">UUID</span><span class="o">=</span>2b3ed70d-5746-4a94-bd07-77eacd99f03c  none swap defaults,discard<span class="o">=</span>pages <span class="m">0</span> 0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Vamos al cargador de arranque (grub en mi caso) y le decimos cual es el disco de
-donde debe tomar la imagen y resumirla. Localiza el fichero <strong>/etc/default/grub</strong>
-y en una de las primeras lineas, modifica la cláusula <strong>GRUB_CMDLINE_LINUX_DEFAULT</strong>
-inclúyele <strong>resume=UUID=LaUUiDeTuDisCoSwap</strong>. A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;la parte de arriba de</span><a href='http://uranio-235.github.io/etc/default/grub'>&#8221;</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">GRUB_DEFAULT</span><span class="o">=</span><span class="s">0</span>
-</span><span class='line'><span class="na">GRUB_TIMEOUT</span><span class="o">=</span><span class="s">5</span>
-</span><span class='line'><span class="na">GRUB_DISTRIBUTOR</span><span class="o">=</span><span class="s">&quot;Arch&quot;</span>
-</span><span class='line'><span class="na">GRUB_CMDLINE_LINUX_DEFAULT</span><span class="o">=</span><span class="s">&quot;ipv6.disable=1 resume=UUID=2b3ed70d-5746-4a94-bd07-77eacd99f03c&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ven, ahí declaramos (EL UUID DE <strong>LA SWAP</strong>) la partición donde se almacena
-la imagen que crea el proceso de hibernación.</p>
-
-<p>Pero no todo está listo, aún initramfs no se ha dado por enterado que vamos a
-hibernar. Localiza el fichero <strong>/etc/mkinitcpio.conf</strong> y añadele el <strong>hook</strong> de
-resume, a mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;fragmento de mkinitcpio.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="c1">#</span>
-</span><span class='line'><span class="c1">##   NOTE: If you have /usr on a separate partition, you MUST include the</span>
-</span><span class='line'><span class="c1">#    usr, fsck and shutdown hooks.</span>
-</span><span class='line'><span class="na">HOOKS</span><span class="o">=</span><span class="s">&quot;base udev resume autodetect modconf block filesystems keyboard fsck&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Generalmente debes ponerlo después de <strong>udev</strong> y antes de <strong>autodetect</strong>. No te
-olvides de regnerar el initramfs:</p>
-
-<figure class='code'><figcaption><span>initramfs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkinitcpio -p linux
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Si te molesta que la swap haga su pincha de swap (como en mi caso) puede
-deshabilitar el swapiness. Crea un fichero <strong>/etc/sysctl.d/00-noswap.conf</strong>
-y ponle adentro el siguiete valor: <strong>vm.swappiness=0</strong></p>
-
-<p>Y hibernan como los osos :D</p>
-
-<p>Seguro te preguntarás como hacer que se ejecute algo al hibernar o despertar.
-Pues puedes crear una unit llamadas <strong>root-resume</strong> y <strong>root-suspend</strong>.</p>
-
-<p>Por
-ejemplo, a mi en lo personal, me interesa parar el puto networkmanager cuando
-hiberno, ya que es poco probable que cuando despierte, esté en otro lugar y
-probablemente sin red. En mi caso yo habilito el networkmanager solo cuando lo
-necesito. En este caso, asumiré que para al hibernar y enciende al despertar.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/systemd/system/root-suspend.service&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Unit]</span>
-</span><span class='line'><span class="na">Description</span><span class="o">=</span><span class="s">Local system suspend actions</span>
-</span><span class='line'><span class="na">Before</span><span class="o">=</span><span class="s">sleep.target</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">[Service]</span>
-</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
-</span><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/bin/systemctl stop NetworkManager</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">[Install]</span>
-</span><span class='line'><span class="na">WantedBy</span><span class="o">=</span><span class="s">sleep.target</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Al despertar arranca:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/systemd/system/root-resume.service &#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Unit]</span>
-</span><span class='line'><span class="na">Description</span><span class="o">=</span><span class="s">Local system suspend actions</span>
-</span><span class='line'><span class="na">Before</span><span class="o">=</span><span class="s">sleep.target</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">[Service]</span>
-</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
-</span><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/bin/systemctl start NetworkManager</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">[Install]</span>
-</span><span class='line'><span class="na">WantedBy</span><span class="o">=</span><span class="s">sleep.target</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Todo lo que necesitas está en el artículo de la wiki de archlinux: <a href="https://wiki.archlinux.org/index.php/Power_management">Power Management</a></p>
 ]]></content>
   </entry>
   
