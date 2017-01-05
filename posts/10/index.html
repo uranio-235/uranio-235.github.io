@@ -9,9 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="compute remote uptime 28/08/2015 12:21 pm | Comments Vamos de atrás pa alante, el truco primero y la muela después. "nmap"1
-2
-[root@artema ~]# nmap &hellip;">
+  <meta name="description" content="archlinux con dos kernel 07/09/2015 8:32 pm | Comments Tener los dos kernel y elegir cual butear con el grub al principio; no es algo
+sencillo en &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +82,229 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/07/archlinux-dos-kernel/">archlinux con dos kernel</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-07T20:32:57-04:00'><span class='date'>07/09/2015</span> <span class='time'>8:32 pm</span></time>
+        
+           | <a href="/blog/2015/09/07/archlinux-dos-kernel/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/09/07/archlinux-dos-kernel/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Tener los dos kernel y elegir cual butear con el grub al principio; no es algo
+sencillo en archlinux.</p>
+
+<p>Por defecto, el grub dice tener dichas entradas en un submenú que nunca se ve.
+Para lograrlo, tenemos que hacer unos paces mágicos en el fichero:</p>
+
+<h4>/etc/default/grub</h4>
+
+<p>Primero instalamos los kernels; el lts y el fresco.</p>
+
+<figure class='code'><figcaption><span>&#8220;los kernels&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S linux linux-lts
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora la configuración con la que logré eso, fue agregándole al final estas
+lineas:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/default/grub&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">GRUB_DISABLE_SUBMENU</span><span class="o">=</span>y
+</span><span class='line'><span class="nv">GRUB_DEFAULT</span><span class="o">=</span>saved
+</span><span class='line'><span class="nv">GRUB_SAVEDEFAULT</span><span class="o">=</span><span class="nb">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso, se salva la última entrada ejecutada. Por que, lo más obvio, es que la
+próxima vez que arranques, se cargue el último kernel que usaste. Lo inusual
+sería que cambies de opinión y cargues otro. Desgraciadamente, si como yo, usas
+btrfs como sistema de archivo, grub no podrá escribir el fichero con la última
+entrada seleccionada. Incluso te dará un error, diciendo que no puede escribir
+el fichero no se que.</p>
+
+<p>Seguimos&hellip; Localiza y la linea de recovery y ponla en false:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/default/grub&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Uncomment to disable generation of recovery mode menu entries</span>
+</span><span class='line'><span class="nv">GRUB_DISABLE_RECOVERY</span><span class="o">=</span><span class="nb">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>NO SE POR QUE</strong>, pero no se generan las dichosas entradas si eso no está en
+false. Además, tener el menú de recovery es bastante útil, en estas distros
+volátiles, uno nunca sabe cuando le va a hacer falta.</p>
+
+<p>Paso final, generar el grub.cfg</p>
+
+<figure class='code'><figcaption><span>&#8220;grub-mkconfig&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>grub-mkconfig -o /boot/grub/grub.cfg
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Va y si quieres, no es obligado, pero para probar, <strong>REINICIA</strong>.</p>
+
+<p>   <blockquote><p>Prefiero lidiar con las pifias de una comunidad<br/>   que con las mazmorras de una compañía.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/01/squid-transparente/">squid transparente</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-01T14:23:00-04:00'><span class='date'>01/09/2015</span> <span class='time'>2:23 pm</span></time>
+        
+           | <a href="/blog/2015/09/01/squid-transparente/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/09/01/squid-transparente/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>La era de SSL, parece haber dejado a los proxies trasparentes un tanto pasados
+de moda. Los tiempos en que dos lineas de iptables resolvían el problema,
+simplemente quedaron atrás. Ahora necesitamos las dos lineas de iptables y un
+poquito más.</p>
+
+<p>Recientemente la comunidad de NetFilter (iptables) y la de squid, ha unido
+esfuerzos para crear solución. El protocolo TPROXY de iptables, entra en juego
+con la maquinaria de squid; dando lugar a un nateo especial. Aunque un está en
+pañales, el asunto promete. En esta entrada no le daremos cobertura a Tproxy,
+pero en la próxima pienso hacerlo.</p>
+
+<p>Esta la dejaremos reservada para &ldquo;ssl_bump&rdquo;</p>
+
+<p>Squid desarrolló un sistema especial para cachear y generar los certificados SSL
+que requiere. Esto al principio fue tema de discusión. Siempre que hay una
+aplicación externa, las vulnerabilidades se sirven con cuchara grande.
+Finalmente squid lo logró y desarrolló una especie de:</p>
+
+<p>&ldquo;ataque MITM corporativizado&rdquo;</p>
+
+<p>Como dirían los aldeanos: &ldquo;mamando se quita el frío&rdquo;, así que empezemos&hellip;</p>
+
+<p>Primero y principioso, es dejar nuestro squid funcionando con una ACL bien
+<em>lazy</em>.  Digamos por ejemplo, que la red 192.168.10.0/24 pasará a través del
+proxy transparente.</p>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>acl red_transparente src 192.168.10.0/24
+</span><span class='line'>http_access allow red_transparente
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Necesitaremos generar un certificado SSL en nuestro squid, certificado que; con
+suerte, el navegador se lo comerá con papa, creyendo que va pal sitio de verdad.</p>
+
+<p>Una vez que el usuario acepte este certificado. TODOS los sitios que pidan,
+vendrán con este certificado.</p>
+
+<figure class='code'><figcaption><span>&#8220;openssl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/squid/
+</span><span class='line'>mkdir ssl_cert
+</span><span class='line'><span class="nb">cd </span>ssl_cert
+</span><span class='line'>openssl req -new -newkey rsa:1024 -days <span class="m">365</span> -nodes -x509 -keyout squid.pem -out squid.pem
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora le decimos a calamardo, que escuche por el 3129 como interceptor. Además,
+le pondremos una serie de parametros que harán un funcionar al ssl_bumper. A mi
+me quedó así:</p>
+
+<h4>OJO con la segunda lina, es muy larga</h4>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>http_port 0.0.0.0:3128
+</span><span class='line'>http_port 0.0.0.0:3129 intercept ssl-bump generate-host-certificates<span class="o">=</span>on <span class="nv">dynamic_cert_mem_cache_size</span><span class="o">=</span>4MB <span class="nv">cert</span><span class="o">=</span>/etc/squid/ssl_cert/squid.pem
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora inicializamos el depósito donde colocaremos los certificados que vallamos
+cogiendo.</p>
+
+<figure class='code'><figcaption><span>&#8220;ssl_crtd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/usr/lib/squid/ssl_crtd -c -s /etc/squid/certificados
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y le configuramos la maquinaria diabólica a squid.</p>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">dynamic_cert_mem_cache_size</span><span class="o">=</span>4MB <span class="nv">cert</span><span class="o">=</span>/etc/squid/ssl_cert/squid.pem
+</span><span class='line'>ssl_bump none localhost
+</span><span class='line'>ssl_bump server-first all
+</span><span class='line'>sslcrtd_program /usr/lib/squid/ssl_crtd -s /etc/squid/certificados -M 4MB
+</span><span class='line'>sslcrtd_children 5
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Entonces NetFilter en juego. Nuevamente salen a la palestras las dos lineas
+clásicas.</p>
+
+<figure class='code'><figcaption><span>&#8220;iptables&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>iptables -t nat -A PREROUTING -i wlan0 -p tcp -m tcp --dport <span class="m">80</span> -j REDIRECT --to-ports 3129
+</span><span class='line'>iptables -t nat -A PREROUTING -i wlan0 -p tcp -m tcp --dport <span class="m">443</span> -j REDIRECT --to-ports 3129
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Claro, esto no lo es todo, vas a necesitar un DNS que apunte TODAS las
+direcciones URL a tu proxy.</p>
+
+<p>Eso lo veremos en la próxima entrada ;)</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -222,7 +444,7 @@ que mejor aprender a leer árabe y listo.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -362,7 +584,7 @@ y muéstrale tu agradecimiento. Yo ya lo hize ;)</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -541,269 +763,7 @@ ponerlos a tu manera. Osea, el contenido de ese YAML se lo adicionas al tuyo.</p
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/07/11/openvas-en-archlinux/">OpenVAS en Archlinux</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-07-11T19:19:59-04:00'><span class='date'>11/07/2015</span> <span class='time'>7:19 pm</span></time>
-        
-           | <a href="/blog/2015/07/11/openvas-en-archlinux/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/07/11/openvas-en-archlinux/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="left" src="/images/greenbone.png" title="Login del Greenbone" alt="Login del Greenbone"></p>
-
-<p>Recientemente, un &ldquo;Webmaster&rdquo; usó en uno de los servidores que patrocino; un
-escaner de vulnerabilidades. El administrador de red del lugar, le dio acceso al
-servidor; claro está. El informe reveló un cartapaso de vulnerabilidades. Por
-ejemplo, la ausencia de una partición swap; podría dar lugar a un kernel-panic
-por falta de memoria RAM; en un servidor de correo con 4 Gigas de RAM. Además,
-advertía que la versión de bash (con sus parches puestos) era muy vieja y
-recomendaba usar una reciente. Como si instalar software reciente en debian
-fuese jamón.</p>
-
-<p>No vi nada con respecto a postfix o dovecot pero de inmediato me llamaron para
-que explicara como era posible que mi servidor tuviera semejantes
-vulnerabilidades. Claro, con acceso a root cualquiera busca vulnerabilidades.</p>
-
-<p>Soy de los que pasa HORAS, intentando penetrar mi propia seguridad; pero el caso
-llevaba un contra ataque más elaborado.</p>
-
-<p>El sosftware por excelencia para probar la seguridad: <a href="http://es.wikipedia.org/wiki/OpenVAS">OpenVAS</a></p>
-
-<h3>No solo identifica el problema, también te dice como arreglarlo.</h3>
-
-<p>Funciona de manera similar a un antivirus. Una base de datos se actualiza y ala
-las vulnerabilidades conocidas. Luego, una interfaz web, de lo más cómoda;
-permite llevar a cabo un análisis tanto ligero como exhaustivo del sistema
-seleccionado como objetivo. Además, se pueden programar análisis de manera
-automatizada.</p>
-
-<p>Su interfaz web, el llamado &ldquo;Greenbone Security Assistant&rdquo;, nos hará la vida muy
-fácil una vez instalado.</p>
-
-<p>En archlinux todo es un rollo, así que empezemos:</p>
-
-<figure class='code'><figcaption><span>&#8220;instalando openvas&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S openvas
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>La interfaz web de openvas (el greenbone) debe ser contactada por SSL (obligao).
-Como siempre, crear los certificados es todo una ceremonia.</p>
-
-<figure class='code'><figcaption><span>&#8220;creando certificados&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvas-mkcert
-</span><span class='line'>openvas-mkcert-client -n -i
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora lo más importante. Descargarnos la base de datos con las amenazas, o sea,
-con las vulnerabilidades.</p>
-
-<figure class='code'><figcaption><span>&#8220;actualizando las bases&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvas-nvt-sync
-</span><span class='line'>openvas-scapdata-sync
-</span><span class='line'>openvas-certdata-sync
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El escaner, es un servicio, que en producción, está supuestamente corriendo y
-realizando escaneos bajo demanda. Lo echamos a andar:</p>
-
-<figure class='code'><figcaption><span>&#8220;el servicio&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl start openvas-scanner
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Una vez que tenemos las bases de datos descargadas, las instalamos en openvas</p>
-
-<figure class='code'><figcaption><span>&#8220;instalando las bases&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvasmd --rebuild --progress
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Y hasta aquí es donde la wiki de arch está bien. Pues para crear el usuario de
-openvas y echar a andar el greenbone, se forma la moña.</p>
-
-<p>Primero debemos crear el usuario de openvas. En este caso de ejemplo, el
-usuario será <strong>admin</strong> con password <strong>admin</strong>.</p>
-
-<figure class='code'><figcaption><span>&#8220;creando usuarios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvasmd --create-user<span class="o">=</span>admin --role<span class="o">=</span>Admin
-</span><span class='line'>openvasmd --user<span class="o">=</span>admin --new-password<span class="o">=</span>admin
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Por último, echamos a andar la interfaz web:</p>
-
-<figure class='code'><figcaption><span>&#8220;iniciando gsad&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>gsad --http-only --listen<span class="o">=</span>127.0.0.1 -p 9392
-</span><span class='line'>openvasmd -p <span class="m">9390</span> -a 127.0.0.1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Abre un navegador y apunta para <a href="http://127.0.0.1:9392">http://127.0.0.1:9392</a></p>
-
-<p>Una vez dentro, verás la página donde se almacenan los escaneos. Ahí localiza un
-botón morado con una barita mágica. Vea la imagen de abajo</p>
-
-<p><img class="center" src="/images/openvas_wiz.png" title="Botón del Wizard" alt="Botón del Wizard"></p>
-
-<p>En la pantalla que le sigue, especificamos el host al que queremos escanear.</p>
-
-<p><img class="center" src="/images/openvas_scan.png" title="Seleccionar Objetivo" alt="Seleccionar objetivo"></p>
-
-<p>Apto seguido, comenzará el escaneo. Es posible que el servidor deje de prestar
-servicios; pues openvas le da con todo.</p>
-
-<p>Finalmente, cuando el escaneo esté terminado, en vez de un tanto por ciento,
-verás; como en la primera imagen, un letrero que dice &ldquo;<strong>done</strong>&rdquo; sobre la barra
-azul.</p>
-
-<p><img class="center" src="/images/openvas_result.png" title="resultado del escaneo" alt="resultado de escaneo"></p>
-
-<p>La imagen muestra, el resultado del webmaster que le tiró piedras al tejado del
-vecino con el suyo de vidrio. Al hacer click en la vulnerabilidad, nos muestra
-la solución, como es el ejemplo de esta:</p>
-
-<p><img class="center" src="/images/openvas_sol.png" title="solución" alt="solución"></p>
-
-<p>Hermosa pareja; el problema y la solución junticos&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/">añadir verbo a un scaffold</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-07-05T21:35:54-04:00'><span class='date'>05/07/2015</span> <span class='time'>9:35 pm</span></time>
-        
-           | <a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/07/05/anadir-verbo-a-un-scaffold/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Cualquiera que sepa como usar debidamente los scaffolds, o sea, cualquiera que
-sepa como hacerle la paja a ruby on rails para que haga lo que queremos; seguro
-habrá intentado en algún momento, añadir un nuevo método a un scaffold. Además,
-de seguro quisiste luego poder llamarlo con los métodos &ldquo;metodo_user_path&rdquo; y que
-la ruta se cree de manera automática.</p>
-
-<p>Por ejemplo, en este caso, tengo el scaffold <strong>user</strong> y le agregué el método
-<strong>cambiar</strong> aparte de los clásicos PUT y DELETE.</p>
-
-<figure class='code'><figcaption><span>&#8220;scope de users_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="c1"># cambia el estado de habilitación del usuarios</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">cambiar</span>
-</span><span class='line'>     <span class="vi">@user</span><span class="o">.</span><span class="n">enabled</span><span class="o">=!</span><span class="vi">@user</span><span class="o">.</span><span class="n">enabled</span>
-</span><span class='line'>     <span class="vi">@user</span><span class="o">.</span><span class="n">save</span>
-</span><span class='line'>     <span class="n">redirect_to</span> <span class="ss">:back</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># GET /users</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
-</span><span class='line'>    <span class="vi">@users</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">all</span>
-</span><span class='line'>  <span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Pero el método cambiar no aparece en rails hasta que no hagas lo siguiente en el
-fichero de las rutas.</p>
-
-<figure class='code'><figcaption><span>&#8220;config/routes.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>   <span class="c1"># el scaffold de los usuarios</span>
-</span><span class='line'>   <span class="n">resources</span> <span class="ss">:users</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="c1"># agregamos el verbo cambiar usado para</span>
-</span><span class='line'>      <span class="c1"># @user.enabled=!@user.enabled</span>
-</span><span class='line'>      <span class="c1"># para que exista: cambiar_user_path</span>
-</span><span class='line'>      <span class="n">member</span> <span class="k">do</span>
-</span><span class='line'>         <span class="n">get</span> <span class="s1">&#39;cambiar&#39;</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora existirá el método <strong>cambiar_user_path</strong> que toma como argumento el
-usuario.</p>
-
-<p>   cambiar_user_path(user)</p>
-
-<p>De esta manera, se le manda el objeto usuario y genera una URL como</p>
-
-<p>   /users/345/cambiar</p>
-
-<p>Dicha ruta macheará el método User#cambiar</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -824,6 +784,14 @@ usuario.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/01/02/rails-assets/">rails-assets</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/12/29/xgproyect/">xgproyect</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/12/27/cambiar-mac-a-un-nano/">cambiar mac a un nano</a>
@@ -1228,7 +1196,7 @@ usuario.</p>
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2016 - låzaro -
+  Copyright &copy; 2017 - låzaro -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

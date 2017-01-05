@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="cambiar mac a un nano 27/12/2016 9:39 am | Comments Un socio me preguntó hace poquito si yo podía cambiarle la MAC a un nano. Me
-pareció muy &hellip;">
+  <meta name="description" content="rails-assets 02/01/2017 6:55 pm | Comments Gemas como twitter-bootstrap-rails, hacen que el trabajo con CSS complejas
+supuestamente se haga al click &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,227 @@ pareció muy &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/01/02/rails-assets/">rails-assets</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-01-02T18:55:02-05:00'><span class='date'>02/01/2017</span> <span class='time'>6:55 pm</span></time>
+        
+           | <a href="/blog/2017/01/02/rails-assets/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/02/rails-assets/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Gemas como twitter-bootstrap-rails, hacen que el trabajo con CSS complejas
+supuestamente se haga al click. Pero cuando deseas ir un poco más allá, por
+ejemplo, si quieres DataTables, notarás que tienes dos opciones, la primera,
+usar una gema desfasada (si hay, que casi siempre la hay, aunque buena para
+nada).</p>
+
+<p>Sin embargo, parece que algún cerebrito, hizo un sitio en el cual la fuente
+oficial de las assets (quizás a través de npm) se convierten de manera
+automatizada en una gema de rails.</p>
+
+<p>De esta manera, al poner en el Gemfile de tu aplicación esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;Gemfile&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span>  <span class="s1">&#39;https://rails-assets.org&#39;</span> <span class="k">do</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-bootstrap&#39;</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-DataTables&#39;</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-jquery-ui&#39;</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-iCheck&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Instalarás dichas js/css en tu aplicación.</p>
+
+<p>En el <a href="https://rails-assets.org">sito web de rails-assets</a> explica con unos
+diff, que debes poner en el application.js y aaplication.css para incluir cada
+una de las assets. Casi siempre es algo genérico al nombre, lo puedes intuir.</p>
+
+<p>De todas maneras, el fracasado proyecto de crear un jquery unobstructive;
+condujo a que jquery fuera expulsada del core de rails. Así que al parecer la
+tendencia de rails 5 en adelante, será usar las js aparte.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/12/29/xgproyect/">xgproyect</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-29T21:48:32-05:00'><span class='date'>29/12/2016</span> <span class='time'>9:48 pm</span></time>
+        
+           | <a href="/blog/2016/12/29/xgproyect/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/12/29/xgproyect/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Se supone que te cuente la historia de Xnova, OAgame y XGProyect pero de verdad
+que NO estoy pa eso; ya me la disparé en la wikipedia más dos alemanes que mi
+hicieron su propia versión de la historia. Pa hacerte el cuento corto, es un
+juego de exploración y conquista del universo. Suena emocionante, pero todo
+sucede en páginas web.  Cosas como &ldquo;tus naves destruyeron la flota enemiga&rdquo; el
+juego te las cuenta, tú no las vez.</p>
+
+<p>La tercera vez que me preguntaron en el calixto si &ldquo;tenía montado un xnova&rdquo;
+decidí tomar cartas del asunto. Después de mucho rodar por google, no di con el
+código fuente de xnova. El colega Leslie (alias &ldquo;Curielete&rdquo;) me comenta que
+ahora lo que se usa es XGProyect.</p>
+
+<p>La versión más reciente, es la <a href="https://github.com/XGProyect/XG-Proyect-v3.x.x/releases/download/v3.0.3/XGP3.0.3.zip">3.0.3, bájatela aquí</a></p>
+
+<p>En mi caso, dispuse de un Virtualhost en el servidor web, para la aplicación. El
+document root de este virtualhost, apuntará a <strong>/var/www/xgp</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;descargando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>wget -c https://github.com/XGProyect/XG-Proyect-v3.x.x/releases/download/v3.0.3/XGP3.0.3.zip
+</span><span class='line'>unzip XGP3.0.3.zip
+</span><span class='line'>mv xgp3.0.3/upload /var/www/xgp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Setea los permisos como prefieras, pero al directorio de configuración, deberás
+darle permiso de escritura HASTA que culmine el proceso de instalación.</p>
+
+<figure class='code'><figcaption><span>&#8220;poniendo permisos temporales&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>chmod -R <span class="m">0777</span> application/config/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>OJO</h4>
+
+<p>Requiere mysql, así que para este ejemplo, crearemos una base de datos llamada
+<strong>&ldquo;x&rdquo;</strong></p>
+
+<p>Al abrir un navegador y dirigirnos al sitio, te redireccionará al instalador de
+manera automática. Pedirá irremediablemente los parámetros. Luego de establecer
+la conexión con la base de datos, creará el fichero de configuración. Al hacer
+click en continuar, creará la complejísima base de datos que contendrá el
+universo del juego.</p>
+
+<p><img class="center" src="/images/xg_1.png" width="500" height="600" title="" ></p>
+
+<p>Si te da un error 500, es porque tu versión de php o de mysql, no le juega. Para
+este ejemplo, se usó debian 8 (el container de docker para ser más preciso)</p>
+
+<p>Más específicamente estas:</p>
+
+<figure class='code'><figcaption><span>&#8220;versiones&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@40e0cc02bcd7:/# php -v
+</span><span class='line'>PHP 5.6.24-0+deb8u1 <span class="o">(</span>cli<span class="o">)</span> <span class="o">(</span>built: Jul <span class="m">26</span> <span class="m">2016</span> 08:17:07<span class="o">)</span>
+</span><span class='line'>Copyright <span class="o">(</span>c<span class="o">)</span> 1997-2016 The PHP Group
+</span><span class='line'>Zend Engine v2.6.0, Copyright <span class="o">(</span>c<span class="o">)</span> 1998-2016 Zend Technologies
+</span><span class='line'>    with Zend OPcache v7.0.6-dev, Copyright <span class="o">(</span>c<span class="o">)</span> 1999-2016, by Zend Technologies
+</span><span class='line'>
+</span><span class='line'>root@40e0cc02bcd7:/# mysqld -V
+</span><span class='line'>mysqld  Ver 5.5.52-0+deb8u1 <span class="k">for</span> debian-linux-gnu on x86_64 <span class="o">((</span>Debian<span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con el php de archlinux, no me pinchó, todo daba error 500</p>
+
+<p>Finalmente, nos pedirá crear el primer usuario que es además, el administrador
+del juego. Deja que veas el panel de admin, tiene más botones y menú, que la
+cabina de cualquier nave espacial.</p>
+
+<p>Una vez terminado ese proceso, nos pide borrar el directorio &ldquo;install&rdquo;.
+Renombrarlo trae horribles consecuencias, así que bórralo o cámbialo de lugar.</p>
+
+<p>Por último, le devolvemos sus permisos al directorio de configuración.</p>
+
+<figure class='code'><figcaption><span>&#8220;poniendo permisos temporales&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>chmod -R <span class="m">0444</span> application/config/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>De regreso a la ventana del juego, tendrás la landing-page y el botón entrar.</p>
+
+<p><img class="center" src="/images/xg_2.png" width="500" height="600" title="" ></p>
+
+<p>Ahí te logueas y localizas el menú de administración. Puedes llegar por
+<a href="http://tuservidor/admin.php">http://tuservidor/admin.php</a> Por ahí puede para empezar, hacer la tarea más
+elemental: Crear usuarios.</p>
+
+<p><img class="center" src="/images/xg_3.png" width="600" height="700" title="" ></p>
+
+<p>Entra cuanto antes al panel de administración y verás que te pida una
+actualización. Al pulsar el botón, te saldrán unas sentencias SQL. Quizás las
+ejecute, quizás no lo consiga. Por si acaso, tu las ejecutas en una consola SQL.
+Si tienes ese error (actualización disponible) no te dejará hacer nada hasta que
+no lo resuelvas.</p>
+
+<p>Luego llégate a &ldquo;Errores DB&rdquo; y subsánalos. Por suerte es tan simple como hacer
+click en &ldquo;Eliminar Todos&rdquo;. También en el menú &ldquo;Características del Juego&rdquo;, te
+recomiendo desactivar &ldquo;Mercader&rdquo; y &ldquo;Oficiales&rdquo;, enseguida te darás cuenta por
+qué lo digo.</p>
+
+<p><img class="right" src="/images/xg_4.png" width="600" height="700" title="" ></p>
+
+<p>Los usuarios se hacen en el menú &ldquo;Creador&rdquo; (no en &ldquo;Usuarios&rdquo;)</p>
+
+<p>Otra cosa, el panel de admin carga lento, es bastante lento pero eso es normal.</p>
+
+<p>Realmente el juego tiene su encanto. Abres la página cada una o dos horas, hace
+una que otra bobería y dejas las tarea en cola. Me resulta más entretenido que
+facebook. En el Link &ldquo;notas&rdquo; vas tomando nota de lo que tienes por hacer, cuando
+te vuelvas a loguear el lunes, solo tienes que mirarlas. Consejo, haste una
+&ldquo;fabrica de robots&rdquo; cuanto antes.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -173,7 +394,7 @@ control de acceso&hellip;</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -318,7 +539,7 @@ quieres acceder.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -365,7 +586,7 @@ especial para el tema.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -470,203 +691,7 @@ cuando salga el rails 5.1 le llamaré alpine_rails51</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/11/24/squid3-bloquear-user-agent/">squid3 bloquear user-agent</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-11-24T14:36:13-05:00'><span class='date'>24/11/2016</span> <span class='time'>2:36 pm</span></time>
-        
-           | <a href="/blog/2016/11/24/squid3-bloquear-user-agent/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/11/24/squid3-bloquear-user-agent/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="right" src="/images/noiexplore.png" width="400" height="500" title="" ></p>
-
-<p>Recién, he tenido algunos problemas con descargadores multi-hilos que se chupan
-el ancho de banda y se cagan en los delay_pools. Buscando como bloquear dichos
-descargadores, el colega Agustín Ybarra me recomienda bloquear los user_agent.</p>
-
-<p>Pero pensándolo bien, resolví unos cuantos problemas. Pues por ejemplo, google
-play service de los teléfonos android, consume muchísimo y resuelve poco, de
-forma que el que navega en un delay_pool, ve afectado su ancho de banda por
-cosas que ignora.</p>
-
-<p>Solución, bloquear los User-Agent. La idea suena bien, pero primero hay que
-loguear los user agent. Para ellos usaremos un custom_log de squid, loguearemos
-los usuarios y los user-agent. A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># loguea los user-agent</span>
-</span><span class='line'>logformat useragent  %un <span class="s2">&quot;%{User-Agent}&gt;h&quot;</span>
-</span><span class='line'>access_log daemon:/var/log/squid3/user_agent.log useragent
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora tenemos el fichero <em>user_agent.log</em>, logueando usuario y user_agent; claro
-está, podría loguear, usuario, user-agent y url, pero la linea queda muy larga.</p>
-
-<p>Una vez que hallas encontrado el user-agent que te moleste, crea una ACL
-<strong>arriba</strong> de la ACL que autorize la navegación.</p>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># por ejemplo, blqueamos zapya y se fana</span>
-</span><span class='line'>acl zapya browser ^com<span class="se">\.</span>dewmobile
-</span><span class='line'>http_access deny zapya
-</span><span class='line'>http_reply_access deny zapya
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Seguiré aquí, como <a href="https://es.wikipedia.org/wiki/The_Catcher_in_the_Rye">el pescador del centeno</a>, esperando a que vuelva a usar su descargadorcito multi-hilo de mierda&hellip; aunque seguro puede cambiarle el user-agent.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/11/22/redimensionar-lvm/">redimensionar lvm</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-11-22T21:00:22-05:00'><span class='date'>22/11/2016</span> <span class='time'>9:00 pm</span></time>
-        
-           | <a href="/blog/2016/11/22/redimensionar-lvm/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/11/22/redimensionar-lvm/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Este post es a método de memorando, ya que SIEMPRE se me olvida como hacerlo.</p>
-
-<p>En materia de virtualización, el sistema de plantillas nunca me ha gustado,
-<strong>porque NO SÉ quién instala esos sistemas operativos ni como.</strong></p>
-
-<p><strong>Yo prefiero</strong> por ejemplo, instalar un debian, acomodarle todo a mi manera y
-usar esa instalación para generar nuevas máquinas, con todo ya listo. Por
-ejemplo, un prototipo de firewall, las configuraciones de interfaz puesta con
-dhcp, pero una configuración estática bien comentada, etc..</p>
-
-<p>Mantengo esa máquina detenida y la arranco de vez en cuando para actualizar.
-Cuando voy a hacer una nueva, <strong>simplemente clono esa máquina</strong>.</p>
-
-<p>Prefiero llamarlo <strong>matriz</strong> que <em>plantilla</em>. El resto del tiempo, dicha máquina
-permanece detenida (apagada) evitando así desgaste, envejecimiento, generación
-de logs, etc&hellip;</p>
-
-<p>Eso en la práctica, es lo mismo que una plantilla (para los criticones y amantes
-de la moda).</p>
-
-<p>Un inconveniente que afronté al principio con esto, fue &ldquo;el tamaño asignado al
-disco duro&rdquo;. Por ejemplo, el servidor de correo que me lleva 500 gigas, mientras
-que en el sistema de monitoreo (nagios) solo se lleva 5 gigas.</p>
-
-<p>La matriz tiene un disco de 5 gigas donde se instaló todo. Sobre espacio, ya que
-borrando /usr/share/doc/ y la cache de apt, se quedo en menos de un giga. El
-problema (con Xen) viene a la hora de agrandar el disco.</p>
-
-<p>No se como proxmox maneja esa situación y sinceramente, <strong>no me interesa</strong>, ya
-que:</p>
-
-<p><strong>LVM resuelve el problema!</strong></p>
-
-<p>Si no tienes la costumbre de instalar sobre LVM, deberías hacértela&hellip; Es muy
-versátil.</p>
-
-<p>BTRfs es otra buena opción, pero su rendimiento decae mucho con el tiempo (<strong>mi
-experiencia</strong>).</p>
-
-<p>Añadir un disco al volumen lógico y aumentar su tamaño resuelve el problema.</p>
-
-<p>Claro, el sistema de archivos que instalaste, debe soportar tal operación, pero
-por suerte, ext4 lo hace perfectamente y sin tener que desmontar el sistema de
-archivos.</p>
-
-<p>El problema es que <strong>NUNCA ME ACUERDO</strong> de los comandos para redimensionar el
-volumen lógico.</p>
-
-<figure class='code'><figcaption><span>&#8220;la nota&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>pvcreate /dev/xvdb
-</span><span class='line'>vgextend lvm /dev/xvdb
-</span><span class='line'>lvm lvextend -l +100%FREE /dev/lvm/lv1
-</span><span class='line'>resize2fs -p /dev/lvm/lv1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note que mi grupo de volúmenes se llama <strong>lvm</strong> y que el volumen lógico se llama
-<strong>lv1</strong> (no soy muy creativo con nombres para lvm). O sea, el disco quedaría
-así:</p>
-
-<h4>/dev/mapper/lvm-lv1</h4>
-
-<p><strong>Nota para los retardados:</strong> <em>El dispositivo /dev/xvdb es OTRO disco que se le
-añadió a la máquina para aumentar su espacio. Tenía /dev/xvda con 5 gigas y se
-le añádió otro disco, el llamado /dev/xvdb, con más espacio. Oséase colocaste
-otro disco en la máquina virtual o simplemente conectaste otro disco duro en el
-canal sata de una máquina física</em></p>
-
-<p>Entonces, linea por linea, en cámara lenta:</p>
-
-<p>1- Convierte el disco /dev/xvdb en un volumen físico (mete el disco pal saco de
-LVM) En mi caso, el  grupo de volúmenes se llama <strong>lvm</strong>, así que:</p>
-
-<p>2- Extenderemos el grupo llamado <strong>lvm</strong> añadiendo el volumen físico
-<strong>/dev/xvdb</strong> al volumen lógico <strong>lv1</strong>.</p>
-
-<p>3- La parte que siempre se me olvida (el parámetro está raro con cojone)
-Redimensionar el volumen lógico <strong>lv1</strong> a su máxima capacidad.</p>
-
-<p>4- Por último, redimensionar el ext4 en <strong>/dev/lvm/lv1</strong> a su máxima capacidad.</p>
-
-<p>Y listo! Ya tienes tu disco del tamaño que te de la gana ;-)</p>
-
-<p>Puedes correr <strong>lvmdiskscan -l</strong> para cerciorarte de que todo esté como esperas,
-no sea que hallas metido la delicada.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -685,6 +710,14 @@ no sea que hallas metido la delicada.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/01/02/rails-assets/">rails-assets</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/12/29/xgproyect/">xgproyect</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/12/27/cambiar-mac-a-un-nano/">cambiar mac a un nano</a>
@@ -1089,7 +1122,7 @@ no sea que hallas metido la delicada.</p>
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2016 - låzaro -
+  Copyright &copy; 2017 - låzaro -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

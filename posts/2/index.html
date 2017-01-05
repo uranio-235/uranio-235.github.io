@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="sysinfo en el motd 20/11/2016 5:13 pm | Comments Desde que lo vi en unbuntu server, había querido hacer que mi servidores
-mostraran un overview en &hellip;">
+  <meta name="description" content="squid3 bloquear user-agent 24/11/2016 2:36 pm | Comments Recién, he tenido algunos problemas con descargadores multi-hilos que se chupan
+el ancho de &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,202 @@ mostraran un overview en &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/11/24/squid3-bloquear-user-agent/">squid3 bloquear user-agent</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-24T14:36:13-05:00'><span class='date'>24/11/2016</span> <span class='time'>2:36 pm</span></time>
+        
+           | <a href="/blog/2016/11/24/squid3-bloquear-user-agent/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/11/24/squid3-bloquear-user-agent/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="right" src="/images/noiexplore.png" width="400" height="500" title="" ></p>
+
+<p>Recién, he tenido algunos problemas con descargadores multi-hilos que se chupan
+el ancho de banda y se cagan en los delay_pools. Buscando como bloquear dichos
+descargadores, el colega Agustín Ybarra me recomienda bloquear los user_agent.</p>
+
+<p>Pero pensándolo bien, resolví unos cuantos problemas. Pues por ejemplo, google
+play service de los teléfonos android, consume muchísimo y resuelve poco, de
+forma que el que navega en un delay_pool, ve afectado su ancho de banda por
+cosas que ignora.</p>
+
+<p>Solución, bloquear los User-Agent. La idea suena bien, pero primero hay que
+loguear los user agent. Para ellos usaremos un custom_log de squid, loguearemos
+los usuarios y los user-agent. A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># loguea los user-agent</span>
+</span><span class='line'>logformat useragent  %un <span class="s2">&quot;%{User-Agent}&gt;h&quot;</span>
+</span><span class='line'>access_log daemon:/var/log/squid3/user_agent.log useragent
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora tenemos el fichero <em>user_agent.log</em>, logueando usuario y user_agent; claro
+está, podría loguear, usuario, user-agent y url, pero la linea queda muy larga.</p>
+
+<p>Una vez que hallas encontrado el user-agent que te moleste, crea una ACL
+<strong>arriba</strong> de la ACL que autorize la navegación.</p>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># por ejemplo, blqueamos zapya y se fana</span>
+</span><span class='line'>acl zapya browser ^com<span class="se">\.</span>dewmobile
+</span><span class='line'>http_access deny zapya
+</span><span class='line'>http_reply_access deny zapya
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Seguiré aquí, como <a href="https://es.wikipedia.org/wiki/The_Catcher_in_the_Rye">el pescador del centeno</a>, esperando a que vuelva a usar su descargadorcito multi-hilo de mierda&hellip; aunque seguro puede cambiarle el user-agent.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/11/22/redimensionar-lvm/">redimensionar lvm</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-22T21:00:22-05:00'><span class='date'>22/11/2016</span> <span class='time'>9:00 pm</span></time>
+        
+           | <a href="/blog/2016/11/22/redimensionar-lvm/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/11/22/redimensionar-lvm/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Este post es a método de memorando, ya que SIEMPRE se me olvida como hacerlo.</p>
+
+<p>En materia de virtualización, el sistema de plantillas nunca me ha gustado,
+<strong>porque NO SÉ quién instala esos sistemas operativos ni como.</strong></p>
+
+<p><strong>Yo prefiero</strong> por ejemplo, instalar un debian, acomodarle todo a mi manera y
+usar esa instalación para generar nuevas máquinas, con todo ya listo. Por
+ejemplo, un prototipo de firewall, las configuraciones de interfaz puesta con
+dhcp, pero una configuración estática bien comentada, etc..</p>
+
+<p>Mantengo esa máquina detenida y la arranco de vez en cuando para actualizar.
+Cuando voy a hacer una nueva, <strong>simplemente clono esa máquina</strong>.</p>
+
+<p>Prefiero llamarlo <strong>matriz</strong> que <em>plantilla</em>. El resto del tiempo, dicha máquina
+permanece detenida (apagada) evitando así desgaste, envejecimiento, generación
+de logs, etc&hellip;</p>
+
+<p>Eso en la práctica, es lo mismo que una plantilla (para los criticones y amantes
+de la moda).</p>
+
+<p>Un inconveniente que afronté al principio con esto, fue &ldquo;el tamaño asignado al
+disco duro&rdquo;. Por ejemplo, el servidor de correo que me lleva 500 gigas, mientras
+que en el sistema de monitoreo (nagios) solo se lleva 5 gigas.</p>
+
+<p>La matriz tiene un disco de 5 gigas donde se instaló todo. Sobre espacio, ya que
+borrando /usr/share/doc/ y la cache de apt, se quedo en menos de un giga. El
+problema (con Xen) viene a la hora de agrandar el disco.</p>
+
+<p>No se como proxmox maneja esa situación y sinceramente, <strong>no me interesa</strong>, ya
+que:</p>
+
+<p><strong>LVM resuelve el problema!</strong></p>
+
+<p>Si no tienes la costumbre de instalar sobre LVM, deberías hacértela&hellip; Es muy
+versátil.</p>
+
+<p>BTRfs es otra buena opción, pero su rendimiento decae mucho con el tiempo (<strong>mi
+experiencia</strong>).</p>
+
+<p>Añadir un disco al volumen lógico y aumentar su tamaño resuelve el problema.</p>
+
+<p>Claro, el sistema de archivos que instalaste, debe soportar tal operación, pero
+por suerte, ext4 lo hace perfectamente y sin tener que desmontar el sistema de
+archivos.</p>
+
+<p>El problema es que <strong>NUNCA ME ACUERDO</strong> de los comandos para redimensionar el
+volumen lógico.</p>
+
+<figure class='code'><figcaption><span>&#8220;la nota&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pvcreate /dev/xvdb
+</span><span class='line'>vgextend lvm /dev/xvdb
+</span><span class='line'>lvm lvextend -l +100%FREE /dev/lvm/lv1
+</span><span class='line'>resize2fs -p /dev/lvm/lv1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note que mi grupo de volúmenes se llama <strong>lvm</strong> y que el volumen lógico se llama
+<strong>lv1</strong> (no soy muy creativo con nombres para lvm). O sea, el disco quedaría
+así:</p>
+
+<h4>/dev/mapper/lvm-lv1</h4>
+
+<p><strong>Nota para los retardados:</strong> <em>El dispositivo /dev/xvdb es OTRO disco que se le
+añadió a la máquina para aumentar su espacio. Tenía /dev/xvda con 5 gigas y se
+le añádió otro disco, el llamado /dev/xvdb, con más espacio. Oséase colocaste
+otro disco en la máquina virtual o simplemente conectaste otro disco duro en el
+canal sata de una máquina física</em></p>
+
+<p>Entonces, linea por linea, en cámara lenta:</p>
+
+<p>1- Convierte el disco /dev/xvdb en un volumen físico (mete el disco pal saco de
+LVM) En mi caso, el  grupo de volúmenes se llama <strong>lvm</strong>, así que:</p>
+
+<p>2- Extenderemos el grupo llamado <strong>lvm</strong> añadiendo el volumen físico
+<strong>/dev/xvdb</strong> al volumen lógico <strong>lv1</strong>.</p>
+
+<p>3- La parte que siempre se me olvida (el parámetro está raro con cojone)
+Redimensionar el volumen lógico <strong>lv1</strong> a su máxima capacidad.</p>
+
+<p>4- Por último, redimensionar el ext4 en <strong>/dev/lvm/lv1</strong> a su máxima capacidad.</p>
+
+<p>Y listo! Ya tienes tu disco del tamaño que te de la gana ;-)</p>
+
+<p>Puedes correr <strong>lvmdiskscan -l</strong> para cerciorarte de que todo esté como esperas,
+no sea que hallas metido la delicada.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -231,7 +427,7 @@ quieras hacer específica para ese servidor. Se mostrará si existe el fichero.<
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -511,7 +707,7 @@ sea <strong>.conf</strong> se puede echar a andar con systemd.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -730,261 +926,7 @@ a los dominios virtuales @otro.tudominio.cu será almacenado en /var/mail/otro</
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/10/22/tunel-6in4/">túnel 6in4</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-10-22T03:18:11-04:00'><span class='date'>22/10/2016</span> <span class='time'>3:18 am</span></time>
-        
-           | <a href="/blog/2016/10/22/tunel-6in4/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/10/22/tunel-6in4/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Típico: Quiero darle cumplimiento a la resolución 185/2016, pero mi proveedor
-no me ha dado una ipv6</p>
-
-<p>¿Tienes una ipv4 pública? Felicidades, puedes jugar con ipv6</p>
-
-<p>Existe una tecnología transisional poco recomendada que se conoce como <a href="https://es.wikipedia.org/wiki/6to4?">6in4</a>,
-consiste en levantar un túnel especial que te permite hacerte con un rango ipv6
-pa jugar y comer mierda, porque no es ipv6 puro. Supuestamente internet debe
-tener servididores que hagan relay hacia ipv6 real pero hoy en día son cada vez
-menos.</p>
-
-<p>y ahora un mensaje:</p>
-
-<p>Si bien <em>Hurricane Electric</em> provee <a href="http://tunnelbroker.net/">túneles</a>, siendo
-esto una solución PERFECTA; hay que tener en cuenta que: No se con que cuchara
-etecsa se coma eso.</p>
-
-<p>Pero volviendo al tema:</p>
-
-<p>Las grandes redes dual-stack como google y facebook, tiene sus 6in4 bien
-afinaditos, así que a través de un 6in4 puedes perfectamente llegar a ellos.
-En otros tiempo, esta solución me pinchó finísimo pero recientemente no la he
-probado.</p>
-
-<p>Digamos que tu ip pública es <strong>220.110.12.190</strong> Calculamos la ipv6 que te toca:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>   ipv6calc --quiet --action conv6to4 220.110.12.190
-</span><span class='line'>2002:dc6e:cbe::
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Digamos que devolvió el prefijo <strong>2002:dc6e:cbe::</strong> Ese será nuestro prefijo, para
-meter cuantas direcciones querramos.</p>
-
-<figure class='code'><figcaption><span>&#8220;creando el túnel&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip tunnel add tun6to4 mode sit ttl <span class="m">255</span> remote any <span class="nb">local </span>10.0.0.1
-</span><span class='line'>ip link <span class="nb">set </span>tun6to4 up
-</span><span class='line'>ip -6 addr add 2002:dc6e:cbe::1/16 dev tun6to4
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Una vez levantada la interfaze, levantamos una puerta de enlace que saque todas
-las direcciones ipv6 del túnel que traduce las ipv4:</p>
-
-<figure class='code'><figcaption><span>&#8220;ruta&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -6 route add 2000::/3 via ::192.88.99.1 dev tun6to4 metric 1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Nota que la dirección ::192.88.99.1 es así de palo, es una ruta especial que da
-lugar al túnel 6in4.</p>
-
-<p>Ahora, asignamos la primera dirección ipv6 a la interfaz pública (eth0):</p>
-
-<figure class='code'><figcaption><span>&#8220;ip a&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -6 addr add 2002:dc6e:cbe::cafe/64 dev eth0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A la interfaz de la LAN (eth1) le asignamos una ip también, pero le decimos que
-::cafe es la puerta de enlace predeterminada. En su momento, el servidor con
-debian me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/network/interfaces&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># la asignamos a la publica una ipv6</span>
-</span><span class='line'>iface eth0 inet6 static
-</span><span class='line'>        address 2002:a00:1::cafe
-</span><span class='line'>        netmask 64
-</span><span class='line'>
-</span><span class='line'><span class="c"># y la interfaz de la LAN se asignamos otra</span>
-</span><span class='line'><span class="c"># pero ::cafe será la puerta de enlace</span>
-</span><span class='line'>iface eth1 inet6 static
-</span><span class='line'>        address 2002:a00:1:21c:c0ff:feb2:91c2
-</span><span class='line'>        netmask 64
-</span><span class='line'>        gateway 2002:a00:1::cafe
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En la entrada anterior vimos como usar el forward y como habilitarlo.
-Recuerdas?</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/10/22/cortafuegos-ipv6-sencillo/">cortafuegos ipv6 sencillo</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-10-22T02:56:00-04:00'><span class='date'>22/10/2016</span> <span class='time'>2:56 am</span></time>
-        
-           | <a href="/blog/2016/10/22/cortafuegos-ipv6-sencillo/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/10/22/cortafuegos-ipv6-sencillo/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>En entradas anteriores mencionábamos la necesidad urgente de un cortafuegos para
-ipv6. Aquí les va uno hipotético y sencillo:</p>
-
-<p>Sean:</p>
-
-<ul>
-<li>la red 2001:db8:: /64</li>
-<li>eth0 interfaz de cara al enlace</li>
-<li>eth1 interfaz de cara a la LAN</li>
-<li>2001:db8::1 servidor DNS</li>
-<li>2001:db8::2 servidor de correo</li>
-</ul>
-
-
-<figure class='code'><figcaption><span>&#8220;firewall ipv6&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># al piedra angular</span>
-</span><span class='line'>ip6tables -A INPUT   -m state --state RELATED,ESTABLISHED -j ACCEPT
-</span><span class='line'>ip6tables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
-</span><span class='line'>
-</span><span class='line'><span class="c"># nuestro ruter no tiene ningún servicio corriendo</span>
-</span><span class='line'><span class="c"># así que no permitimos nada pa adentro</span>
-</span><span class='line'>ip6tables -A INPUT -j DROP
-</span><span class='line'>
-</span><span class='line'><span class="c"># el forward desde internet hacia la LAN va descartado</span>
-</span><span class='line'>ip6tables -A FORWARD -i eth0 -o eth1 -j DROP
-</span><span class='line'>
-</span><span class='line'><span class="c"># permitimos que las máquinas en la LAN vean los sitios web de internet</span>
-</span><span class='line'>ip6tables -A FORWARD -i eth1 -o eth0 -p tcp --dport <span class="m">80</span>  -j ACCEPT
-</span><span class='line'>ip6tables -A FORWARD -i eth1 -o eth0 -p tcp --dport <span class="m">443</span> -j ACCEPT
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="c"># al servidor DNS le permitimos que encueste a otros servidores dns</span>
-</span><span class='line'><span class="c"># nuestro servidor dns es un servidor de cache, para la LAN. Dice:</span>
-</span><span class='line'><span class="c"># lo que venga por la lan, a salir por el enlace, proveniente del servidor DNS</span>
-</span><span class='line'><span class="c"># y además, cuto puerto de destino sea el 53, permítelo</span>
-</span><span class='line'>ip6tables -A FORWARD -i eth1 -o eth0 -p udp --dport <span class="m">53</span> -s 2001:db8::01 -j ACCEPT
-</span><span class='line'>ip6tables -A FORWARD -i eth1 -o eth0 -p tcp --dport <span class="m">53</span> -s 2001:db8::01 -j ACCEPT
-</span><span class='line'>
-</span><span class='line'><span class="c"># permitimos que el servidor de correo sea visible desde afuera</span>
-</span><span class='line'><span class="c"># lo que venga, de afuera, pa adentro, protocolo tcp del puerto tal</span>
-</span><span class='line'><span class="c"># y como destino sea la ip del servidor de correo, permítelo</span>
-</span><span class='line'>ip6tables -A FORWARD -i eth0 -o eth1 -p tcp --dport <span class="m">25</span>  -d 2001:db8::2 -j ACCEPT
-</span><span class='line'>ip6tables -A FORWARD -i eth0 -o eth1 -p tcp --dport <span class="m">80</span>  -d 2001:db8::2 -j ACCEPT
-</span><span class='line'>ip6tables -A FORWARD -i eth0 -o eth1 -p tcp --dport <span class="m">110</span> -d 2001:db8::2 -j ACCEPT
-</span><span class='line'>
-</span><span class='line'><span class="c"># el resto del tráfico proveniente de la LAN hacia internet, le hacemos reject</span>
-</span><span class='line'><span class="c"># esto evita que los teléfonos no se queden locos intentando buscar salida</span>
-</span><span class='line'>ip6tables -A FORWARD -i eth1 -o eth0 -j REJECT
-</span><span class='line'>
-</span><span class='line'><span class="c"># el resto del tráfico que venga de internet, le hacemos DROP</span>
-</span><span class='line'>ip6tables -A FORWARD -i eth0 -o eth1 -j DROP
-</span><span class='line'>
-</span><span class='line'><span class="c"># habilita el forward</span>
-</span><span class='line'>sysctl net.ipv6.conf.all.forwarding<span class="o">=</span>1
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1005,6 +947,14 @@ ipv6. Aquí les va uno hipotético y sencillo:</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/01/02/rails-assets/">rails-assets</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/12/29/xgproyect/">xgproyect</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2016/12/27/cambiar-mac-a-un-nano/">cambiar mac a un nano</a>
@@ -1409,7 +1359,7 @@ ipv6. Aquí les va uno hipotético y sencillo:</p>
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2016 - låzaro -
+  Copyright &copy; 2017 - låzaro -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

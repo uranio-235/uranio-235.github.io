@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://uranio-235.github.io/blog/2017/01/02/rails-assets/</loc>
+<lastmod>2017-01-02T18:55:02-05:00</lastmod>
+</url>
+<url>
+<loc>http://uranio-235.github.io/blog/2016/12/29/xgproyect/</loc>
+<lastmod>2016-12-29T21:48:32-05:00</lastmod>
+</url>
+<url>
 <loc>http://uranio-235.github.io/blog/2016/12/27/cambiar-mac-a-un-nano/</loc>
 <lastmod>2016-12-27T09:39:44-05:00</lastmod>
 </url>
