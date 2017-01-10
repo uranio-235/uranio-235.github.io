@@ -9,8 +9,7 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="más de OCS 25/08/2014 10:01 am | Comments Con este script, se toman los datos de /opt/samba/ocs y se inyectan en la base
-de datos central de manera &hellip;">
+  <meta name="description" content="palos de wordpress 05/09/2014 12:03 pm | Comments Hay dos palos típicos de wordpress: El primero: Al hacer click en un post, devuelve 404 Solución: &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +81,193 @@ de datos central de manera &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/05/palos-de-wordpress/">palos de wordpress</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-09-05T12:03:41-04:00'><span class='date'>05/09/2014</span> <span class='time'>12:03 pm</span></time>
+        
+           | <a href="/blog/2014/09/05/palos-de-wordpress/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/09/05/palos-de-wordpress/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Hay dos palos típicos de wordpress:</p>
+
+<p>El primero: Al hacer click en un post, devuelve 404</p>
+
+<p>Solución: Un htaccess file para reescribir la URL</p>
+
+<figure class='code'><figcaption><span>&#8220;/usr/share/wordpress/.htaccess&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>&lt;IfModule mod_rewrite.c&gt;
+</span><span class='line'>RewriteEngine On
+</span><span class='line'>RewriteBase /
+</span><span class='line'>RewriteCond %<span class="o">{</span>REQUEST_FILENAME<span class="o">}</span> !-f
+</span><span class='line'>RewriteCond %<span class="o">{</span>REQUEST_FILENAME<span class="o">}</span> !-d
+</span><span class='line'>RewriteRule . /index.php <span class="o">[</span>L<span class="o">]</span>
+</span><span class='line'>&lt;/IfModule&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;IfModule mod_rewrite.c&gt;
+</span><span class='line'>RewriteEngine On
+</span><span class='line'>RewriteBase /
+</span><span class='line'>RewriteRule ^index<span class="se">\.</span>php<span class="nv">$ </span>- <span class="o">[</span>L<span class="o">]</span>
+</span><span class='line'>RewriteRule ^files/<span class="o">(</span>.+<span class="o">)</span> wp-includes/ms-files.php?file<span class="o">=</span><span class="nv">$1</span> <span class="o">[</span>L<span class="o">]</span>
+</span><span class='line'>RewriteCond %<span class="o">{</span>REQUEST_FILENAME<span class="o">}</span> -f <span class="o">[</span>OR<span class="o">]</span>
+</span><span class='line'>RewriteCond %<span class="o">{</span>REQUEST_FILENAME<span class="o">}</span> -d
+</span><span class='line'>RewriteRule ^ - <span class="o">[</span>L<span class="o">]</span>
+</span><span class='line'>RewriteRule . index.php <span class="o">[</span>L<span class="o">]</span>
+</span><span class='line'>&lt;/IfModule&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El segundo, no se pueden modificar los estilos desde la interfaz web:</p>
+
+<p>Solución: Cambiar los permisos</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@leviatan:~# chown -R www-data:www-data /usr/share/wordpress/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al carajo albañiles que se acabó la mezcla. Wordpress para rato&hellip;</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-08-25T20:19:27-04:00'><span class='date'>25/08/2014</span> <span class='time'>8:19 pm</span></time>
+        
+           | <a href="/blog/2014/08/25/el-server-de-correo/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/08/25/el-server-de-correo/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Después de que el chino se diera mil cabezasos con la papelística; Yoel le dijo
+que quería revisar el estado y organización de su papelística. De facto
+&ldquo;apareció&rdquo; la contraseña del MultiPOP. El que no puede ser nombrado se la sabía
+de memoria, minutos más tarde, apareció la papelística.</p>
+
+<p>El mismo, responde a la dirección &ldquo;multipop.sld.cu&rdquo;. El usuario y contraseña
+están escritos en el fetchmailrc. Si tienes acceso al servidor de correo, los
+puedes ver la susodicha en el fichero. En este caso te pondré unos &ldquo;??&rdquo; donde
+debería ir la contraseña.</p>
+
+<figure class='code'><figcaption><span>&#8220;/root/.fetchmailrc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">set </span>daemon 60
+</span><span class='line'><span class="nb">set </span>postmaster <span class="s2">&quot;root&quot;</span>
+</span><span class='line'><span class="nb">set </span>no bouncemail
+</span><span class='line'><span class="nb">set </span>no spambounce
+</span><span class='line'><span class="nb">set </span>logfile /var/log/fetchmail/fetchmail.log
+</span><span class='line'><span class="nb">set </span>no syslog
+</span><span class='line'>
+</span><span class='line'>defaults
+</span><span class='line'>    timeout 10
+</span><span class='line'>    no keep
+</span><span class='line'>    fetchall
+</span><span class='line'>    expunge 5
+</span><span class='line'>    dropstatus
+</span><span class='line'>
+</span><span class='line'>poll multipop.sld.cu port <span class="m">110</span> protocol pop3 localdomains hcg.sld.cu
+</span><span class='line'>    envelope <span class="m">1</span> <span class="s2">&quot;Delivered-To&quot;</span>
+</span><span class='line'>    no dns
+</span><span class='line'>    username ????
+</span><span class='line'>    password ?????????
+</span><span class='line'>    to * here
+</span><span class='line'>    limitflush
+</span><span class='line'>    smtphost localhost
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Aún me queda pendiente a verificar que encabezado genera Exim para entergar el
+correo, si no, fetchmail lo manda todo amablemente para el postmaster. Cuando
+arranque probaré si es ese; si no, debe ser &ldquo;X-Delivered-To:&rdquo;</p>
+
+<p>Ahora el problema está en que NO hay un puntero MX para el dominio <em>hcg.sld.cu</em>
+porque el contrato no está renovado (problemas papelísticos). En el nodo de
+infomed me dijeron que fuera al &ldquo;GAU&rdquo; para renovar el contrato.</p>
+
+<p>Solo falta poner en orden la parte burocrática&hellip;</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -219,7 +405,7 @@ componentes ya fabricados por los rubios.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -291,7 +477,7 @@ el servidor de OCS.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -342,149 +528,7 @@ existía. Evito a toda costa usar select, pero aveces no queda más remedio; un
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/05/empirico/">empíricos</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-07-05T09:18:42-04:00'><span class='date'>05/07/2014</span> <span class='time'>9:18 am</span></time>
-        
-           | <a href="/blog/2014/07/05/empirico/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/07/05/empirico/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>¿Sabes tú qué es un &ldquo;empírico&rdquo;?</p>
-
-<p>Una persona que desarrolla habilidades de manera autodidacta en un oficio o
-campo de la ciencia y que llega a ser tanto o más bueno que un catedrático.</p>
-
-<p>Generalmente estamos graduados de algo que no ejercemos.</p>
-
-<p>Guardamos con devoción en nuestra casa, el libro que nos darían si llegáramos al
-tercer año de la carrera universitaria que deberíamos estudiar.</p>
-
-<p>No leemos los libros que nos obligan. Leemos los que nos interesan.</p>
-
-<p>No podemos ir a la universidad porque suspendemos las pruebas en las que nos
-preguntan cosas que hace 6 años leímos o cosas que No nos interesan.</p>
-
-<p>Cuando llegamos a preescolar sabíamos las vocales, los colores y contar del uno
-al diez. Odiábamos a la profesora por obligarnos a atender su aburrida clase.</p>
-
-<p>Somos gente que pensamos diferentes y no encajamos en el montón. Algunos nos
-llaman &ldquo;rosca izquierda&rdquo; otros nos llaman &ldquo;originales&rdquo;.</p>
-
-<p>Sabemos que colar un café es una reacción exotérmica porque dimos química en
-noveno grado.</p>
-
-<p>Sabemos que de día sopla la brisa y de noche el terral, porque dimos &ldquo;mundo en
-que vivimos&rdquo; en 5to grado.</p>
-
-<p>VAMOS A LA ESCUELA A APRENDER, no a sacar buenas notas.</p>
-
-<p>No nos expliques nada, solo déjanos ver como lo haces.</p>
-
-<p>Sabemos hacer muy pocas cosas pero no tenemos rivales en las pocas que hacemos.</p>
-
-<p>Si hay un camino a la derecha y otro a la izquierda, hacemos uno nuevo por el
-medio; con la esperanza de hacerlo mejor.</p>
-
-<p>No somos mejores ni peores que nadie porque no nos comparamos.</p>
-
-<p>Tenemos una ortografía terrible porque escribimos en cualquier idioma menos en
-el nuestro.</p>
-
-<p>Sabemos un montón de cosas y no nos acordamos cuando o porque lo aprendimos.</p>
-
-<p>Los que nos aprecian o admiran nos llaman &ldquo;geniales&rdquo; o &ldquo;inteligentes&rdquo;. Los que
-nos repudian o envidian nos llaman &ldquo;autosuficientes&rdquo; o &ldquo;excéntricos&rdquo;.</p>
-
-<p>Solo somos &ldquo;empíricos&rdquo;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/27/crear-un-chroot-con-debian/">crear un chroot con debian</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-06-27T14:48:13-04:00'><span class='date'>27/06/2014</span> <span class='time'>2:48 pm</span></time>
-        
-           | <a href="/blog/2014/06/27/crear-un-chroot-con-debian/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/06/27/crear-un-chroot-con-debian/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>A menudo, necesitamos hacer una que otra barbaridad y no nos gustaría que esto
-sucediera en nuestro sistema base. La virtualización es una buena opción para
-aquellos que son enfermos a meter las patas; pero correr virtualbox solo para
-eso, es matar moscas a cañonazos y:</p>
-
-<p>   <blockquote><p>Prefiero lamer el piso del IPK que usar Proxmox.</p></blockquote></p>
-
-<p>En debian, tenemos la herramienta
-<a href="https://wiki.debian.org/es/debootstrap">debootstrap</a> que nos permite generar
-chroot con fines educativos. La mala noticias es que necesita bajar los paquetes
-de un mirror. Por suerte con un CD se resuelve el problema&hellip;</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mount debian-7.0.0-i386-CD-1.iso /media/cdrom
-</span><span class='line'>debootstrap --no-check-gpg wheezy /opt/chroot/ file:/media/cdrom
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Luego para echarlo a andar montamos /sys y /proc como bind del host en el chroot:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mount -o <span class="nb">bind</span> /sys /opt/chroot/sys
-</span><span class='line'>mount -o <span class="nb">bind</span> /proc /opt/chroot/proc
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Y luego hazle el chroot</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -505,6 +549,14 @@ de un mirror. Por suerte con un CD se resuelve el problema&hellip;</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/01/09/tendencias-tecnologicas/">tendencias tecnológicas</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/01/09/flasheando-modem-al-s4/">flasheando modem al S4</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/01/02/rails-assets/">rails-assets</a>

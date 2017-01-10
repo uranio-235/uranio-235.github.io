@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="OpenVAS en Archlinux 11/07/2015 7:19 pm | Comments Recientemente, un &ldquo;Webmaster&rdquo; usó en uno de los servidores que patrocino; un
-escaner &hellip;">
+  <meta name="description" content="will_paginate 19/07/2015 2:58 pm | Comments De siempre, en materia de web la paginación ha sido tremendo rollo. A mi en lo
+personal no me gustan los &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,325 @@ escaner &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/19/will-paginate/">will_paginate</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-07-19T14:58:30-04:00'><span class='date'>19/07/2015</span> <span class='time'>2:58 pm</span></time>
+        
+           | <a href="/blog/2015/07/19/will-paginate/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/07/19/will-paginate/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>De siempre, en materia de web la paginación ha sido tremendo rollo. A mi en lo
+personal no me gustan los paginadores; pienso que nadie los usa. Pero siempre
+hay un cliente que pide con mucho fervor detallitos que consideran importantes.</p>
+
+<p>Una de las cosas que me gusta de MongoMapper es que viene con un paginador
+integrado, pero este no es el caso.</p>
+
+<p>No entiendo porque carajo ActiveRecords, que se jacta (con razón) de ser la ORM
+definitiva; no tiene un puñetero soporte nativo para la paginación. O porque
+esta subestimada gema, llamada
+<a href="https://github.com/mislav/will_paginate/">will_paginate</a> no viene incluida en
+el Gemfile que trae RoR por defecto. Se harían un buen favor.</p>
+
+<p>La cuestión es que will_paginate hace muy simple la tediosa tarea de paginar.</p>
+
+<figure class='code'><figcaption><span>&#8216;instalando will_paginate&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;gem &quot;will_paginate&quot;&#39;</span> &gt;&gt; Gemfile
+</span><span class='line'>bundle update
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora veamos como se pagina un modelo. Tengamos el ejemplo típico, el
+controlador &ldquo;User&rdquo; con los 1500 usuarios.</p>
+
+<figure class='code'><figcaption><span>&#8220;controlador del scaffold users&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="vi">@users</span><span class="o">=</span><span class="no">User</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">all</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">paginate</span><span class="p">(</span><span class="ss">:page</span> <span class="o">=&gt;</span> <span class="n">params</span><span class="o">[</span><span class="ss">:page</span><span class="o">]</span><span class="p">,</span> <span class="ss">:per_page</span> <span class="o">=&gt;</span> <span class="mi">15</span><span class="p">)</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="s1">&#39;updated_at asc&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>OJO! De la 3ra linea, te puedes tomar el atrevimiento de modificar el 15 y poner
+el número que te de la gana; pero NO toques al símbolo :page y su valor. En este
+caso, el 15 representa la cantidad de elementos que mostraremos por página.</p>
+
+<p>Te digo que no toques el params[:page] porque will_paginate lo hace todo solo.
+En la vista solo tienes que poner esto</p>
+
+<figure class='code'><figcaption><span>&#8220;app/views/users/index.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="x">   &lt;div class=&quot;text-center&quot;&gt;</span>
+</span><span class='line'><span class="x">      </span><span class="cp">&lt;%=</span> <span class="n">will_paginate</span> <span class="vi">@users</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">   &lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finalmente queda algo de lo más discreto pero 100% funcional:</p>
+
+<div class="text-center">
+<div class="pagination">
+<span class="previous_page disabled">&#8592; Anterior</span>
+<em class="current">1</em>
+<a rel="next" href="#">2</a> <a href="#">3</a>
+<a href="#">4</a>
+<a href="#">5</a>
+<a href="#">6</a> <a href="#">7</a>
+<a href="#">8</a> <a href="#">9</a>
+<span class="gap">&hellip;</span>
+<a href="#">28</a>
+<a href="#">29</a>
+<a class="next_page" rel="next" href="#">Próximo &#8594;</a>
+</div></div>
+
+
+<p>¡COOOOÑOóOOO! En español y todo. Por supuesto,  no es magia. Lo que pasa que el
+que hizo la gema, la hizo con tremendo cariño y parece conocer muy bien la API
+de ruby on rails; con lo cual tuvo muy en cuenta, la parte del i18n.</p>
+
+<p>Ejecute lo siguiente:</p>
+
+<figure class='code'><figcaption><span>&#8220;contenido de la gema&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>gem cont will_paginate<span class="p">|</span>grep en.yml
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Guíate por ese fichero y añádele a tu locale la traducción relacionada con
+will_paginate, en mi caso, quedo así:</p>
+
+<figure class='code'><figcaption><span>&#8220;en.yml&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">en</span><span class="p-Indicator">:</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># el locales de will_paginate</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">will_paginate</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">previous_label</span><span class="p-Indicator">:</span> <span class="s">&quot;&amp;#8592;</span><span class="nv"> </span><span class="s">Anterior&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">next_label</span><span class="p-Indicator">:</span> <span class="s">&quot;Próximo</span><span class="nv"> </span><span class="s">&amp;#8594;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">page_gap</span><span class="p-Indicator">:</span> <span class="s">&quot;&amp;hellip;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¡¡A paginar se ha dicho!!</p>
+
+<p>Thanks to <strong>Mislav Marohnić</strong> for you good job; developing will_paginate</p>
+
+<p>Si te ha gustado will_paginate, escríbele un <a href="mailto:mislav.marohnic@gmail.com">correo al autor</a>
+y muéstrale tu agradecimiento. Yo ya lo hize ;)</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/12/date-select-en-espanol/">date_select en español</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-07-12T15:14:12-04:00'><span class='date'>12/07/2015</span> <span class='time'>3:14 pm</span></time>
+        
+           | <a href="/blog/2015/07/12/date-select-en-espanol/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/07/12/date-select-en-espanol/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Algunos componentes de <a href="http://rubyonrails.org/">Ruby on Rails</a>, se pueden usar
+de manera independiente, como es el caso de
+<a href="https://github.com/rails/rails/tree/master/activerecord">active_record</a> (sin
+dudas es el más potente). Pero otro que no se queda atrás, es active_support.
+Lleno de sorpresas y de joyas poco documentadas.</p>
+
+<p>Para el que no lo conozca, en ruby on rails, hay un método muy cómodo que genera
+un <a href="https://www.w3.org/wiki/HTML/Elements/select"><strong>select</strong></a> cuyas <em>option</em> son nada menos que la fecha. Los usuarios
+mononeuronales, encuentran más cómodo introducir una fecha así, que con un
+datepicker.</p>
+
+<p>El método <a href="http://apidock.com/rails/ActionView/Helpers/DateHelper/select_date"><strong>select_date</strong></a> genera una cosa similar a esta:</p>
+
+<p><select id="caudocidad_day" name="caudocidad[day]">
+<option value="12" selected="selected">12</option>
+</select>
+<select id="caudocidad_month" name="caudocidad[month]">
+<option value="8" selected="selected">Agosto</option>
+</select>
+<select id="caudocidad_year" name="caudocidad[year]">
+<option value="2015" selected="selected">2015</option>
+</select></p>
+
+<p>Pero con todos los meses y sus días claro. Ahí soló te puse un pedazito. Para
+generar esto, se supone que solo necesites poner algo como:</p>
+
+<figure class='code'><figcaption><span>&#8220;select_date&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="cp">&lt;%=</span> <span class="n">select_date</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="p">,</span> <span class="ss">prefix</span><span class="p">:</span> <span class="ss">:caudocidad</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Luego en el controlador, generas la fecha, procesando el dato. Hay mil y una
+forma de hacerlo. Más mágica y menos mágica, yo lo hago de una manera bien
+rudimentaria:</p>
+
+<figure class='code'><figcaption><span>&#8220;Time.mktime en el controller&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@cuando</span><span class="o">=</span><span class="no">Time</span><span class="o">.</span><span class="n">mktime</span> <span class="n">params</span><span class="o">[</span><span class="ss">:caudocidad</span><span class="o">][</span><span class="ss">:year</span><span class="o">]</span><span class="p">,</span><span class="n">params</span><span class="o">[</span><span class="ss">:caudocidad</span><span class="o">][</span><span class="ss">:month</span><span class="o">]</span><span class="p">,</span><span class="n">params</span><span class="o">[</span><span class="ss">:caudocidad</span><span class="o">][</span><span class="ss">:day</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como vez, a <strong>prefix:</strong> se le mandó un símbolo, que pasó a ser el valor del HTML
+generado, <strong>name=&ldquo;caudocidad&rdquo;</strong>. En mi caso, se llama &ldquo;cadocidad&rdquo; usted le pone
+como le de la gana. Sería :prefix=>&lsquo;nombre_que_quieras&rsquo; o prefix: &lsquo;nombre&rsquo; en su
+versión corta.</p>
+
+<p>En el controlador, <strong>params[:caudocidad]</strong>, contiene un Hash, donde las claves
+<strong>:year</strong>, <strong>:month</strong> y <strong>:day</strong> tendrán los valores numéricos listos para ser
+procesados.</p>
+
+<figure class='code'><figcaption><span>params[:caudocidad]</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">{</span><span class="ss">:year</span><span class="o">=&gt;</span><span class="mi">2015</span><span class="p">,</span> <span class="ss">:month</span><span class="o">=&gt;</span><span class="mi">8</span><span class="p">,</span> <span class="ss">:day</span><span class="o">=&gt;</span><span class="mi">12</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Todo eso está muy bonito, pero lo jodido del caso, es que los meses vienen en
+inglés.</p>
+
+<p>Llevarlo a español, requiere estar un poco familiarizado con el
+<a href="http://guides.rubyonrails.org/i18n.html">i18n</a> de Ruby on rails.</p>
+
+<p>Para el que no lo conozca, el i18n, es un sistema que nos permite crear
+aplicaciones en múltiples idiomas. De forma tal que nuestra aplicación le hable
+al navegador en el idioma que este soporta. Lo malo del caso es que no lo hace
+solo. Serás tu quien deba indicarle cuando usar que idioma. Una buena manera de
+hacer eso, es parseando el encabezado &ldquo;content-&rdquo; para ver que idioma soporta el
+navegador. Métodos hay miles, pero no se porque rails no lo hace solo.</p>
+
+<p>Si nuestra aplicación fuera canadiense, le diría que cree un fichero para cada
+idioma. Pero como nuestra aplicación es Cubana, con ponerlo todo en el
+<strong>en.yml</strong> resolvemos el problema.</p>
+
+<p>Al principio me fajaba con el <strong>en.yml</strong> y trataba de ponerle cosas, pero luego
+descubrí que hay una especie de esqueleto en la gema de active_support.</p>
+
+<p>En vez de escribir un en.yml desde cero, podemos usar el que está en
+active_support. Ejecuta este comando:</p>
+
+<figure class='code'><figcaption><span>&#8220;buscando el en.yml&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> gem  cont activesupport<span class="p">|</span>grep en.yml
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Copia dicho fichero a tu <strong>config/locales/en.yml</strong> y comencemos a editarlo.</p>
+
+<p>En la linea 30 y pico. Hay una cláusula llamada <strong>month_names</strong>, ahí le pones
+los meses. A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;month_names, cerca de la linea 30&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>    <span class="c1"># Don&#39;t forget the nil at the beginning; there&#39;s no such thing as a 0th month</span>
+</span><span class='line'>    <span class="ss">month_names</span><span class="p">:</span> <span class="o">[~</span><span class="p">,</span> <span class="no">Enero</span><span class="p">,</span> <span class="no">Febrero</span><span class="p">,</span> <span class="no">Marzo</span><span class="p">,</span> <span class="no">Abril</span><span class="p">,</span> <span class="no">Mayo</span><span class="p">,</span> <span class="no">Junio</span><span class="p">,</span> <span class="no">Julio</span><span class="p">,</span> <span class="no">Agosto</span><span class="p">,</span> <span class="no">Septiembre</span><span class="p">,</span> <span class="no">Octubre</span><span class="p">,</span> <span class="no">Novimebre</span><span class="p">,</span> <span class="no">Diciembre</span><span class="o">]</span>
+</span><span class='line'>    <span class="ss">abbr_month_names</span><span class="p">:</span> <span class="o">[~</span><span class="p">,</span> <span class="no">Ene</span><span class="p">,</span> <span class="no">Feb</span><span class="p">,</span> <span class="no">Mar</span><span class="p">,</span> <span class="no">Abr</span><span class="p">,</span> <span class="no">May</span><span class="p">,</span> <span class="no">Jun</span><span class="p">,</span> <span class="no">Jul</span><span class="p">,</span> <span class="no">Aug</span><span class="p">,</span> <span class="no">Sep</span><span class="p">,</span> <span class="no">Oct</span><span class="p">,</span> <span class="no">Nov</span><span class="p">,</span> <span class="no">Dec</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Además, más abajo, por la linea 40, tienes el orden en el que se muestra la
+fecha.</p>
+
+<figure class='code'><figcaption><span>&#8220;order: bajo la linea 40&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Used in date_select and datetime_select.</span>
+</span><span class='line'><span class="ss">order</span><span class="p">:</span>
+</span><span class='line'>  <span class="o">-</span> <span class="n">day</span>
+</span><span class='line'>  <span class="o">-</span> <span class="n">month</span>
+</span><span class='line'>  <span class="o">-</span> <span class="n">year</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A mi me quedó así, porque los yumas ponen el mes delante y el día detrás.</p>
+
+<p>Si miras más abajo, verás que tiene incluso la moneda (currency) y los
+separadores, por ejemplo, usar coma en vez de punto para separar los decimales.
+También están los numerales (millones, millares, centenas, etc&hellip;)</p>
+
+<p>Hay un método muy curioso que yo uso mucho. Convierte un array en una oración
+delimitada por coma; pero pone una conjunción &ldquo;y&rdquo; en el último elemento.</p>
+
+<figure class='code'><figcaption><span>&#8216;to_sentence&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="ss">:&gt;</span> <span class="sx">%w[perros gatos]</span><span class="o">.</span><span class="n">to_sentence</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;perros y gatos&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="ss">:&gt;</span> <span class="sx">%w[papas malangas calabazas]</span><span class="o">.</span><span class="n">to_sentence</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;papas, malangas y calabazas&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El separador se configura ahí también. Por defecto dice &ldquo;<strong>and</strong>&rdquo; en vez de &ldquo;<strong>y</strong>&rdquo;</p>
+
+<p>Conclusión:</p>
+
+<p>La instrumentación de active_support (ese nombre tan suigeneris se lo pusieron
+ellos) es bastante rica. Deberían verla bien de cerca. La guia es bastante
+escueta; te recomiendo que mires un poco el código fuente de active_support o la
+documentación de la API (que es casi lo mismo).</p>
+
+<p>Si buscas en la misma ruta, pero con <em>model</em> donde dice <em>support</em> verás el YAML
+que utiliza ActiveRecord para generar los errores de validación. Ahí puedes
+ponerlos a tu manera. Osea, el contenido de ese YAML se lo adicionas al tuyo.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -341,7 +660,7 @@ usuario.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -417,7 +736,7 @@ enlaces a las assets.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -604,218 +923,7 @@ declarando los componentes en los controladores.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-21T22:27:03-04:00'><span class='date'>21/06/2015</span> <span class='time'>10:27 pm</span></time>
-        
-           | <a href="/blog/2015/06/21/se-dice-dios-no-ala/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/21/se-dice-dios-no-ala/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="right" src="/images/ala.png" width="300" height="400" title="" ></p>
-
-<p>Aunque el islam es algo poco común en cuba, cada día en el mundo, va tomando más
-fuerza. Nunca falta un curioso que se cree culto y te dice.</p>
-
-<p>&ldquo;yo creo en dios, no en alá&rdquo;.</p>
-
-<p>Sin darse cuenta el disparate que están diciendo.</p>
-
-<p>   <blockquote><p>Alá es la hispanización de la palabra árabe Al-lāh (الله), que en español significa <strong>Dios</strong>.</p><footer><strong>Wikipedia</strong></footer></blockquote></p>
-
-<p>De hecho, los cristianos árabes (que hay) llaman a dios Alá, porque repito,
-<strong>significa dios LITERALMENTE</strong></p>
-
-<p>Claro, como en todas las religiones, siempre hay extremistas y aquí los hay, que
-andan por la habana, disfrazados de árabes y dicen Alá en vez de dios.</p>
-
-<p>Por otra parte, el <a href="https://es.wikipedia.org/wiki/Lengua_lit%C3%BArgica">idioma litúrgico</a>
-del islam es el árabe, razón por la cual el término suena más o menos como <em>al
-laaj</em> y mucha gente lo agarra por el mango.</p>
-
-<p>Existen dos grandes traducciones del corán al español, la Julio Cortés y la Isa
-García. La primera, en mi opinión, es bastante mala; comparada con la segunda,
-que es más completa, ya que incluye una interpretación contextual [entre
-corchetes] de las oraciones más complejas. Esto nos da la medida que la
-traducción es más fiel. En esta traducción, se usa el término Dios en lugar de
-Alá (casi siempre con inicial mayúscula).</p>
-
-<p>Por esta razón, mucha gente hablando en español dice &ldquo;alá&rdquo;. Y yo pregunto:</p>
-
-<h3>¿Has visto algún testigo de Jehová diciendo GOD?</h3>
-
-<p>Claro que no, todos dicen <strong>dios</strong>. Porque cuando la religión salió de Estados
-Unidos, medio mundo sabía inglés.</p>
-
-<p>Sin embargo, cuando el islam salió del mundo árabe, la palabra Alá empezó a
-sonar en España, donde no convenía que Alá y Dios fueran la misma cosa. A los
-Españoles había que convencerlos de que adorar a alá era adorar a un dios
-diferente. Problemas políticos <strong>de aquel entonces</strong>, por una bobería ahí
-llamada <a href="https://es.wikipedia.org/wiki/Reconquista">reconquista</a>.</p>
-
-<p>Hoy, en el siglo XXI, sabemos que <strong>dios</strong> en árabe se dice &ldquo;al laj&rdquo; (Al-Lāh o الله).</p>
-
-<p>Dios y Alá, son la misma cosa, solo cambia la manera en que las vemos&hellip; Dios es
-uno solo, onmipotente y omnisapiente; nosotros los mortales, dadas nuestras
-diferencias políticas, culturales e idiomáticas, necesitamos ponerle nombre a
-dios para poder comprenderlo.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/14/revocar-certificados-de-ovpn/">revocar certificados de OVPN</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-14T18:36:49-04:00'><span class='date'>14/06/2015</span> <span class='time'>6:36 pm</span></time>
-        
-           | <a href="/blog/2015/06/14/revocar-certificados-de-ovpn/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/14/revocar-certificados-de-ovpn/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Acá en mi tierra, SSL es algo relativamente novedoso. Hasta el otro día, las
-conexiones cifradas eran la peste; pero ahora resulta que el SSL es
-prácticamente obligatorio.</p>
-
-<p>En el episodio anterior, hablábamos sobre OpenVPN. Mencionamos que la
-autenticación podría hacerse a nivel de certificados.</p>
-
-<p>Algunos retrógrados preferirían hacerlo con nombre de usuario y contraseña, pero
-realmente emitir un certificado para cada cliente, es un método más seguro y
-simple.</p>
-
-<p>El objetivo es deshacernos de un cliente</p>
-
-<p>En el ejemplo anterior teníamos a &ldquo;cliente1&rdquo;. Por N motivo, no queremos que
-cliente1 se conecte más. El que no sepa lo que es la CRL (Certificate Revocation
-List) me imagino que acabará poniendo disímiles direcciones ip en el cortafuegos.</p>
-
-<p>Primero, revocamos el certificado que le dimos al cliente.</p>
-
-<figure class='code'><figcaption><span>&#8220;revocando certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/openvpn/easy-rsa
-</span><span class='line'><span class="nb">source</span> ./vars
-</span><span class='line'>./revoke-full cliente1
-</span><span class='line'>Using configuration from /etc/openvpn/easy-rsa/openssl-1.0.0.cnf
-</span><span class='line'>Revoking Certificate 02.
-</span><span class='line'>Data Base Updated
-</span><span class='line'>Using configuration from /etc/openvpn/easy-rsa/openssl-1.0.0.cnf
-</span><span class='line'>cliente1.crt: <span class="nv">C</span> <span class="o">=</span> CU, <span class="nv">ST</span> <span class="o">=</span> HAV, <span class="nv">L</span> <span class="o">=</span> Plaza, <span class="nv">O</span> <span class="o">=</span> DOMINIO, <span class="nv">OU</span> <span class="o">=</span> DOMINIO, <span class="nv">CN</span> <span class="o">=</span>
-</span><span class='line'>cliente1, <span class="nv">name</span> <span class="o">=</span> RSA, <span class="nv">emailAddress</span> <span class="o">=</span> vpn@dominio.cu
-</span><span class='line'>error <span class="m">23</span> at <span class="m">0</span> depth lookup:certificate revoked
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ve en la última linea, dice que se ha cometido un error 23, porque no se
-pudo ver la firma. EL certificado ha sido revocado.</p>
-
-<p>Ahora debemos instruir al servidor de que el fichero <strong>keys/crl.pem</strong> contiene
-la lista de certificados revocados. A la configuración del servidor, le
-agregamos la cláusula <strong>crl-verify</strong> y como argumento le damos la ruta absoluta
-al crl.pem</p>
-
-<figure class='code'><figcaption><span>&#8220;crl.pem&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;crl-verify crl.pem&#39;</span> &gt;&gt; /etc/openvpn/servidor.conf
-</span><span class='line'>ln -s /etc/openvpn/easy-rsa/keys/crl.pem
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>No se puede especificar una ruta completa porque no pincha, no me preguntes por
-que. El crl.pem debe estar en el mismo directorio que el fichero de
-configuración del servidor.</p>
-
-<p><strong>OJO</strong> No olvide reinciar el servidor!</p>
-
-<p>Probemos como le va a un cliente con su certificado revocado.</p>
-
-<figure class='code'><figcaption><span>&#8220;cliente1 embarcao&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@rasp openvpn<span class="o">]</span><span class="c"># openvpn --config cliente1.conf </span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> OpenVPN 2.3.6 i686-pc-linux-gnu <span class="o">[</span>SSL <span class="o">(</span>OpenSSL<span class="o">)]</span> <span class="o">[</span>LZO<span class="o">]</span> <span class="o">[</span>EPOLL<span class="o">]</span> <span class="o">[</span>MH<span class="o">]</span> <span class="o">[</span>IPv6<span class="o">]</span> built on Dec  <span class="m">2</span> 2014
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> library versions: OpenSSL 1.0.2a <span class="m">19</span> Mar 2015, LZO 2.09
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> WARNING: No server certificate verification method has been enabled.  See http://openvpn.net/howto.html#mitm <span class="k">for</span> more info.
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> Attempting to establish TCP connection with <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443 <span class="o">[</span>nonblock<span class="o">]</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCP connection established with <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCPv4_CLIENT link <span class="nb">local</span>: <span class="o">[</span>undef<span class="o">]</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:49 <span class="m">2015</span> TCPv4_CLIENT link remote: <span class="o">[</span>AF_INET<span class="o">]</span>192.168.24.1:443
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> VERIFY OK: <span class="nv">depth</span><span class="o">=</span>1, <span class="nv">C</span><span class="o">=</span>CU, <span class="nv">ST</span><span class="o">=</span>HAV, <span class="nv">L</span><span class="o">=</span>Plaza, <span class="nv">O</span><span class="o">=</span>DOMINIO, <span class="nv">OU</span><span class="o">=</span>DOMINIO, <span class="nv">CN</span><span class="o">=</span>DOMINIO CA, <span class="nv">name</span><span class="o">=</span>RSA, <span class="nv">emailAddress</span><span class="o">=</span>vpn@dominio.cu
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> VERIFY OK: <span class="nv">depth</span><span class="o">=</span>0, <span class="nv">C</span><span class="o">=</span>CU, <span class="nv">ST</span><span class="o">=</span>HAV, <span class="nv">L</span><span class="o">=</span>Plaza, <span class="nv">O</span><span class="o">=</span>DOMINIO, <span class="nv">OU</span><span class="o">=</span>dominio, <span class="nv">CN</span><span class="o">=</span>vpn.dominio.cu, <span class="nv">name</span><span class="o">=</span>RSA, <span class="nv">emailAddress</span><span class="o">=</span>vpn@dominio.cu
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> write TCPv4_CLIENT: Broken pipe <span class="o">(</span><span class="nv">code</span><span class="o">=</span>32<span class="o">)</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> write TCPv4_CLIENT: Broken pipe <span class="o">(</span><span class="nv">code</span><span class="o">=</span>32<span class="o">)</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> Connection reset, restarting <span class="o">[</span>0<span class="o">]</span>
-</span><span class='line'>Sun Jun <span class="m">14</span> 19:02:50 <span class="m">2015</span> SIGUSR1<span class="o">[</span>soft,connection-reset<span class="o">]</span> received, process restarting
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ve, el servidor &ldquo;le cuelga&rdquo; y le deja hablando. Porque el certificado que
-el cliente está mandándole, no le cuadra.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -836,6 +944,14 @@ el cliente está mandándole, no le cuadra.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/01/09/tendencias-tecnologicas/">tendencias tecnológicas</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/01/09/flasheando-modem-al-s4/">flasheando modem al S4</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/01/02/rails-assets/">rails-assets</a>

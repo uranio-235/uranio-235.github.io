@@ -4,7 +4,7 @@
   <title><![CDATA[Category: razonemos | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/razonemos/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-01-05T11:47:40-05:00</updated>
+  <updated>2017-01-10T14:09:31-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,122 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[tendencias tecnológicas]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/01/09/tendencias-tecnologicas/"/>
+    <updated>2017-01-09T21:04:02-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/01/09/tendencias-tecnologicas</id>
+    <content type="html"><![CDATA[<p>Por suerte, la era de Zentyal está a punto de terminar.</p>
+
+<p>Ahora tenemos tocadores de PFsense, que se creen usuarios de FreeBSD.</p>
+
+<p>Siempre me ha maravillado el criterio de selección tecnológica de la mayoría (NO
+todos) los cubanos</p>
+
+<h4>puro efecto bandwagon</h4>
+
+<p>Funciona como especie de moda, donde el software más popular triunfa,
+simplemente por su popularidad, no por su adecuación, o idoneidad.</p>
+
+<p>Por ejemplo, nginx se puso de moda, porque el jovenclub lo usa. El jovenclub es
+famoso por sus disparates tecnológicos, pero no importa. ¡Usemos nginx! Antes yo
+usaba nginx, como proxy inverso, balanceo de carga y servidor web de contenido
+estático. Entonces yo era &ldquo;un extravagante&rdquo;. Ahora todo el mundo usa nginx para
+TODO. Tipos que AYER tocaron la puntica de nginx, te dicen: &ldquo;¿aún usas apache?&rdquo;
+y te miran como si tú fueras un bicho raro. Curiosamente, la misma mirada que
+ponían cuando les decías que usabas nginx (además de apache).</p>
+
+<p>Muchos dicen que &ldquo;systemd es una mierda&rdquo;, pero al preguntar &ldquo;por qué&rdquo;, son pocos
+los que dan argumentos técnicos que vallan más allá de simple resistencia al
+cambio. Parece no haber un término medio. Todo es blanco y negro. Nadie dice por
+ejemplo que systemd es bueno para máquinas de escritorios pero no tan bueno para
+servidores. NOOoo&hellip;</p>
+
+<p>Otro que bien baila es Proxmox. La herramienta de virtualización que ha caído en
+manos de los mas perezosos como dedo en el anillo. Al parecer soy el único
+cubano que usa Xen. Actualmente me dicen: &ldquo;ah! ¿no usas proxmox?&rdquo;. Pero cuando
+pregunto: ¿qué tiene proxmox superior a xen? Estoo, es queeee, veráaas,
+bueeenooo&hellip;. Nada, que está moda. La ecuación es simple:</p>
+
+<h4>Virtualización = Proxmox</h4>
+
+<p>click-click-click-click-click ¡<strong>ZAS</strong>! Todo está listo!!</p>
+
+<p>Dejaron de usar windows Server (click, click listo!)</p>
+
+<p>Para usar:</p>
+
+<p>Proxmox+Zimbra+Pfsense (click, click ¡LISTO! ¡¡¡y además FUNCIONA!!)</p>
+
+<p>¿Cambio de paradigma? ¿Filosofía UNIX? ¿Estilo de trabajo? ¿Teorema de KISS?
+¿Software Libre? <em>-pfff, que chiste. Ese tipo está loco, anda con la pila de
+consolas que parecen salida de la matrix. Nerd!</em></p>
+
+<p>No saben que demonios es un cortafuegos, no son capaces de elaborar una solución
+a la medida de su problema y ni siquiera entienden el software que usan pero
+eso son nimiedades.</p>
+
+<p>Cuando las necesidades tan pecularies de cubita la bella dicen &ldquo;aquí estoy&rdquo;,
+entonces no saben como van a modificar el comportamiento del software para
+adecuarse a nuestras extravagantes necesidades. Por que hay cientos de menus con
+cientos de click y checkmarks, pero ninguna hace lo que le exigen al sysadmin
+cubano.</p>
+
+<p>El servidor de correos, es su mayor dolor de cabeza, pero hay Zimbra. A veces
+necesitan un servidor SIMPLE o un servidor COMPLEJO, nada que ver con Zimbra y
+bueno, prueba a ver si iRedMail te lo resuelve.</p>
+
+<p>Ven herramientas como nagios o smokeping, se quedan con la boca abierta, pero
+¡joder! es muy complicado, me paso. Al menos,  hasta que alguien me de una
+configuración que funcione y yo cambiarle los valores para que se adecue a mi
+entorno.</p>
+
+<p>Reza porque todo funcione. Ya que es tanta la ignorancia, que si hay un
+problema, ni siquiera saben como van a pedir ayuda, porque ni siquiera entienden
+con que están tratando.</p>
+
+<p>Siempre puedes decirle al jefe &ldquo;no se puede&rdquo;. Después de todo, eres un
+<strong>tolerable asalariado</strong> y no te pasará nada por incumplir. Le puedes echar la
+culpa <em>al país que es una mierda por el atraso tecnológico</em> y bla bla bla; todas
+esas excusas que usan los mediocres de gama alta.</p>
+
+<h4>pero tienen más horas de facebook que de consola</h4>
+
+<p>Los más triste del caso, es que luego quieren venir a discutir de tecnología y
+uno no sabe como va a llevar la conversación para no humillarlos.</p>
+
+<h4>punto y aparte</h4>
+
+<p>Además, están los tipos que <strong>Sí SABEN</strong>, pero que usan todo eso porque &ldquo;no
+tienen tiempo&rdquo;. Trabajan sentados, el día entero apretando teclas en aire
+acondicionado y &ldquo;no tienen tiempo&rdquo;.</p>
+
+<p>Pierden su tiempo en jugar con toda esta parafernalia modista, para luego darse
+cuenta que esos sistemas, están incompletos. Les falta algo que ellos ya han
+hecho mejor y es cuando se dan cuenta, que están andando con juguetes.</p>
+
+<h4>para los extremistas</h4>
+
+<p>No digo que Zimbra/PFsense/Proxmox sean malos, digo que el método perezoso, es
+malo.</p>
+
+<p>No puedes comparar la picoloro con la llave inglesa.</p>
+
+<p>Tampoco puedes pensar que solo necesitas una de las dos para hacerlo todo. Ambas
+son útiles, en su adecuado ambiente y para la tarea que fueron diseñadas.</p>
+
+<p>Antes de emitir un criterio tecnológico, pruebo el software, lo instalo, lo
+manoceo, trato de romperlo, de ver como funciona, que tiene por detrás;
+finalmente, que haría yo si quisiera/pudiera mejorarlo. Entonces me hago un
+criterio.</p>
+
+<p>La gente que me conoces, sabe que aveces digo: &ldquo;eso es una mierda&rdquo;. Otros, que
+me conocen mejor y que hace lo mismo que yo; suelen oírme cuando digo: -eso es
+una mierda y te contaré como llegué a esa conclusión, ya que seguro que a ti te
+ha pasado parecido.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[las mujeres gordas]]></title>

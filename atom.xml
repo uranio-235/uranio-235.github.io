@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-01-05T11:47:40-05:00</updated>
+  <updated>2017-01-10T14:09:31-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,200 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[tendencias tecnológicas]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/01/09/tendencias-tecnologicas/"/>
+    <updated>2017-01-09T21:04:02-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/01/09/tendencias-tecnologicas</id>
+    <content type="html"><![CDATA[<p>Por suerte, la era de Zentyal está a punto de terminar.</p>
+
+<p>Ahora tenemos tocadores de PFsense, que se creen usuarios de FreeBSD.</p>
+
+<p>Siempre me ha maravillado el criterio de selección tecnológica de la mayoría (NO
+todos) los cubanos</p>
+
+<h4>puro efecto bandwagon</h4>
+
+<p>Funciona como especie de moda, donde el software más popular triunfa,
+simplemente por su popularidad, no por su adecuación, o idoneidad.</p>
+
+<p>Por ejemplo, nginx se puso de moda, porque el jovenclub lo usa. El jovenclub es
+famoso por sus disparates tecnológicos, pero no importa. ¡Usemos nginx! Antes yo
+usaba nginx, como proxy inverso, balanceo de carga y servidor web de contenido
+estático. Entonces yo era &ldquo;un extravagante&rdquo;. Ahora todo el mundo usa nginx para
+TODO. Tipos que AYER tocaron la puntica de nginx, te dicen: &ldquo;¿aún usas apache?&rdquo;
+y te miran como si tú fueras un bicho raro. Curiosamente, la misma mirada que
+ponían cuando les decías que usabas nginx (además de apache).</p>
+
+<p>Muchos dicen que &ldquo;systemd es una mierda&rdquo;, pero al preguntar &ldquo;por qué&rdquo;, son pocos
+los que dan argumentos técnicos que vallan más allá de simple resistencia al
+cambio. Parece no haber un término medio. Todo es blanco y negro. Nadie dice por
+ejemplo que systemd es bueno para máquinas de escritorios pero no tan bueno para
+servidores. NOOoo&hellip;</p>
+
+<p>Otro que bien baila es Proxmox. La herramienta de virtualización que ha caído en
+manos de los mas perezosos como dedo en el anillo. Al parecer soy el único
+cubano que usa Xen. Actualmente me dicen: &ldquo;ah! ¿no usas proxmox?&rdquo;. Pero cuando
+pregunto: ¿qué tiene proxmox superior a xen? Estoo, es queeee, veráaas,
+bueeenooo&hellip;. Nada, que está moda. La ecuación es simple:</p>
+
+<h4>Virtualización = Proxmox</h4>
+
+<p>click-click-click-click-click ¡<strong>ZAS</strong>! Todo está listo!!</p>
+
+<p>Dejaron de usar windows Server (click, click listo!)</p>
+
+<p>Para usar:</p>
+
+<p>Proxmox+Zimbra+Pfsense (click, click ¡LISTO! ¡¡¡y además FUNCIONA!!)</p>
+
+<p>¿Cambio de paradigma? ¿Filosofía UNIX? ¿Estilo de trabajo? ¿Teorema de KISS?
+¿Software Libre? <em>-pfff, que chiste. Ese tipo está loco, anda con la pila de
+consolas que parecen salida de la matrix. Nerd!</em></p>
+
+<p>No saben que demonios es un cortafuegos, no son capaces de elaborar una solución
+a la medida de su problema y ni siquiera entienden el software que usan pero
+eso son nimiedades.</p>
+
+<p>Cuando las necesidades tan pecularies de cubita la bella dicen &ldquo;aquí estoy&rdquo;,
+entonces no saben como van a modificar el comportamiento del software para
+adecuarse a nuestras extravagantes necesidades. Por que hay cientos de menus con
+cientos de click y checkmarks, pero ninguna hace lo que le exigen al sysadmin
+cubano.</p>
+
+<p>El servidor de correos, es su mayor dolor de cabeza, pero hay Zimbra. A veces
+necesitan un servidor SIMPLE o un servidor COMPLEJO, nada que ver con Zimbra y
+bueno, prueba a ver si iRedMail te lo resuelve.</p>
+
+<p>Ven herramientas como nagios o smokeping, se quedan con la boca abierta, pero
+¡joder! es muy complicado, me paso. Al menos,  hasta que alguien me de una
+configuración que funcione y yo cambiarle los valores para que se adecue a mi
+entorno.</p>
+
+<p>Reza porque todo funcione. Ya que es tanta la ignorancia, que si hay un
+problema, ni siquiera saben como van a pedir ayuda, porque ni siquiera entienden
+con que están tratando.</p>
+
+<p>Siempre puedes decirle al jefe &ldquo;no se puede&rdquo;. Después de todo, eres un
+<strong>tolerable asalariado</strong> y no te pasará nada por incumplir. Le puedes echar la
+culpa <em>al país que es una mierda por el atraso tecnológico</em> y bla bla bla; todas
+esas excusas que usan los mediocres de gama alta.</p>
+
+<h4>pero tienen más horas de facebook que de consola</h4>
+
+<p>Los más triste del caso, es que luego quieren venir a discutir de tecnología y
+uno no sabe como va a llevar la conversación para no humillarlos.</p>
+
+<h4>punto y aparte</h4>
+
+<p>Además, están los tipos que <strong>Sí SABEN</strong>, pero que usan todo eso porque &ldquo;no
+tienen tiempo&rdquo;. Trabajan sentados, el día entero apretando teclas en aire
+acondicionado y &ldquo;no tienen tiempo&rdquo;.</p>
+
+<p>Pierden su tiempo en jugar con toda esta parafernalia modista, para luego darse
+cuenta que esos sistemas, están incompletos. Les falta algo que ellos ya han
+hecho mejor y es cuando se dan cuenta, que están andando con juguetes.</p>
+
+<h4>para los extremistas</h4>
+
+<p>No digo que Zimbra/PFsense/Proxmox sean malos, digo que el método perezoso, es
+malo.</p>
+
+<p>No puedes comparar la picoloro con la llave inglesa.</p>
+
+<p>Tampoco puedes pensar que solo necesitas una de las dos para hacerlo todo. Ambas
+son útiles, en su adecuado ambiente y para la tarea que fueron diseñadas.</p>
+
+<p>Antes de emitir un criterio tecnológico, pruebo el software, lo instalo, lo
+manoceo, trato de romperlo, de ver como funciona, que tiene por detrás;
+finalmente, que haría yo si quisiera/pudiera mejorarlo. Entonces me hago un
+criterio.</p>
+
+<p>La gente que me conoces, sabe que aveces digo: &ldquo;eso es una mierda&rdquo;. Otros, que
+me conocen mejor y que hace lo mismo que yo; suelen oírme cuando digo: -eso es
+una mierda y te contaré como llegué a esa conclusión, ya que seguro que a ti te
+ha pasado parecido.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[flasheando modem al S4]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/01/09/flasheando-modem-al-s4/"/>
+    <updated>2017-01-09T19:00:58-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/01/09/flasheando-modem-al-s4</id>
+    <content type="html"><![CDATA[<p>Es un mojón de los Samsung, tener el módem (banda base) como una partición y
+(por ende un firmware) aparte del sistema. Por este motivo, cuando flasheas
+cyanogen (léase &ldquo;cualquier ROM&rdquo;) una y otra vez; o cuando el teléfono se apaga
+abruptamente&hellip; Diiiicen que se corrompe el módem.</p>
+
+<p>Entonces, de buenas a primeras, el teléfono te dice &ldquo;tarjeta SIM expulsada,
+Reinicie&rdquo;. Aveces al reiniciar no se soluciona el problema. Yo he estado hasta 3
+días sin teléfono. Quitarle la batería un rato y volverla a poner, suele ser una
+solución, pero aveces, hasta 7 veces al día; he tenido que lidiar con el
+errorsito de los cojones.</p>
+
+<p><img class="right" src="http://uranio-235.github.io/images/acercade_baseband.png" width="200" height="300" title="" ></p>
+
+<p>La única solución paliativa que he visto, es, de vez en vez, al menos una cada
+dos mes; flahsear el módem.</p>
+
+<p>El cómo dar con el módem te lo dejo de tarea. Lo siento, no soy la base de datos
+de bandas bases de samsung. La mía la <strong>busqué en google</strong> escribiendo el texto:</p>
+
+<p>&ldquo;modem SGH-M919&rdquo;</p>
+
+<p>Oséase, pidiendo el módem para mi modelo del teléfono, que al parecer, la
+<strong>M919UVUFNH7</strong>, es la última disponible para mi canchanfleta.</p>
+
+<p>El proceso de flasheo, la primera vez, requiere que nos hagamos con el
+fichero PIT del teléfono.</p>
+
+<p>Reinicia el teléfono en modo descarga. Si no sabes cómo hacerlo, googlea, cada
+samsung tiene su forma. El mío (S4 T-Mobile) es Power+VolDown+Home. Luego, en el
+modo descarga; una vez que (presiones VolUp) para inicializar la conexión,
+pasamos a Heimdall.</p>
+
+<p>Nota para los imbéciles: Conecte el teléfono a la computadora mediante un cable
+USB <strong>en buen estado</strong>.</p>
+
+<p><img class="right" src="http://uranio-235.github.io/images/pitfile.png" width="600" height="700" title="" ></p>
+
+<p>En Heimdall, vamos a la pestaña <strong>Utilities</strong>. Presiona botón
+<em>Detect</em><sup>1</sup>, cuando te coja el teléfono, presiona <em>Save As</em><sup>2</sup>
+y te dará un nombre de fichero para salvar, por ejemplo, <strong>fulanito.pit</strong>.
+Finalmente presiona <em>Download</em><sup>3</sup> y te creará el fichero.</p>
+
+<p>Decirte quiero que este ficherito es muy famoso, ya que es algo así como tu
+tabla de particiones.</p>
+
+<p>Una vez que tienes el fichero en tu poder, Heimdall, será capaz de saber <em>a
+ciegas</em> donde están las particiones de tu teléfono sin tener que preguntárselo
+una y otra vez, así que guardalo en un directorio donde pongas todas las
+gangarreas de tu teléfono. Por cierto, terminamos con el teléfono; aunque diga
+&ldquo;do not turn off&rdquo; cágate en la noticia y reinicia (quita la batería).</p>
+
+<p>Ahora viene tiempo de google, muuuuucho google, para dar con tu módem.</p>
+
+<p>Digamos que finalmente diste con el módem de tu samsung. Seguro tiene un nombre
+muy genérico, casi siempre se llaman <strong>modem.bin</strong>. Procede con el mismo
+preludio del ritual (modo descarga y abre heimdall)</p>
+
+<p><img class="left" src="http://uranio-235.github.io/images/flasheo_modem.png" width="600" height="700" title="" ></p>
+
+<p>Ahí ve para la pestaña que dice <strong>Flash</strong>. Click en <em>Browse</em><sup>1</sup> y
+localiza tu pitfile. Click en <em>Add</em><sup>2</sup> y luego en el <em>select</em> del campo
+<em>partition name</em><sup>3</sup> selecciona la partición <strong>MDM</strong>. Finalmente, le
+buscamos el fichero modem.bin haciendo click en Browse<sup>4</sup>.</p>
+
+<p>¿No tengo que decirte que pulses <strong>Start</strong>, verdad?</p>
+
+<p>Si todo salió bien, se reiniciará y tendrás tu módem recién flasheado. Pero no
+cantes victoria. Si tu modem se deterioró, fue que ALGO lo deterioró y ese algo,
+lo joderá de nuevo, así que, mantén las herramientas a manos; las necesitarás
+pronto.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[rails-assets]]></title>
@@ -554,7 +748,7 @@ de la moda).</p>
 disco duro&rdquo;. Por ejemplo, el servidor de correo que me lleva 500 gigas, mientras
 que en el sistema de monitoreo (nagios) solo se lleva 5 gigas.</p>
 
-<p>La matriz tiene un disco de 5 gigas donde se instaló todo. Sobre espacio, ya que
+<p>La matriz tiene un disco de 5 gigas donde se instaló todo. Sobra espacio, ya que
 borrando /usr/share/doc/ y la cache de apt, se quedo en menos de un giga. El
 problema (con Xen) viene a la hora de agrandar el disco.</p>
 
@@ -569,7 +763,7 @@ versátil.</p>
 <p>BTRfs es otra buena opción, pero su rendimiento decae mucho con el tiempo (<strong>mi
 experiencia</strong>).</p>
 
-<p>Añadir un disco al volumen lógico y aumentar su tamaño resuelve el problema.</p>
+<p>Añadir un disco al volumen lógico y aumentar su tamaño <strong>resuelve el problema</strong>.</p>
 
 <p>Claro, el sistema de archivos que instalaste, debe soportar tal operación, pero
 por suerte, ext4 lo hace perfectamente y sin tener que desmontar el sistema de
@@ -1800,186 +1994,6 @@ pulseaudio al directorio de usuario:</p>
 
 
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[dispatcher script]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/09/16/dispatcher-script/"/>
-    <updated>2016-09-16T10:53:51-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/09/16/dispatcher-script</id>
-    <content type="html"><![CDATA[<p>El network-manager, el sistema de 2 clicasos para configurar la interfaz de red.
-Resulta que cuando levanta la red, no se por qué, telepathy-salut se queda
-mariado y el chat &ldquo;gente cerca&rdquo; no ve a los usuarios. Al reiniciar avahi se le
-quita el mareo. Entonces la talla sería que el avahi se reiniciara solo.</p>
-
-<p>Resulta que NetworkManger, tiene los llamados dispatcher. Puedes ver
-<a href="https://developer.gnome.org/NetworkManager/stable/NetworkManager.html">la documentación aquí</a></p>
-
-<p>Los scripts que radique en <strong>/etc/NetworkManager/dispatcher.d/</strong> se ejecutarán
-sí y solo si, pertenecen al root con permisos 755.</p>
-
-<p>Los script reciben como primer argumento, la interfaz y como segundo la acción.
-Las acciones pueden ser up, down, conectivity-change, hostname y en fin, vease
-<strong>man NetworkManager</strong> para más detalles.</p>
-
-<p>Mi script quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/NetworkManager/dispatcher.d/migancho.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># la interfaz involucrada</span>
-</span><span class='line'><span class="nv">INTERFAZ</span><span class="o">=</span><span class="nv">$1</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># la acción involucrada</span>
-</span><span class='line'><span class="nv">ACCION</span><span class="o">=</span><span class="nv">$2</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># una función para loguear</span>
-</span><span class='line'><span class="k">function</span> loguear<span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>   logger <span class="k">$(</span>basename <span class="nv">$0</span><span class="k">)</span> <span class="nv">$@</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># un logueo simple, pa saber lo que hay</span>
-</span><span class='line'>loguear <span class="s2">&quot;acción «$ACCION» en la interfaz «$INTERFAZ»&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># según la acción</span>
-</span><span class='line'><span class="k">case</span> <span class="s2">&quot;$ACCION&quot;</span> in
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>   up<span class="o">)</span> <span class="c"># una interfaz que se levanto</span>
-</span><span class='line'>
-</span><span class='line'>      loguear <span class="s1">&#39;tumbando telepathy y compañía&#39;</span>
-</span><span class='line'>      pkill -9 empathy
-</span><span class='line'>      pkill -9 telepathy
-</span><span class='line'>
-</span><span class='line'>      loguear <span class="s1">&#39;reiniciando avahi&#39;</span>
-</span><span class='line'>      systemctl restart avahi-daemon
-</span><span class='line'>
-</span><span class='line'>      loguear <span class="s1">&#39;ajustando la hora&#39;</span>
-</span><span class='line'>      systemctl start systemd-timesyncd
-</span><span class='line'>
-</span><span class='line'>   <span class="p">;;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>   down<span class="o">)</span> <span class="c"># al tumbar una conexión</span>
-</span><span class='line'>
-</span><span class='line'>     loguear <span class="s1">&#39;para el clientico ntp de systemd&#39;</span>
-</span><span class='line'>     systemctl stop systemd-timesyncd
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>   <span class="p">;;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>   *<span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'>      loguear <span class="s1">&#39;sin accion&#39;</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="p">;;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">esac</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con <strong>journalctl -f</strong> puedes ver como loguea, en este caso el argumento $0 es el
-nombre del script. En fin puedes hacer muchísimas cosas creativas. Con ver en el
-man de NetworkManager las acciones; podrás subsanar muchas necesidades.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[password de windows]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/08/16/password-de-windows/"/>
-    <updated>2016-08-16T00:13:36-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/08/16/password-de-windows</id>
-    <content type="html"><![CDATA[<p>Resulta que en el puesto de mando, uno de los tantos que se sientan ahí; le
-cambió el password a la canchanfleta que tienen por computadora y entonces
-NAADIEEE vio nada. Conclusión no apareció el autor de la contraseña y los
-técnicos no sabían que hacer (para variar).</p>
-
-<p>&ldquo;lázaro, tú que usas linux: ¿Podrías &#8220;hackear&rdquo; la contraseña?&#8221;</p>
-
-<p>Pregunta uno de los usuarios, con cara de: <em>Cambié el password y no me acuerdo
-cual puse</em>. Véase la definición del termino <a href="https://es.wikipedia.org/wiki/Hacker">hacker</a> y note lo mal empleado que está.</p>
-
-<p>Metí un archlinux en la memoria flash de la pornografía, lo levanté en caliente
-e instalé <strong>chntpw</strong>.</p>
-
-<p>Monté el disco de windows, primera partición (alias &ldquo;C:&rdquo;) en /mnt. Con el
-comando <strong>find</strong> y abusando de mi memoria, sobre un artículo que leí acerca de
-las contraseñas de Windows; localicé el fichero <strong>C:/Windows/System32/config/SAM</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>   pacman -S chntpw
-</span><span class='line'>   mount /dev/sdb1 /mnt
-</span><span class='line'>   <span class="nb">cd</span> /mnt/Windows/System32/config/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como lo hice en un sistema en caliente, no pude copiar la salida, pero esto fue
-lo que hice.</p>
-
-<p>Paso 1: Lista los usuarios de Güindos: <strong>chntpw -l SAM</strong></p>
-
-<p>Paso 2: Modifica el usuario &ldquo;Administrador&rdquo;: <strong>chntpw -u &ldquo;Administrador&rdquo; SAM</strong></p>
-
-<p>Verás un pequeño asistente en modo texto que te pregunta que hacer. Lo mejor es
-vaciar el password, luego desbloquearlo. Sale con <strong>quit</strong> y te preguntará si
-quieres guardar los cambios. No te preocupes, se entiende mejor cuando lo ves,
-es bastante simple.</p>
-
-<p>Gracias a dios que a <a href="https://es.wikipedia.org/wiki/Bill_Gates">Rico McPato</a> no se le ocurrió meter la contraseña en el registro de windows.</p>
 ]]></content>
   </entry>
   

@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="rc.local en systemd 12/11/2015 9:49 am | Comments Déjame decirte, que es un gran mojón de parte de systemd; el hecho de que no
-halla una puñetera &hellip;">
+  <meta name="description" content="desmume ultralento 23/11/2015 9:37 pm | Comments Es tremendo mojón departe del desmume, no venir con el compilador JIT activado
+por defecto. Los &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +88,273 @@ halla una puñetera &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2015/11/23/desmume-ultralento/">desmume ultralento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-23T21:37:40-05:00'><span class='date'>23/11/2015</span> <span class='time'>9:37 pm</span></time>
+        
+           | <a href="/blog/2015/11/23/desmume-ultralento/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/23/desmume-ultralento/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Es tremendo mojón departe del desmume, no venir con el compilador JIT activado
+por defecto. Los juegos de DS corren suúuuuper lentos. Pero si corres desmume
+con los siguientes argumentos:</p>
+
+<figure class='code'><figcaption><span>&#8220;desmume&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>desmume  --fwlang<span class="o">=</span><span class="m">5</span> --jit-size<span class="o">=</span><span class="m">100</span> --cpu-mode<span class="o">=</span><span class="m">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Se activará el <a href="https://es.wikipedia.org/wiki/Compilaci%C3%B3n_en_tiempo_de_ejecuci%C3%B3n">Compilador en Tiempo de Ejecución</a>
+que tiene desmume y créeme, la mejora es increíble. Tanto que luego se dispara
+de una manera descomunal, así que será necesario limitar el FrameSkip a 60 FPS.</p>
+
+<p><img class="right" src="/images/desmume.png"></p>
+
+<p>Como ven en la imagen, está corriendo Le pokemón negro, y con un micro de 2 mil
+herzios se me monta en los 80fps renderizando 3d. Con la Soul Silver, se me
+monta en +100 fps, ya que las peleas son en 2D.</p>
+
+<p>Te preguntarás por que usar Frameskip entonces. Pues al menos en mi caso, cuando
+el juego renderiza 3D, sin Frameskip, no llega ni a las 40FPS. Por suerte, con
+la opción marcada debajo, ni se siente el frame-skip, cosa que en otros
+emuladores es un dolor.</p>
+
+<p>Por suerte el DS solo puede renderizar 3D en una sola pantalla a la vez. Ah!
+OpenGL es por gusto, desmume pincha arriba del micro.</p>
+
+<p>Para mayor comodida, puedes crear un .desktop en tu home, el cual se lanze con
+los parámetros. A mi me quedó así</p>
+
+<figure class='code'><figcaption><span>&#8221;~/.local/share/applications/desmume.desktop&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Desktop Entry]</span>
+</span><span class='line'><span class="na">Version</span><span class="o">=</span><span class="s">1.0</span>
+</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">Application</span>
+</span><span class='line'><span class="na">Name</span><span class="o">=</span><span class="s">DeSmuME (Gtk)</span>
+</span><span class='line'><span class="na">Comment</span><span class="o">=</span><span class="s">Nintento DS emulator</span>
+</span><span class='line'><span class="na">TryExec</span><span class="o">=</span><span class="s">desmume --fwlang=5 --jit-size=90 --cpu-mode=1</span>
+</span><span class='line'><span class="na">Exec</span><span class="o">=</span><span class="s">desmume --fwlang=5 --jit-size=90 --cpu-mode=1</span>
+</span><span class='line'><span class="na">Icon</span><span class="o">=</span><span class="s">DeSmuME</span>
+</span><span class='line'><span class="na">Categories</span><span class="o">=</span><span class="s">GNOME;GTK;Game;Emulator;</span>
+</span><span class='line'><span class="na">MimeType</span><span class="o">=</span><span class="s">application/x-nintendo-ds-rom;</span>
+</span><span class='line'><span class="na">X-Desktop-File-Install-Version</span><span class="o">=</span><span class="s">0.22</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/22/certificado-autofirmado/">certificado autofirmado</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-22T19:33:54-05:00'><span class='date'>22/11/2015</span> <span class='time'>7:33 pm</span></time>
+        
+           | <a href="/blog/2015/11/22/certificado-autofirmado/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/22/certificado-autofirmado/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Ya hemos visto en varios post, que para hacer un servicio con SSL, requerimos un
+certificado autofirmado. De ahora en lo adelante, no pienso repetir ese proceso,
+por el contrario, pondré un link a este post.</p>
+
+<p>Una vez creado tu propio certificado, no tendrás que volver a crear uno para
+cada servicio, simplemente uno para cada host. Por tanto, vamos a crear y
+almacenar nuestro certificado en <strong>/etc/ssl/private/</strong> para usarlo con todos los
+servicios.</p>
+
+<p>De facto, asumo que tienes el paquete <strong>openssl</strong> instalado.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/ssl/private&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/ssl/private/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Primeros debemo generar una <a href="https://es.wikipedia.org/wiki/RSA">Clave RSA Privada</a>. La clave RSA es la que genera los
+certificados autofirmados como tal.</p>
+
+<figure class='code'><figcaption><span>&#8220;generando la RSA&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl genrsa -des3 -out privado.key 1024
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Te pide un password. Debes ver algo como esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;salida&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>.++++++
+</span><span class='line'>..............................++++++
+</span><span class='line'>e is <span class="m">65537</span> <span class="o">(</span>0x10001<span class="o">)</span>
+</span><span class='line'>Enter pass phrase <span class="k">for</span> privado.key:
+</span><span class='line'>Verifying - Enter pass phrase <span class="k">for</span> privado.key:
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ah! El password no se ve mientras los escribes&hellip;</p>
+
+<p>Bueno, ahora generamos el CSR (Certificate Signing Request). Esto se usa para
+dos cosas: El CSR, es lo que se le envía a una autoridad certificadora (CA) para
+identificarnos con ella o como es el caso para simplemente, generar certificados
+autofirmados.</p>
+
+<p>En este proceso, que ya lo hemos visto repetidamente, te preguntarán por
+aquellos datos que identifican a tu servicio de manera fideligna.</p>
+
+<p><strong>OJO</strong> El servidor que especifiques en el FQDN debe machear al hostname que se
+pida en las peticiones DNS.</p>
+
+<figure class='code'><figcaption><span>&#8220;generando el CSR&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl req -new -key privado.key -out privado.csr
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Debes ver algo como esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;salida&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Enter pass phrase <span class="k">for</span> privado.key:
+</span><span class='line'>You are about to be asked to enter information that will be incorporated
+</span><span class='line'>into your certificate request.
+</span><span class='line'>What you are about to enter is what is called a Distinguished Name or a DN.
+</span><span class='line'>There are quite a few fields but you can leave some blank
+</span><span class='line'>For some fields there will be a default value,
+</span><span class='line'>If you enter <span class="s1">&#39;.&#39;</span>, the field will be left blank.
+</span><span class='line'>-----
+</span><span class='line'>Country Name <span class="o">(</span><span class="m">2</span> letter code<span class="o">)</span> <span class="o">[</span>AU<span class="o">]</span>:CU
+</span><span class='line'>State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>Some-State<span class="o">]</span>:Havana
+</span><span class='line'>Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[]</span>:Plaza
+</span><span class='line'>Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>Internet Widgits Pty Ltd<span class="o">]</span>:
+</span><span class='line'>Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[]</span>:
+</span><span class='line'>Common Name <span class="o">(</span>e.g. server FQDN or YOUR name<span class="o">)</span> <span class="o">[]</span>:tuservidor.cu
+</span><span class='line'>Email Address <span class="o">[]</span>:
+</span><span class='line'>
+</span><span class='line'>Please enter the following <span class="s1">&#39;extra&#39;</span> attributes
+</span><span class='line'>to be sent with your certificate request
+</span><span class='line'>A challenge password <span class="o">[]</span>:
+</span><span class='line'>An optional company name <span class="o">[]</span>:Calixto Garcia
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>REPITO</strong> Donde dice: &ldquo;Common Name (eg, your name or your server&rsquo;s hostname)&rdquo;
+Debes poner el hostname por el que será llamado tu server. Por esta razón, los
+pop3 y los SMTP, suelen generar certificados aparte.</p>
+
+<p>Otra jodedera de los certificados autofirmados, es que siempre piden un password
+cuando van a ser usados. Para evitar este fenómeno, debemos hacer una burumba y
+quitarle el password.</p>
+
+<figure class='code'><figcaption><span>&#8220;quitando el password&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp privado.key privado.key.org
+</span><span class='line'>openssl rsa -in privado.key.org -out privado.key
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya puedes borrar el fichero &ldquo;privado.key.org&rdquo; tranquilamente, pero bueno, si lo
+guardas, nadie se pondrá bravo.</p>
+
+<p>Ahora por fin vamos a generar el dichoso certificado autofirmado. Para
+generarlo, necesitaremos usar una CA, en este caso, nosotros mismos.</p>
+
+<figure class='code'><figcaption><span>&#8220;generando el certificados&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl x509 -req -days <span class="m">365</span> -in privado.csr -signkey privado.key -out privado.crt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Debes ver algo como esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;salida&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Signature ok
+</span><span class='line'><span class="nv">subject</span><span class="o">=</span>/C<span class="o">=</span>CU/ST<span class="o">=</span>Havana/L<span class="o">=</span>Plaza/O<span class="o">=</span>Internet Widgits Pty Ltd/CN<span class="o">=</span>tuservidor.cu
+</span><span class='line'>Getting Private key
+</span><span class='line'>Enter pass phrase <span class="k">for</span> privado.key:
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El parámetros <strong>-days</strong> puede saltarse si no quiere que el certificado caduque.
+Pero en ambientes muy hostiles, donde de verdad se quiere cifrado, es necesario
+que el ceritificado caduque. Uno nunca sabe que mariconá están planificando los
+hackers por ahí.</p>
+
+<p>Ahí tienes tu certificado autofirmado ;)</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a></h1>
     
     
@@ -158,7 +425,7 @@ oneshot, que cargue el /etc/rc.local</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -583,7 +850,7 @@ ver con SSL, declarando esto:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -793,203 +1060,7 @@ NetworkManager.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/18/systemd-timesyncd/">systemd-timesyncd</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-10-18T13:19:01-04:00'><span class='date'>18/10/2015</span> <span class='time'>1:19 pm</span></time>
-        
-           | <a href="/blog/2015/10/18/systemd-timesyncd/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/18/systemd-timesyncd/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Mantener un reloj sincronizado y en hora, siempre ha sido un dilema. Algunas
-personas no reconocen la necesidad de esto; y además son tan imbéciles, que
-luego se quejan cuando la desfasada fecha de su computadora les impide
-conectarse a un sitio SSL.</p>
-
-<p>En los servidores y en las estaciones de trabajo que se respeten; siempre ha
-sido una opción usar un cliente NTP. Pero los ntp, cuando la fecha no está en el
-día adecuado, no se toman la molestia de sincronizar. En los raspberry-pi eso
-puede llegar a ser un tremendo problema, ya que NO tienen reloj de hardware y ni
-siquiera conservan la fecha.</p>
-
-<p>El tan criticado <a href="https://es.wikipedia.org/wiki/Systemd">Systemd</a>, tiene una
-solución para este problema. Sucia y burda, pero muy eficiente. Normalmente, los
-&ldquo;clientes&rdquo; <a href="https://es.wikipedia.org/wiki/Network_Time_Protocol">NTP</a>, son
-cliente y servidor. En el caso de systemd-timsyncd, no se tomaron la molestia de
-implementar un servidor; solamente un cliente minimalista. Además, guarda las
-sincronizaciones en un fichero, para determinar si tu reloj de hardware se
-adelante o atraza y contrarrestar dicho efecto.</p>
-
-<p>Lo bueno que tiene es que agarra la fecha y hora de cualquier parte; luego, la
-setea sin chistar. La configuración es sencillísima. Localiza el fichero:</p>
-
-<p><strong>/etc/systemd/timesyncd.conf</strong></p>
-
-<p>Declárale un servidor principal y si te da la gana, uno o varios adicionales. A
-mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>/etc/systemd/timesyncd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#  This file is part of systemd.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#  systemd is free software; you can redistribute it and/or modify it</span>
-</span><span class='line'><span class="c">#  under the terms of the GNU Lesser General Public License as published by</span>
-</span><span class='line'><span class="c">#  the Free Software Foundation; either version 2.1 of the License, or</span>
-</span><span class='line'><span class="c">#  (at your option) any later version.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># You can override the directives in this file by creating files in</span>
-</span><span class='line'><span class="c"># /etc/systemd/timesyncd.conf.d/*.conf.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># See timesyncd.conf(5) for details</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Time<span class="o">]</span>
-</span><span class='line'><span class="nv">NTP</span><span class="o">=</span>time.hcg.sld.cu
-</span><span class='line'><span class="nv">FallbackNTP</span><span class="o">=</span>time.sld.cu time.microsoft.com
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Generalmente, mi laptop está en el calixto, por eso puse mi servidor local como
-primario; pero si no lo estuviera, de seguro <strong>time.sld.cu</strong> sería alcanzable. En
-el dificilísimo caso de que estuviera de cara a internet, quizás responda el de
-microsoft, que no está malo. Por cierto, los comentarios del fichero son
-bastante útiles, vale la pena leerlos.</p>
-
-<p>Por último, lo más importante, habilitar y arrancar el servicio:</p>
-
-<p>systemctl <strong>start</strong> systemd-timesyncd.service</p>
-
-<p>systemctl <strong>enable</strong> systemd-timesyncd.service</p>
-
-<p>Para saber el estado del servicio, corre:</p>
-
-<p><strong>timedatectl</strong></p>
-
-<p>Te dirá la hora local y la UTC; te dirá además si está sincronizando por NTP.
-Con ese comando puede hacer un montón de operaciones, por ejemplo, setear la
-hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.org/wiki/Reloj_en_tiempo_real">RTC</a> también.</p>
-
-<p>   <blockquote><p>No existe juez más justo, que el pasar del tiempo.</p></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/16/palo-con-la-wifi/">palo con la wifi</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-10-16T12:40:04-04:00'><span class='date'>16/10/2015</span> <span class='time'>12:40 pm</span></time>
-        
-           | <a href="/blog/2015/10/16/palo-con-la-wifi/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/16/palo-con-la-wifi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Vale la pena hacer una entrada de esto, porque podría ser el problema de alguien
-que como yo; se cansó de alarse los pelos y buscar en google.</p>
-
-<p>Recién no se cuando me bajé una versión de algo que involucra al networkmanager
-y BUN! La wifi, cada vez que levantaba al susodicho, se bloqueaba.</p>
-
-<p>El problema parecía estar en el fichero:</p>
-
-<p><strong>/var/lib/NetworkManager/NetworkManager.state</strong></p>
-
-<p>No se porque, decía tener la wifi deshabilitada. El fichero contiene algo como
-esto:</p>
-
-<figure class='code'><figcaption><span>NetworkManager.state</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>main<span class="o">]</span>
-</span><span class='line'><span class="nv">NetworkingEnabled</span><span class="o">=</span><span class="nb">true</span>
-</span><span class='line'><span class="nv">WirelessEnabled</span><span class="o">=</span><span class="nb">true</span>
-</span><span class='line'><span class="nv">WWANEnabled</span><span class="o">=</span><span class="nb">true</span>
-</span><span class='line'><span class="nv">WimaxEnabled</span><span class="o">=</span><span class="nb">true</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>No se por qué, la clave <strong>NetworkingEnabled</strong> estaba con valor <strong>false</strong> y al
-arrancar NetworkManager, bloqueaba la wifi, al punto que al levantarla
-manualmente, me decía que tenía que desbloquearla con rfkill. Para el que no lo
-sepa, con rfkill se pueden bloquear los radios.</p>
-
-<p>Si por casualidad tienes alguno bloqueado, ejecuta:</p>
-
-<p>rfkill unblock all</p>
-
-<p>Cosa que tenía que ejecutar cada vez que arrancaba el dichóso NetworkManager</p>
-
-<p>Probé apagar la wifi y arrancar el networkmanager con la wifi apagada, para ver
-si eso cambiaba algo en el fichero antes mencionado; pero no. Lo cual me llevó a
-la conclusión de que no fue una metedura de pata mía si no, un bug.</p>
-
-<p>Ponerle atributo inmutable a ese fichero podría ser una solución, pero todo lo
-que está en /var suele ser un dato volátil que señala el estado de algo, así que
-ponerle inmutable podría causar fallos en la aplicación.</p>
-
-<p>Si ese fichero está en /var es porque el network manager dumpea ahí su estado,
-fíjese que está junto a los lease del DHCP. No tengo certeza de que modificando
-esa configuración manualmente esta persista; pero ya llevo una semana con el
-problema resuelto.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1010,6 +1081,14 @@ problema resuelto.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/01/09/tendencias-tecnologicas/">tendencias tecnológicas</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/01/09/flasheando-modem-al-s4/">flasheando modem al S4</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/01/02/rails-assets/">rails-assets</a>

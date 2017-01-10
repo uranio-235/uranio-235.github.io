@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://uranio-235.github.io/blog/2017/01/09/tendencias-tecnologicas/</loc>
+<lastmod>2017-01-09T21:04:02-05:00</lastmod>
+</url>
+<url>
+<loc>http://uranio-235.github.io/blog/2017/01/09/flasheando-modem-al-s4/</loc>
+<lastmod>2017-01-09T19:00:58-05:00</lastmod>
+</url>
+<url>
 <loc>http://uranio-235.github.io/blog/2017/01/02/rails-assets/</loc>
 <lastmod>2017-01-02T18:55:02-05:00</lastmod>
 </url>

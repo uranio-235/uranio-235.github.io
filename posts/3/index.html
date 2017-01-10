@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="túnel 6in4 22/10/2016 3:18 am | Comments Típico: Quiero darle cumplimiento a la resolución 185/2016, pero mi proveedor
-no me ha dado una ipv6 ¿ &hellip;">
+  <meta name="description" content="recolección DomainPOP 22/10/2016 10:44 pm | Comments Esta entrada ha sido copiada de mi antiguo blog puheroska.
+Vale aclarar que la escribí en el &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,225 @@ no me ha dado una ipv6 ¿ &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/10/22/el-domain-pop/">recolección DomainPOP</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-10-22T22:44:36-04:00'><span class='date'>22/10/2016</span> <span class='time'>10:44 pm</span></time>
+        
+           | <a href="/blog/2016/10/22/el-domain-pop/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/10/22/el-domain-pop/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Esta entrada ha sido copiada de mi antiguo blog <a href="http://otherlinuxblog.blogspot.com">puheroska</a>.
+Vale aclarar que la escribí en el 2012&hellip;</p>
+
+<p>Se sabe poco sobre los orígenes de ese aborto de la naturaleza que es conocido
+por algunos como &ldquo;recolección aPOP&rdquo; o por otros como &ldquo;DomainPOP&rdquo;.</p>
+
+<p><img class="right" src="/images/apartado_postal.jpg" width="200" height="300" title="" ></p>
+
+<p>Haciendo referencia al hecho de bajar todo el correo para un dominio de un pop
+remoto. Muchos seguron lo identifican con un popular, potente y hermoso servidor
+de correo, para windows llamado MDeamon (pronunciado por algunos como
+&ldquo;emodimons&rdquo; y por otro como &ldquo;emdaimons&rdquo;). Muy conocido por su simple pero
+elegante cliente web, el World Client. Entre sus <em>features</em>, podemos ver el
+almacenamiento de TODO el correo de un dominio en un mismo buzón. Esto, sumado a
+que en cuba todo el software es gratis :D lo convirtió en la herramienta
+definitiva para las redes conmutadas.</p>
+
+<p>Por otra parte, no todo se le impugna windows. Cuando aún el morro era de palo y
+los cañones tiraban taquitos; ya citmatel usaba un CuciPOP (vean que clase de
+nombre &ldquo;Cubic Circles = CuCiPOP&rdquo;) para depositar el correo de sus clientes por
+lineas conmutadas; una clara implementación de aPOP. Esto resolvió ser la manera
+mas burda pero eficiente para resolver el problema del correo en lineas
+conmutadas.</p>
+
+<p>Lo único que perturba este barato panorama, es el hecho de que si el correo
+no tiene un To: bien claro, se jode todo y te ves obligado a usar MDeamon, que
+en ese aspecto se saca todos los premios. Por su puesto, él es una de
+la principales implementaciones de este modelo.</p>
+
+<p>A menudo nos encontramos con que al bajar el correo con fetchmail, uno o varios
+correos no van a su destino, y, por el contrario, van al postmaster sin tener
+coincidencias de usuarios locales.</p>
+
+<p>Hay quien esta acostumbrado a que el postmaster este LLENO de correos y eso
+le parece normal, cuando el buen funcionamiento de un servidor, se mide por el
+postmaster vacío.</p>
+
+<p>Si un correo tiene un To: o un Cc: fetchmail lo parsea (del infintivo &ldquo;parsear&rdquo;)
+y localiza una dirección de nuestro dominio basándose en que tiene el dominio en
+la configuración. Como le dijimos &lsquo;is * here&rsquo; buscará cual nombre que este
+delante de lo que se parezca a nuestro dominio y lo entregara.</p>
+
+<p>Pero: Qué pasa si el To: o el Cc: NO tienen una dirección de nuestro dominio?</p>
+
+<p>Supongamos que el correo viene Bcc: (blink carbon copy)</p>
+
+<p>Como por ejemplo, los correos de listas de distribuciones, etc&hellip; En ese caso
+los destinos se especifican en la orden RCPTO durante la sesión SMTP. Algunos
+servidores incluyen encabezados como: &ldquo;Delivery-To&rdquo;,&ldquo;Envelope-To&rdquo; o
+&ldquo;X-Orignial-To&rdquo; En mi opinión todos están de más, porque el Received: tiene esta
+información; pero bueno, podríamos decirle a fetchmail que ademas de esos,
+parsee encabezados Received: Eso parecería una solución, el único problema es
+que no pincha :-P</p>
+
+<h4>Hasta aquí la entrada de puheroska.</h4>
+
+<p>En aquel momento consideraba eso &ldquo;un problema sin solución&rdquo;</p>
+
+<p>Cuando llegué a salud, me encontré nuevamente con los DomainPOP, pero <strong>por
+suerte</strong>, los exim de infomed hacen bien esa pincha y dejan plasmado el
+destinatario en un encabezado &ldquo;Envelope-To&rdquo;</p>
+
+<p>He aquí el fetchmailrc que tengo en el calixto:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/fetchmailrc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Fichero de configuración de fethcmail, adecuado para los MultiPOP de infomed</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">set </span>daemon 60
+</span><span class='line'><span class="nb">set </span>postmaster <span class="s2">&quot;root&quot;</span>
+</span><span class='line'><span class="nb">set </span>no bouncemail
+</span><span class='line'><span class="nb">set </span>no spambounce
+</span><span class='line'><span class="nb">set </span>logfile .fetchmail.log
+</span><span class='line'><span class="nb">set </span>no syslog
+</span><span class='line'>
+</span><span class='line'>defaults
+</span><span class='line'>    timeout 10
+</span><span class='line'>    no keep
+</span><span class='line'>    fetchall
+</span><span class='line'>    expunge 5
+</span><span class='line'>    dropstatus
+</span><span class='line'>
+</span><span class='line'>poll multipop.sld.cu port <span class="m">110</span> protocol pop3 localdomains tudominio.sld.cu
+</span><span class='line'>    envelope <span class="m">1</span> <span class="s2">&quot;Envelope-to:&quot;</span>
+</span><span class='line'>    no dns
+</span><span class='line'>    username tuusuario
+</span><span class='line'>    password tupassword
+</span><span class='line'>    to * here
+</span><span class='line'>    limitflush
+</span><span class='line'>    smtphost localhost
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/10/22/domainpop-con-postfix/">domainpop con postfix</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-10-22T17:35:46-04:00'><span class='date'>22/10/2016</span> <span class='time'>5:35 pm</span></time>
+        
+           | <a href="/blog/2016/10/22/domainpop-con-postfix/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/10/22/domainpop-con-postfix/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Otra importante entrada que decidí migrar de <a href="http://otherlinuxblog.blogspot.com">puheroska</a></p>
+
+<p>Es tan sencillo como crear un dominio virtual y asignarle usuarios reales. Para
+no volverte loco pon el nombre del usaurio igual que el del dominoio.</p>
+
+<p>Por ejemplo, crea dos usuarios, uno llamado <em>subdom</em> y un segndo llamado <em>otro</em>.
+Luego crea el fichero /etc/postfix/virtual y ponle esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/postfix/virtual&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>@subdom.tudomionio.cu   subdom
+</span><span class='line'>@otro.tudominio.cu      otro
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>postmap</strong> que tú conoces y <strong>postfix reload</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;postmap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>postmap /etc/postfix/virtual
+</span><span class='line'>postfix reload
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya hemos declarado que <em>subdom</em> y <em>otro</em>, serán usuarios y que todo lo que se envíe
+a los dominios virtuales @otro.tudominio.cu será almacenado en /var/mail/otro</p>
+
+<p>Finalmente en el /etc/main.cf pones:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/postfix/main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">virtual_alias_domains</span> <span class="o">=</span> subdom.tudominio.cu otro.tudominio.cu
+</span><span class='line'><span class="nv">virtual_alias_maps</span> <span class="o">=</span> <span class="nb">hash</span>:/etc/postfix/virtual
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>OJO no olvides que en <strong>mydestination</strong> y debes incluir ambos dominios virtuales.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -333,7 +552,7 @@ ipv6. Aquí les va uno hipotético y sencillo:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -570,7 +789,7 @@ ambas direcciones (4 y 6), la configuración de dichos stack, decidirá cual usa
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -651,219 +870,6 @@ ES VISIBLE EN INTERNET</strong> y si no tienen cortafuegos pinguísimo <strong>a
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/10/04/dirver-broadcom/">driver broadcom</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-10-04T14:53:41-04:00'><span class='date'>04/10/2016</span> <span class='time'>2:53 pm</span></time>
-        
-           | <a href="/blog/2016/10/04/dirver-broadcom/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/10/04/dirver-broadcom/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Cuando tienes un dispositivo inalámbrico de Broadcom, por lo general tienes un
-bluetooth y una wifi. Me imagino que los broadcom modernos, tengan además dual
-band (wifi de 5Ghz).</p>
-
-<p>En la entrada anterior, mencioné que había adquirido unos audífonos bluetooth;
-junto con él, un montón de nuevas resinguetas (como todo en archlinux). Resulta
-que el driver opensource <strong>brcm80211</strong> no pinchaba bien del todo con el
-bluetooth. Al punto que no podía alejarme ni un metro del dispositivo, además,
-que el mero echo de moverme, hacía que el audio se cortara.</p>
-
-<p>Usar el blob (driver propietario) parecía una variante atractiva, pero existe
-el driver <strong>b43</strong> (QUE TAMBIÉN es opensource) y se jacta de ser creado con
-ingeniería inversa. De un principio esto no me pareció algo atractivo; pero ya
-lo había dicho el célebre comunistón Chino:</p>
-
-<p>   <blockquote><p>Todo conocimiento auténtico nace de la experiencia directa</p><footer><strong>Mao Zedong</strong></footer></blockquote></p>
-
-<p>Al parecer, el driver ya viene con el sistema, sin embargo, necesita un firmware
-para poder levantar el hardware. Por suerte hay un paquete en <strong>AUR</strong> que hace
-toda la pincha, se llama <strong>b43-firmware</strong></p>
-
-<p>Tras instalarlo, hay que poner en la lista negra, el driver anterior, si no se
-forma un reguero tremendo a la hora de cargar los driver y seleccionará el
-opensource por defecto.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/modprobe.d/broadcom.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/modprobe.d/broadcom.conf
-</span><span class='line'>blacklist brcmsmac
-</span><span class='line'>b43
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Por si las moscas, ejecuta:</p>
-
-<figure class='code'><figcaption><span>&#8220;depmod&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># depmod -a</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>y reinicia</p>
-
-<h3>Ahora, la comparación:</h3>
-
-<h4>brcm80211</h4>
-
-<p>La wifi pincha DE PINGA. Dentro de la banda de los 2.4Ghz, hace de todo, desde
-AP (modo master) hasta la dichosa autenticación WPA2. Soporta incluso survey.
-<strong>PERO</strong> el bluetooth pincha de asco. Se desaparece cuando lo usas más de 20
-minutos, diciendo que un dispositivo USB fue desconectado.</p>
-
-<h4>broadcom-wl</h4>
-
-<p>Sin dudas, el driver propietario es una seda, dice que habilita los canales de
-5Ghz pero es mentira. El bluetooth pincha de maravilla, sobre todo en lo
-referente a calidad de audio <strong>PERO</strong> cada vez que cambias de kernel el driver
-debe recompilarse y suele fallar (eso dicen). En tal caso, reinstalar el driver
-es una solución. Además, te recuerdo que <strong>no es de código abierto</strong>. Sabe dios
-que backdoor te mete dentro del kernel. En cuanto a las prestaciones de la wifi,
-hay unas cuantas pérdidas: No puede autenticar con WPA2 y no soporta modo
-master. Tampoco el survey parece pinchar.</p>
-
-<h4>b43</h4>
-
-<p>La wifi, tiene las mismas prestaciones que el propietario. El bluetooth funciona
-excelente. La wifi se porta muy bien los primeros días. <strong>PERO</strong> El día que
-amanezca con el moño virao la wifi se desparece, corriendo depmod AVEEECEES
-aparece. O sea, la mismas miserias del propietario, pero con la aleatoria
-posibilidad de que amanezcas sin wifi.</p>
-
-<p>Al final, fui a un taller, di 5 pesos mi tarjeta y adquirí una Atheros&hellip;
-Solución PERFECTA.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/09/22/audifonos-blutu/">audífonos blutú</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-09-22T17:39:04-04:00'><span class='date'>22/09/2016</span> <span class='time'>5:39 pm</span></time>
-        
-           | <a href="/blog/2016/09/22/audifonos-blutu/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/09/22/audifonos-blutu/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="left" src="/images/audifonos_blutu.png" width="400"></p>
-
-<p>Más por embullo que por necesidad, me he comprado uno de esos audífonos
-Bluetooth que se usan ahora. Estoy pasando un trabajo tremendo para adaptarme a
-tener la morronga esa en el cuello. Como si fuera poco, archlinux no me perdonó
-y me hizo de las suyas.</p>
-
-<p>Al conectarlos se escuchaban horrible y se desaparecía el bluetooth.</p>
-
-<p>Según me dijeron en el #archlinux de freenode. Se debe a que los audífonos se
-conecta como micrófonos/audífonos y no como audífonos solamente. Para ellos
-había que cambiarlos al modo A2DP.</p>
-
-<p>El comando <strong>pacmd set-card-profile 2 a2dp_sink</strong> resuelve el problema. Pero
-tener que correr el comando cada vez que los conecte, no me parece; no me da tan
-fuerte todavía&hellip;</p>
-
-<p>El gestor de audio de gnome supuestamente cambia el modo. Pero resulta que el
-puto <strong>pulse-audio</strong>, si arranca con GDM, forma una cagazón con los permisos ahí
-y no cambia de modo.</p>
-
-<p>Para evitar eso, creas un fichero llamado
-<strong>/var/lib/gdm/.config/pulse/client.conf</strong> donde le declaras que no arrancará
-pulse-audio con gnome:</p>
-
-<figure class='code'><figcaption><span>&#8220;/var/lib/gdm/.config/pulse/client.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">autospawn</span> <span class="o">=</span> no
-</span><span class='line'>daemon-binary <span class="o">=</span> /bin/true
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Pero eso no lo es todo. Si pulseaudio arranca con socket, se joden los
-audifonitos. Supuestamente creando una configuración, se deshabilita el socket,
-pero no pincha. Hay que deshabilitarlo con systemd. Ejecuta esto <strong>como root</strong>:</p>
-
-<figure class='code'><figcaption><span>&#8220;sin socket plis&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span> mkdir -p /var/lib/gdm/.config/systemd/user
-</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span> ln -s /dev/null /var/lib/gdm/.config/systemd/user/pulseaudio.socket
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Reinicia y al conectar los audífonos; y, al hacerle click al dipositivo, debe
-darte una opción que conduce a la configuración de audio. Ahí mismo cambias el
-modo y seleccionas el dispositivo de salida de audio por defecto.</p>
-
-<p>Otra cuestión es que pulseaudio use los audífonos como salida de audio por
-defecto al conectarlos. Finalmente decidí pasar mis configuraciones de
-pulseaudio al directorio de usuario:</p>
-
-<figure class='code'><figcaption><span>&#8220;pulseudio en el home&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir ~/.config/pulse/
-</span><span class='line'>cp -ruv /etc/pulse/ ~/.config/pulse/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Localiza el fichero <strong>~/.config/pulse/default.pa</strong> y al final añadele esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;default.pa&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema pulse<span class="o">]</span><span class="nv">$ </span>tail -4 ~/.config/pulse/default.pa
-</span><span class='line'>
-</span><span class='line'><span class="c"># file:///usr/share/doc/arch-wiki/html/en/PulseAudio/Troubleshooting.html#Bluetooth</span>
-</span><span class='line'><span class="c"># automatically switch to newly-connected devices</span>
-</span><span class='line'>load-module module-switch-on-connect
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -881,6 +887,14 @@ pulseaudio al directorio de usuario:</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/01/09/tendencias-tecnologicas/">tendencias tecnológicas</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/01/09/flasheando-modem-al-s4/">flasheando modem al S4</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/01/02/rails-assets/">rails-assets</a>
