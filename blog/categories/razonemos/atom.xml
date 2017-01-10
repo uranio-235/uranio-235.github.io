@@ -4,7 +4,7 @@
   <title><![CDATA[Category: razonemos | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/razonemos/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-01-10T14:09:31-05:00</updated>
+  <updated>2017-01-10T17:04:31-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -20,7 +20,7 @@
     <id>http://uranio-235.github.io/blog/2017/01/09/tendencias-tecnologicas</id>
     <content type="html"><![CDATA[<p>Por suerte, la era de Zentyal está a punto de terminar.</p>
 
-<p>Ahora tenemos tocadores de PFsense, que se creen usuarios de FreeBSD.</p>
+<p>Ahora tenemos tocadores de pfSense, que se creen usuarios de FreeBSD.</p>
 
 <p>Siempre me ha maravillado el criterio de selección tecnológica de la mayoría (NO
 todos) los cubanos</p>
@@ -58,7 +58,7 @@ bueeenooo&hellip;. Nada, que está moda. La ecuación es simple:</p>
 
 <p>Para usar:</p>
 
-<p>Proxmox+Zimbra+Pfsense (click, click ¡LISTO! ¡¡¡y además FUNCIONA!!)</p>
+<p>Proxmox+Zimbra+pfSense (click, click ¡LISTO! ¡¡¡y además FUNCIONA!!)</p>
 
 <p>¿Cambio de paradigma? ¿Filosofía UNIX? ¿Estilo de trabajo? ¿Teorema de KISS?
 ¿Software Libre? <em>-pfff, que chiste. Ese tipo está loco, anda con la pila de
@@ -109,7 +109,7 @@ hecho mejor y es cuando se dan cuenta, que están andando con juguetes.</p>
 
 <h4>para los extremistas</h4>
 
-<p>No digo que Zimbra/PFsense/Proxmox sean malos, digo que el método perezoso, es
+<p>No digo que Zimbra/pfSense/Proxmox sean malos, digo que el método perezoso, es
 malo.</p>
 
 <p>No puedes comparar la picoloro con la llave inglesa.</p>
