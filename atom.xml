@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-01-10T17:04:31-05:00</updated>
+  <updated>2017-01-28T00:22:32-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -14,11 +14,158 @@
 
   
   <entry>
+    <title type="html"><![CDATA[animación del palito]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/01/21/palito/"/>
+    <updated>2017-01-21T12:47:55-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/01/21/palito</id>
+    <content type="html"><![CDATA[<p>Por si se me olvida, porque lo he olvidado varias veces. En ocasiones, queremos
+hacer una simple animación de consola, para representar trabajo de un script sin
+mostrar lo que está procesando. Este script de ejemplo, itera por cada caracter
+de la fecha y muestra la barra cambiando de posición, el clásico palito girando.</p>
+
+<figure class='code'><figcaption><span>&#8220;scope&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#!/usr/bin/env ruby</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># esta es la animación, puedes sustituirla</span>
+</span><span class='line'><span class="c1"># por lo que más te guste, solo pon la secuencia</span>
+</span><span class='line'><span class="n">animacion</span><span class="o">=[</span><span class="s1">&#39;|&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;\ &#39;</span><span class="o">.</span><span class="n">strip</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="n">d</span><span class="p">,</span><span class="n">i</span>  <span class="k">in</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">chars</span><span class="o">.</span><span class="n">each_with_index</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c1"># múeve a la siguiente frama de la animación</span>
+</span><span class='line'>   <span class="n">palito</span><span class="o">=</span><span class="p">(</span><span class="n">animacion</span><span class="o">.</span><span class="n">push</span> <span class="n">animacion</span><span class="o">.</span><span class="n">shift</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c1"># muestra el palito y has un retorno de carro</span>
+</span><span class='line'>   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">palito</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c1"># has una media</span>
+</span><span class='line'>   <span class="nb">sleep</span> <span class="mi">0</span><span class="o">.</span><span class="mi">3</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">d</span><span class="o">=</span><span class="n">d</span> <span class="c1"># nada que hacer con los datos</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En el array, el último caracter tiene un String#strip porque al escribir <strong>\&lsquo;</strong>
+el compilador suele interpretarlo como que estás escapando la comilla simple.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[DataTables en español]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/01/20/datatables-espanol/"/>
+    <updated>2017-01-20T16:39:32-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/01/20/datatables-espanol</id>
+    <content type="html"><![CDATA[<p>Siempre hay un cliente exquisito que le molesta la aplicación completa en
+español, a excepción del puñetero paginador que está en inglés.</p>
+
+<p>Como ya no uso kaminari ni will_paginate la cosa se complica. Decidí llamar a
+todas las tables id=&ldquo;latabla&rdquo; y en el <strong>application.js</strong>, según la
+documentación de la API de DataTables, le ponemos la clave <em>language</em> con sus
+pertinentes componentes.</p>
+
+<figure class='code'><figcaption><span>&#8220;application.js&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#latabla&#39;</span><span class="p">).</span><span class="nx">DataTable</span><span class="p">(</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="s2">&quot;language&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;decimal&quot;</span><span class="o">:</span>        <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;emptyTable&quot;</span><span class="o">:</span>     <span class="s2">&quot;No hay datos para mostrar&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;info&quot;</span><span class="o">:</span>           <span class="s2">&quot;del _START_ al _END_ (_TOTAL_ total)&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;infoEmpty&quot;</span><span class="o">:</span>      <span class="s2">&quot;del 0 al 0 (0 total)&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;infoFiltered&quot;</span><span class="o">:</span>   <span class="s2">&quot;(filtrado de todas las _MAX_ entradas)&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;infoPostFix&quot;</span><span class="o">:</span>    <span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;thousands&quot;</span><span class="o">:</span>      <span class="s2">&quot;&#39;&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;lengthMenu&quot;</span><span class="o">:</span>     <span class="s2">&quot;Mostrar _MENU_ entradas&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;loadingRecords&quot;</span><span class="o">:</span> <span class="s2">&quot;Cargando...&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;processing&quot;</span><span class="o">:</span>     <span class="s2">&quot;Procesando...&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;search&quot;</span><span class="o">:</span>         <span class="s2">&quot;Buscar:&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;zeroRecords&quot;</span><span class="o">:</span>    <span class="s2">&quot;No hay resultados&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;paginate&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="s2">&quot;first&quot;</span><span class="o">:</span>      <span class="s2">&quot;Primero&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;last&quot;</span><span class="o">:</span>       <span class="s2">&quot;Último&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;next&quot;</span><span class="o">:</span>       <span class="s2">&quot;Siguiente&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;previous&quot;</span><span class="o">:</span>   <span class="s2">&quot;Anterior&quot;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="s2">&quot;aria&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="s2">&quot;sortAscending&quot;</span><span class="o">:</span>  <span class="s2">&quot;: ordenar de manera Ascendente&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;sortDescending&quot;</span><span class="o">:</span> <span class="s2">&quot;: ordenar de manera Descendente &quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span> <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span> <span class="p">);</span> <span class="c1">// document ready</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Claro, realmente no lo hice así, ya que en vez de <strong>&ldquo;Anterior&rdquo;</strong> puse
+<strong>t(:dt_prev)</strong>  y cree su pertinente fichero de idioma con la traducción, pero
+escribí esta entrada pensando en gente que puede o no usar RoR. No obstante, el
+buen desarrollador de rails, sabe que lo correcto sería usar la in API de i18n.</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[tendencias tecnológicas]]></title>
     <link href="http://uranio-235.github.io/blog/2017/01/09/tendencias-tecnologicas/"/>
     <updated>2017-01-09T21:04:02-05:00</updated>
     <id>http://uranio-235.github.io/blog/2017/01/09/tendencias-tecnologicas</id>
-    <content type="html"><![CDATA[<p>Por suerte, la era de Zentyal está a punto de terminar.</p>
+    <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/bandwagon.jpg" width="400" height="500" title="" ></p>
+
+<p>Por suerte, la era de Zentyal está a punto de terminar.</p>
 
 <p>Ahora tenemos tocadores de pfSense, que se creen usuarios de FreeBSD.</p>
 
@@ -1831,169 +1978,6 @@ sea, que si tu servidor de correo tiene una dirección como 2001:db8::2/64 <stro
 ES VISIBLE EN INTERNET</strong> y si no tienen cortafuegos pinguísimo <strong>aprepárate</strong>.</p>
 
 <p>Más detalles en la siguiente entrada&hellip;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[driver broadcom]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/10/04/dirver-broadcom/"/>
-    <updated>2016-10-04T14:53:41-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/10/04/dirver-broadcom</id>
-    <content type="html"><![CDATA[<p>Cuando tienes un dispositivo inalámbrico de Broadcom, por lo general tienes un
-bluetooth y una wifi. Me imagino que los broadcom modernos, tengan además dual
-band (wifi de 5Ghz).</p>
-
-<p>En la entrada anterior, mencioné que había adquirido unos audífonos bluetooth;
-junto con él, un montón de nuevas resinguetas (como todo en archlinux). Resulta
-que el driver opensource <strong>brcm80211</strong> no pinchaba bien del todo con el
-bluetooth. Al punto que no podía alejarme ni un metro del dispositivo, además,
-que el mero echo de moverme, hacía que el audio se cortara.</p>
-
-<p>Usar el blob (driver propietario) parecía una variante atractiva, pero existe
-el driver <strong>b43</strong> (QUE TAMBIÉN es opensource) y se jacta de ser creado con
-ingeniería inversa. De un principio esto no me pareció algo atractivo; pero ya
-lo había dicho el célebre comunistón Chino:</p>
-
-<p>   <blockquote><p>Todo conocimiento auténtico nace de la experiencia directa</p><footer><strong>Mao Zedong</strong></footer></blockquote></p>
-
-<p>Al parecer, el driver ya viene con el sistema, sin embargo, necesita un firmware
-para poder levantar el hardware. Por suerte hay un paquete en <strong>AUR</strong> que hace
-toda la pincha, se llama <strong>b43-firmware</strong></p>
-
-<p>Tras instalarlo, hay que poner en la lista negra, el driver anterior, si no se
-forma un reguero tremendo a la hora de cargar los driver y seleccionará el
-opensource por defecto.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/modprobe.d/broadcom.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/modprobe.d/broadcom.conf
-</span><span class='line'>blacklist brcmsmac
-</span><span class='line'>b43
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Por si las moscas, ejecuta:</p>
-
-<figure class='code'><figcaption><span>&#8220;depmod&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># depmod -a</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>y reinicia</p>
-
-<h3>Ahora, la comparación:</h3>
-
-<h4>brcm80211</h4>
-
-<p>La wifi pincha DE PINGA. Dentro de la banda de los 2.4Ghz, hace de todo, desde
-AP (modo master) hasta la dichosa autenticación WPA2. Soporta incluso survey.
-<strong>PERO</strong> el bluetooth pincha de asco. Se desaparece cuando lo usas más de 20
-minutos, diciendo que un dispositivo USB fue desconectado.</p>
-
-<h4>broadcom-wl</h4>
-
-<p>Sin dudas, el driver propietario es una seda, dice que habilita los canales de
-5Ghz pero es mentira. El bluetooth pincha de maravilla, sobre todo en lo
-referente a calidad de audio <strong>PERO</strong> cada vez que cambias de kernel el driver
-debe recompilarse y suele fallar (eso dicen). En tal caso, reinstalar el driver
-es una solución. Además, te recuerdo que <strong>no es de código abierto</strong>. Sabe dios
-que backdoor te mete dentro del kernel. En cuanto a las prestaciones de la wifi,
-hay unas cuantas pérdidas: No puede autenticar con WPA2 y no soporta modo
-master. Tampoco el survey parece pinchar.</p>
-
-<h4>b43</h4>
-
-<p>La wifi, tiene las mismas prestaciones que el propietario. El bluetooth funciona
-excelente. La wifi se porta muy bien los primeros días. <strong>PERO</strong> El día que
-amanezca con el moño virao la wifi se desparece, corriendo depmod AVEEECEES
-aparece. O sea, la mismas miserias del propietario, pero con la aleatoria
-posibilidad de que amanezcas sin wifi.</p>
-
-<p>Al final, fui a un taller, di 5 pesos mi tarjeta y adquirí una Atheros&hellip;
-Solución PERFECTA.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[audífonos blutú]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/09/22/audifonos-blutu/"/>
-    <updated>2016-09-22T17:39:04-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/09/22/audifonos-blutu</id>
-    <content type="html"><![CDATA[<p><img class="left" src="http://uranio-235.github.io/images/audifonos_blutu.png" width="400"></p>
-
-<p>Más por embullo que por necesidad, me he comprado uno de esos audífonos
-Bluetooth que se usan ahora. Estoy pasando un trabajo tremendo para adaptarme a
-tener la morronga esa en el cuello. Como si fuera poco, archlinux no me perdonó
-y me hizo de las suyas.</p>
-
-<p>Al conectarlos se escuchaban horrible y se desaparecía el bluetooth.</p>
-
-<p>Según me dijeron en el #archlinux de freenode. Se debe a que los audífonos se
-conecta como micrófonos/audífonos y no como audífonos solamente. Para ellos
-había que cambiarlos al modo A2DP.</p>
-
-<p>El comando <strong>pacmd set-card-profile 2 a2dp_sink</strong> resuelve el problema. Pero
-tener que correr el comando cada vez que los conecte, no me parece; no me da tan
-fuerte todavía&hellip;</p>
-
-<p>El gestor de audio de gnome supuestamente cambia el modo. Pero resulta que el
-puto <strong>pulse-audio</strong>, si arranca con GDM, forma una cagazón con los permisos ahí
-y no cambia de modo.</p>
-
-<p>Para evitar eso, creas un fichero llamado
-<strong>/var/lib/gdm/.config/pulse/client.conf</strong> donde le declaras que no arrancará
-pulse-audio con gnome:</p>
-
-<figure class='code'><figcaption><span>&#8220;/var/lib/gdm/.config/pulse/client.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">autospawn</span> <span class="o">=</span> no
-</span><span class='line'>daemon-binary <span class="o">=</span> /bin/true
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Pero eso no lo es todo. Si pulseaudio arranca con socket, se joden los
-audifonitos. Supuestamente creando una configuración, se deshabilita el socket,
-pero no pincha. Hay que deshabilitarlo con systemd. Ejecuta esto <strong>como root</strong>:</p>
-
-<figure class='code'><figcaption><span>&#8220;sin socket plis&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span> mkdir -p /var/lib/gdm/.config/systemd/user
-</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span> ln -s /dev/null /var/lib/gdm/.config/systemd/user/pulseaudio.socket
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Reinicia y al conectar los audífonos; y, al hacerle click al dipositivo, debe
-darte una opción que conduce a la configuración de audio. Ahí mismo cambias el
-modo y seleccionas el dispositivo de salida de audio por defecto.</p>
-
-<p>Otra cuestión es que pulseaudio use los audífonos como salida de audio por
-defecto al conectarlos. Finalmente decidí pasar mis configuraciones de
-pulseaudio al directorio de usuario:</p>
-
-<figure class='code'><figcaption><span>&#8220;pulseudio en el home&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir ~/.config/pulse/
-</span><span class='line'>cp -ruv /etc/pulse/ ~/.config/pulse/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Localiza el fichero <strong>~/.config/pulse/default.pa</strong> y al final añadele esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;default.pa&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema pulse<span class="o">]</span><span class="nv">$ </span>tail -4 ~/.config/pulse/default.pa
-</span><span class='line'>
-</span><span class='line'><span class="c"># file:///usr/share/doc/arch-wiki/html/en/PulseAudio/Troubleshooting.html#Bluetooth</span>
-</span><span class='line'><span class="c"># automatically switch to newly-connected devices</span>
-</span><span class='line'>load-module module-switch-on-connect
-</span></code></pre></td></tr></table></div></figure>
-
-
-
 ]]></content>
   </entry>
   

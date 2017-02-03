@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-01-10T17:04:31-05:00</updated>
+  <updated>2017-02-02T21:59:45-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -14,11 +14,65 @@
 
   
   <entry>
+    <title type="html"><![CDATA[DataTables en español]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/01/20/datatables-espanol/"/>
+    <updated>2017-01-20T16:39:32-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/01/20/datatables-espanol</id>
+    <content type="html"><![CDATA[<p>Siempre hay un cliente exquisito que le molesta la aplicación completa en
+español, a excepción del puñetero paginador que está en inglés.</p>
+
+<p>Como ya no uso kaminari ni will_paginate la cosa se complica. Decidí llamar a
+todas las tables id=&ldquo;latabla&rdquo; y en el <strong>application.js</strong>, según la
+documentación de la API de DataTables, le ponemos la clave <em>language</em> con sus
+pertinentes componentes.</p>
+
+<pre><code class="javascript "application.js"">$(document).ready(function() {
+
+    $('#latabla').DataTable( {
+
+      "language": {
+        "decimal":        ".",
+        "emptyTable":     "No hay datos para mostrar",
+        "info":           "del _START_ al _END_ (_TOTAL_ total)",
+        "infoEmpty":      "del 0 al 0 (0 total)",
+        "infoFiltered":   "(filtrado de todas las _MAX_ entradas)",
+        "infoPostFix":    "",
+        "thousands":      "'",
+        "lengthMenu":     "Mostrar _MENU_ entradas",
+        "loadingRecords": "Cargando...",
+        "processing":     "Procesando...",
+        "search":         "Buscar:",
+        "zeroRecords":    "No hay resultados",
+        "paginate": {
+          "first":      "Primero",
+          "last":       "Último",
+          "next":       "Siguiente",
+          "previous":   "Anterior"
+        },
+        "aria": {
+          "sortAscending":  ": ordenar de manera Ascendente",
+          "sortDescending": ": ordenar de manera Descendente ",
+        }
+      }
+
+    } );
+
+} ); // document ready
+</code></pre>
+
+<p>Claro, realmente no lo hice así, ya que en vez de <strong>&ldquo;Anterior&rdquo;</strong> puse
+<strong>t(:dt_prev)</strong>  y cree su pertinente fichero de idioma con la traducción, pero
+escribí esta entrada pensando en gente que puede o no usar RoR. No obstante, el
+buen desarrollador de rails, sabe que lo correcto sería usar la in API de i18n.</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[rails en alpine]]></title>
     <link href="http://uranio-235.github.io/blog/2016/12/09/rails-en-alpine/"/>
     <updated>2016-12-09T20:14:28-05:00</updated>
     <id>http://uranio-235.github.io/blog/2016/12/09/rails-en-alpine</id>
-    <content type="html"><![CDATA[<p><img class="right" src="/images/shinkasen.jpg" width="400" height="500" title="" ></p>
+    <content type="html"><![CDATA[<p>{% img right /images/shinkasen.jpg 400 500  %}</p>
 
 <p>Finalmente el boom de docker llegó a Cuba. En mi caso personal, hace rato lo uso
 para desplegar aplicaciones de Ruby on Rails y siempre me pareció que debian era
@@ -200,100 +254,6 @@ controlador especificado en <strong>params[:controller]</strong></p>
 con ambos. Veamos que trae rails 5 con esto, porque la mejora urge&hellip;</p>
 
 <p>Si la cosa sigue así en la versión 5, me estoy mudando para Volt</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[will_paginate]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/07/19/will-paginate/"/>
-    <updated>2015-07-19T14:58:30-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/07/19/will-paginate</id>
-    <content type="html"><![CDATA[<p>De siempre, en materia de web la paginación ha sido tremendo rollo. A mi en lo
-personal no me gustan los paginadores; pienso que nadie los usa. Pero siempre
-hay un cliente que pide con mucho fervor detallitos que consideran importantes.</p>
-
-<p>Una de las cosas que me gusta de MongoMapper es que viene con un paginador
-integrado, pero este no es el caso.</p>
-
-<p>No entiendo porque carajo ActiveRecords, que se jacta (con razón) de ser la ORM
-definitiva; no tiene un puñetero soporte nativo para la paginación. O porque
-esta subestimada gema, llamada
-<a href="https://github.com/mislav/will_paginate/">will_paginate</a> no viene incluida en
-el Gemfile que trae RoR por defecto. Se harían un buen favor.</p>
-
-<p>La cuestión es que will_paginate hace muy simple la tediosa tarea de paginar.</p>
-
-<pre><code class="bash 'instalando will_paginate'">echo 'gem "will_paginate"' &gt;&gt; Gemfile
-bundle update
-</code></pre>
-
-<p>Ahora veamos como se pagina un modelo. Tengamos el ejemplo típico, el
-controlador &ldquo;User&rdquo; con los 1500 usuarios.</p>
-
-<pre><code class="ruby "controlador del scaffold users"">  @users=User
-  .all
-  .paginate(:page =&gt; params[:page], :per_page =&gt; 15)
-  .order('updated_at asc')
-</code></pre>
-
-<p>OJO! De la 3ra linea, te puedes tomar el atrevimiento de modificar el 15 y poner
-el número que te de la gana; pero NO toques al símbolo :page y su valor. En este
-caso, el 15 representa la cantidad de elementos que mostraremos por página.</p>
-
-<p>Te digo que no toques el params[:page] porque will_paginate lo hace todo solo.
-En la vista solo tienes que poner esto</p>
-
-<pre><code class="erb "app/views/users/index.html.erb"">
-   &lt;div class="text-center"&gt;
-      &lt;%= will_paginate @users %&gt;
-   &lt;/div&gt;
-</code></pre>
-
-<p>Finalmente queda algo de lo más discreto pero 100% funcional:</p>
-
-<div class="text-center">
-<div class="pagination">
-<span class="previous_page disabled">&#8592; Anterior</span>
-<em class="current">1</em>
-<a rel="next" href="#">2</a> <a href="#">3</a>
-<a href="#">4</a>
-<a href="#">5</a>
-<a href="#">6</a> <a href="#">7</a>
-<a href="#">8</a> <a href="#">9</a>
-<span class="gap">&hellip;</span>
-<a href="#">28</a>
-<a href="#">29</a>
-<a class="next_page" rel="next" href="#">Próximo &#8594;</a>
-</div></div>
-
-
-<p>¡COOOOÑOóOOO! En español y todo. Por supuesto,  no es magia. Lo que pasa que el
-que hizo la gema, la hizo con tremendo cariño y parece conocer muy bien la API
-de ruby on rails; con lo cual tuvo muy en cuenta, la parte del i18n.</p>
-
-<p>Ejecute lo siguiente:</p>
-
-<pre><code class="bash "contenido de la gema"">gem cont will_paginate|grep en.yml
-</code></pre>
-
-<p>Guíate por ese fichero y añádele a tu locale la traducción relacionada con
-will_paginate, en mi caso, quedo así:</p>
-
-<pre><code class="yml "en.yml"">en:
-
-  # el locales de will_paginate
-  will_paginate:
-    previous_label: "&amp;#8592; Anterior"
-    next_label: "Próximo &amp;#8594;"
-    page_gap: "&amp;hellip;"
-</code></pre>
-
-<p>¡¡A paginar se ha dicho!!</p>
-
-<p>Thanks to <strong>Mislav Marohnić</strong> for you good job; developing will_paginate</p>
-
-<p>Si te ha gustado will_paginate, escríbele un <a href="mailto:mislav.marohnic@gmail.com">correo al autor</a>
-y muéstrale tu agradecimiento. Yo ya lo hize ;)</p>
 ]]></content>
   </entry>
   

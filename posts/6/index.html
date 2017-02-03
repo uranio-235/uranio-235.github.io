@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="reparar archivos de innodb 29/04/2016 11:22 pm | Comments Los archivos binarios que almacenan las bases de datos de mysql (percona o
-mariadb) suelen &hellip;">
+  <meta name="description" content="desacelerar mouse 06/06/2016 11:41 pm | Comments El reducido espacio de trabajo que tengo en la casa para colocar la laptop; me
+hace sentir como si &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +88,143 @@ mariadb) suelen &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/06/06/desacelerar-mouse/">desacelerar mouse</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-06-06T23:41:44-04:00'><span class='date'>06/06/2016</span> <span class='time'>11:41 pm</span></time>
+        
+           | <a href="/blog/2016/06/06/desacelerar-mouse/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/06/06/desacelerar-mouse/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>El reducido espacio de trabajo que tengo en la casa para colocar la laptop; me
+hace sentir como si viviera en el apartamento más pequeño de Tokio. Tanto así,
+que no tengo ni donde desplazar el mouse y los cables me la ponen aún más
+difícil. Comprar una casa más grande no es una opción; sin embargo, reducir el
+mouse es más viable. Se me ocurrió adquirir un mouse inalámbrico, ya que son
+pequeñitos.</p>
+
+<p>Pero un mouse pequeño liviano, resulta que se desplaza mucho más rápido, que mi
+antiguo <em>General Electric Pixart Inc. Optical Mouse</em>. Lo que más me molesta es;
+no solo lo rápido que se desplaza, si no el <em>picor</em> que tiene en la aceleración.</p>
+
+<p>La solución: Desacelerar el mouse</p>
+
+<figure class='code'><figcaption><span>&#8220;slowmouse.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Constant Deceleration&quot;</span> 0.5
+</span><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Velocity Scaling&quot;</span> 1
+</span><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Profile&quot;</span> -1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso, el mouse pequeñito, se desplaza tal como lo hace el grande. Ya que el
+grande, es más pesado y por ende, se desplaza un tín mas lento.</p>
+
+<p><strong>¡¡¡Tardé bastante en quedar complacido probando números!!!</strong></p>
+
+<p>Por cierto, el <strong>10</strong> es la id del dispositivo. Puedes verlo corriendo el
+comando <strong>xinput &ndash;list &ndash;short</strong> a mi se me ve así:</p>
+
+<figure class='code'><figcaption><span>&#8220;xinput &#8211;list &#8211;short&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@samsung ~&gt; xinput --list --short
+</span><span class='line'>⎡ Virtual core pointer                      <span class="nv">id</span><span class="o">=</span>2 <span class="o">[</span>master pointer  <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>⎜   ↳ Virtual core XTEST pointer                  <span class="nv">id</span><span class="o">=</span>4 <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
+</span><span class='line'>⎜   ↳ PixArt USB Optical Mouse                    <span class="nv">id</span><span class="o">=</span>10    <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
+</span><span class='line'>⎜   ↳ ETPS/2 Elantech Touchpad                    <span class="nv">id</span><span class="o">=</span>12    <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
+</span><span class='line'>⎣ Virtual core keyboard                     <span class="nv">id</span><span class="o">=</span>3 <span class="o">[</span>master keyboard <span class="o">(</span>2<span class="o">)]</span>
+</span><span class='line'>    ↳ Virtual core XTEST keyboard               <span class="nv">id</span><span class="o">=</span>5 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>    ↳ Power Button                              <span class="nv">id</span><span class="o">=</span>6 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>    ↳ Video Bus                                 <span class="nv">id</span><span class="o">=</span>7 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>    ↳ Power Button                              <span class="nv">id</span><span class="o">=</span>8 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>    ↳ Sleep Button                              <span class="nv">id</span><span class="o">=</span>9 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>    ↳ AT Translated Set <span class="m">2</span> keyboard
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ve, el <em>PixArt USB Optical Mouse</em> dice que <strong>id=10</strong></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/05/12/deshabilitar-historial-de-bash/">deshabilitar historial de bash</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-05-12T14:34:13-04:00'><span class='date'>12/05/2016</span> <span class='time'>2:34 pm</span></time>
+        
+           | <a href="/blog/2016/05/12/deshabilitar-historial-de-bash/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/05/12/deshabilitar-historial-de-bash/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Alguna vez han pensado, que en algunos servidores o estaciones, en las cual
+trabajan múltiples personas remotamente via consola; el historial de comandos
+puede llegar a ser un problema???</p>
+
+<p>Pues deshabilítalo. En el fichero <strong>/etc/environment</strong> ponle</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/environment&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>   <span class="nb">export </span><span class="nv">HISTFILE</span><span class="o">=</span>/dev/null
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La próxima vez que etres, la función historial será deshabilitada. OJO!!! <strong>LA
+PRÓXIMA VEZ</strong> esta sesión aún salva historial&hellip; Sale y vuelve a entrar.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2016/04/29/reparar-archivos-de-innodb/">reparar archivos de innodb</a></h1>
     
     
@@ -137,7 +274,7 @@ manera automática.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -400,7 +537,7 @@ que &ldquo;la wifi sin contraseña es más fácil&rdquo; sin pensar en riesgos&h
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -509,249 +646,7 @@ default, los demás script necesarios para cargar dichos rubies.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/02/22/data-confirm-en-un-boton/">data confirm en un boton</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-02-22T14:20:33-05:00'><span class='date'>22/02/2016</span> <span class='time'>2:20 pm</span></time>
-        
-           | <a href="/blog/2016/02/22/data-confirm-en-un-boton/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/02/22/data-confirm-en-un-boton/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Usualmente, tenemos un botón en un formulario y nos gustaría que al pulsar este,
-nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
-
-<figure class='code'><figcaption><span>&#8221;_navbar.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='rhtml'><span class='line'>  <span class="cp">&lt;%=</span> <span class="n">form_tag</span> <span class="n">manager_email_path</span><span class="p">,</span><span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;navbar-form navbar-left&#39;</span><span class="p">,</span><span class="ss">role</span><span class="p">:</span> <span class="s1">&#39;search&#39;</span><span class="p">,</span><span class="nb">method</span><span class="p">:</span> <span class="ss">:post</span> <span class="k">do</span> <span class="cp">%&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;form-group&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">name=</span><span class="s">&quot;email&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">class=</span><span class="s">&quot;form-control&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;fulanito@infomed.sld.cu&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>     <span class="cp">&lt;%=</span> <span class="n">button_tag</span><span class="p">(</span><span class="ss">:class</span> <span class="o">=&gt;</span> <span class="s2">&quot;btn btn-default&quot;</span><span class="p">,</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span><span class="ss">:confirm</span> <span class="o">=&gt;</span> <span class="s1">&#39;Seguro?&#39;</span><span class="p">}</span> <span class="p">)</span> <span class="k">do</span> <span class="cp">%&gt;</span>
-</span><span class='line'>        Enviar
-</span><span class='line'>     <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
-</span><span class='line'>  <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/02/20/hooks-de-pacman/">los hooks de pacman</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-02-20T03:14:28-05:00'><span class='date'>20/02/2016</span> <span class='time'>3:14 am</span></time>
-        
-           | <a href="/blog/2016/02/20/hooks-de-pacman/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/02/20/hooks-de-pacman/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Finalmente, después de tantas plegarias, tenemos <strong>hooks</strong> en pacman. Lo cual
-nos permite, por medio de la poderosa API de alpm correr script antes o después
-de cada instalación.</p>
-
-<p>Desgraciadamente, hay poca documentación sobre el tema. Para colmo, la página de
-man de alpm-hooks, no dice como deben llamarse los archivos. Tuve que adivinar
-que la extensión <strong>.hook</strong> era necesaria.</p>
-
-<p>Primero que todo, vamos a especificar en <strong>/etc/pacman.conf</strong> que el directorio
-de hooks está en otro lado.</p>
-
-<figure class='code'><figcaption><span>&#8220;escope de</span><a href='/etc/pacman.conf"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">HookDir</span> <span class="o">=</span> /etc/pacman.d/hooks/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>¿Por qué aquí? Muy sencillo. Quiero que al hacer una salva de mi configuración
-de pacman, los hooks también se salven. Un hook sencillo, podría correr un
-comando simple, como el del ejemplo en la página de man; sin embargo, uno
-complejo, sería mejor ponerlo en un script.</p>
-
-<p>Lo más importante: El fichero con el hook <strong>debe tener la extensión .hook</strong> Si
-no pacman se limpia el culo con él.</p>
-
-<p>Creemos uno de ejemplo, llamado /etc/pacman.d/hooks/migancho<strong>.hook</strong> y
-digámosle que ejecutará el script, sito en /etc/pacman.d/hooks/migancho.sh</p>
-
-<p>Sería así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.hook&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>Trigger<span class="o">]</span>
-</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Install
-</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Upgrade
-</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Remove
-</span><span class='line'><span class="nv">Type</span> <span class="o">=</span> Package
-</span><span class='line'><span class="nv">Target</span> <span class="o">=</span> *
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Action<span class="o">]</span>
-</span><span class='line'><span class="nv">Description</span> <span class="o">=</span> sincronizando disco
-</span><span class='line'><span class="nv">Depends</span> <span class="o">=</span> coreutils
-</span><span class='line'><span class="nv">When</span> <span class="o">=</span> PostTransaction
-</span><span class='line'><span class="nv">Exec</span> <span class="o">=</span> /etc/pacman.d/hooks/migancho.sh
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ve, la cláusula <strong>Operation</strong> está repetida, con los 3 posibles momentos
-que se disparará el gancho. Podrías hacerlo en uno de ellos solamente. La
-cláusula <strong>Description</strong> se verá cuando pacman termine de instalar. En este caso
-cuando termine, ya que la cláusula <strong>When</strong> especifica <em>PreTransaction</em> o
-<em>PostTransaction</em> (antes o después de la transacción).</p>
-
-<p>Ahora creamos el script <strong>migancho.sh</strong> y le ponemos todas las aberraciones que
-queremos llevar a cabo tras una instalación, desinstalación o actualización.</p>
-
-<p>Digamos por ejemplo, en este caso uno trivial, ejecutar sync cuando termine una
-operación, lo cual evita que si falla la energía en ese momento, queden datos
-por escribirse en la cache disco (con suerte).</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>/usr/bin/sync
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Veámoslo en acción</p>
-
-<figure class='code'><figcaption><span>&#8220;el hook&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># pacman -S --noconfirm unrar</span>
-</span><span class='line'>warning: unrar-1:5.3.11-1 is up to date -- reinstalling
-</span><span class='line'>resolving dependencies...
-</span><span class='line'>looking <span class="k">for</span> conflicting packages...
-</span><span class='line'>
-</span><span class='line'>Packages <span class="o">(</span>1<span class="o">)</span> unrar-1:5.3.11-1
-</span><span class='line'>
-</span><span class='line'>Total Installed Size:  0.32 MiB
-</span><span class='line'>Net Upgrade Size:      0.00 MiB
-</span><span class='line'>
-</span><span class='line'>:: Proceed with installation? <span class="o">[</span>Y/n<span class="o">]</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking keys in keyring                                                   <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking package integrity                                                 <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> loading package files                                                      <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking <span class="k">for</span> file conflicts                                                <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking available disk space                                              <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'>:: Processing package changes...
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> reinstalling unrar                                                         <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'>:: Running post-transaction hooks...
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> sincronizando disco
-</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c">#</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Véanlo como dice <em>sincronizando discos</em> en español, corriendo la operación (1/1)
-ya que hay un solo hook.</p>
-
-<p>Sencillo!!! Como todo en ArchLinux: KISS</p>
-
-<p>Podría volverse más creativo&hellip;</p>
-
-<p>Digamos por ejemplo, que yo quiero tener la lista de paquetes que tiene mi
-sistema antes y después de una instalación, para saber que se instalo y cuando.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/listpackages.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>pacman -Qe &gt; /root/<span class="k">$(</span>date +%j%H%M%S<span class="k">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Eso creará un fichero similar a /root/051153712, el nombre, es el yday (día del
-año) y con la hora, minuto y segundo. Dentro del fichero, una lista de todos los
-paquetes instalados. Muy útil si eres tester o desarrollador, o simplemente
-quieres saber que paquetes había antes o después de instalar.</p>
-
-<p>Por cierto, otra manera de saber que si instalo hoy y ayer, es esta:</p>
-
-<figure class='code'><figcaption><span>&#8220;¿cuando fue?&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ls -ltcr --time-style +%j /var/lib/pacman/local/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Devuelve el día del año en el que se instaló un paquete. Así sabes que se
-instaló hoy. Te recuerdo, que en ArchLinux, todos los días hay algo nuevo que
-instalar :D</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -772,6 +667,14 @@ instalar :D</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/01/21/palito/">animación del palito</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/01/20/datatables-espanol/">DataTables en español</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/01/09/tendencias-tecnologicas/">tendencias tecnológicas</a>
@@ -926,14 +829,6 @@ instalar :D</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2016/01/19/espejos-de-clamav/">espejos de clamav y salud</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2016/01/14/clamav-en-windows/">clamav en windows</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/12/14/servidor-jabber-con-prosody/">servidor jabber con prosody</a>
 		</li>
 		
@@ -967,10 +862,6 @@ instalar :D</p>
 		
 		<li class="post">
 			<a href="/blog/2015/10/18/systemd-timesyncd/">systemd-timesyncd</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/10/16/palo-con-la-wifi/">palo con la wifi</a>
 		</li>
 		
 		<li class="post">
@@ -1014,10 +905,6 @@ instalar :D</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/07/19/will-paginate/">will_paginate</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/07/12/date-select-en-espanol/">date_select en español</a>
 		</li>
 		
@@ -1039,10 +926,6 @@ instalar :D</p>
 		
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/06/14/revocar-certificados-de-ovpn/">revocar certificados de OVPN</a>
 		</li>
 		
 		<li class="post">
@@ -1074,10 +957,6 @@ instalar :D</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/02/22/rails-sin-turbolink/">rails sin turbolinks</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a>
 		</li>
 		
@@ -1091,10 +970,6 @@ instalar :D</p>
 		
 		<li class="post">
 			<a href="/blog/2015/02/06/zentyal/">Zentyal</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/02/01/bundle/">bundle</a>
 		</li>
 		
 		<li class="post">
@@ -1135,10 +1010,6 @@ instalar :D</p>
 		
 		<li class="post">
 			<a href="/blog/2014/07/05/empirico/">empíricos</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/06/27/crear-un-chroot-con-debian/">crear un chroot con debian</a>
 		</li>
 		
 		<li class="post">

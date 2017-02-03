@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>bundle - El SysAdmin del 3er Mundo</title>
+  <title>DataTables en español - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="bundle 01/02/2015 11:40 am | Comments Parece que a mi paisanos, la portabilidad les resulta un problemón. Sienten una imperiosa necesidad de &hellip;">
+  <meta name="description" content="DataTables en español 20/01/2017 4:39 pm | Comments Siempre hay un cliente exquisito que le molesta la aplicación completa en
+español, a excepción &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/02/01/bundle/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2017/01/20/datatables-espanol/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -84,7 +85,7 @@
   
   <header>
     
-      <h1 class="entry-title">bundle</h1>
+      <h1 class="entry-title">DataTables en español</h1>
     
     
       <p class="meta">
@@ -93,7 +94,7 @@
 
 
 
-<time class='entry-date' datetime='2015-02-01T11:40:20-05:00'><span class='date'>01/02/2015</span> <span class='time'>11:40 am</span></time>
+<time class='entry-date' datetime='2017-01-20T16:39:32-05:00'><span class='date'>20/01/2017</span> <span class='time'>4:39 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -103,79 +104,15 @@
   </header>
 
 
-<div class="entry-content"><p>Parece que a mi paisanos, la portabilidad les resulta un problemón.</p>
+<div class="entry-content"><p>Siempre hay un cliente exquisito que le molesta la aplicación completa en
+español, a excepción del puñetero paginador que está en inglés.</p>
 
-<p>Sienten una imperiosa necesidad de desarollar aplicaciones que corran en
-cualquier máquina. (yo prefiero una aplicación web que corra en la mia).
-Recién varios me han comentado que con ruby, la dependencias de gemas es un
-problema, a la hora de mover una aplicación.</p>
+<p>Como ya no uso kaminari ni will_paginate la cosa se complica. Decidí llamar a
+todas las tables id=&ldquo;latabla&rdquo; y en el <strong>application.js</strong>, según la
+documentación de la API de DataTables, le ponemos la clave <em>language</em> con sus
+pertinentes componentes.</p>
 
-<h3><a href="http://bundler.io/">PARECE QUE NO CONOCEN BUNDLER!!!</a></h3>
-
-<p>Bundler se describe a si mismo como:</p>
-
-<p><img class="center" src="/images/gembundler.png"></p>
-
-<p>Que además, es usado por muchísimas aplicaciones de Ruby.</p>
-
-<p>Bueno, veamos un ejemplo sencillo. Supongamos que tenemos la aplicacion y
-queremos que esta se distribuya en una o varias maquinas que solo cuentan con
-Ruby instalado.</p>
-
-<p>Bundler usa los llamados <a href="http://bundler.io/gemfile.html">Gemfiles</a> para manejar
-las dependencias de tu gema. Entonces. Empacaremos una aplicación con sinatra
-(un framework web sencillo).</p>
-
-<p>Creamos el directorio con la aplicacion:</p>
-
-<figure class='code'><figcaption><span>&#8220;nueva app&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~<span class="nv">$ </span>mkdir proyecto
-</span><span class='line'>lazaro@leviatan:~<span class="nv">$ </span><span class="nb">cd </span>proyecto/
-</span><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span>touch Gemfile
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Si no, haces el procedimiento normal en TU máquina</p>
-
-<figure class='code'><figcaption><span>&#8220;instalar bundler&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~<span class="nv">$ </span>gem in bundler
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En el gemfile, declaramos dos cosas básicas. El source (donde están las gemas) y
-las gemas. Supongamos que tiene acceso a internet (como es lógico pero poco usual).
-Su suorce sería así:</p>
-
-<figure class='code'><figcaption><span>&#8216;source&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;https://rubygems.org&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Pero si no tiene, supongamos que tiene el repo de gemas en una memoria, montada
-en /media/memoria/</p>
-
-<figure class='code'><figcaption><span>&#8216;source&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;file:///media/memoria/ruby/repo/&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Bueno, el gemfile de este ejemplo, usara las gemas de mi repo en la memoria. A
-mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>Gemfile </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;file:///media/sdb1/ruby/repo/&#39;</span>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;sinatra&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Si nada de eso te juega, puede usar &ndash;local y usara tu cache de gemas :D</h3>
-
-<p>Obviamente, también empaquetaremos bunlder, porque allá puede que no esté.</p>
-
-<figure class='code'><figcaption><span>&#8220;bundler install&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>&#8220;application.js&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -185,103 +122,71 @@ mi me quedó así:</p>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span>bundler ins --standalone
-</span><span class='line'>Fetching <span class="nb">source </span>index from file:/media/sdb1/ruby/repo/
-</span><span class='line'>Resolving dependencies...
-</span><span class='line'>Using bundler 1.7.2
-</span><span class='line'>Installing rack 1.5.2
-</span><span class='line'>Installing rack-protection 1.5.3
-</span><span class='line'>Installing tilt 1.4.1
-</span><span class='line'>Installing sinatra 1.4.5
-</span><span class='line'>Your bundle is <span class="nb">complete</span>!
-</span><span class='line'>It was installed into ./bundle
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>AY que lindo!!! Todo se empaquetó! Por si no lo notaste, el logo de bundler es
-un rollo de makingtype, lo que usa pa sellar las cajas, solo le falta la
-etiqueta que diga: &ldquo;listo para exportar&rdquo;</p>
-
-<p>Bueno, creamos una aplicación estupidamente simple con sinatra.</p>
-
-<figure class='code'><figcaption><span>aplicacion.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># he aquí el toque mágico</span>
-</span><span class='line'><span class="n">require_relative</span> <span class="s1">&#39;../bundle/bundler/setup&#39;</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 </span><span class='line'>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;sinatra&#39;</span>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#latabla&#39;</span><span class="p">).</span><span class="nx">DataTable</span><span class="p">(</span> <span class="p">{</span>
 </span><span class='line'>
-</span><span class='line'><span class="n">get</span> <span class="s1">&#39;/&#39;</span> <span class="k">do</span>
-</span><span class='line'>   <span class="s1">&#39;Tírame la musiquita Frank!&#39;</span>
-</span><span class='line'><span class="k">end</span>
+</span><span class='line'>      <span class="s2">&quot;language&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;decimal&quot;</span><span class="o">:</span>        <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;emptyTable&quot;</span><span class="o">:</span>     <span class="s2">&quot;No hay datos para mostrar&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;info&quot;</span><span class="o">:</span>           <span class="s2">&quot;del _START_ al _END_ (_TOTAL_ total)&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;infoEmpty&quot;</span><span class="o">:</span>      <span class="s2">&quot;del 0 al 0 (0 total)&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;infoFiltered&quot;</span><span class="o">:</span>   <span class="s2">&quot;(filtrado de todas las _MAX_ entradas)&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;infoPostFix&quot;</span><span class="o">:</span>    <span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;thousands&quot;</span><span class="o">:</span>      <span class="s2">&quot;&#39;&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;lengthMenu&quot;</span><span class="o">:</span>     <span class="s2">&quot;Mostrar _MENU_ entradas&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;loadingRecords&quot;</span><span class="o">:</span> <span class="s2">&quot;Cargando...&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;processing&quot;</span><span class="o">:</span>     <span class="s2">&quot;Procesando...&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;search&quot;</span><span class="o">:</span>         <span class="s2">&quot;Buscar:&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;zeroRecords&quot;</span><span class="o">:</span>    <span class="s2">&quot;No hay resultados&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;paginate&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="s2">&quot;first&quot;</span><span class="o">:</span>      <span class="s2">&quot;Primero&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;last&quot;</span><span class="o">:</span>       <span class="s2">&quot;Último&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;next&quot;</span><span class="o">:</span>       <span class="s2">&quot;Siguiente&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;previous&quot;</span><span class="o">:</span>   <span class="s2">&quot;Anterior&quot;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="s2">&quot;aria&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="s2">&quot;sortAscending&quot;</span><span class="o">:</span>  <span class="s2">&quot;: ordenar de manera Ascendente&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;sortDescending&quot;</span><span class="o">:</span> <span class="s2">&quot;: ordenar de manera Descendente &quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span> <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span> <span class="p">);</span> <span class="c1">// document ready</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Debes tener algo como esto en el directorio</p>
-
-<figure class='code'><figcaption><span>&#8221;~/proyecto&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span>ls
-</span><span class='line'>aplicacion.rb Gemfile  Gemfile.lock bundle
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Y listo, distruibuimos nuestra aplicaion en la computadora tercermundista sin
-acceso a internet.</p>
-
-<p>DIN DON DEN DIN! pasajeros con destino a donde el diablo dio las 7 voces y
-nadie lo escuchó; por favor, abordar el tren por el andén número 4. NO olviden
-llevar la memoria flash con la aplicacion.</p>
-
-<figure class='code'><figcaption><span>&#8220;empacando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/proyecto<span class="nv">$ </span><span class="nb">cd</span> ..
-</span><span class='line'>lazaro@leviatan:~<span class="nv">$ </span>cp -ruv proyecto/ /media/sdb1/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Al fin, voy a estrenar mi juguete nuevo, un Raspberry Pi :D</p>
-
-<p>Llegamos al destino, montamos la memoria y ejecutamos la aplicacion DESDE
-BUNLDER.</p>
-
-<figure class='code'><figcaption><span>&#8220;empacando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>pi@raspberry:~/proyecto<span class="nv">$ </span>ruby aplicacion.rb
-</span><span class='line'><span class="o">[</span>2015-02-01 12:43:34<span class="o">]</span> INFO  WEBrick 1.3.1
-</span><span class='line'><span class="o">[</span>2015-02-01 12:43:34<span class="o">]</span> INFO  ruby 2.2.0 <span class="o">(</span>2014-12-25<span class="o">)</span> <span class="o">[</span>i686-linux<span class="o">]</span>
-</span><span class='line'><span class="o">==</span> Sinatra/1.4.5 has taken the stage on <span class="m">4567</span> <span class="k">for</span> development with backup from
-</span><span class='line'>WEBrick
-</span><span class='line'><span class="o">[</span>2015-02-01 12:43:34<span class="o">]</span> INFO  WEBrick::HTTPServer#start: <span class="nv">pid</span><span class="o">=</span><span class="m">4741</span> <span class="nv">port</span><span class="o">=</span>4567
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A ver&hellip;</p>
-
-<figure class='code'><figcaption><span>&#8220;1, 2, 3, Probando&#8230;&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>pi@raspberry:~<span class="nv">$ </span>w3m -dump http://localhost:4567
-</span><span class='line'>Tírame la musiquita Frank!
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Opensource y Cross Plataform</h3>
-
-<p>Señores, el código compilado APESTA!!!!</p>
+<p>Claro, realmente no lo hice así, ya que en vez de <strong>&ldquo;Anterior&rdquo;</strong> puse
+<strong>t(:dt_prev)</strong>  y cree su pertinente fichero de idioma con la traducción, pero
+escribí esta entrada pensando en gente que puede o no usar RoR. No obstante, el
+buen desarrollador de rails, sabe que lo correcto sería usar la in API de i18n.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -295,7 +200,7 @@ BUNLDER.</p>
 
 
 
-<time class='entry-date' datetime='2015-02-01T11:40:20-05:00'><span class='date'>01/02/2015</span> <span class='time'>11:40 am</span></time>
+<time class='entry-date' datetime='2017-01-20T16:39:32-05:00'><span class='date'>20/01/2017</span> <span class='time'>4:39 pm</span></time>
       
 
 <span class="categories">
@@ -309,7 +214,7 @@ BUNLDER.</p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/02/01/bundle/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/02/01/bundle/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2017/01/20/datatables-espanol/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2017/01/20/datatables-espanol/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -322,10 +227,10 @@ BUNLDER.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/12/02/welcome-aboard/" title="Previous Post: welcome aboard">&laquo; welcome aboard</a>
+        <a class="basic-alignment left" href="/blog/2017/01/09/tendencias-tecnologicas/" title="Previous Post: tendencias tecnológicas">&laquo; tendencias tecnológicas</a>
       
       
-        <a class="basic-alignment right" href="/blog/2015/02/06/zentyal/" title="Next Post: Zentyal">Zentyal &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2017/01/21/palito/" title="Next Post: animación del palito">animación del palito &raquo;</a>
       
     </p>
   </footer>
@@ -346,6 +251,14 @@ BUNLDER.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/01/21/palito/">animación del palito</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/01/20/datatables-espanol/">DataTables en español</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/01/09/tendencias-tecnologicas/">tendencias tecnológicas</a>
@@ -500,14 +413,6 @@ BUNLDER.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2016/01/19/espejos-de-clamav/">espejos de clamav y salud</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2016/01/14/clamav-en-windows/">clamav en windows</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/12/14/servidor-jabber-con-prosody/">servidor jabber con prosody</a>
 		</li>
 		
@@ -541,10 +446,6 @@ BUNLDER.</p>
 		
 		<li class="post">
 			<a href="/blog/2015/10/18/systemd-timesyncd/">systemd-timesyncd</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/10/16/palo-con-la-wifi/">palo con la wifi</a>
 		</li>
 		
 		<li class="post">
@@ -588,10 +489,6 @@ BUNLDER.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/07/19/will-paginate/">will_paginate</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/07/12/date-select-en-espanol/">date_select en español</a>
 		</li>
 		
@@ -613,10 +510,6 @@ BUNLDER.</p>
 		
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/06/14/revocar-certificados-de-ovpn/">revocar certificados de OVPN</a>
 		</li>
 		
 		<li class="post">
@@ -648,10 +541,6 @@ BUNLDER.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/02/22/rails-sin-turbolink/">rails sin turbolinks</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a>
 		</li>
 		
@@ -665,10 +554,6 @@ BUNLDER.</p>
 		
 		<li class="post">
 			<a href="/blog/2015/02/06/zentyal/">Zentyal</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/02/01/bundle/">bundle</a>
 		</li>
 		
 		<li class="post">
@@ -709,10 +594,6 @@ BUNLDER.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/07/05/empirico/">empíricos</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/06/27/crear-un-chroot-con-debian/">crear un chroot con debian</a>
 		</li>
 		
 		<li class="post">
@@ -779,8 +660,8 @@ BUNLDER.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2015/02/01/bundle/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2015/02/01/bundle/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2017/01/20/datatables-espanol/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2017/01/20/datatables-espanol/';
         var disqus_script = 'embed.js';
       
     (function () {

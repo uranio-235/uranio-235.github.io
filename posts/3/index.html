@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="recolección DomainPOP 22/10/2016 10:44 pm | Comments Esta entrada ha sido copiada de mi antiguo blog puheroska.
-Vale aclarar que la escribí en el &hellip;">
+  <meta name="description" content="sysinfo en el motd 20/11/2016 5:13 pm | Comments Desde que lo vi en unbuntu server, había querido hacer que mi servidores
+mostraran un overview en &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,438 @@ Vale aclarar que la escribí en el &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/11/20/sysinfo-en-el-motd/">sysinfo en el motd</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-20T17:13:27-05:00'><span class='date'>20/11/2016</span> <span class='time'>5:13 pm</span></time>
+        
+           | <a href="/blog/2016/11/20/sysinfo-en-el-motd/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/11/20/sysinfo-en-el-motd/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="right" src="/images/sysinfo.png" width="400" height="500" title="" ></p>
+
+<p>Desde que lo vi en unbuntu server, había querido hacer que mi servidores
+mostraran un overview en el <a href="https://en.wikipedia.org/wiki/Motd_(Unix">MOTD</a>)</p>
+
+<p>Al menos debian, tiene una manera de cambiar el MOTD dinamicamente. Para sazonar
+bien el MOTD, vamos a usar figlet, una aplicación que genera letras en ascii-art a
+partir de una palabra dada.</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando todo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install figlet
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El directorio <strong>/etc/update-motd.d/</strong> ejecutará en orden alfabético (o numérico
+en nuestro caso) aquellos script cuya salida estandard, compondrán nuestro MOTD.</p>
+
+<figure class='code'><figcaption><span>&#8220;aprovisionando el update-motd.d&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir /etc/update-motd.d/
+</span><span class='line'><span class="nb">cd</span> /etc/update-motd.d/
+</span><span class='line'>touch 00-header <span class="o">&amp;&amp;</span> touch 01-sysinfo <span class="o">&amp;&amp;</span> touch 02-footer
+</span><span class='line'>chmod +x /etc/update-motd.d/*
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finalmente, nos echamos el MOTD de debian por defecto; que no deja de
+restregarnos en cara la falta de garantía.</p>
+
+<p>Además, el fichero <strong>/var/run/motd</strong> contendrá nuestro motd resultante, así que
+lo lincamos con el que borramos.</p>
+
+<figure class='code'><figcaption><span>&#8220;aprovisionando el update-motd.d&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rm /etc/motd
+</span><span class='line'>ln -s /var/run/motd /etc/motd
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por una cuestión de organización, usaremos 3 ficheros:</p>
+
+<p><strong>00-header</strong> con lo que queremos poner primero. En este caso, el nombre y
+version de la distribución, además de un mensajito de bienvenida.</p>
+
+<figure class='code'><figcaption><span>&#8220;00-header&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="o">[</span> -r /etc/lsb-release <span class="o">]</span> <span class="o">&amp;&amp;</span> . /etc/lsb-release
+</span><span class='line'><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;$DISTRIB_DESCRIPTION&quot;</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">[</span> -x /usr/bin/lsb_release <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span><span class='line'>        <span class="nv">DISTRIB_DESCRIPTION</span><span class="o">=</span><span class="k">$(</span>lsb_release -s -d<span class="k">)</span>
+</span><span class='line'><span class="k">fi</span>
+</span><span class='line'>figlet <span class="k">$(</span>hostname<span class="k">)</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;\n&quot;</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Welcome to %s (%s).\n&quot;</span> <span class="s2">&quot;$DISTRIB_DESCRIPTION&quot;</span> <span class="s2">&quot;$(uname -r)&quot;</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;\n&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Yo instalo los sistemas en inglés, así que para mantener todo parejo, escribimos
+<em>güelcome</em> y lo hacemos con <strong>printf</strong> para procesar mejor los &ldquo;\n&rdquo; y que pinche
+sin importar la shell que se esté usando.</p>
+
+<p>El segundo fichero será <strong>01-sysinfo</strong> y contendrá la parte linda, de la memoria
+RAM en uso, el CPU, la carga y la dirección ip de la primera interfaz.</p>
+
+<figure class='code'><figcaption><span>&#8220;01-sysinfo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="nv">date</span><span class="o">=</span><span class="sb">`</span>date<span class="sb">`</span>
+</span><span class='line'><span class="nv">load</span><span class="o">=</span><span class="sb">`</span>cat /proc/loadavg <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="nv">root_usage</span><span class="o">=</span><span class="sb">`</span>df -h / <span class="p">|</span> awk <span class="s1">&#39;/\// {print $(NF-1)}&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="nv">memory_usage</span><span class="o">=</span><span class="sb">`</span>free -m <span class="p">|</span> awk <span class="s1">&#39;/Mem:/ { total=$2 } /buffers\/cache/ { used=$3 } END { printf(&quot;%3.1f%%&quot;, used/total*100)}&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="nv">swap_usage</span><span class="o">=</span><span class="sb">`</span>free -m <span class="p">|</span> awk <span class="s1">&#39;/Swap/ { printf(&quot;%3.1f%%&quot;, &quot;exit !$2;$3/$2*100&quot;) }&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="nv">users</span><span class="o">=</span><span class="sb">`</span>users <span class="p">|</span> wc -w<span class="sb">`</span>
+</span><span class='line'><span class="nb">time</span><span class="o">=</span><span class="sb">`</span>uptime <span class="p">|</span> grep -ohe <span class="s1">&#39;up .*&#39;</span> <span class="p">|</span> sed <span class="s1">&#39;s/,/\ hours/g&#39;</span> <span class="p">|</span> awk <span class="s1">&#39;{ printf $2&quot; &quot;$3 }&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="nv">processes</span><span class="o">=</span><span class="sb">`</span>ps aux <span class="p">|</span> wc -l<span class="sb">`</span>
+</span><span class='line'><span class="nv">ip</span><span class="o">=</span><span class="sb">`</span>ip a  s dev eth0<span class="p">|</span>grep inet<span class="p">|</span>awk <span class="s1">&#39;{print $2}&#39;</span><span class="p">|</span>cut -d <span class="s1">&#39;/&#39;</span> -f 1<span class="sb">`</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;System information as of: $date\n&quot;</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;System load:\t%s\tIP Address:\t%s\n&quot;</span> <span class="nv">$load</span> <span class="nv">$ip</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Memory usage:\t%s\tSystem uptime:\t%s\n&quot;</span> <span class="nv">$memory_usage</span> <span class="s2">&quot;$time&quot;</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Usage on /:\t%s\tSwap usage:\t%s\n&quot;</span> <span class="nv">$root_usage</span> <span class="nv">$swap_usage</span>
+</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Local Users:\t%s\tProcesses:\t%s\n\n&quot;</span> <span class="nv">$users</span> <span class="nv">$processes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por último <strong>02-footer</strong> será la parte de abajo. Contendrá cualquier cosa que
+quieras poner en el fichero <strong>/etc/motd.tail</strong> por ejemplo, una anotación que
+quieras hacer específica para ese servidor. Se mostrará si existe el fichero.</p>
+
+<figure class='code'><figcaption><span>&#8220;02-footer&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="o">[</span> -f /etc/motd.tail <span class="o">]</span> <span class="o">&amp;&amp;</span> cat /etc/motd.tail <span class="o">||</span> <span class="nb">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/11/14/openvpn-user-plus-pass/">openvpn user+pass</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-14T21:41:05-05:00'><span class='date'>14/11/2016</span> <span class='time'>9:41 pm</span></time>
+        
+           | <a href="/blog/2016/11/14/openvpn-user-plus-pass/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/11/14/openvpn-user-plus-pass/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Si bien, openvpn con una llave estática es algo bastante sencillo de configurar;
+tiene un grave problema: Que solo un cliente puede conectarse a la vez. En un
+escenario donde por ejemplo, queremos crear una vpn para múltiples servidores
+que deben conectarse, usar un clave estática se vuelve un problema. Una
+topología de anillo podría ayudarnos resolverlo, pero cada servidor debería ser
+cliente y servidor a la vez. Una VPN autenticada por usuario y contraseña
+resuelve el problema de la manera más simplificada posible.</p>
+
+<p>Creamos la infraestructura de certificados:</p>
+
+<figure class='code'><figcaption><span>&#8220;aprovisionando easy-rsa&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>mkdir Downloads/vpn
+</span><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span><span class="nb">cd </span>Downloads/vpn
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp -r /etc/easy-rsa/* ./
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si quieres, si te da la mariconería, edita los parámetros del fichero que acabas
+de copiar, pa que pongas los parámetros bonitillos, si no, espera a que openssl
+los pregunte; a lo mejor ni los pregunta.</p>
+
+<figure class='code'><figcaption><span>&#8220;aprovisionamiento de certificados&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>easyrsa init-pki
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>easyrsa build-ca nopass
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note que la cadena de texto <strong>tuservidor</strong> debe ser remplazada por el nombre de
+tu actor asiático preferido o, por algún nombre de tu agrado para el servidor.</p>
+
+<figure class='code'><figcaption><span>&#8220;creando el certificado del servidor&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>easyrsa build-server-full tuservidor nopass
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora el <a href="https://es.wikipedia.org/wiki/Diffie-Hellman">Diffie Hellman</a>, MUY
+importante. Ponte cómodo que va pa largo:</p>
+
+<figure class='code'><figcaption><span>&#8220;creando el diffie hellman&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>easyrsa gen-dh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Tiramos todo eso para /etc/openvpn en un directorio que designaremos con el
+nombre de &ldquo;servidor&rdquo; (por una cuestión de orden).</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/openvpn/&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>mkdir /etc/openvpn/servidor
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp pki/ca.crt /etc/openvpn/servidor
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp pki/dh.pem /etc/openvpn/servidor
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp -r pki/private/*.* /etc/openvpn/servidor/
+</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp -r pki/issued/tuservidor.* /etc/openvpn/servidor/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya tenemos todo listo pa armar el muñeco. Ahora vamos a crear la configuración
+del servidor. A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;servidor.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span><span class="nb">cd</span> /etc/openvpn/
+</span><span class='line'><span class="o">[</span>lazaro@artema openvpn<span class="o">]</span><span class="nv">$ </span>cat servidor.conf
+</span><span class='line'><span class="c"># como y por donde escuhan</span>
+</span><span class='line'>port 1194
+</span><span class='line'>proto udp
+</span><span class='line'>dev tun
+</span><span class='line'>
+</span><span class='line'><span class="c"># los certificados</span>
+</span><span class='line'>ca /etc/openvpn/servidor/ca.crt
+</span><span class='line'>cert  /etc/openvpn/servidor/tuservidor.crt
+</span><span class='line'>key /etc/openvpn/servidor/tuservidor.key
+</span><span class='line'>
+</span><span class='line'><span class="c"># el diffie hellman</span>
+</span><span class='line'>dh /etc/openvpn/servidor/dh.pem
+</span><span class='line'>
+</span><span class='line'><span class="c"># la red que vamos a operar</span>
+</span><span class='line'>server 10.8.0.0 255.255.255.0
+</span><span class='line'>
+</span><span class='line'><span class="c"># manda un ping cada 10 segundos</span>
+</span><span class='line'><span class="c"># y tumba el tunel si a los 120 no hay respuesta</span>
+</span><span class='line'>keepalive <span class="m">10</span> 120
+</span><span class='line'>
+</span><span class='line'><span class="c"># usa la compresión lzo</span>
+</span><span class='line'>comp-lzo
+</span><span class='line'>
+</span><span class='line'><span class="c"># opera con los siguientes privilegios</span>
+</span><span class='line'><span class="c">#user nobody</span>
+</span><span class='line'><span class="c">#group nogroup</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># esto es para reforzarlo</span>
+</span><span class='line'>persist-key
+</span><span class='line'>persist-tun
+</span><span class='line'>
+</span><span class='line'><span class="c"># que tan elocuente será</span>
+</span><span class='line'>verb 3
+</span><span class='line'>
+</span><span class='line'><span class="c"># mándale estos parámetros al cliente</span>
+</span><span class='line'>push <span class="s2">&quot;redirect-gateway def1&quot;</span>
+</span><span class='line'>push <span class="s2">&quot;dhcp-option DNS 8.8.8.8&quot;</span>
+</span><span class='line'>push <span class="s2">&quot;dhcp-option DNS 8.8.4.4&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># y he aquí el truco de la autenticación</span>
+</span><span class='line'>plugin /usr/lib/openvpn/plugins/openvpn-plugin-auth-pam.so login
+</span><span class='line'>client-cert-not-required
+</span><span class='line'>username-as-common-name
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso tenemos el servidor pinchando. Ahora vamos a hacer un fichero <strong>.ovpn</strong>
+genérico, para dar a entender como sería la configuración de nuestro cliente.</p>
+
+<p><strong>OJO</strong> El certificado que se le dará al cliente será el <strong>ca.crt</strong></p>
+
+<p>A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;cliente.ovpn&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema openvpn<span class="o">]</span><span class="nv">$ </span>cat tuservidor.ovpn
+</span><span class='line'>client
+</span><span class='line'>dev tun
+</span><span class='line'>proto udp
+</span><span class='line'>remote 192.168.0.1 1194
+</span><span class='line'>remote-cert-tls server
+</span><span class='line'>auth-user-pass ~/autenticacion.conf
+</span><span class='line'>comp-lzo
+</span><span class='line'>&lt;ca&gt;
+</span><span class='line'>-----BEGIN CERTIFICATE-----
+</span><span class='line'>Lorem ipsum ad his scripta blandit partiendo, eum fastidii
+</span><span class='line'>accumsan euripidis in, eum liber hendrerit an. Qui ut wisi
+</span><span class='line'>vocibus suscipiantur, quo dicit ridens inciderint id. Quo mundi
+</span><span class='line'>lobortis reformidans eu, legimus senserit definiebas an eos. Eu
+</span><span class='line'>sit tincidunt incorrupte definitionem, vis mutat affert
+</span><span class='line'>percipit cu, eirmod consectetuer signiferumque eu per. In usu
+</span><span class='line'>latine equidem dolores. Quo no falli viris intellegam, ut fugit
+</span><span class='line'>veritus placerat per.  Ius id vidit volumus mandamus, vide
+</span><span class='line'>veritus democritum te nec, ei eos debet libris consulatu. No
+</span><span class='line'>mei ferri graeco dicunt, ad cum veri accommodare. Sed at malis
+</span><span class='line'>omnesque delicata, usu et iusto zzril meliore. Dicunt maiorum
+</span><span class='line'>eloquentiam cum cu, sit summo dolor essent te. Ne quodsi
+</span><span class='line'>nusquam legendos has, ea dicit voluptua eloquentiam pro, ad sit
+</span><span class='line'>quas qualisque. Eos vocibus deserunt quaestio ei.
+</span><span class='line'>-----END CERTIFICATE-----
+</span><span class='line'>&lt;/ca&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Cada cliente de OpenVPN tiene su librito&hellip; Pero ese .ovpn genérico, debe ser
+capaz de ser importado sin problema.</p>
+
+<p>Por una cuestión de orden y seguridad, yo borro la base con la que se creó todo:</p>
+
+<figure class='code'><figcaption><span>&#8220;clear area&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>rm -rf Downloads/vpn
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por cierto, cada configuración que pongas en <strong>/etc/openvpn</strong> cuya extensión
+sea <strong>.conf</strong> se puede echar a andar con systemd.</p>
+
+<figure class='code'><figcaption><span>&#8220;systemctl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># systemctl status openvpn@servidor</span>
+</span><span class='line'>● openvpn@servidor.service - OpenVPN connection to servidor
+</span><span class='line'>   Loaded: loaded <span class="o">(</span>/usr/lib/systemd/system/openvpn@.service<span class="p">;</span> disabled<span class="p">;</span> vendor preset: disabled<span class="o">)</span>
+</span><span class='line'>   Active: inactive <span class="o">(</span>dead<span class="o">)</span>
+</span><span class='line'>     Docs: man:openvpn<span class="o">(</span>8<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -425,7 +857,7 @@ Recuerdas?</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -552,320 +984,6 @@ ipv6. Aquí les va uno hipotético y sencillo:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/10/22/poniendo-direcciones-ipv6/">las reglas del juego ipv6</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-10-22T01:17:30-04:00'><span class='date'>22/10/2016</span> <span class='time'>1:17 am</span></time>
-        
-           | <a href="/blog/2016/10/22/poniendo-direcciones-ipv6/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/10/22/poniendo-direcciones-ipv6/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>   <blockquote><p>ipv4 se parece a ipv6, lo que las damas se parecen al ajedrez</p></blockquote></p>
-
-<p>Ambos juegos se desarrollan sobre un tablero de 64 casillas, moviendo fichas y
-comiéndose las del adversario. Pero sus fundamentos, aunque similares, no son
-iguales y para que hablar de las reglas.</p>
-
-<p>En la entrada anterior, comentaba los disparates primordiales que he ido viendo
-con respecto a ipv6. Aquí les dejo un básico sobre las reglas del juego con
-ipv6.</p>
-
-<h4>2001:db8:: NO ES UN RANGO USABLE</h4>
-
-<p>Realmente sí lo es, pero está reservado <strong>para documentación</strong> esto quiere
-decir que <strong>NO DEBE HABER UNA LAN CON ESTE RANGO</strong>.</p>
-
-<h4>¿Entonces la LAN y la pública?</h4>
-
-<p>En ipv6, las direcciones de la LAN, son parte de la pública. No existe una
-distinción real entre LAN o internet y sobre todo:</p>
-
-<p><strong>NO HAY NATEO!!!</strong></p>
-
-<p>Te delegarán un prefijo y tú tendrás suficientes ip como para asignarle un ip a
-cada partícula de polvo de tu oficina. Pero ojo:</p>
-
-<p><strong>esas ip serán visibles desde y hacia internet</strong></p>
-
-<p>Cada ip que delegues de tu prefijo, formará parte del ciberspacio. Visto de otra
-forma. Si asignas 2001:db8::aaa1 a una máquina en tu LAN, esa dirección será de
-facto, alcanzable desde internet (si tienes internet claro).</p>
-
-<p>Para lidiar con esta situación, deberás tener bien claro el forward en tu
-router.</p>
-
-<h3>pero yo no tengo una ipv6 real</h3>
-
-<p>No estés tan seguro&hellip; Si tienes una ipv4 pública, tienes algo parecido. Más
-adelante veremos como hacer un túnel 6in4, así que el prefijo de dirección más
-apropiado para tu LAN lo calcularás así:</p>
-
-<figure class='code'><figcaption><span>&#8220;ipv6calc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipv6calc --quiet --action conv6to4 tu.ipv4.publica.aqui
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Nota para los imbéciles: ¿¿Notaste lo que dice <strong>tu.ipv4.publica.aqui</strong>??</p>
-
-<p>Eso te devolverá algo como <strong>2002:a00:1::</strong> lo cual es prefijo 6in4 en base a la
-ipv4 pública de tu LAN. Ese será tu prefijo ipv6.</p>
-
-<p>Otra cosa: <strong>NO SE PONEN IP CORRIDAS</strong> como por ejemplo 2002:a00:1::1 y
-2002:a00:1::2 ya que una de las cosas que intenta evitar ipv6 es el escaneo de
-redes. Las ipv6 se calculan en base a la mac. Más tarde veremos como lo hace el
-protocolo SLAAC.</p>
-
-<p>A mi en lo personal, me gusta ponerle al ruter &ldquo;cafe&rdquo; <strong>2002:a00:1::cafe</strong> y un
-ejemplo mas creativo 2002:a00:1::caba110 (caballo) así cada servidor tendría un
-nombre: cafe, caba110, ada, ded0, dad0, 1ce, a5ado</p>
-
-<p>Por cierto, los 0 a la izquierda, se descartan</p>
-
-<p>2002:a00:1::<strong>000</strong>1 es la misma dirección que 2002:a00:1::1 y de echo, es mucho más
-largo, porque tiene una pila de 0 por medio, pero así se expresa de manera más
-corta. Incluso así puede hacer ping y cualquier referencia a la dirección que el
-stack ipv6 se encarga de comprimirla y descomprimirla, sepa usted.</p>
-
-<p>Note que en <strong>a00</strong> sí se ponen los ceros, porque <strong>NO</strong> están a la izquierda.</p>
-
-<h3>Entonces el Forward</h3>
-
-<p>El forward de un cortafuegos será lo que controla que será visible dentro de tu
-LAN. La puerta de enlace decide qué será visible o no. Más adelante veremos un
-firewall ipv6 lo más sencillo posible. Usaremos ip6tables.</p>
-
-<h3>¿y el dhcp?</h3>
-
-<p>Hay servidores dhcp para ipv6, pero el mecanismo bacán es SLAAC. Te adelanto que
-dnsmasq tiene SLAAC, pero el pro, es <strong>radvd</strong></p>
-
-<p>Una configuración de radvd típica se ve así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/radvd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='C'><span class='line'><span class="n">interface</span> <span class="n">eth1</span> <span class="p">{</span>
-</span><span class='line'>     <span class="n">AdvSendAdvert</span> <span class="n">on</span><span class="p">;</span>
-</span><span class='line'>     <span class="n">MinRtrAdvInterval</span> <span class="mi">3</span><span class="p">;</span>
-</span><span class='line'>     <span class="n">MaxRtrAdvInterval</span> <span class="mi">10</span><span class="p">;</span>
-</span><span class='line'>     <span class="n">prefix</span> <span class="o">::/</span><span class="mi">64</span> <span class="p">{</span>
-</span><span class='line'>            <span class="n">AdvOnLink</span> <span class="n">on</span><span class="p">;</span>
-</span><span class='line'>            <span class="n">AdvAutonomous</span> <span class="n">on</span><span class="p">;</span>
-</span><span class='line'>            <span class="n">AdvRouterAddr</span> <span class="n">on</span><span class="p">;</span>
-</span><span class='line'>     <span class="p">};</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como vez, no especificas que rango de ip darás ni cosa parecida. El rango que
-darás, será del mismo prefijo que tiene en la interfaz eth1 (en este caso).</p>
-
-<h3>¿qué son las direcciones ff02 y fe80?</h3>
-
-<p>Son direcciones link-local. En ipv6, hay direcciones del tipo &ldquo;multicast&rdquo; cuyo
-destino serán todas las ip que estén dislocadas en la red. Esto no debe
-confundirse con anycast y vale aclarar que en ipv6 NO EXISTE broadcast.</p>
-
-<figure class='code'><figcaption><span>&#8220;ping multicast&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># ping ff02::1%wlp2s0</span>
-</span><span class='line'>PING ff02::1%wlp2s0<span class="o">(</span>ff02::1%wlp2s0<span class="o">)</span> <span class="m">56</span> data bytes
-</span><span class='line'><span class="m">64</span> bytes from fe80::420e:85ff:fe7a:e6d7%wlp2s0: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">17</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span><span class="m">112</span> ms
-</span><span class='line'><span class="m">64</span> bytes from fe80::420e:85ff:fe7a:e6d7%wlp2s0: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">18</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>7.42 ms
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Eso hará le hará ping a malanga y puesto de vianda que tengan un
-<a href="https://es.wikipedia.org/wiki/Direcci%C3%B3n_de_Enlace-Local">link-local</a> en la
-red que tiene conectado el cable de eth0.</p>
-
-<p>Sin embargo, al hacer ping a <strong>ff02::2</strong> solo responderán aquellas ipv6 que sean
-<strong>routers</strong>. Eso es una manera de saber quien es un router o simplemente si hay
-alguno.</p>
-
-<p>Las direcciones <strong>fe80::</strong> son enlaces locales. Podría decirse que las
-direcciones fe80 son como decir &ldquo;arp&rdquo; pero se les puede hacer ping y otras
-boberías. O sea, es de palo tener direcciones fe80:: aparte de las globales.</p>
-
-<h4>¿y dnsmasq?</h4>
-
-<p>Ese es otro que bien baila y con cualquier música. Tiene un SLAAC implementado
-que es una maravilla. Al parámetro <strong>dhcp-range</strong> se le mandan unas clásulas
-especiales que hacen maravillas. La que más me gusta es <strong>ra-names</strong> que asigna
-una ip y un registro AAAA para máquina.</p>
-
-<h4>que bolá con bind?</h4>
-
-<p>Los registros del tipo AAAA resuelven punteros address para direcciones ipv6.</p>
-
-<p>Sean:</p>
-
-<ul>
-<li> ns01 el nombre del servidor</li>
-<li> ns01 registro A con ip 192.168.0.1</li>
-<li> ns01 registro AAAA con ip 2001:db8::cafe</li>
-<li> proxy registro CNAME que apunta a ns01</li>
-</ul>
-
-
-<p>Cuando preguntes por la ipv6 de proxy, resolverá 2001:db8::cafe, de esta manera,
-el sistema operativo preguntará simplemente por &ldquo;proxy&rdquo; y el DNS le resolverá
-ambas direcciones (4 y 6), la configuración de dichos stack, decidirá cual usar.</p>
-
-<p>Esto en bind se escribe así:</p>
-
-<figure class='code'><figcaption><span>&#8220;dominio.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="p">;</span> El <span class="m">1</span> el proxy
-</span><span class='line'>ns01         IN      A       192.168.0.1
-</span><span class='line'>ns01         IN      AAAA    2001:db8::cafe
-</span><span class='line'>             IN      MX  <span class="m">0</span>   ns01
-</span><span class='line'>ruter        IN      CNAME   ns01
-</span><span class='line'>proxy        IN      CNAME   ns01
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ejemplo vivo:</p>
-
-<figure class='code'><figcaption><span>&#8220;ping ipv6 a un CNAME&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>ping -6 proxy.hcg.sld.cu
-</span><span class='line'>PING proxy.hcg.sld.cu<span class="o">(</span>ns01 <span class="o">(</span>2002:c9dc:d582::cafe<span class="o">))</span> <span class="m">56</span> data bytes
-</span><span class='line'><span class="m">64</span> bytes from ns01 <span class="o">(</span>2002:c9dc:d582::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.100 ms
-</span><span class='line'><span class="m">64</span> bytes from ns01 <span class="o">(</span>2002:c9dc:d582::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">2</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.174 ms
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>¿Qué aprendimos?</h3>
-
-<ul>
-<li> 2001:db8:: es un rango reservado, no se usa</li>
-<li> ipv6 es complejo pero no complicado.</li>
-<li> hay un ip6tables aparte de iptables</li>
-<li> ipv6 NO necesita nateo</li>
-<li> que existen tecnologías transicionales como 6in4</li>
-<li> no es DHCP, si no RA y SLAAC</li>
-<li> no hay ARP, si no link-local</li>
-<li> los punteros AAAA funcionan igualito que los A</li>
-</ul>
-
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/10/22/ipv6/">la resolución 185/2016</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-10-22T00:51:14-04:00'><span class='date'>22/10/2016</span> <span class='time'>12:51 am</span></time>
-        
-           | <a href="/blog/2016/10/22/ipv6/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/10/22/ipv6/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>El otro día, me doy por enterado que que lanzaron la resolución 185/2016 nada
-menos que sobre la implementación de ipv6. Como todo en cuba; llega tarde pero
-bien recibido. Me reí muchísimo cuando la leí. No con la ley, si no imaginándome
-la puesta en vigor de la ley.</p>
-
-<p>Me imaginé:</p>
-
-<ul>
-<li>la gente poniendo ipv6 en su LAN con el prefijo 2001:db8::</li>
-<li>los cortafuegos sin configurar</li>
-<li>los que no leen preguntando como hacer un forward o un nateo</li>
-</ul>
-
-
-<p>Y la mierda estaba por llover, cuando vi mi vaticinio materializándose ante mis
-ojos.</p>
-
-<h3>Podría ser este tu caso</h3>
-
-<p>Luego de entablar un diálogo técnico, una persona a la que consideraba buena en
-este asunto de los servidores y redes, me dice que implementó ipv6 hace como un
-mes, pero que tenía &ldquo;un problema&rdquo;, ya que no lograba hacer un NAT para que el
-servidor de correo dentro de la LAN, recibiera los correos desde afuera.</p>
-
-<p>Cuando le dije que me mandara su cortafuegos, me dijo que no tenía un
-cortafuegos aún para ipv6.</p>
-
-<p>Me insistió que por favor le explicara <strong>cómo hacer el singao nateo</strong>.</p>
-
-<p>Le pedí que me mostrara como tenía ipv6 desplegado y me dijo que la puerta de
-enlace era 2001:db8::1 y el servidor de correo ::2</p>
-
-<p>Llegado a ese punto, lo mandé a fumarse un peo, pero volvió a llamar; pasando
-por alto el collar de insultos que le había puesto antes de tirar el teléfono.</p>
-
-<h3>Sobre el &ldquo;nateo de ipv6&rdquo;</h3>
-
-<p><strong>ipv6 NO lleva nateo. El nateo fue una solución que mandó a la mierda ipv6</strong></p>
-
-<p>Si tienes una ip pública con máscara /64 es visible desde y hacia internet. O
-sea, que si tu servidor de correo tiene una dirección como 2001:db8::2/64 <strong>YA
-ES VISIBLE EN INTERNET</strong> y si no tienen cortafuegos pinguísimo <strong>aprepárate</strong>.</p>
-
-<p>Más detalles en la siguiente entrada&hellip;</p>
-</div>
-  
-  
-
-
 <p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
@@ -887,6 +1005,14 @@ ES VISIBLE EN INTERNET</strong> y si no tienen cortafuegos pinguísimo <strong>a
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/01/21/palito/">animación del palito</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/01/20/datatables-espanol/">DataTables en español</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/01/09/tendencias-tecnologicas/">tendencias tecnológicas</a>
@@ -1041,14 +1167,6 @@ ES VISIBLE EN INTERNET</strong> y si no tienen cortafuegos pinguísimo <strong>a
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2016/01/19/espejos-de-clamav/">espejos de clamav y salud</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2016/01/14/clamav-en-windows/">clamav en windows</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/12/14/servidor-jabber-con-prosody/">servidor jabber con prosody</a>
 		</li>
 		
@@ -1082,10 +1200,6 @@ ES VISIBLE EN INTERNET</strong> y si no tienen cortafuegos pinguísimo <strong>a
 		
 		<li class="post">
 			<a href="/blog/2015/10/18/systemd-timesyncd/">systemd-timesyncd</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/10/16/palo-con-la-wifi/">palo con la wifi</a>
 		</li>
 		
 		<li class="post">
@@ -1129,10 +1243,6 @@ ES VISIBLE EN INTERNET</strong> y si no tienen cortafuegos pinguísimo <strong>a
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/07/19/will-paginate/">will_paginate</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/07/12/date-select-en-espanol/">date_select en español</a>
 		</li>
 		
@@ -1154,10 +1264,6 @@ ES VISIBLE EN INTERNET</strong> y si no tienen cortafuegos pinguísimo <strong>a
 		
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/06/14/revocar-certificados-de-ovpn/">revocar certificados de OVPN</a>
 		</li>
 		
 		<li class="post">
@@ -1189,10 +1295,6 @@ ES VISIBLE EN INTERNET</strong> y si no tienen cortafuegos pinguísimo <strong>a
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/02/22/rails-sin-turbolink/">rails sin turbolinks</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a>
 		</li>
 		
@@ -1206,10 +1308,6 @@ ES VISIBLE EN INTERNET</strong> y si no tienen cortafuegos pinguísimo <strong>a
 		
 		<li class="post">
 			<a href="/blog/2015/02/06/zentyal/">Zentyal</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/02/01/bundle/">bundle</a>
 		</li>
 		
 		<li class="post">
@@ -1250,10 +1348,6 @@ ES VISIBLE EN INTERNET</strong> y si no tienen cortafuegos pinguísimo <strong>a
 		
 		<li class="post">
 			<a href="/blog/2014/07/05/empirico/">empíricos</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/06/27/crear-un-chroot-con-debian/">crear un chroot con debian</a>
 		</li>
 		
 		<li class="post">

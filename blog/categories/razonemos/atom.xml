@@ -4,7 +4,7 @@
   <title><![CDATA[Category: razonemos | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/razonemos/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-01-10T17:04:31-05:00</updated>
+  <updated>2017-02-02T21:59:45-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -18,7 +18,9 @@
     <link href="http://uranio-235.github.io/blog/2017/01/09/tendencias-tecnologicas/"/>
     <updated>2017-01-09T21:04:02-05:00</updated>
     <id>http://uranio-235.github.io/blog/2017/01/09/tendencias-tecnologicas</id>
-    <content type="html"><![CDATA[<p>Por suerte, la era de Zentyal está a punto de terminar.</p>
+    <content type="html"><![CDATA[<p>{% img right /images/bandwagon.jpg 400 500  %}</p>
+
+<p>Por suerte, la era de Zentyal está a punto de terminar.</p>
 
 <p>Ahora tenemos tocadores de pfSense, que se creen usuarios de FreeBSD.</p>
 
@@ -136,7 +138,7 @@ ha pasado parecido.</p>
     <id>http://uranio-235.github.io/blog/2015/11/03/las-mujeres-gordas</id>
     <content type="html"><![CDATA[<p><em>¿Como te gustan las mujeres gordas o flacas?</em></p>
 
-<p><img class="right" src="/images/gorda2.jpg" width="190" height="290" title="" ></p>
+<p>{% img right /images/gorda2.jpg 190 290  %}</p>
 
 <p>Esa pregunta se ha vuelto un boicot.</p>
 
@@ -190,7 +192,7 @@ esa es masa pura. Si no le duele, es manteca.</p>
 
 <h4>deterioro de la autoestima</h4>
 
-<p><img class="right" src="/images/gorda1.jpg" width="190" height="290" title="" ></p>
+<p>{% img right /images/gorda1.jpg 190 290  %}</p>
 
 <p>Este tema es muy peliagudo y repercute, tanto pa las gordas, como para los
 amantes de las curvas.</p>
@@ -235,7 +237,10 @@ y NO se esconde para decirlo, se pasea con su prieto por la calle. En cambio, el
 tipo que le gustan las gordas, le pesa reconocerlo e incluso, le da pena que la
 gente lo vean con aun gorda.</p>
 
-<p>   <blockquote><p>Los huesos son para los perros,<br/>   los hombres comen carne.</p></blockquote></p>
+<p>   {% blockquote %}
+   Los huesos son para los perros,
+   los hombres comen carne.
+   {% endblockquote %}</p>
 ]]></content>
   </entry>
   
