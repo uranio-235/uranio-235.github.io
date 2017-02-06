@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-01-28T00:22:32-05:00</updated>
+  <updated>2017-02-05T23:07:15-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,464 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[a las puertas del 3g]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/02/05/a-las-puertas-del-3g/"/>
+    <updated>2017-02-05T21:24:40-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/02/05/a-las-puertas-del-3g</id>
+    <content type="html"><![CDATA[<p>Oficialmente, han anunciado en la mesa redonda que se proveerá internet por 3G.</p>
+
+<p>La noticia me impactó bastante y supongo que todo el que se haga llamar
+&ldquo;administrador de red&rdquo; (en Cuba) se halla sentido conmovido.</p>
+
+<p>A partir de ese día no llevaremos más sobre nuestros hombros la ardua tarea de
+proveerle internet a una sociedad desconectada. La penosa tarea de explicarle a
+los usuarios porque fulano sí y tú no. Con ello, nuestra importancia actual en
+marcos laborales; se verá considerablemente reducida. Ya no seremos las
+fantásticas criaturas con acceso a internet, si no, un simple operario más (como
+somos en el mundo entero). Imagino (y espero) que los proxy pasen a ser una
+segunda prioridad. El uso de internet en las empresas, por fin, será para
+aquello que realmente fue concebido y no para proveerle facebook a cuatro vacas
+sagradas.</p>
+
+<p>La introducción de la 3G en cuba, será un cambio. Todos debemos estar preparados
+para afrontar este cambio; no solo desde el punto de vista tecnológico, si no
+también social y psicológico. Si dios quiere y todo sale a pedir de boca,
+caeremos de sopetón y recién llegados; a un mundo donde el internet, ya es algo
+cotidiano. Todos NO están preparados para esto, en especial, aquellos que tienen
+canas y teléfonos modernos.</p>
+
+<p>Si bien, las tarifas siguen siendo un misterio por resolver, este es un momento
+en que no hay lugar para el pesimismo. Nuestro país está haciendo un esfuerzo
+sin precedentes (al menos en ese aspecto) y nosotros, esperamos lo mejor. hay
+mucho optimismo y la gente habla del tema con brillo en lo ojos. Esperamos que
+esto se materialize y no se convierta en un vaporware. Por otra parte, muchas
+personas tienen la expectativa muy alta; en especial aquellas que han viajado y
+conocen el 4g. Esto podría dar lugar a disgustos y desilusiones en aquellas
+personas que tienen las expectativas muy altas. Yo solo espero, poder tener
+internet en mi bolsillo con el salario que me gano.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[dns con vistas]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/02/05/dns-con-vistas/"/>
+    <updated>2017-02-05T18:57:26-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/02/05/dns-con-vistas</id>
+    <content type="html"><![CDATA[<p>Que lindo corre bind9 en alpine linux. Ahora que mis servidores están todo en el
+pool de xenserver (los reyes magos me trajeron un servidor pro) tengo un nuevo
+problema. Dentro de la red interna de xen, los servidores tienen una ip
+distinta. Por ejemplo, para todo el mundo, el alpine linux que hace de router,
+es 192.168.0.1, pero para los servidores, es 169.254.0.10</p>
+
+<p>Además, el forward para infomed, es un privilegio que solo los servidores
+tienen. Por tanto, lo más seguro, será usar una zona para la LAN y otra para la
+red interna del pool.</p>
+
+<p>Esto me recuerda las DMZ, pero no es lo mismo, porque no estoy creando cuellos
+de botella. La red interna del pool es una vif, que funciona sin emitir
+tráfico real por alguna pif.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/bind/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>// vim:set <span class="nv">ts</span><span class="o">=</span><span class="m">4</span> <span class="nv">sw</span><span class="o">=</span><span class="m">4</span> et:
+</span><span class='line'>
+</span><span class='line'>options <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>   directory <span class="s2">&quot;/etc/bind/&quot;</span><span class="p">;</span>
+</span><span class='line'>   pid-file <span class="s2">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
+</span><span class='line'>   listen-on-v6 <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   listen-on <span class="o">{</span> 169.254.0.0/16<span class="p">;</span> localhost<span class="p">;</span> 192.168.1.0/24<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   allow-transfer <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   allow-update <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   version none<span class="p">;</span>
+</span><span class='line'>   hostname none<span class="p">;</span>
+</span><span class='line'>   server-id none<span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   // los servidores hacen recursion
+</span><span class='line'>   allow-recursion <span class="o">{</span> 169.254.0.0/16<span class="p">;</span> localhost<span class="p">;</span><span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   recursion yes<span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>view lan  <span class="o">{</span> // la red LAN
+</span><span class='line'>
+</span><span class='line'>   match-clients <span class="o">{</span>192.168.1.0/24<span class="p">;</span><span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   zone <span class="s2">&quot;localhost&quot;</span> IN <span class="o">{</span>
+</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
+</span><span class='line'>      file <span class="s2">&quot;localhost.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   zone <span class="s2">&quot;hcg.sld.cu&quot;</span> IN <span class="o">{</span>
+</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
+</span><span class='line'>      file <span class="s2">&quot;hcg.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      notify no<span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   zone <span class="s2">&quot;.&quot;</span> <span class="o">{</span>
+</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
+</span><span class='line'>      file <span class="s2">&quot;fakeroot.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span><span class="p">;</span> // view lan
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>view xen <span class="o">{</span> // la red interna de XenServer
+</span><span class='line'>
+</span><span class='line'>   match-clients <span class="o">{</span>169.254.0.0/16<span class="p">;</span> localhost<span class="p">;</span><span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   zone <span class="s2">&quot;localhost&quot;</span> IN <span class="o">{</span>
+</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
+</span><span class='line'>      file <span class="s2">&quot;localhost.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   zone <span class="s2">&quot;xen&quot;</span> IN <span class="o">{</span>
+</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
+</span><span class='line'>      file <span class="s2">&quot;xen.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      notify no<span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   zone <span class="s2">&quot;hcg.sld.cu&quot;</span> IN <span class="o">{</span>
+</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
+</span><span class='line'>      file <span class="s2">&quot;hcg.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      notify no<span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   zone <span class="s2">&quot;sld.cu&quot;</span> <span class="o">{</span>
+</span><span class='line'>      forwarders <span class="o">{</span> 201.220.222.131<span class="p">;</span> 201.220.222.132<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>      <span class="nb">type </span>forward<span class="p">;</span>
+</span><span class='line'>      forward only<span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span><span class="p">;</span> // view xen
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ven, cree el dominio &ldquo;.xen&rdquo; que solo será visible a la red interna del
+pool. La zona &ldquo;hcg.sld.cu&rdquo; también será visible para los servidores ya que estos
+tienen una pata en la LAN; a esto suele llamarse &ldquo;shared zone&rdquo; (zona
+compartida). Finalmente, la zona &ldquo;sld.cu&rdquo; (debajo de hcg) es una zona forward en
+la vista de la interfaz interna.</p>
+
+<p>El host proxy.hcg.sld.cu resolverá una ip de la lan; de esta misma manera, el
+host proxy.xen, resolverá la ip de dicho host, pero dentro de la red interna del
+pool.</p>
+
+<p><strong>¿y por qué?</strong></p>
+
+<p>Por que esta menera, solo los servidores (a través de la red del pool), harán
+forward. Por ejemplo, el servidor de correo, podrá enviar y recibir su correo
+multipop, ya que el alpine que está haciendo como router, permite forward desde
+la red del pool hacia la WAN; o sea, todos los servidores, ven a la WAN. Es
+obligaría al servidor de correo, a usar el dns de infomed para resolver
+direcciones de infomed y el servidor local para resolver las direcciones de la
+LAN, lo cual funciona de asco. Sin embargo, la vista del pool tiene una zona
+forward. Cabe destacar, que una zona forward y un fakeroot, no se por qué; hace
+que ninguna pinche.</p>
+
+<p>Sensillo y seguro.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ipfw simple y conciso]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/02/01/ipfw-simple-y-consiso/"/>
+    <updated>2017-02-01T23:15:47-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/02/01/ipfw-simple-y-consiso</id>
+    <content type="html"><![CDATA[<p>Las instrucciones para hacer un cortafuegos realmente <strong>SIMPLE</strong> y la vez
+funcional (statefull firewall) con ipfw; simplemente no existe, al menos de
+manera oficial. El cortafuegos ejemplificado en el handbook es bastante
+complejo. Cosas como pasar los paquetes de conexiones relacionadas, hacer drop o
+&ldquo;reiniciar el cortafuegos&rdquo;, no se tomaron la molestia de documentarlas &ldquo;bien&rdquo;.
+Otras cosas como el filtrado por mac address, simplemente no funciona; a menos
+que hagas un ritual previo que NO está documentado en el man.</p>
+
+<p>Para empezar, el módulo debe ser cargado en el kernel, así que inicializaremos
+ipfw como si fuera un demonio más del sistema. Esto quiere decir que lo
+añadiremos al <strong>/etc/rc.conf</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/rc.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="nv">firewall_enable</span><span class="o">=</span><span class="s2">&quot;YES&quot;</span>
+</span><span class='line'> <span class="nv">firewall_type</span><span class="o">=</span><span class="s2">&quot;/usr/local/etc/ipfw.rules&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La <a href="https://www.freebsd.org/doc/handbook/firewalls-ipfw.html">documentación oficial</a> aclara que
+los firewall pueden ser (además) del tipo: open, client, simple, closed o
+UNKNOWN. Sin embargo, <strong>en mi opinión</strong> estas configuraciones prefabricadas, no
+son suficiente para un servidor (por ejemplo proxy).</p>
+
+<p>Para mantener la armonía chea y anticuada de freebsd; colocamos el cortafuegos
+en el /etc dentro /usr/local/. Ten en cuenta que casi todas las aplicaciones que
+instales, tendrán su /etc ahí.</p>
+
+<p>Reiniciar ipfw no es tan jamón como un usuario de iptables haría. Hacer un flush
+de las reglas, significa quedarse trancado y perder la conexión por ssh. Para
+reiniciar el cortafuegos, deberás tener un script que haga flush y además,
+reiniciar el servicio. Este scriptsito me lo hice para la faena de toquetear el
+cortafuegos</p>
+
+<figure class='code'><figcaption><span>&#8220;/usr/local/bin/reiniciar_ipfw.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/csh</span>
+</span><span class='line'>service ipfw stop
+</span><span class='line'>ipfw -q flush
+</span><span class='line'>service ipfw start
+</span><span class='line'>ipfw show
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>La documentación oficial (y otras muchas) indican que cada regla se cree
+enumerada y que bebes mantener esta numeración manualmente. Sin embargo, esto no
+es estrictamente necesario. Cada regla incrementará el número de una manera
+automáticamente curiosa.</p>
+
+<p>Veamos pues un <strong>ipfw.rules</strong> bien básico. La interfaz <strong>lo0</strong> es el localhost.
+La interfaz xn0 es la WAN y xn1 es la LAN.</p>
+
+<figure class='code'><figcaption><span>&#8220;ipfw.rules&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># para afuera todo</span>
+</span><span class='line'>ipfw -q add allow all from any to any out
+</span><span class='line'>
+</span><span class='line'><span class="c"># permite todo por el localhost</span>
+</span><span class='line'>ipfw -q add allow all from any to any via lo0
+</span><span class='line'>
+</span><span class='line'><span class="c"># las conexiones que ya estén iniciadas, tíralas</span>
+</span><span class='line'>ipfw -q add check-state
+</span><span class='line'>ipfw -q add allow tcp from any to any established
+</span><span class='line'>ipfw -q add allow all from any to any out keep-state
+</span><span class='line'>
+</span><span class='line'><span class="c"># permite que te hagan ping desde la LAN con la ip</span>
+</span><span class='line'>ipfw -q add allow icmp from 10.1.1.0/24 to any via xn1
+</span><span class='line'>
+</span><span class='line'><span class="c"># permite que accedan al proxy desde la LAN</span>
+</span><span class='line'>ipfw -q add allow tcp from any to any dst-port <span class="m">3128</span> via xn1
+</span><span class='line'>
+</span><span class='line'><span class="c"># permite el servidor web pero solo deade la WAN</span>
+</span><span class='line'>ipfw -q add allow tcp from any to any dst-port <span class="m">80</span> via xn0
+</span><span class='line'>
+</span><span class='line'><span class="c"># descarta el resto</span>
+</span><span class='line'>ipfw -q add reset
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Veamos algunas características de este cortafuegos&hellip;</p>
+
+<p>La salida, por definición, está bloqueada. La primera regla; autoriza la salida
+del tráfico.</p>
+
+<p>La política por defecto del cortafuegos del tipo &ldquo;script&rdquo; es rechazar con icmp
+de vuelta. Lo que se conoce en iptables como REJECT. Por tanto, para que haga lo
+que en iptables sería DROP, debemos usar un action del tipo <strong>reset</strong>.</p>
+
+<p>Como ven, este cortafuegos no arranca haciendo flush como los de iptables. De
+hecho, hacer flush como primera linea puede causarte problemas muy serios. Por
+otro parte, reiniciar el cortafuegos sin hacer flush, provoca que se dupliquen
+las reglas.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[mis crónicas con freebsd]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/01/28/freebsd-11/"/>
+    <updated>2017-01-28T23:39:52-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/01/28/freebsd-11</id>
+    <content type="html"><![CDATA[<p>Si vas a leer este artículo, te aviso, que no tiene nada que ver con el blog. Me
+dispongo a expresar mi criterio sobre FreeBSD y un tanto de como ha formado
+parte de mi vida profesional.</p>
+
+<p>   <blockquote><p>FreeBSD, tecnología arcana para algunos y arcaica para otros.</p></blockquote></p>
+
+<p>Se cuentan leyendas sobre FreeBSD, como que es el sistema operativo de los nodos
+y cosas así. Mucha gente lo tiene como un arcano o algo que probarán <em>un día de
+estos</em>. Yo pienso que no tiene nada del otro mundo. De hecho, en mi opinión,
+gentoo es más complicado que freebsd.</p>
+
+<p>Lo que si me queda claro que es un excelente sistema operativo para servidores
+proxy. Además, ipfw, su cortafuegos, es sólido como una piedra. En FreeBSD eso
+de caer de rodillas ante un ataque DoS, es simplemente utópico.</p>
+
+<p>En ambientes libres de proxy, el binomio dummynet-<a href="https://www.freebsd.org/doc/handbook/firewalls-ipfw.html">ipfw</a>
+permite un manejo del ancho de banda con una simpleza que ya quisiera <strong>tc</strong>. Un
+solo pipe puede tener valores diferentes para su ancho de banda, encolamiento y
+delay.</p>
+
+<p>Por otra parte, el sistema de <a href="https://www.freebsd.org/doc/handbook/jails.html">jails</a>
+es un batazo. Sobre todo en ambientes donde te ves obligado a meter la pata y no
+dispones de virtualización. Los jails combinado con ZFS, permiten hacer cosas
+alucinantes.</p>
+
+<p>El gestor de paquetes ha mejorado muchísimo. En cuanto a resolución de
+dependencias y velocidad. Lo han optimizado bastante en mi opinión y ahora
+maneja mejor el tema de las redes lentas.</p>
+
+<p>Cada versión nueva que sale la pruebo; y aunque había hecho mis cositas con él,
+siempre acababa dejándolo de lado por el tema del ancho de banda. Cualquier
+operación que hagas con la paquetería requiere conexión y poco ancho de banda
+provoca que la operación falle. La versión 9 en mi opinión fue un desastre.
+Especialmente por el sistema de ports que daba unos palos horribles.</p>
+
+<p>FreeBSD 10 no lo toqué, estuve más girado para OpenIndiana.</p>
+
+<p>Pero la versión 7 de OI parecía no terminar nunca. Finalmente el avión no
+despegó. El fiasco de nexenta store y la insertidumbre de oracle, golpearon
+fuertemente a la comunidad de OpenIndiana. El mundo se dio cuenta que OI tenía
+el futuro de un submarino descapotable y gran parte de la comunidad de illumos
+se mudó pa BSD. La comunidad de OpenIndiana se desmoronaba con las botas
+puestas. El agitado canal de freenode #openindiana se convirtió en un canal
+muerto. En lo personal, tras fracasar en mi afán por portar Ruby a OI, en parte
+debido a que no tengo ancho de banda para hacer operaciones en el Userland; alcé
+bandera blanca también.</p>
+
+<p>Pero como soy Linuxero! Volví a poner mis servidores en debian y comencé a mirar
+a fedora. De nuevo el ancho de vianda me golpeó; además de otros avatares de la
+vida. Terminé usando un chroot de arch, sobre la viejísima instalación de debian
+en mi laptop Pentium 3 que ya estaba más que obsoleta. Todas mis aplicaciones,
+mi /home, etc&hellip; Eran un chroot de arch dentro de un debian desnudo. Corría i3 y
+levantaba con startx luego de entrar al chroot.</p>
+
+<p>Free BSD andaba por finales de la 9 y la 10 en el horno; si mal no recuerdo&hellip;
+Yo, me dedicaba a leer noticias y continuaba suscrito a la lista de freebsd en
+español; donde hacer top-posting se paga con la pena capital.</p>
+
+<p>Mientras tanto, perdía yo mi trabajo y paradógicamente recién adquiría una nueva
+laptop. Apostar por el recién abierto &ldquo;modelo de trabajo por cuenta propia&rdquo;; me
+costó perder mi empleo y quedarme sentado un buen rato. Instalé ArchLinux en la
+laptop nueva para conservar las configuraciones de la anterior. Para este
+entonces me consideraba usuario de archlinux &ldquo;por casualidad&rdquo;. Me soñaba como un
+feliz usuario de Fedora. Consideraba ya a Debian; única y expresamente una
+herramienta para servidores.</p>
+
+<p>A todas esas: ¿¿¿FreeBSD??? Relegado a: &ldquo;proyecto para cuando tenga tiempo&rdquo;</p>
+
+<p>El período más jodido de mi vida estaba aconteciendo en ese momento. No voy a
+escribir aquí mis problemas personales; pero hasta sin donde vivir me quedé. Por
+tanto, el único producto que podía ofrecer eran servidores con debian. A
+mediados del 2014, arranqué en el calixto, pero el ancho de vianda seguía siendo
+un problema; también el tema de la cuota. ¿¿FreeBSD?? Simplemente olvidado hasta
+entonces.</p>
+
+<p>A finales del 2016, me trajeron el servidor de gama media para remplazar el
+totem de servidores. Además, habían ampliado el susodicho ancho de vianda. Fue
+entonces cuando decidí, que el nuevo proxy, no podía quedarse mariado como le
+pasa al squid en linux; muchísimo menos con el micro tan poco potente del
+servidor (gama media).</p>
+
+<p>Para mi sopresa, FreeBSD andaba por la 11 (yo lo hacía por la 10 todavía) por lo
+lento que se desarrolla; el pobre. Ahora estoy muy contento con mi
+squid+squidGuard sobre FreeBSD 11. Que si bien también se marea, lo hace
+bastante poco y se recupera rápido.</p>
+
+<p>Por lo que veo ya no son tan retrógrados como antes; han mejorado mucho en ese
+aspecto, aunque siguen siendo una mirada al futuro desde el pasado. Mantienen la
+onda chea reflejada en su configuración; pero todo bien afinado, fresco y
+modernizado.</p>
+
+<p>Dejaron de ser retrógrados para convertirse en modernos pero anticuados.</p>
+
+<p>FreeBSD es un buen sistema operativo para los enemigos de systemd.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[animación del palito]]></title>
@@ -360,7 +818,7 @@ pronto.</p>
     <updated>2017-01-02T18:55:02-05:00</updated>
     <id>http://uranio-235.github.io/blog/2017/01/02/rails-assets</id>
     <content type="html"><![CDATA[<p>Gemas como twitter-bootstrap-rails, hacen que el trabajo con CSS complejas
-supuestamente se haga al click. Pero cuando deseas ir un poco más allá, por
+supuestamente se haga &ldquo;al click&rdquo;. Pero cuando deseas ir un poco más allá, por
 ejemplo, si quieres DataTables, notarás que tienes dos opciones, la primera,
 usar una gema desfasada (si hay, que casi siempre la hay, aunque buena para
 nada).</p>
@@ -377,11 +835,17 @@ automatizada en una gema de rails.</p>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span>  <span class="s1">&#39;https://rails-assets.org&#39;</span> <span class="k">do</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-bootstrap&#39;</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-underscore&#39;</span>
 </span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-DataTables&#39;</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-bootstrap&#39;</span>
 </span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-jquery-ui&#39;</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-stringjs&#39;</span>
 </span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-iCheck&#39;</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-jquery&#39;</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -394,7 +858,8 @@ una de las assets. Casi siempre es algo genérico al nombre, lo puedes intuir.</
 
 <p>De todas maneras, el fracasado proyecto de crear un jquery unobstructive;
 condujo a que jquery fuera expulsada del core de rails. Así que al parecer la
-tendencia de rails 5 en adelante, será usar las js aparte.</p>
+tendencia de rails 5 en adelante, será usar las js aparte. Más vale tener un
+buen jquery a mano.</p>
 ]]></content>
   </entry>
   
@@ -1510,474 +1975,6 @@ a los dominios virtuales @otro.tudominio.cu será almacenado en /var/mail/otro</
 
 
 <p>OJO no olvides que en <strong>mydestination</strong> y debes incluir ambos dominios virtuales.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[túnel 6in4]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/10/22/tunel-6in4/"/>
-    <updated>2016-10-22T03:18:11-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/10/22/tunel-6in4</id>
-    <content type="html"><![CDATA[<p>Típico: Quiero darle cumplimiento a la resolución 185/2016, pero mi proveedor
-no me ha dado una ipv6</p>
-
-<p>¿Tienes una ipv4 pública? Felicidades, puedes jugar con ipv6</p>
-
-<p>Existe una tecnología transisional poco recomendada que se conoce como <a href="https://es.wikipedia.org/wiki/6to4?">6in4</a>,
-consiste en levantar un túnel especial que te permite hacerte con un rango ipv6
-pa jugar y comer mierda, porque no es ipv6 puro. Supuestamente internet debe
-tener servididores que hagan relay hacia ipv6 real pero hoy en día son cada vez
-menos.</p>
-
-<p>y ahora un mensaje:</p>
-
-<p>Si bien <em>Hurricane Electric</em> provee <a href="http://tunnelbroker.net/">túneles</a>, siendo
-esto una solución PERFECTA; hay que tener en cuenta que: No se con que cuchara
-etecsa se coma eso.</p>
-
-<p>Pero volviendo al tema:</p>
-
-<p>Las grandes redes dual-stack como google y facebook, tiene sus 6in4 bien
-afinaditos, así que a través de un 6in4 puedes perfectamente llegar a ellos.
-En otros tiempo, esta solución me pinchó finísimo pero recientemente no la he
-probado.</p>
-
-<p>Digamos que tu ip pública es <strong>220.110.12.190</strong> Calculamos la ipv6 que te toca:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>   ipv6calc --quiet --action conv6to4 220.110.12.190
-</span><span class='line'>2002:dc6e:cbe::
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Digamos que devolvió el prefijo <strong>2002:dc6e:cbe::</strong> Ese será nuestro prefijo, para
-meter cuantas direcciones querramos.</p>
-
-<figure class='code'><figcaption><span>&#8220;creando el túnel&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip tunnel add tun6to4 mode sit ttl <span class="m">255</span> remote any <span class="nb">local </span>10.0.0.1
-</span><span class='line'>ip link <span class="nb">set </span>tun6to4 up
-</span><span class='line'>ip -6 addr add 2002:dc6e:cbe::1/16 dev tun6to4
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Una vez levantada la interfaze, levantamos una puerta de enlace que saque todas
-las direcciones ipv6 del túnel que traduce las ipv4:</p>
-
-<figure class='code'><figcaption><span>&#8220;ruta&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -6 route add 2000::/3 via ::192.88.99.1 dev tun6to4 metric 1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Nota que la dirección ::192.88.99.1 es así de palo, es una ruta especial que da
-lugar al túnel 6in4.</p>
-
-<p>Ahora, asignamos la primera dirección ipv6 a la interfaz pública (eth0):</p>
-
-<figure class='code'><figcaption><span>&#8220;ip a&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -6 addr add 2002:dc6e:cbe::cafe/64 dev eth0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A la interfaz de la LAN (eth1) le asignamos una ip también, pero le decimos que
-::cafe es la puerta de enlace predeterminada. En su momento, el servidor con
-debian me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/network/interfaces&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># la asignamos a la publica una ipv6</span>
-</span><span class='line'>iface eth0 inet6 static
-</span><span class='line'>        address 2002:a00:1::cafe
-</span><span class='line'>        netmask 64
-</span><span class='line'>
-</span><span class='line'><span class="c"># y la interfaz de la LAN se asignamos otra</span>
-</span><span class='line'><span class="c"># pero ::cafe será la puerta de enlace</span>
-</span><span class='line'>iface eth1 inet6 static
-</span><span class='line'>        address 2002:a00:1:21c:c0ff:feb2:91c2
-</span><span class='line'>        netmask 64
-</span><span class='line'>        gateway 2002:a00:1::cafe
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En la entrada anterior vimos como usar el forward y como habilitarlo.
-Recuerdas?</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[cortafuegos ipv6 sencillo]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/10/22/cortafuegos-ipv6-sencillo/"/>
-    <updated>2016-10-22T02:56:00-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/10/22/cortafuegos-ipv6-sencillo</id>
-    <content type="html"><![CDATA[<p>En entradas anteriores mencionábamos la necesidad urgente de un cortafuegos para
-ipv6. Aquí les va uno hipotético y sencillo:</p>
-
-<p>Sean:</p>
-
-<ul>
-<li>la red 2001:db8:: /64</li>
-<li>eth0 interfaz de cara al enlace</li>
-<li>eth1 interfaz de cara a la LAN</li>
-<li>2001:db8::1 servidor DNS</li>
-<li>2001:db8::2 servidor de correo</li>
-</ul>
-
-
-<figure class='code'><figcaption><span>&#8220;firewall ipv6&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># al piedra angular</span>
-</span><span class='line'>ip6tables -A INPUT   -m state --state RELATED,ESTABLISHED -j ACCEPT
-</span><span class='line'>ip6tables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
-</span><span class='line'>
-</span><span class='line'><span class="c"># nuestro ruter no tiene ningún servicio corriendo</span>
-</span><span class='line'><span class="c"># así que no permitimos nada pa adentro</span>
-</span><span class='line'>ip6tables -A INPUT -j DROP
-</span><span class='line'>
-</span><span class='line'><span class="c"># el forward desde internet hacia la LAN va descartado</span>
-</span><span class='line'>ip6tables -A FORWARD -i eth0 -o eth1 -j DROP
-</span><span class='line'>
-</span><span class='line'><span class="c"># permitimos que las máquinas en la LAN vean los sitios web de internet</span>
-</span><span class='line'>ip6tables -A FORWARD -i eth1 -o eth0 -p tcp --dport <span class="m">80</span>  -j ACCEPT
-</span><span class='line'>ip6tables -A FORWARD -i eth1 -o eth0 -p tcp --dport <span class="m">443</span> -j ACCEPT
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="c"># al servidor DNS le permitimos que encueste a otros servidores dns</span>
-</span><span class='line'><span class="c"># nuestro servidor dns es un servidor de cache, para la LAN. Dice:</span>
-</span><span class='line'><span class="c"># lo que venga por la lan, a salir por el enlace, proveniente del servidor DNS</span>
-</span><span class='line'><span class="c"># y además, cuto puerto de destino sea el 53, permítelo</span>
-</span><span class='line'>ip6tables -A FORWARD -i eth1 -o eth0 -p udp --dport <span class="m">53</span> -s 2001:db8::01 -j ACCEPT
-</span><span class='line'>ip6tables -A FORWARD -i eth1 -o eth0 -p tcp --dport <span class="m">53</span> -s 2001:db8::01 -j ACCEPT
-</span><span class='line'>
-</span><span class='line'><span class="c"># permitimos que el servidor de correo sea visible desde afuera</span>
-</span><span class='line'><span class="c"># lo que venga, de afuera, pa adentro, protocolo tcp del puerto tal</span>
-</span><span class='line'><span class="c"># y como destino sea la ip del servidor de correo, permítelo</span>
-</span><span class='line'>ip6tables -A FORWARD -i eth0 -o eth1 -p tcp --dport <span class="m">25</span>  -d 2001:db8::2 -j ACCEPT
-</span><span class='line'>ip6tables -A FORWARD -i eth0 -o eth1 -p tcp --dport <span class="m">80</span>  -d 2001:db8::2 -j ACCEPT
-</span><span class='line'>ip6tables -A FORWARD -i eth0 -o eth1 -p tcp --dport <span class="m">110</span> -d 2001:db8::2 -j ACCEPT
-</span><span class='line'>
-</span><span class='line'><span class="c"># el resto del tráfico proveniente de la LAN hacia internet, le hacemos reject</span>
-</span><span class='line'><span class="c"># esto evita que los teléfonos no se queden locos intentando buscar salida</span>
-</span><span class='line'>ip6tables -A FORWARD -i eth1 -o eth0 -j REJECT
-</span><span class='line'>
-</span><span class='line'><span class="c"># el resto del tráfico que venga de internet, le hacemos DROP</span>
-</span><span class='line'>ip6tables -A FORWARD -i eth0 -o eth1 -j DROP
-</span><span class='line'>
-</span><span class='line'><span class="c"># habilita el forward</span>
-</span><span class='line'>sysctl net.ipv6.conf.all.forwarding<span class="o">=</span>1
-</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[las reglas del juego ipv6]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/10/22/poniendo-direcciones-ipv6/"/>
-    <updated>2016-10-22T01:17:30-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/10/22/poniendo-direcciones-ipv6</id>
-    <content type="html"><![CDATA[<p>   <blockquote><p>ipv4 se parece a ipv6, lo que las damas se parecen al ajedrez</p></blockquote></p>
-
-<p>Ambos juegos se desarrollan sobre un tablero de 64 casillas, moviendo fichas y
-comiéndose las del adversario. Pero sus fundamentos, aunque similares, no son
-iguales y para que hablar de las reglas.</p>
-
-<p>En la entrada anterior, comentaba los disparates primordiales que he ido viendo
-con respecto a ipv6. Aquí les dejo un básico sobre las reglas del juego con
-ipv6.</p>
-
-<h4>2001:db8:: NO ES UN RANGO USABLE</h4>
-
-<p>Realmente sí lo es, pero está reservado <strong>para documentación</strong> esto quiere
-decir que <strong>NO DEBE HABER UNA LAN CON ESTE RANGO</strong>.</p>
-
-<h4>¿Entonces la LAN y la pública?</h4>
-
-<p>En ipv6, las direcciones de la LAN, son parte de la pública. No existe una
-distinción real entre LAN o internet y sobre todo:</p>
-
-<p><strong>NO HAY NATEO!!!</strong></p>
-
-<p>Te delegarán un prefijo y tú tendrás suficientes ip como para asignarle un ip a
-cada partícula de polvo de tu oficina. Pero ojo:</p>
-
-<p><strong>esas ip serán visibles desde y hacia internet</strong></p>
-
-<p>Cada ip que delegues de tu prefijo, formará parte del ciberspacio. Visto de otra
-forma. Si asignas 2001:db8::aaa1 a una máquina en tu LAN, esa dirección será de
-facto, alcanzable desde internet (si tienes internet claro).</p>
-
-<p>Para lidiar con esta situación, deberás tener bien claro el forward en tu
-router.</p>
-
-<h3>pero yo no tengo una ipv6 real</h3>
-
-<p>No estés tan seguro&hellip; Si tienes una ipv4 pública, tienes algo parecido. Más
-adelante veremos como hacer un túnel 6in4, así que el prefijo de dirección más
-apropiado para tu LAN lo calcularás así:</p>
-
-<figure class='code'><figcaption><span>&#8220;ipv6calc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipv6calc --quiet --action conv6to4 tu.ipv4.publica.aqui
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Nota para los imbéciles: ¿¿Notaste lo que dice <strong>tu.ipv4.publica.aqui</strong>??</p>
-
-<p>Eso te devolverá algo como <strong>2002:a00:1::</strong> lo cual es prefijo 6in4 en base a la
-ipv4 pública de tu LAN. Ese será tu prefijo ipv6.</p>
-
-<p>Otra cosa: <strong>NO SE PONEN IP CORRIDAS</strong> como por ejemplo 2002:a00:1::1 y
-2002:a00:1::2 ya que una de las cosas que intenta evitar ipv6 es el escaneo de
-redes. Las ipv6 se calculan en base a la mac. Más tarde veremos como lo hace el
-protocolo SLAAC.</p>
-
-<p>A mi en lo personal, me gusta ponerle al ruter &ldquo;cafe&rdquo; <strong>2002:a00:1::cafe</strong> y un
-ejemplo mas creativo 2002:a00:1::caba110 (caballo) así cada servidor tendría un
-nombre: cafe, caba110, ada, ded0, dad0, 1ce, a5ado</p>
-
-<p>Por cierto, los 0 a la izquierda, se descartan</p>
-
-<p>2002:a00:1::<strong>000</strong>1 es la misma dirección que 2002:a00:1::1 y de echo, es mucho más
-largo, porque tiene una pila de 0 por medio, pero así se expresa de manera más
-corta. Incluso así puede hacer ping y cualquier referencia a la dirección que el
-stack ipv6 se encarga de comprimirla y descomprimirla, sepa usted.</p>
-
-<p>Note que en <strong>a00</strong> sí se ponen los ceros, porque <strong>NO</strong> están a la izquierda.</p>
-
-<h3>Entonces el Forward</h3>
-
-<p>El forward de un cortafuegos será lo que controla que será visible dentro de tu
-LAN. La puerta de enlace decide qué será visible o no. Más adelante veremos un
-firewall ipv6 lo más sencillo posible. Usaremos ip6tables.</p>
-
-<h3>¿y el dhcp?</h3>
-
-<p>Hay servidores dhcp para ipv6, pero el mecanismo bacán es SLAAC. Te adelanto que
-dnsmasq tiene SLAAC, pero el pro, es <strong>radvd</strong></p>
-
-<p>Una configuración de radvd típica se ve así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/radvd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='C'><span class='line'><span class="n">interface</span> <span class="n">eth1</span> <span class="p">{</span>
-</span><span class='line'>     <span class="n">AdvSendAdvert</span> <span class="n">on</span><span class="p">;</span>
-</span><span class='line'>     <span class="n">MinRtrAdvInterval</span> <span class="mi">3</span><span class="p">;</span>
-</span><span class='line'>     <span class="n">MaxRtrAdvInterval</span> <span class="mi">10</span><span class="p">;</span>
-</span><span class='line'>     <span class="n">prefix</span> <span class="o">::/</span><span class="mi">64</span> <span class="p">{</span>
-</span><span class='line'>            <span class="n">AdvOnLink</span> <span class="n">on</span><span class="p">;</span>
-</span><span class='line'>            <span class="n">AdvAutonomous</span> <span class="n">on</span><span class="p">;</span>
-</span><span class='line'>            <span class="n">AdvRouterAddr</span> <span class="n">on</span><span class="p">;</span>
-</span><span class='line'>     <span class="p">};</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como vez, no especificas que rango de ip darás ni cosa parecida. El rango que
-darás, será del mismo prefijo que tiene en la interfaz eth1 (en este caso).</p>
-
-<h3>¿qué son las direcciones ff02 y fe80?</h3>
-
-<p>Son direcciones link-local. En ipv6, hay direcciones del tipo &ldquo;multicast&rdquo; cuyo
-destino serán todas las ip que estén dislocadas en la red. Esto no debe
-confundirse con anycast y vale aclarar que en ipv6 NO EXISTE broadcast.</p>
-
-<figure class='code'><figcaption><span>&#8220;ping multicast&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># ping ff02::1%wlp2s0</span>
-</span><span class='line'>PING ff02::1%wlp2s0<span class="o">(</span>ff02::1%wlp2s0<span class="o">)</span> <span class="m">56</span> data bytes
-</span><span class='line'><span class="m">64</span> bytes from fe80::420e:85ff:fe7a:e6d7%wlp2s0: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">17</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span><span class="m">112</span> ms
-</span><span class='line'><span class="m">64</span> bytes from fe80::420e:85ff:fe7a:e6d7%wlp2s0: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">18</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>7.42 ms
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Eso hará le hará ping a malanga y puesto de vianda que tengan un
-<a href="https://es.wikipedia.org/wiki/Direcci%C3%B3n_de_Enlace-Local">link-local</a> en la
-red que tiene conectado el cable de eth0.</p>
-
-<p>Sin embargo, al hacer ping a <strong>ff02::2</strong> solo responderán aquellas ipv6 que sean
-<strong>routers</strong>. Eso es una manera de saber quien es un router o simplemente si hay
-alguno.</p>
-
-<p>Las direcciones <strong>fe80::</strong> son enlaces locales. Podría decirse que las
-direcciones fe80 son como decir &ldquo;arp&rdquo; pero se les puede hacer ping y otras
-boberías. O sea, es de palo tener direcciones fe80:: aparte de las globales.</p>
-
-<h4>¿y dnsmasq?</h4>
-
-<p>Ese es otro que bien baila y con cualquier música. Tiene un SLAAC implementado
-que es una maravilla. Al parámetro <strong>dhcp-range</strong> se le mandan unas clásulas
-especiales que hacen maravillas. La que más me gusta es <strong>ra-names</strong> que asigna
-una ip y un registro AAAA para máquina.</p>
-
-<h4>que bolá con bind?</h4>
-
-<p>Los registros del tipo AAAA resuelven punteros address para direcciones ipv6.</p>
-
-<p>Sean:</p>
-
-<ul>
-<li> ns01 el nombre del servidor</li>
-<li> ns01 registro A con ip 192.168.0.1</li>
-<li> ns01 registro AAAA con ip 2001:db8::cafe</li>
-<li> proxy registro CNAME que apunta a ns01</li>
-</ul>
-
-
-<p>Cuando preguntes por la ipv6 de proxy, resolverá 2001:db8::cafe, de esta manera,
-el sistema operativo preguntará simplemente por &ldquo;proxy&rdquo; y el DNS le resolverá
-ambas direcciones (4 y 6), la configuración de dichos stack, decidirá cual usar.</p>
-
-<p>Esto en bind se escribe así:</p>
-
-<figure class='code'><figcaption><span>&#8220;dominio.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="p">;</span> El <span class="m">1</span> el proxy
-</span><span class='line'>ns01         IN      A       192.168.0.1
-</span><span class='line'>ns01         IN      AAAA    2001:db8::cafe
-</span><span class='line'>             IN      MX  <span class="m">0</span>   ns01
-</span><span class='line'>ruter        IN      CNAME   ns01
-</span><span class='line'>proxy        IN      CNAME   ns01
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ejemplo vivo:</p>
-
-<figure class='code'><figcaption><span>&#8220;ping ipv6 a un CNAME&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>ping -6 proxy.hcg.sld.cu
-</span><span class='line'>PING proxy.hcg.sld.cu<span class="o">(</span>ns01 <span class="o">(</span>2002:c9dc:d582::cafe<span class="o">))</span> <span class="m">56</span> data bytes
-</span><span class='line'><span class="m">64</span> bytes from ns01 <span class="o">(</span>2002:c9dc:d582::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.100 ms
-</span><span class='line'><span class="m">64</span> bytes from ns01 <span class="o">(</span>2002:c9dc:d582::cafe<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">2</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.174 ms
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>¿Qué aprendimos?</h3>
-
-<ul>
-<li> 2001:db8:: es un rango reservado, no se usa</li>
-<li> ipv6 es complejo pero no complicado.</li>
-<li> hay un ip6tables aparte de iptables</li>
-<li> ipv6 NO necesita nateo</li>
-<li> que existen tecnologías transicionales como 6in4</li>
-<li> no es DHCP, si no RA y SLAAC</li>
-<li> no hay ARP, si no link-local</li>
-<li> los punteros AAAA funcionan igualito que los A</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[la resolución 185/2016]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/10/22/ipv6/"/>
-    <updated>2016-10-22T00:51:14-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/10/22/ipv6</id>
-    <content type="html"><![CDATA[<p>El otro día, me doy por enterado que que lanzaron la resolución 185/2016 nada
-menos que sobre la implementación de ipv6. Como todo en cuba; llega tarde pero
-bien recibido. Me reí muchísimo cuando la leí. No con la ley, si no imaginándome
-la puesta en vigor de la ley.</p>
-
-<p>Me imaginé:</p>
-
-<ul>
-<li>la gente poniendo ipv6 en su LAN con el prefijo 2001:db8::</li>
-<li>los cortafuegos sin configurar</li>
-<li>los que no leen preguntando como hacer un forward o un nateo</li>
-</ul>
-
-
-<p>Y la mierda estaba por llover, cuando vi mi vaticinio materializándose ante mis
-ojos.</p>
-
-<h3>Podría ser este tu caso</h3>
-
-<p>Luego de entablar un diálogo técnico, una persona a la que consideraba buena en
-este asunto de los servidores y redes, me dice que implementó ipv6 hace como un
-mes, pero que tenía &ldquo;un problema&rdquo;, ya que no lograba hacer un NAT para que el
-servidor de correo dentro de la LAN, recibiera los correos desde afuera.</p>
-
-<p>Cuando le dije que me mandara su cortafuegos, me dijo que no tenía un
-cortafuegos aún para ipv6.</p>
-
-<p>Me insistió que por favor le explicara <strong>cómo hacer el singao nateo</strong>.</p>
-
-<p>Le pedí que me mostrara como tenía ipv6 desplegado y me dijo que la puerta de
-enlace era 2001:db8::1 y el servidor de correo ::2</p>
-
-<p>Llegado a ese punto, lo mandé a fumarse un peo, pero volvió a llamar; pasando
-por alto el collar de insultos que le había puesto antes de tirar el teléfono.</p>
-
-<h3>Sobre el &ldquo;nateo de ipv6&rdquo;</h3>
-
-<p><strong>ipv6 NO lleva nateo. El nateo fue una solución que mandó a la mierda ipv6</strong></p>
-
-<p>Si tienes una ip pública con máscara /64 es visible desde y hacia internet. O
-sea, que si tu servidor de correo tiene una dirección como 2001:db8::2/64 <strong>YA
-ES VISIBLE EN INTERNET</strong> y si no tienen cortafuegos pinguísimo <strong>aprepárate</strong>.</p>
-
-<p>Más detalles en la siguiente entrada&hellip;</p>
 ]]></content>
   </entry>
   

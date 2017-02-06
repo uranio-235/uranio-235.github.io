@@ -9,8 +9,7 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="animación del palito 21/01/2017 12:47 pm | Comments Por si se me olvida, porque lo he olvidado varias veces. En ocasiones, queremos
-hacer una simple &hellip;">
+  <meta name="description" content="a las puertas del 3g 05/02/2017 9:24 pm | Comments Oficialmente, han anunciado en la mesa redonda que se proveerá internet por 3G. La noticia me &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +81,564 @@ hacer una simple &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-02-05T21:24:40-05:00'><span class='date'>05/02/2017</span> <span class='time'>9:24 pm</span></time>
+        
+           | <a href="/blog/2017/02/05/a-las-puertas-del-3g/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/02/05/a-las-puertas-del-3g/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Oficialmente, han anunciado en la mesa redonda que se proveerá internet por 3G.</p>
+
+<p>La noticia me impactó bastante y supongo que todo el que se haga llamar
+&ldquo;administrador de red&rdquo; (en Cuba) se halla sentido conmovido.</p>
+
+<p>A partir de ese día no llevaremos más sobre nuestros hombros la ardua tarea de
+proveerle internet a una sociedad desconectada. La penosa tarea de explicarle a
+los usuarios porque fulano sí y tú no. Con ello, nuestra importancia actual en
+marcos laborales; se verá considerablemente reducida. Ya no seremos las
+fantásticas criaturas con acceso a internet, si no, un simple operario más (como
+somos en el mundo entero). Imagino (y espero) que los proxy pasen a ser una
+segunda prioridad. El uso de internet en las empresas, por fin, será para
+aquello que realmente fue concebido y no para proveerle facebook a cuatro vacas
+sagradas.</p>
+
+<p>La introducción de la 3G en cuba, será un cambio. Todos debemos estar preparados
+para afrontar este cambio; no solo desde el punto de vista tecnológico, si no
+también social y psicológico. Si dios quiere y todo sale a pedir de boca,
+caeremos de sopetón y recién llegados; a un mundo donde el internet, ya es algo
+cotidiano. Todos NO están preparados para esto, en especial, aquellos que tienen
+canas y teléfonos modernos.</p>
+
+<p>Si bien, las tarifas siguen siendo un misterio por resolver, este es un momento
+en que no hay lugar para el pesimismo. Nuestro país está haciendo un esfuerzo
+sin precedentes (al menos en ese aspecto) y nosotros, esperamos lo mejor. hay
+mucho optimismo y la gente habla del tema con brillo en lo ojos. Esperamos que
+esto se materialize y no se convierta en un vaporware. Por otra parte, muchas
+personas tienen la expectativa muy alta; en especial aquellas que han viajado y
+conocen el 4g. Esto podría dar lugar a disgustos y desilusiones en aquellas
+personas que tienen las expectativas muy altas. Yo solo espero, poder tener
+internet en mi bolsillo con el salario que me gano.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/02/05/dns-con-vistas/">dns con vistas</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-02-05T18:57:26-05:00'><span class='date'>05/02/2017</span> <span class='time'>6:57 pm</span></time>
+        
+           | <a href="/blog/2017/02/05/dns-con-vistas/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/02/05/dns-con-vistas/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Que lindo corre bind9 en alpine linux. Ahora que mis servidores están todo en el
+pool de xenserver (los reyes magos me trajeron un servidor pro) tengo un nuevo
+problema. Dentro de la red interna de xen, los servidores tienen una ip
+distinta. Por ejemplo, para todo el mundo, el alpine linux que hace de router,
+es 192.168.0.1, pero para los servidores, es 169.254.0.10</p>
+
+<p>Además, el forward para infomed, es un privilegio que solo los servidores
+tienen. Por tanto, lo más seguro, será usar una zona para la LAN y otra para la
+red interna del pool.</p>
+
+<p>Esto me recuerda las DMZ, pero no es lo mismo, porque no estoy creando cuellos
+de botella. La red interna del pool es una vif, que funciona sin emitir
+tráfico real por alguna pif.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/bind/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>// vim:set <span class="nv">ts</span><span class="o">=</span><span class="m">4</span> <span class="nv">sw</span><span class="o">=</span><span class="m">4</span> et:
+</span><span class='line'>
+</span><span class='line'>options <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>   directory <span class="s2">&quot;/etc/bind/&quot;</span><span class="p">;</span>
+</span><span class='line'>   pid-file <span class="s2">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
+</span><span class='line'>   listen-on-v6 <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   listen-on <span class="o">{</span> 169.254.0.0/16<span class="p">;</span> localhost<span class="p">;</span> 192.168.1.0/24<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   allow-transfer <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   allow-update <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   version none<span class="p">;</span>
+</span><span class='line'>   hostname none<span class="p">;</span>
+</span><span class='line'>   server-id none<span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   // los servidores hacen recursion
+</span><span class='line'>   allow-recursion <span class="o">{</span> 169.254.0.0/16<span class="p">;</span> localhost<span class="p">;</span><span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   recursion yes<span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>view lan  <span class="o">{</span> // la red LAN
+</span><span class='line'>
+</span><span class='line'>   match-clients <span class="o">{</span>192.168.1.0/24<span class="p">;</span><span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   zone <span class="s2">&quot;localhost&quot;</span> IN <span class="o">{</span>
+</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
+</span><span class='line'>      file <span class="s2">&quot;localhost.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   zone <span class="s2">&quot;hcg.sld.cu&quot;</span> IN <span class="o">{</span>
+</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
+</span><span class='line'>      file <span class="s2">&quot;hcg.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      notify no<span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   zone <span class="s2">&quot;.&quot;</span> <span class="o">{</span>
+</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
+</span><span class='line'>      file <span class="s2">&quot;fakeroot.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span><span class="p">;</span> // view lan
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>view xen <span class="o">{</span> // la red interna de XenServer
+</span><span class='line'>
+</span><span class='line'>   match-clients <span class="o">{</span>169.254.0.0/16<span class="p">;</span> localhost<span class="p">;</span><span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   zone <span class="s2">&quot;localhost&quot;</span> IN <span class="o">{</span>
+</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
+</span><span class='line'>      file <span class="s2">&quot;localhost.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   zone <span class="s2">&quot;xen&quot;</span> IN <span class="o">{</span>
+</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
+</span><span class='line'>      file <span class="s2">&quot;xen.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      notify no<span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   zone <span class="s2">&quot;hcg.sld.cu&quot;</span> IN <span class="o">{</span>
+</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
+</span><span class='line'>      file <span class="s2">&quot;hcg.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      notify no<span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   zone <span class="s2">&quot;sld.cu&quot;</span> <span class="o">{</span>
+</span><span class='line'>      forwarders <span class="o">{</span> 201.220.222.131<span class="p">;</span> 201.220.222.132<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>      <span class="nb">type </span>forward<span class="p">;</span>
+</span><span class='line'>      forward only<span class="p">;</span>
+</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span><span class="p">;</span> // view xen
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ven, cree el dominio &ldquo;.xen&rdquo; que solo será visible a la red interna del
+pool. La zona &ldquo;hcg.sld.cu&rdquo; también será visible para los servidores ya que estos
+tienen una pata en la LAN; a esto suele llamarse &ldquo;shared zone&rdquo; (zona
+compartida). Finalmente, la zona &ldquo;sld.cu&rdquo; (debajo de hcg) es una zona forward en
+la vista de la interfaz interna.</p>
+
+<p>El host proxy.hcg.sld.cu resolverá una ip de la lan; de esta misma manera, el
+host proxy.xen, resolverá la ip de dicho host, pero dentro de la red interna del
+pool.</p>
+
+<p><strong>¿y por qué?</strong></p>
+
+<p>Por que esta menera, solo los servidores (a través de la red del pool), harán
+forward. Por ejemplo, el servidor de correo, podrá enviar y recibir su correo
+multipop, ya que el alpine que está haciendo como router, permite forward desde
+la red del pool hacia la WAN; o sea, todos los servidores, ven a la WAN. Es
+obligaría al servidor de correo, a usar el dns de infomed para resolver
+direcciones de infomed y el servidor local para resolver las direcciones de la
+LAN, lo cual funciona de asco. Sin embargo, la vista del pool tiene una zona
+forward. Cabe destacar, que una zona forward y un fakeroot, no se por qué; hace
+que ninguna pinche.</p>
+
+<p>Sensillo y seguro.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/02/01/ipfw-simple-y-consiso/">ipfw simple y conciso</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-02-01T23:15:47-05:00'><span class='date'>01/02/2017</span> <span class='time'>11:15 pm</span></time>
+        
+           | <a href="/blog/2017/02/01/ipfw-simple-y-consiso/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/02/01/ipfw-simple-y-consiso/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Las instrucciones para hacer un cortafuegos realmente <strong>SIMPLE</strong> y la vez
+funcional (statefull firewall) con ipfw; simplemente no existe, al menos de
+manera oficial. El cortafuegos ejemplificado en el handbook es bastante
+complejo. Cosas como pasar los paquetes de conexiones relacionadas, hacer drop o
+&ldquo;reiniciar el cortafuegos&rdquo;, no se tomaron la molestia de documentarlas &ldquo;bien&rdquo;.
+Otras cosas como el filtrado por mac address, simplemente no funciona; a menos
+que hagas un ritual previo que NO está documentado en el man.</p>
+
+<p>Para empezar, el módulo debe ser cargado en el kernel, así que inicializaremos
+ipfw como si fuera un demonio más del sistema. Esto quiere decir que lo
+añadiremos al <strong>/etc/rc.conf</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/rc.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="nv">firewall_enable</span><span class="o">=</span><span class="s2">&quot;YES&quot;</span>
+</span><span class='line'> <span class="nv">firewall_type</span><span class="o">=</span><span class="s2">&quot;/usr/local/etc/ipfw.rules&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La <a href="https://www.freebsd.org/doc/handbook/firewalls-ipfw.html">documentación oficial</a> aclara que
+los firewall pueden ser (además) del tipo: open, client, simple, closed o
+UNKNOWN. Sin embargo, <strong>en mi opinión</strong> estas configuraciones prefabricadas, no
+son suficiente para un servidor (por ejemplo proxy).</p>
+
+<p>Para mantener la armonía chea y anticuada de freebsd; colocamos el cortafuegos
+en el /etc dentro /usr/local/. Ten en cuenta que casi todas las aplicaciones que
+instales, tendrán su /etc ahí.</p>
+
+<p>Reiniciar ipfw no es tan jamón como un usuario de iptables haría. Hacer un flush
+de las reglas, significa quedarse trancado y perder la conexión por ssh. Para
+reiniciar el cortafuegos, deberás tener un script que haga flush y además,
+reiniciar el servicio. Este scriptsito me lo hice para la faena de toquetear el
+cortafuegos</p>
+
+<figure class='code'><figcaption><span>&#8220;/usr/local/bin/reiniciar_ipfw.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/csh</span>
+</span><span class='line'>service ipfw stop
+</span><span class='line'>ipfw -q flush
+</span><span class='line'>service ipfw start
+</span><span class='line'>ipfw show
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>La documentación oficial (y otras muchas) indican que cada regla se cree
+enumerada y que bebes mantener esta numeración manualmente. Sin embargo, esto no
+es estrictamente necesario. Cada regla incrementará el número de una manera
+automáticamente curiosa.</p>
+
+<p>Veamos pues un <strong>ipfw.rules</strong> bien básico. La interfaz <strong>lo0</strong> es el localhost.
+La interfaz xn0 es la WAN y xn1 es la LAN.</p>
+
+<figure class='code'><figcaption><span>&#8220;ipfw.rules&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># para afuera todo</span>
+</span><span class='line'>ipfw -q add allow all from any to any out
+</span><span class='line'>
+</span><span class='line'><span class="c"># permite todo por el localhost</span>
+</span><span class='line'>ipfw -q add allow all from any to any via lo0
+</span><span class='line'>
+</span><span class='line'><span class="c"># las conexiones que ya estén iniciadas, tíralas</span>
+</span><span class='line'>ipfw -q add check-state
+</span><span class='line'>ipfw -q add allow tcp from any to any established
+</span><span class='line'>ipfw -q add allow all from any to any out keep-state
+</span><span class='line'>
+</span><span class='line'><span class="c"># permite que te hagan ping desde la LAN con la ip</span>
+</span><span class='line'>ipfw -q add allow icmp from 10.1.1.0/24 to any via xn1
+</span><span class='line'>
+</span><span class='line'><span class="c"># permite que accedan al proxy desde la LAN</span>
+</span><span class='line'>ipfw -q add allow tcp from any to any dst-port <span class="m">3128</span> via xn1
+</span><span class='line'>
+</span><span class='line'><span class="c"># permite el servidor web pero solo deade la WAN</span>
+</span><span class='line'>ipfw -q add allow tcp from any to any dst-port <span class="m">80</span> via xn0
+</span><span class='line'>
+</span><span class='line'><span class="c"># descarta el resto</span>
+</span><span class='line'>ipfw -q add reset
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Veamos algunas características de este cortafuegos&hellip;</p>
+
+<p>La salida, por definición, está bloqueada. La primera regla; autoriza la salida
+del tráfico.</p>
+
+<p>La política por defecto del cortafuegos del tipo &ldquo;script&rdquo; es rechazar con icmp
+de vuelta. Lo que se conoce en iptables como REJECT. Por tanto, para que haga lo
+que en iptables sería DROP, debemos usar un action del tipo <strong>reset</strong>.</p>
+
+<p>Como ven, este cortafuegos no arranca haciendo flush como los de iptables. De
+hecho, hacer flush como primera linea puede causarte problemas muy serios. Por
+otro parte, reiniciar el cortafuegos sin hacer flush, provoca que se dupliquen
+las reglas.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/01/28/freebsd-11/">mis crónicas con freebsd</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-01-28T23:39:52-05:00'><span class='date'>28/01/2017</span> <span class='time'>11:39 pm</span></time>
+        
+           | <a href="/blog/2017/01/28/freebsd-11/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/28/freebsd-11/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Si vas a leer este artículo, te aviso, que no tiene nada que ver con el blog. Me
+dispongo a expresar mi criterio sobre FreeBSD y un tanto de como ha formado
+parte de mi vida profesional.</p>
+
+<p>   <blockquote><p>FreeBSD, tecnología arcana para algunos y arcaica para otros.</p></blockquote></p>
+
+<p>Se cuentan leyendas sobre FreeBSD, como que es el sistema operativo de los nodos
+y cosas así. Mucha gente lo tiene como un arcano o algo que probarán <em>un día de
+estos</em>. Yo pienso que no tiene nada del otro mundo. De hecho, en mi opinión,
+gentoo es más complicado que freebsd.</p>
+
+<p>Lo que si me queda claro que es un excelente sistema operativo para servidores
+proxy. Además, ipfw, su cortafuegos, es sólido como una piedra. En FreeBSD eso
+de caer de rodillas ante un ataque DoS, es simplemente utópico.</p>
+
+<p>En ambientes libres de proxy, el binomio dummynet-<a href="https://www.freebsd.org/doc/handbook/firewalls-ipfw.html">ipfw</a>
+permite un manejo del ancho de banda con una simpleza que ya quisiera <strong>tc</strong>. Un
+solo pipe puede tener valores diferentes para su ancho de banda, encolamiento y
+delay.</p>
+
+<p>Por otra parte, el sistema de <a href="https://www.freebsd.org/doc/handbook/jails.html">jails</a>
+es un batazo. Sobre todo en ambientes donde te ves obligado a meter la pata y no
+dispones de virtualización. Los jails combinado con ZFS, permiten hacer cosas
+alucinantes.</p>
+
+<p>El gestor de paquetes ha mejorado muchísimo. En cuanto a resolución de
+dependencias y velocidad. Lo han optimizado bastante en mi opinión y ahora
+maneja mejor el tema de las redes lentas.</p>
+
+<p>Cada versión nueva que sale la pruebo; y aunque había hecho mis cositas con él,
+siempre acababa dejándolo de lado por el tema del ancho de banda. Cualquier
+operación que hagas con la paquetería requiere conexión y poco ancho de banda
+provoca que la operación falle. La versión 9 en mi opinión fue un desastre.
+Especialmente por el sistema de ports que daba unos palos horribles.</p>
+
+<p>FreeBSD 10 no lo toqué, estuve más girado para OpenIndiana.</p>
+
+<p>Pero la versión 7 de OI parecía no terminar nunca. Finalmente el avión no
+despegó. El fiasco de nexenta store y la insertidumbre de oracle, golpearon
+fuertemente a la comunidad de OpenIndiana. El mundo se dio cuenta que OI tenía
+el futuro de un submarino descapotable y gran parte de la comunidad de illumos
+se mudó pa BSD. La comunidad de OpenIndiana se desmoronaba con las botas
+puestas. El agitado canal de freenode #openindiana se convirtió en un canal
+muerto. En lo personal, tras fracasar en mi afán por portar Ruby a OI, en parte
+debido a que no tengo ancho de banda para hacer operaciones en el Userland; alcé
+bandera blanca también.</p>
+
+<p>Pero como soy Linuxero! Volví a poner mis servidores en debian y comencé a mirar
+a fedora. De nuevo el ancho de vianda me golpeó; además de otros avatares de la
+vida. Terminé usando un chroot de arch, sobre la viejísima instalación de debian
+en mi laptop Pentium 3 que ya estaba más que obsoleta. Todas mis aplicaciones,
+mi /home, etc&hellip; Eran un chroot de arch dentro de un debian desnudo. Corría i3 y
+levantaba con startx luego de entrar al chroot.</p>
+
+<p>Free BSD andaba por finales de la 9 y la 10 en el horno; si mal no recuerdo&hellip;
+Yo, me dedicaba a leer noticias y continuaba suscrito a la lista de freebsd en
+español; donde hacer top-posting se paga con la pena capital.</p>
+
+<p>Mientras tanto, perdía yo mi trabajo y paradógicamente recién adquiría una nueva
+laptop. Apostar por el recién abierto &ldquo;modelo de trabajo por cuenta propia&rdquo;; me
+costó perder mi empleo y quedarme sentado un buen rato. Instalé ArchLinux en la
+laptop nueva para conservar las configuraciones de la anterior. Para este
+entonces me consideraba usuario de archlinux &ldquo;por casualidad&rdquo;. Me soñaba como un
+feliz usuario de Fedora. Consideraba ya a Debian; única y expresamente una
+herramienta para servidores.</p>
+
+<p>A todas esas: ¿¿¿FreeBSD??? Relegado a: &ldquo;proyecto para cuando tenga tiempo&rdquo;</p>
+
+<p>El período más jodido de mi vida estaba aconteciendo en ese momento. No voy a
+escribir aquí mis problemas personales; pero hasta sin donde vivir me quedé. Por
+tanto, el único producto que podía ofrecer eran servidores con debian. A
+mediados del 2014, arranqué en el calixto, pero el ancho de vianda seguía siendo
+un problema; también el tema de la cuota. ¿¿FreeBSD?? Simplemente olvidado hasta
+entonces.</p>
+
+<p>A finales del 2016, me trajeron el servidor de gama media para remplazar el
+totem de servidores. Además, habían ampliado el susodicho ancho de vianda. Fue
+entonces cuando decidí, que el nuevo proxy, no podía quedarse mariado como le
+pasa al squid en linux; muchísimo menos con el micro tan poco potente del
+servidor (gama media).</p>
+
+<p>Para mi sopresa, FreeBSD andaba por la 11 (yo lo hacía por la 10 todavía) por lo
+lento que se desarrolla; el pobre. Ahora estoy muy contento con mi
+squid+squidGuard sobre FreeBSD 11. Que si bien también se marea, lo hace
+bastante poco y se recupera rápido.</p>
+
+<p>Por lo que veo ya no son tan retrógrados como antes; han mejorado mucho en ese
+aspecto, aunque siguen siendo una mirada al futuro desde el pasado. Mantienen la
+onda chea reflejada en su configuración; pero todo bien afinado, fresco y
+modernizado.</p>
+
+<p>Dejaron de ser retrógrados para convertirse en modernos pero anticuados.</p>
+
+<p>FreeBSD es un buen sistema operativo para los enemigos de systemd.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -162,7 +719,7 @@ el compilador suele interpretarlo como que estás escapando la comilla simple.</
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -274,474 +831,7 @@ buen desarrollador de rails, sabe que lo correcto sería usar la in API de i18n.
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/09/tendencias-tecnologicas/">tendencias tecnológicas</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-09T21:04:02-05:00'><span class='date'>09/01/2017</span> <span class='time'>9:04 pm</span></time>
-        
-           | <a href="/blog/2017/01/09/tendencias-tecnologicas/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/09/tendencias-tecnologicas/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="right" src="/images/bandwagon.jpg" width="400" height="500" title="" ></p>
-
-<p>Por suerte, la era de Zentyal está a punto de terminar.</p>
-
-<p>Ahora tenemos tocadores de pfSense, que se creen usuarios de FreeBSD.</p>
-
-<p>Siempre me ha maravillado el criterio de selección tecnológica de la mayoría (NO
-todos) los cubanos</p>
-
-<h4>puro efecto bandwagon</h4>
-
-<p>Funciona como especie de moda, donde el software más popular triunfa,
-simplemente por su popularidad, no por su adecuación, o idoneidad.</p>
-
-<p>Por ejemplo, nginx se puso de moda, porque el jovenclub lo usa. El jovenclub es
-famoso por sus disparates tecnológicos, pero no importa. ¡Usemos nginx! Antes yo
-usaba nginx, como proxy inverso, balanceo de carga y servidor web de contenido
-estático. Entonces yo era &ldquo;un extravagante&rdquo;. Ahora todo el mundo usa nginx para
-TODO. Tipos que AYER tocaron la puntica de nginx, te dicen: &ldquo;¿aún usas apache?&rdquo;
-y te miran como si tú fueras un bicho raro. Curiosamente, la misma mirada que
-ponían cuando les decías que usabas nginx (además de apache).</p>
-
-<p>Muchos dicen que &ldquo;systemd es una mierda&rdquo;, pero al preguntar &ldquo;por qué&rdquo;, son pocos
-los que dan argumentos técnicos que vallan más allá de simple resistencia al
-cambio. Parece no haber un término medio. Todo es blanco y negro. Nadie dice por
-ejemplo que systemd es bueno para máquinas de escritorios pero no tan bueno para
-servidores. NOOoo&hellip;</p>
-
-<p>Otro que bien baila es Proxmox. La herramienta de virtualización que ha caído en
-manos de los mas perezosos como dedo en el anillo. Al parecer soy el único
-cubano que usa Xen. Actualmente me dicen: &ldquo;ah! ¿no usas proxmox?&rdquo;. Pero cuando
-pregunto: ¿qué tiene proxmox superior a xen? Estoo, es queeee, veráaas,
-bueeenooo&hellip;. Nada, que está moda. La ecuación es simple:</p>
-
-<h4>Virtualización = Proxmox</h4>
-
-<p>click-click-click-click-click ¡<strong>ZAS</strong>! Todo está listo!!</p>
-
-<p>Dejaron de usar windows Server (click, click listo!)</p>
-
-<p>Para usar:</p>
-
-<p>Proxmox+Zimbra+pfSense (click, click ¡LISTO! ¡¡¡y además FUNCIONA!!)</p>
-
-<p>¿Cambio de paradigma? ¿Filosofía UNIX? ¿Estilo de trabajo? ¿Teorema de KISS?
-¿Software Libre? <em>-pfff, que chiste. Ese tipo está loco, anda con la pila de
-consolas que parecen salida de la matrix. Nerd!</em></p>
-
-<p>No saben que demonios es un cortafuegos, no son capaces de elaborar una solución
-a la medida de su problema y ni siquiera entienden el software que usan pero
-eso son nimiedades.</p>
-
-<p>Cuando las necesidades tan pecularies de cubita la bella dicen &ldquo;aquí estoy&rdquo;,
-entonces no saben como van a modificar el comportamiento del software para
-adecuarse a nuestras extravagantes necesidades. Por que hay cientos de menus con
-cientos de click y checkmarks, pero ninguna hace lo que le exigen al sysadmin
-cubano.</p>
-
-<p>El servidor de correos, es su mayor dolor de cabeza, pero hay Zimbra. A veces
-necesitan un servidor SIMPLE o un servidor COMPLEJO, nada que ver con Zimbra y
-bueno, prueba a ver si iRedMail te lo resuelve.</p>
-
-<p>Ven herramientas como nagios o smokeping, se quedan con la boca abierta, pero
-¡joder! es muy complicado, me paso. Al menos,  hasta que alguien me de una
-configuración que funcione y yo cambiarle los valores para que se adecue a mi
-entorno.</p>
-
-<p>Reza porque todo funcione. Ya que es tanta la ignorancia, que si hay un
-problema, ni siquiera saben como van a pedir ayuda, porque ni siquiera entienden
-con que están tratando.</p>
-
-<p>Siempre puedes decirle al jefe &ldquo;no se puede&rdquo;. Después de todo, eres un
-<strong>tolerable asalariado</strong> y no te pasará nada por incumplir. Le puedes echar la
-culpa <em>al país que es una mierda por el atraso tecnológico</em> y bla bla bla; todas
-esas excusas que usan los mediocres de gama alta.</p>
-
-<h4>pero tienen más horas de facebook que de consola</h4>
-
-<p>Los más triste del caso, es que luego quieren venir a discutir de tecnología y
-uno no sabe como va a llevar la conversación para no humillarlos.</p>
-
-<h4>punto y aparte</h4>
-
-<p>Además, están los tipos que <strong>Sí SABEN</strong>, pero que usan todo eso porque &ldquo;no
-tienen tiempo&rdquo;. Trabajan sentados, el día entero apretando teclas en aire
-acondicionado y &ldquo;no tienen tiempo&rdquo;.</p>
-
-<p>Pierden su tiempo en jugar con toda esta parafernalia modista, para luego darse
-cuenta que esos sistemas, están incompletos. Les falta algo que ellos ya han
-hecho mejor y es cuando se dan cuenta, que están andando con juguetes.</p>
-
-<h4>para los extremistas</h4>
-
-<p>No digo que Zimbra/pfSense/Proxmox sean malos, digo que el método perezoso, es
-malo.</p>
-
-<p>No puedes comparar la picoloro con la llave inglesa.</p>
-
-<p>Tampoco puedes pensar que solo necesitas una de las dos para hacerlo todo. Ambas
-son útiles, en su adecuado ambiente y para la tarea que fueron diseñadas.</p>
-
-<p>Antes de emitir un criterio tecnológico, pruebo el software, lo instalo, lo
-manoceo, trato de romperlo, de ver como funciona, que tiene por detrás;
-finalmente, que haría yo si quisiera/pudiera mejorarlo. Entonces me hago un
-criterio.</p>
-
-<p>La gente que me conoces, sabe que aveces digo: &ldquo;eso es una mierda&rdquo;. Otros, que
-me conocen mejor y que hace lo mismo que yo; suelen oírme cuando digo: -eso es
-una mierda y te contaré como llegué a esa conclusión, ya que seguro que a ti te
-ha pasado parecido.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/09/flasheando-modem-al-s4/">flasheando modem al S4</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-09T19:00:58-05:00'><span class='date'>09/01/2017</span> <span class='time'>7:00 pm</span></time>
-        
-           | <a href="/blog/2017/01/09/flasheando-modem-al-s4/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/09/flasheando-modem-al-s4/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Es un mojón de los Samsung, tener el módem (banda base) como una partición y
-(por ende un firmware) aparte del sistema. Por este motivo, cuando flasheas
-cyanogen (léase &ldquo;cualquier ROM&rdquo;) una y otra vez; o cuando el teléfono se apaga
-abruptamente&hellip; Diiiicen que se corrompe el módem.</p>
-
-<p>Entonces, de buenas a primeras, el teléfono te dice &ldquo;tarjeta SIM expulsada,
-Reinicie&rdquo;. Aveces al reiniciar no se soluciona el problema. Yo he estado hasta 3
-días sin teléfono. Quitarle la batería un rato y volverla a poner, suele ser una
-solución, pero aveces, hasta 7 veces al día; he tenido que lidiar con el
-errorsito de los cojones.</p>
-
-<p><img class="right" src="/images/acercade_baseband.png" width="200" height="300" title="" ></p>
-
-<p>La única solución paliativa que he visto, es, de vez en vez, al menos una cada
-dos mes; flahsear el módem.</p>
-
-<p>El cómo dar con el módem te lo dejo de tarea. Lo siento, no soy la base de datos
-de bandas bases de samsung. La mía la <strong>busqué en google</strong> escribiendo el texto:</p>
-
-<p>&ldquo;modem SGH-M919&rdquo;</p>
-
-<p>Oséase, pidiendo el módem para mi modelo del teléfono, que al parecer, la
-<strong>M919UVUFNH7</strong>, es la última disponible para mi canchanfleta.</p>
-
-<p>El proceso de flasheo, la primera vez, requiere que nos hagamos con el
-fichero PIT del teléfono.</p>
-
-<p>Reinicia el teléfono en modo descarga. Si no sabes cómo hacerlo, googlea, cada
-samsung tiene su forma. El mío (S4 T-Mobile) es Power+VolDown+Home. Luego, en el
-modo descarga; una vez que (presiones VolUp) para inicializar la conexión,
-pasamos a Heimdall.</p>
-
-<p>Nota para los imbéciles: Conecte el teléfono a la computadora mediante un cable
-USB <strong>en buen estado</strong>.</p>
-
-<p><img class="right" src="/images/pitfile.png" width="600" height="700" title="" ></p>
-
-<p>En Heimdall, vamos a la pestaña <strong>Utilities</strong>. Presiona botón
-<em>Detect</em><sup>1</sup>, cuando te coja el teléfono, presiona <em>Save As</em><sup>2</sup>
-y te dará un nombre de fichero para salvar, por ejemplo, <strong>fulanito.pit</strong>.
-Finalmente presiona <em>Download</em><sup>3</sup> y te creará el fichero.</p>
-
-<p>Decirte quiero que este ficherito es muy famoso, ya que es algo así como tu
-tabla de particiones.</p>
-
-<p>Una vez que tienes el fichero en tu poder, Heimdall, será capaz de saber <em>a
-ciegas</em> donde están las particiones de tu teléfono sin tener que preguntárselo
-una y otra vez, así que guardalo en un directorio donde pongas todas las
-gangarreas de tu teléfono. Por cierto, terminamos con el teléfono; aunque diga
-&ldquo;do not turn off&rdquo; cágate en la noticia y reinicia (quita la batería).</p>
-
-<p>Ahora viene tiempo de google, muuuuucho google, para dar con tu módem.</p>
-
-<p>Digamos que finalmente diste con el módem de tu samsung. Seguro tiene un nombre
-muy genérico, casi siempre se llaman <strong>modem.bin</strong>. Procede con el mismo
-preludio del ritual (modo descarga y abre heimdall)</p>
-
-<p><img class="left" src="/images/flasheo_modem.png" width="600" height="700" title="" ></p>
-
-<p>Ahí ve para la pestaña que dice <strong>Flash</strong>. Click en <em>Browse</em><sup>1</sup> y
-localiza tu pitfile. Click en <em>Add</em><sup>2</sup> y luego en el <em>select</em> del campo
-<em>partition name</em><sup>3</sup> selecciona la partición <strong>MDM</strong>. Finalmente, le
-buscamos el fichero modem.bin haciendo click en Browse<sup>4</sup>.</p>
-
-<p>¿No tengo que decirte que pulses <strong>Start</strong>, verdad?</p>
-
-<p>Si todo salió bien, se reiniciará y tendrás tu módem recién flasheado. Pero no
-cantes victoria. Si tu modem se deterioró, fue que ALGO lo deterioró y ese algo,
-lo joderá de nuevo, así que, mantén las herramientas a manos; las necesitarás
-pronto.</p>
-</div>
-  
-  
-
-
 <p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/02/rails-assets/">rails-assets</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-02T18:55:02-05:00'><span class='date'>02/01/2017</span> <span class='time'>6:55 pm</span></time>
-        
-           | <a href="/blog/2017/01/02/rails-assets/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/02/rails-assets/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Gemas como twitter-bootstrap-rails, hacen que el trabajo con CSS complejas
-supuestamente se haga al click. Pero cuando deseas ir un poco más allá, por
-ejemplo, si quieres DataTables, notarás que tienes dos opciones, la primera,
-usar una gema desfasada (si hay, que casi siempre la hay, aunque buena para
-nada).</p>
-
-<p>Sin embargo, parece que algún cerebrito, hizo un sitio en el cual la fuente
-oficial de las assets (quizás a través de npm) se convierten de manera
-automatizada en una gema de rails.</p>
-
-<p>De esta manera, al poner en el Gemfile de tu aplicación esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;Gemfile&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span>  <span class="s1">&#39;https://rails-assets.org&#39;</span> <span class="k">do</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-bootstrap&#39;</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-DataTables&#39;</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-jquery-ui&#39;</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-iCheck&#39;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Instalarás dichas js/css en tu aplicación.</p>
-
-<p>En el <a href="https://rails-assets.org">sito web de rails-assets</a> explica con unos
-diff, que debes poner en el application.js y aaplication.css para incluir cada
-una de las assets. Casi siempre es algo genérico al nombre, lo puedes intuir.</p>
-
-<p>De todas maneras, el fracasado proyecto de crear un jquery unobstructive;
-condujo a que jquery fuera expulsada del core de rails. Así que al parecer la
-tendencia de rails 5 en adelante, será usar las js aparte.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/12/29/xgproyect/">xgproyect</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-12-29T21:48:32-05:00'><span class='date'>29/12/2016</span> <span class='time'>9:48 pm</span></time>
-        
-           | <a href="/blog/2016/12/29/xgproyect/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/12/29/xgproyect/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Se supone que te cuente la historia de Xnova, OAgame y XGProyect pero de verdad
-que NO estoy pa eso; ya me la disparé en la wikipedia más dos alemanes que mi
-hicieron su propia versión de la historia. Pa hacerte el cuento corto, es un
-juego de exploración y conquista del universo. Suena emocionante, pero todo
-sucede en páginas web.  Cosas como &ldquo;tus naves destruyeron la flota enemiga&rdquo; el
-juego te las cuenta, tú no las vez.</p>
-
-<p>La tercera vez que me preguntaron en el calixto si &ldquo;tenía montado un xnova&rdquo;
-decidí tomar cartas del asunto. Después de mucho rodar por google, no di con el
-código fuente de xnova. El colega Leslie (alias &ldquo;Curielete&rdquo;) me comenta que
-ahora lo que se usa es XGProyect.</p>
-
-<p>La versión más reciente, es la <a href="https://github.com/XGProyect/XG-Proyect-v3.x.x/releases/download/v3.0.3/XGP3.0.3.zip">3.0.3, bájatela aquí</a></p>
-
-<p>En mi caso, dispuse de un Virtualhost en el servidor web, para la aplicación. El
-document root de este virtualhost, apuntará a <strong>/var/www/xgp</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;descargando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>wget -c https://github.com/XGProyect/XG-Proyect-v3.x.x/releases/download/v3.0.3/XGP3.0.3.zip
-</span><span class='line'>unzip XGP3.0.3.zip
-</span><span class='line'>mv xgp3.0.3/upload /var/www/xgp
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Setea los permisos como prefieras, pero al directorio de configuración, deberás
-darle permiso de escritura HASTA que culmine el proceso de instalación.</p>
-
-<figure class='code'><figcaption><span>&#8220;poniendo permisos temporales&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>chmod -R <span class="m">0777</span> application/config/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>OJO</h4>
-
-<p>Requiere mysql, así que para este ejemplo, crearemos una base de datos llamada
-<strong>&ldquo;x&rdquo;</strong></p>
-
-<p>Al abrir un navegador y dirigirnos al sitio, te redireccionará al instalador de
-manera automática. Pedirá irremediablemente los parámetros. Luego de establecer
-la conexión con la base de datos, creará el fichero de configuración. Al hacer
-click en continuar, creará la complejísima base de datos que contendrá el
-universo del juego.</p>
-
-<p><img class="center" src="/images/xg_1.png" width="500" height="600" title="" ></p>
-
-<p>Si te da un error 500, es porque tu versión de php o de mysql, no le juega. Para
-este ejemplo, se usó debian 8 (el container de docker para ser más preciso)</p>
-
-<p>Más específicamente estas:</p>
-
-<figure class='code'><figcaption><span>&#8220;versiones&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@40e0cc02bcd7:/# php -v
-</span><span class='line'>PHP 5.6.24-0+deb8u1 <span class="o">(</span>cli<span class="o">)</span> <span class="o">(</span>built: Jul <span class="m">26</span> <span class="m">2016</span> 08:17:07<span class="o">)</span>
-</span><span class='line'>Copyright <span class="o">(</span>c<span class="o">)</span> 1997-2016 The PHP Group
-</span><span class='line'>Zend Engine v2.6.0, Copyright <span class="o">(</span>c<span class="o">)</span> 1998-2016 Zend Technologies
-</span><span class='line'>    with Zend OPcache v7.0.6-dev, Copyright <span class="o">(</span>c<span class="o">)</span> 1999-2016, by Zend Technologies
-</span><span class='line'>
-</span><span class='line'>root@40e0cc02bcd7:/# mysqld -V
-</span><span class='line'>mysqld  Ver 5.5.52-0+deb8u1 <span class="k">for</span> debian-linux-gnu on x86_64 <span class="o">((</span>Debian<span class="o">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con el php de archlinux, no me pinchó, todo daba error 500</p>
-
-<p>Finalmente, nos pedirá crear el primer usuario que es además, el administrador
-del juego. Deja que veas el panel de admin, tiene más botones y menú, que la
-cabina de cualquier nave espacial.</p>
-
-<p>Una vez terminado ese proceso, nos pide borrar el directorio &ldquo;install&rdquo;.
-Renombrarlo trae horribles consecuencias, así que bórralo o cámbialo de lugar.</p>
-
-<p>Por último, le devolvemos sus permisos al directorio de configuración.</p>
-
-<figure class='code'><figcaption><span>&#8220;poniendo permisos temporales&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>chmod -R <span class="m">0444</span> application/config/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>De regreso a la ventana del juego, tendrás la landing-page y el botón entrar.</p>
-
-<p><img class="center" src="/images/xg_2.png" width="500" height="600" title="" ></p>
-
-<p>Ahí te logueas y localizas el menú de administración. Puedes llegar por
-<a href="http://tuservidor/admin.php">http://tuservidor/admin.php</a> Por ahí puede para empezar, hacer la tarea más
-elemental: Crear usuarios.</p>
-
-<p><img class="center" src="/images/xg_3.png" width="600" height="700" title="" ></p>
-
-<p>Entra cuanto antes al panel de administración y verás que te pida una
-actualización. Al pulsar el botón, te saldrán unas sentencias SQL. Quizás las
-ejecute, quizás no lo consiga. Por si acaso, tu las ejecutas en una consola SQL.
-Si tienes ese error (actualización disponible) no te dejará hacer nada hasta que
-no lo resuelvas.</p>
-
-<p>Luego llégate a &ldquo;Errores DB&rdquo; y subsánalos. Por suerte es tan simple como hacer
-click en &ldquo;Eliminar Todos&rdquo;. También en el menú &ldquo;Características del Juego&rdquo;, te
-recomiendo desactivar &ldquo;Mercader&rdquo; y &ldquo;Oficiales&rdquo;, enseguida te darás cuenta por
-qué lo digo.</p>
-
-<p><img class="right" src="/images/xg_4.png" width="600" height="700" title="" ></p>
-
-<p>Los usuarios se hacen en el menú &ldquo;Creador&rdquo; (no en &ldquo;Usuarios&rdquo;)</p>
-
-<p>Otra cosa, el panel de admin carga lento, es bastante lento pero eso es normal.</p>
-
-<p>Realmente el juego tiene su encanto. Abres la página cada una o dos horas, hace
-una que otra bobería y dejas las tarea en cola. Me resulta más entretenido que
-facebook. En el Link &ldquo;notas&rdquo; vas tomando nota de lo que tienes por hacer, cuando
-te vuelvas a loguear el lunes, solo tienes que mirarlas. Consejo, haste una
-&ldquo;fabrica de robots&rdquo; cuanto antes.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -760,6 +850,22 @@ te vuelvas a loguear el lunes, solo tienes que mirarlas. Consejo, haste una
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/02/05/dns-con-vistas/">dns con vistas</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/02/01/ipfw-simple-y-consiso/">ipfw simple y conciso</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/01/28/freebsd-11/">mis crónicas con freebsd</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/01/21/palito/">animación del palito</a>

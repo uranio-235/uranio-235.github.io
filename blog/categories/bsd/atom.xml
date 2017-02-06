@@ -4,7 +4,7 @@
   <title><![CDATA[Category: bsd | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/bsd/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-02-02T21:59:45-05:00</updated>
+  <updated>2017-02-05T23:07:15-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -14,94 +14,104 @@
 
   
   <entry>
-    <title type="html"><![CDATA[ipfw simple y consiso]]></title>
-    <link href="http://uranio-235.github.io/blog/2017/02/01/ipfw-simple-y-consiso/"/>
-    <updated>2017-02-01T23:15:47-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2017/02/01/ipfw-simple-y-consiso</id>
-    <content type="html"><![CDATA[<p>Algo tan simple, como las instrucciones para hacer un cortafuegos realmente
-funcional ipfw; simplemente no existe, al menos de manera oficial.</p>
+    <title type="html"><![CDATA[mis crónicas con freebsd]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/01/28/freebsd-11/"/>
+    <updated>2017-01-28T23:39:52-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/01/28/freebsd-11</id>
+    <content type="html"><![CDATA[<p>Si vas a leer este artículo, te aviso, que no tiene nada que ver con el blog. Me
+dispongo a expresar mi criterio sobre FreeBSD y un tanto de como ha formado
+parte de mi vida profesional.</p>
 
-<p>FreeBSD no es como Linux que tiene estupendas wikis. Si bien el Handbook está
-muy; completo es una referencia demasiado <em>tecnocratizada</em>. Cosas como pasar los
-paquetes de conexiones relacionadas, hacer drop o &ldquo;reiniciar el cortafuegos&rdquo;, no
-se tomaron la molestia de documentarlas &ldquo;bien&rdquo;. Otras cosas como el filtrado por
-mac address, simplemente no funciona, a menos que hagas un ritual previo; que NO
-está documentado en el man (al menos no explícitamente).</p>
+<p>   <blockquote><p>FreeBSD, tecnología arcana para algunos y arcaica para otros.</p></blockquote></p>
 
-<p>Para empezar, el módulo debe ser cargado en el kernel, así que inicializaremos
-ipfw como si fuera un demonio más del sistema. Esto quiere decir que lo
-añadiremos al <strong>/etc/rc.conf</strong></p>
+<p>Se cuentan leyendas sobre FreeBSD, como que es el sistema operativo de los nodos
+y cosas así. Mucha gente lo tiene como un arcano o algo que probarán <em>un día de
+estos</em>. Yo pienso que no tiene nada del otro mundo. De hecho, en mi opinión,
+gentoo es más complicado que freebsd.</p>
 
-<pre><code class="bash "/etc/rc.conf"">firewall_enable="YES"
-firewall_type="/usr/local/etc/ipfw.rules"
-</code></pre>
+<p>Lo que si me queda claro que es un excelente sistema operativo para servidores
+proxy. Además, ipfw, su cortafuegos, es sólido como una piedra. En FreeBSD eso
+de caer de rodillas ante un ataque DoS, es simplemente utópico.</p>
 
-<p>La <a href="https://www.freebsd.org/doc/handbook/firewalls-ipfw.html">documentación oficial</a> aclara que
-los firewall pueden ser (además) del tipo: open, client, simple, closed o
-UNKNOWN. Sin embargo, <strong>en mi opinión</strong> estas configuraciones prefabricadas, no
-son suficiente para un servidor (por ejemplo proxy).</p>
+<p>En ambientes libres de proxy, el binomio dummynet-<a href="https://www.freebsd.org/doc/handbook/firewalls-ipfw.html">ipfw</a>
+permite un manejo del ancho de banda con una simpleza que ya quisiera <strong>tc</strong>. Un
+solo pipe puede tener valores diferentes para su ancho de banda, encolamiento y
+delay.</p>
 
-<p>En nuestro cosas, para mantener la armonía chea del sistema, colocamos el
-cortafuegos en el /etc de /usr/local. Tenga en cuenta que casi todas las
-aplicaciones que instales, tendrán su /etc ahí.</p>
+<p>Por otra parte, el sistema de <a href="https://www.freebsd.org/doc/handbook/jails.html">jails</a>
+es un batazo. Sobre todo en ambientes donde te ves obligado a meter la pata y no
+dispones de virtualización. Los jails combinado con ZFS, permiten hacer cosas
+alucinantes.</p>
 
-<p>Reiniciar ipfw no es tan jamón como un usuario de iptables haría. Hacer un flush
-de las reglas, significa quedarse trancado y perder la conexión por ssh. Para
-reiniciar el cortafuegos, deberás tener un firewall que haga flush y además,
-reiniciar el servicio.</p>
+<p>El gestor de paquetes ha mejorado muchísimo. En cuanto a resolución de
+dependencias y velocidad. Lo han optimizado bastante en mi opinión y ahora
+maneja mejor el tema de las redes lentas.</p>
 
-<pre><code class="bash "reiniciando ipfw"">#!/bin/csh
-service ipfw stop
-ipfw -q flush
-service ipfw start
-ipfw show
-</code></pre>
+<p>Cada versión nueva que sale la pruebo; y aunque había hecho mis cositas con él,
+siempre acababa dejándolo de lado por el tema del ancho de banda. Cualquier
+operación que hagas con la paquetería requiere conexión y poco ancho de banda
+provoca que la operación falle. La versión 9 en mi opinión fue un desastre.
+Especialmente por el sistema de ports que daba unos palos horribles.</p>
 
-<p>La documentación oficial (y otras muchas) indican que cada regla se cree
-enumerada. Sin embargo, esto no es estrictamente necesario. Cada regla
-incrementará el número de una manera automáticamente curiosa.</p>
+<p>FreeBSD 10 no lo toqué, estuve más girado para OpenIndiana.</p>
 
-<p>Veamos pues un <strong>ipfw.rules</strong> bien básico. La interfaz <strong>lo0</strong> es el localhost.
-La interfaz xn0 es la WAN y xn1 es la LAN.</p>
+<p>Pero la versión 7 de OI parecía no terminar nunca. Finalmente el avión no
+despegó. El fiasco de nexenta store y la insertidumbre de oracle, golpearon
+fuertemente a la comunidad de OpenIndiana. El mundo se dio cuenta que OI tenía
+el futuro de un submarino descapotable y gran parte de la comunidad de illumos
+se mudó pa BSD. La comunidad de OpenIndiana se desmoronaba con las botas
+puestas. El agitado canal de freenode #openindiana se convirtió en un canal
+muerto. En lo personal, tras fracasar en mi afán por portar Ruby a OI, en parte
+debido a que no tengo ancho de banda para hacer operaciones en el Userland; alcé
+bandera blanca también.</p>
 
-<pre><code class="bash "ipfw.rules""># para afuera todo
-ipfw -q add allow all from any to any out
+<p>Pero como soy Linuxero! Volví a poner mis servidores en debian y comencé a mirar
+a fedora. De nuevo el ancho de vianda me golpeó; además de otros avatares de la
+vida. Terminé usando un chroot de arch, sobre la viejísima instalación de debian
+en mi laptop Pentium 3 que ya estaba más que obsoleta. Todas mis aplicaciones,
+mi /home, etc&hellip; Eran un chroot de arch dentro de un debian desnudo. Corría i3 y
+levantaba con startx luego de entrar al chroot.</p>
 
-# permite todo por el localhost
-ipfw -q add allow all from any to any via lo0
+<p>Free BSD andaba por finales de la 9 y la 10 en el horno; si mal no recuerdo&hellip;
+Yo, me dedicaba a leer noticias y continuaba suscrito a la lista de freebsd en
+español; donde hacer top-posting se paga con la pena capital.</p>
 
-# las conexiones que ya estén iniciadas, tíralas
-ipfw -q add check-state
-ipfw -q add allow tcp from any to any established
-ipfw -q add allow all from any to any out keep-state
+<p>Mientras tanto, perdía yo mi trabajo y paradógicamente recién adquiría una nueva
+laptop. Apostar por el recién abierto &ldquo;modelo de trabajo por cuenta propia&rdquo;; me
+costó perder mi empleo y quedarme sentado un buen rato. Instalé ArchLinux en la
+laptop nueva para conservar las configuraciones de la anterior. Para este
+entonces me consideraba usuario de archlinux &ldquo;por casualidad&rdquo;. Me soñaba como un
+feliz usuario de Fedora. Consideraba ya a Debian; única y expresamente una
+herramienta para servidores.</p>
 
-# permite que te hagan ping desde la LAN con la ip
-ipfw -q add allow icmp from 10.1.1.0/24 to any via xn1
+<p>A todas esas: ¿¿¿FreeBSD??? Relegado a: &ldquo;proyecto para cuando tenga tiempo&rdquo;</p>
 
-# permite que accedan al proxy desde la LAN
-ipfw -q add allow tcp from any to any dst-port 3128 via xn1
+<p>El período más jodido de mi vida estaba aconteciendo en ese momento. No voy a
+escribir aquí mis problemas personales; pero hasta sin donde vivir me quedé. Por
+tanto, el único producto que podía ofrecer eran servidores con debian. A
+mediados del 2014, arranqué en el calixto, pero el ancho de vianda seguía siendo
+un problema; también el tema de la cuota. ¿¿FreeBSD?? Simplemente olvidado hasta
+entonces.</p>
 
-# permite el servidor web pero solo deade la WAN
-ipfw -q add allow tcp from any to any dst-port 80 via xn0
+<p>A finales del 2016, me trajeron el servidor de gama media para remplazar el
+totem de servidores. Además, habían ampliado el susodicho ancho de vianda. Fue
+entonces cuando decidí, que el nuevo proxy, no podía quedarse mariado como le
+pasa al squid en linux; muchísimo menos con el micro tan poco potente del
+servidor (gama media).</p>
 
+<p>Para mi sopresa, FreeBSD andaba por la 11 (yo lo hacía por la 10 todavía) por lo
+lento que se desarrolla; el pobre. Ahora estoy muy contento con mi
+squid+squidGuard sobre FreeBSD 11. Que si bien también se marea, lo hace
+bastante poco y se recupera rápido.</p>
 
-# descarta el resto
-ipfw -q add reset
-</code></pre>
+<p>Por lo que veo ya no son tan retrógrados como antes; han mejorado mucho en ese
+aspecto, aunque siguen siendo una mirada al futuro desde el pasado. Mantienen la
+onda chea reflejada en su configuración; pero todo bien afinado, fresco y
+modernizado.</p>
 
-<p>Veamos algunas características de este cortafuegos&hellip;</p>
+<p>Dejaron de ser retrógrados para convertirse en modernos pero anticuados.</p>
 
-<p>Otra cosa chocante de ipfw, es que la salida, por definición, está bloqueada.
-Verán una regla que autoriza la salida del tráfico.</p>
-
-<p>La política por defecto del cortafuegos del tipo &ldquo;script&rdquo; es rechazar con icmp
-de vuelta. Lo que se conoce en iptables como REJECT. Por tanto, para que haga lo
-que en iptables sería DROP, debemos usar un action del tipo <strong>reset</strong>.</p>
-
-<p>Como ven, este cortafuegos no arranca haciendo flush como los de iptables. De
-hecho, hacer flush como primera linea puede causarte problemas muy serios. Por
-otro parte, reiniciar el cortafuegos sin hacer flush, provoca que se dupliquen
-las reglas.</p>
+<p>FreeBSD es un buen sistema operativo para los enemigos de systemd.</p>
 ]]></content>
   </entry>
   

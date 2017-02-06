@@ -4,7 +4,7 @@
   <title><![CDATA[Category: razonemos | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/razonemos/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-02-02T21:59:45-05:00</updated>
+  <updated>2017-02-05T23:07:15-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -14,11 +14,50 @@
 
   
   <entry>
+    <title type="html"><![CDATA[a las puertas del 3g]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/02/05/a-las-puertas-del-3g/"/>
+    <updated>2017-02-05T21:24:40-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/02/05/a-las-puertas-del-3g</id>
+    <content type="html"><![CDATA[<p>Oficialmente, han anunciado en la mesa redonda que se proveerá internet por 3G.</p>
+
+<p>La noticia me impactó bastante y supongo que todo el que se haga llamar
+&ldquo;administrador de red&rdquo; (en Cuba) se halla sentido conmovido.</p>
+
+<p>A partir de ese día no llevaremos más sobre nuestros hombros la ardua tarea de
+proveerle internet a una sociedad desconectada. La penosa tarea de explicarle a
+los usuarios porque fulano sí y tú no. Con ello, nuestra importancia actual en
+marcos laborales; se verá considerablemente reducida. Ya no seremos las
+fantásticas criaturas con acceso a internet, si no, un simple operario más (como
+somos en el mundo entero). Imagino (y espero) que los proxy pasen a ser una
+segunda prioridad. El uso de internet en las empresas, por fin, será para
+aquello que realmente fue concebido y no para proveerle facebook a cuatro vacas
+sagradas.</p>
+
+<p>La introducción de la 3G en cuba, será un cambio. Todos debemos estar preparados
+para afrontar este cambio; no solo desde el punto de vista tecnológico, si no
+también social y psicológico. Si dios quiere y todo sale a pedir de boca,
+caeremos de sopetón y recién llegados; a un mundo donde el internet, ya es algo
+cotidiano. Todos NO están preparados para esto, en especial, aquellos que tienen
+canas y teléfonos modernos.</p>
+
+<p>Si bien, las tarifas siguen siendo un misterio por resolver, este es un momento
+en que no hay lugar para el pesimismo. Nuestro país está haciendo un esfuerzo
+sin precedentes (al menos en ese aspecto) y nosotros, esperamos lo mejor. hay
+mucho optimismo y la gente habla del tema con brillo en lo ojos. Esperamos que
+esto se materialize y no se convierta en un vaporware. Por otra parte, muchas
+personas tienen la expectativa muy alta; en especial aquellas que han viajado y
+conocen el 4g. Esto podría dar lugar a disgustos y desilusiones en aquellas
+personas que tienen las expectativas muy altas. Yo solo espero, poder tener
+internet en mi bolsillo con el salario que me gano.</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[tendencias tecnológicas]]></title>
     <link href="http://uranio-235.github.io/blog/2017/01/09/tendencias-tecnologicas/"/>
     <updated>2017-01-09T21:04:02-05:00</updated>
     <id>http://uranio-235.github.io/blog/2017/01/09/tendencias-tecnologicas</id>
-    <content type="html"><![CDATA[<p>{% img right /images/bandwagon.jpg 400 500  %}</p>
+    <content type="html"><![CDATA[<p><img class="right" src="/images/bandwagon.jpg" width="400" height="500" title="" ></p>
 
 <p>Por suerte, la era de Zentyal está a punto de terminar.</p>
 
@@ -138,7 +177,7 @@ ha pasado parecido.</p>
     <id>http://uranio-235.github.io/blog/2015/11/03/las-mujeres-gordas</id>
     <content type="html"><![CDATA[<p><em>¿Como te gustan las mujeres gordas o flacas?</em></p>
 
-<p>{% img right /images/gorda2.jpg 190 290  %}</p>
+<p><img class="right" src="/images/gorda2.jpg" width="190" height="290" title="" ></p>
 
 <p>Esa pregunta se ha vuelto un boicot.</p>
 
@@ -192,7 +231,7 @@ esa es masa pura. Si no le duele, es manteca.</p>
 
 <h4>deterioro de la autoestima</h4>
 
-<p>{% img right /images/gorda1.jpg 190 290  %}</p>
+<p><img class="right" src="/images/gorda1.jpg" width="190" height="290" title="" ></p>
 
 <p>Este tema es muy peliagudo y repercute, tanto pa las gordas, como para los
 amantes de las curvas.</p>
@@ -237,10 +276,7 @@ y NO se esconde para decirlo, se pasea con su prieto por la calle. En cambio, el
 tipo que le gustan las gordas, le pesa reconocerlo e incluso, le da pena que la
 gente lo vean con aun gorda.</p>
 
-<p>   {% blockquote %}
-   Los huesos son para los perros,
-   los hombres comen carne.
-   {% endblockquote %}</p>
+<p>   <blockquote><p>Los huesos son para los perros,<br/>   los hombres comen carne.</p></blockquote></p>
 ]]></content>
   </entry>
   

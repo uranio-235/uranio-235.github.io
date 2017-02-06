@@ -4,7 +4,7 @@
   <title><![CDATA[Category: destacado | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/destacado/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-02-02T21:59:45-05:00</updated>
+  <updated>2017-02-05T23:07:15-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -316,9 +316,7 @@ systemctl status -l opendkim
 
 <h2>El DNS</h2>
 
-<p>   {% blockquote Lázaro Armando, mi criterio sobre DNS %}
-   El patico feo de internet, el DNS. El remedio que se inventó pa ir tirando y acabó quedándose con su pésimo diseño y su horrible arquitectura que hasta el sol de hoy, pretende llamarse &ldquo;distribuida&rdquo;
-   {% endblockquote %}</p>
+<p>   <blockquote><p>El patico feo de internet, el DNS. El remedio que se inventó pa ir tirando y acabó quedándose con su pésimo diseño y su horrible arquitectura que hasta el sol de hoy, pretende llamarse &ldquo;distribuida&rdquo;</p><footer><strong>Lázaro Armando</strong> <cite>Mi Criterio Sobre DNS</cite></footer></blockquote></p>
 
 <p>Agregamos le registro TXT con la clave. Te cuento que el fichero &ldquo;.txt&rdquo; contiene
 el tabaco base64 que usualmente vemos en el encabezado DKIM-Signature, pues
@@ -604,10 +602,7 @@ tls_random_source = dev:/dev/urandom
 
 <p>No olvides correr <strong>postfix reload</strong></p>
 
-<p>   {% blockquote Décima popular %}
-   Te voy a coser el culo con un alambre finito.
-   No te quedará bonito, pero te quedará seguro.
-   {% endblockquote %}</p>
+<p>   <blockquote><p>Te voy a coser el culo con un alambre finito.<br/>   No te quedará bonito, pero te quedará seguro.</p><footer><strong>Décima popular</strong></footer></blockquote></p>
 ]]></content>
   </entry>
   
@@ -767,10 +762,7 @@ volátiles, uno nunca sabe cuando le va a hacer falta.</p>
 
 <p>Va y si quieres, no es obligado, pero para probar, <strong>REINICIA</strong>.</p>
 
-<p>   {% blockquote Lázaro Armando %}
-   Prefiero lidiar con las pifias de una comunidad
-   que con las mazmorras de una compañía.
-   {% endblockquote %}</p>
+<p>   <blockquote><p>Prefiero lidiar con las pifias de una comunidad<br/>   que con las mazmorras de una compañía.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
 ]]></content>
   </entry>
   
@@ -815,9 +807,7 @@ nunca lo ha hecho.</p>
 determinada. O por el contrario, se afirma que la máquina a esa hora NO estaba
 encendida y el uptime dice lo contrario.</p>
 
-<p>   {% blockquote Taladrid, Pasaje a lo desconocido %}
-   Saque usted, sus propias concluciones&hellip;
-   {% endblockquote %}</p>
+<p>   <blockquote><p>Saque usted, sus propias concluciones&hellip;</p><footer><strong>Taladrid</strong> <cite>Pasaje a Lo Desconocido</cite></footer></blockquote></p>
 ]]></content>
   </entry>
   

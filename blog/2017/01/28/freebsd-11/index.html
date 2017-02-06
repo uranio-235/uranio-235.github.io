@@ -1,0 +1,757 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>mis crónicas con freebsd - El SysAdmin del 3er Mundo</title>
+  <meta name="author" content="låzaro">
+
+  
+  <meta name="description" content="mis crónicas con freebsd 28/01/2017 11:39 pm | Comments Si vas a leer este artículo, te aviso, que no tiene nada que ver con el blog. Me
+dispongo a &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2017/01/28/freebsd-11/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-68987437-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
+  
+    <h2>luchando contra el subdesarrollo en todos los frentes</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://www.google.com" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="uranio-235.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/archives">Archivo</a></li>
+  <li><a href="/blog/categories/rails/">Ruby on Rails</a></li>
+  <li><a href="/blog/categories/islam/">Islam</a></li>
+  <li><a href="/blog/categories/destacado/">Destacado</a></li>
+  <li><a href="/blog/categories/razonemos/">Razonemos</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">mis crónicas con freebsd</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-01-28T23:39:52-05:00'><span class='date'>28/01/2017</span> <span class='time'>11:39 pm</span></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Si vas a leer este artículo, te aviso, que no tiene nada que ver con el blog. Me
+dispongo a expresar mi criterio sobre FreeBSD y un tanto de como ha formado
+parte de mi vida profesional.</p>
+
+<p>   <blockquote><p>FreeBSD, tecnología arcana para algunos y arcaica para otros.</p></blockquote></p>
+
+<p>Se cuentan leyendas sobre FreeBSD, como que es el sistema operativo de los nodos
+y cosas así. Mucha gente lo tiene como un arcano o algo que probarán <em>un día de
+estos</em>. Yo pienso que no tiene nada del otro mundo. De hecho, en mi opinión,
+gentoo es más complicado que freebsd.</p>
+
+<p>Lo que si me queda claro que es un excelente sistema operativo para servidores
+proxy. Además, ipfw, su cortafuegos, es sólido como una piedra. En FreeBSD eso
+de caer de rodillas ante un ataque DoS, es simplemente utópico.</p>
+
+<p>En ambientes libres de proxy, el binomio dummynet-<a href="https://www.freebsd.org/doc/handbook/firewalls-ipfw.html">ipfw</a>
+permite un manejo del ancho de banda con una simpleza que ya quisiera <strong>tc</strong>. Un
+solo pipe puede tener valores diferentes para su ancho de banda, encolamiento y
+delay.</p>
+
+<p>Por otra parte, el sistema de <a href="https://www.freebsd.org/doc/handbook/jails.html">jails</a>
+es un batazo. Sobre todo en ambientes donde te ves obligado a meter la pata y no
+dispones de virtualización. Los jails combinado con ZFS, permiten hacer cosas
+alucinantes.</p>
+
+<p>El gestor de paquetes ha mejorado muchísimo. En cuanto a resolución de
+dependencias y velocidad. Lo han optimizado bastante en mi opinión y ahora
+maneja mejor el tema de las redes lentas.</p>
+
+<p>Cada versión nueva que sale la pruebo; y aunque había hecho mis cositas con él,
+siempre acababa dejándolo de lado por el tema del ancho de banda. Cualquier
+operación que hagas con la paquetería requiere conexión y poco ancho de banda
+provoca que la operación falle. La versión 9 en mi opinión fue un desastre.
+Especialmente por el sistema de ports que daba unos palos horribles.</p>
+
+<p>FreeBSD 10 no lo toqué, estuve más girado para OpenIndiana.</p>
+
+<p>Pero la versión 7 de OI parecía no terminar nunca. Finalmente el avión no
+despegó. El fiasco de nexenta store y la insertidumbre de oracle, golpearon
+fuertemente a la comunidad de OpenIndiana. El mundo se dio cuenta que OI tenía
+el futuro de un submarino descapotable y gran parte de la comunidad de illumos
+se mudó pa BSD. La comunidad de OpenIndiana se desmoronaba con las botas
+puestas. El agitado canal de freenode #openindiana se convirtió en un canal
+muerto. En lo personal, tras fracasar en mi afán por portar Ruby a OI, en parte
+debido a que no tengo ancho de banda para hacer operaciones en el Userland; alcé
+bandera blanca también.</p>
+
+<p>Pero como soy Linuxero! Volví a poner mis servidores en debian y comencé a mirar
+a fedora. De nuevo el ancho de vianda me golpeó; además de otros avatares de la
+vida. Terminé usando un chroot de arch, sobre la viejísima instalación de debian
+en mi laptop Pentium 3 que ya estaba más que obsoleta. Todas mis aplicaciones,
+mi /home, etc&hellip; Eran un chroot de arch dentro de un debian desnudo. Corría i3 y
+levantaba con startx luego de entrar al chroot.</p>
+
+<p>Free BSD andaba por finales de la 9 y la 10 en el horno; si mal no recuerdo&hellip;
+Yo, me dedicaba a leer noticias y continuaba suscrito a la lista de freebsd en
+español; donde hacer top-posting se paga con la pena capital.</p>
+
+<p>Mientras tanto, perdía yo mi trabajo y paradógicamente recién adquiría una nueva
+laptop. Apostar por el recién abierto &ldquo;modelo de trabajo por cuenta propia&rdquo;; me
+costó perder mi empleo y quedarme sentado un buen rato. Instalé ArchLinux en la
+laptop nueva para conservar las configuraciones de la anterior. Para este
+entonces me consideraba usuario de archlinux &ldquo;por casualidad&rdquo;. Me soñaba como un
+feliz usuario de Fedora. Consideraba ya a Debian; única y expresamente una
+herramienta para servidores.</p>
+
+<p>A todas esas: ¿¿¿FreeBSD??? Relegado a: &ldquo;proyecto para cuando tenga tiempo&rdquo;</p>
+
+<p>El período más jodido de mi vida estaba aconteciendo en ese momento. No voy a
+escribir aquí mis problemas personales; pero hasta sin donde vivir me quedé. Por
+tanto, el único producto que podía ofrecer eran servidores con debian. A
+mediados del 2014, arranqué en el calixto, pero el ancho de vianda seguía siendo
+un problema; también el tema de la cuota. ¿¿FreeBSD?? Simplemente olvidado hasta
+entonces.</p>
+
+<p>A finales del 2016, me trajeron el servidor de gama media para remplazar el
+totem de servidores. Además, habían ampliado el susodicho ancho de vianda. Fue
+entonces cuando decidí, que el nuevo proxy, no podía quedarse mariado como le
+pasa al squid en linux; muchísimo menos con el micro tan poco potente del
+servidor (gama media).</p>
+
+<p>Para mi sopresa, FreeBSD andaba por la 11 (yo lo hacía por la 10 todavía) por lo
+lento que se desarrolla; el pobre. Ahora estoy muy contento con mi
+squid+squidGuard sobre FreeBSD 11. Que si bien también se marea, lo hace
+bastante poco y se recupera rápido.</p>
+
+<p>Por lo que veo ya no son tan retrógrados como antes; han mejorado mucho en ese
+aspecto, aunque siguen siendo una mirada al futuro desde el pasado. Mantienen la
+onda chea reflejada en su configuración; pero todo bien afinado, fresco y
+modernizado.</p>
+
+<p>Dejaron de ser retrógrados para convertirse en modernos pero anticuados.</p>
+
+<p>FreeBSD es un buen sistema operativo para los enemigos de systemd.</p>
+</div>
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">låzaro</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-01-28T23:39:52-05:00'><span class='date'>28/01/2017</span> <span class='time'>11:39 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/bsd/'>bsd</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2017/01/28/freebsd-11/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2017/01/28/freebsd-11/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/01/21/palito/" title="Previous Post: animación del palito">&laquo; animación del palito</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2017/02/01/ipfw-simple-y-consiso/" title="Next Post: ipfw simple y conciso">ipfw simple y conciso &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+
+	<h1>Lo m&aacute;s reciente</h1>
+
+	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/02/05/dns-con-vistas/">dns con vistas</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/02/01/ipfw-simple-y-consiso/">ipfw simple y conciso</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/01/28/freebsd-11/">mis crónicas con freebsd</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/01/21/palito/">animación del palito</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/01/20/datatables-espanol/">DataTables en español</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/01/09/tendencias-tecnologicas/">tendencias tecnológicas</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/01/09/flasheando-modem-al-s4/">flasheando modem al S4</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/01/02/rails-assets/">rails-assets</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/12/29/xgproyect/">xgproyect</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/12/27/cambiar-mac-a-un-nano/">cambiar mac a un nano</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/12/19/phpmyadmin-multiples-servidores/">phpmyadmin múltiples servidores</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/12/19/iptables-y-ftp/">iptables y ftp</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/12/09/rails-en-alpine/">rails en alpine</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/11/24/squid3-bloquear-user-agent/">squid3 bloquear user-agent</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/11/22/redimensionar-lvm/">redimensionar lvm</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/11/20/sysinfo-en-el-motd/">sysinfo en el motd</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/11/14/openvpn-user-plus-pass/">openvpn user+pass</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/el-domain-pop/">recolección DomainPOP</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/domainpop-con-postfix/">domainpop con postfix</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/tunel-6in4/">túnel 6in4</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/cortafuegos-ipv6-sencillo/">cortafuegos ipv6 sencillo</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/poniendo-direcciones-ipv6/">las reglas del juego ipv6</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/22/ipv6/">la resolución 185/2016</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/10/04/dirver-broadcom/">driver broadcom</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/09/22/audifonos-blutu/">audífonos blutú</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/09/16/dispatcher-script/">dispatcher script</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/08/16/password-de-windows/">password de windows</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en xen</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/07/31/kiwix-como-servicio/">kiwix como servicio</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/07/17/hibernar-en-archlinux/">hibernar en archlinux</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/07/17/rsync-basico/">rsync básico</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/06/20/correos-del-cron/">correos del cron</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/06/18/dkim-y-spf-en-postfix/">dkim y spf en postfix</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/06/06/desacelerar-mouse/">desacelerar mouse</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/05/12/deshabilitar-historial-de-bash/">deshabilitar historial de bash</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/04/29/reparar-archivos-de-innodb/">reparar archivos de innodb</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/04/01/wpa2-con-freeradius/">WPA2 con freeradius</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/03/14/misterio-con-ethernet-foxconn/">misterio con ethernet foxconn</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/03/07/cargar-rvm/">cargar rvm</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/02/22/data-confirm-en-un-boton/">data confirm en un boton</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/02/20/hooks-de-pacman/">los hooks de pacman</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/02/01/arch-compartir-paquetes/">arch compartir paquetes</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2016/01/25/hostname-arbitrario-en-bind9/">bind9, registro arbitratio</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/12/14/servidor-jabber-con-prosody/">servidor jabber con prosody</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/11/29/mc-demora-en-abrir/">mc demora en abrir</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/11/23/desmume-ultralento/">desmume ultralento</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/11/22/certificado-autofirmado/">certificado autofirmado</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/11/03/las-mujeres-gordas/">las mujeres gordas</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/11/03/tls-y-ssl-en-postfix/">tls y ssl en postfix</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/10/20/compartir-la-wifi/">compartir la wifi</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/10/18/systemd-timesyncd/">systemd-timesyncd</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/10/15/repo-de-fdroid/">repo de fdroid</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/10/05/assets-por-controlador/">assets por controlador</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/09/17/dhcp-por-grupos/">dhcp por grupos</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/09/10/plymouth-boot-screen/">plymouth boot screen</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/09/07/git-clone-rapido/">git clone rápido</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/09/07/archlinux-dos-kernel/">archlinux con dos kernel</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/09/01/squid-transparente/">squid transparente</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/08/28/compute-remote-uptime/">compute remote uptime</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/07/24/transliteracion-del-coran/">transliteración del corán</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/07/12/date-select-en-espanol/">date_select en español</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/07/11/openvas-en-archlinux/">OpenVAS en Archlinux</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/">añadir verbo a un scaffold</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/07/05/asset-pipeline-en-production/">asset pipeline en production</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/06/12/systemd-automount/">systemd automount</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/06/07/openvpn-en-arch/">OpenVPN en Arch</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/06/01/pacman-bajo-el-microscopio/">pacman bajo el microscopio</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/05/28/cambiar-user-agent-en-squid/">cambiar user agent con squid</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/05/26/nic-bonding/">NIC bonding</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/05/23/ltsp-en-debian8-y-salud/">ltsp en debian8 y salud</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/02/19/delay-pools-de-squid/">delay pools de squid</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/02/12/rails-con-mongodb/">rails con mongodb</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2015/02/06/zentyal/">Zentyal</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/12/02/welcome-aboard/">welcome aboard</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/09/24/verdial-y-el-imagis/">la pena de verdial</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/09/05/palos-de-wordpress/">palos de wordpress</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/08/25/mas-de-ocs/">más de OCS</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/08/15/subdesarrollo/">subdesarrollo</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/08/11/ocs-inventory/">ocs-inventory</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/07/08/select-en-bootstrap/">select en bootstrap</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/07/05/empirico/">empíricos</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/06/10/autenticador-sql-en-el-proxy/">autenticador SQL en el proxy</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/06/09/postfix-entrando-en-el-baile/">postfix entrando en el baile</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
+		</li>
+		
+	</ul>
+	
+</section>
+
+
+
+
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-68987437-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - låzaro -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'uranio-235';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2017/01/28/freebsd-11/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2017/01/28/freebsd-11/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-68987437-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+
+</body>
+</html>

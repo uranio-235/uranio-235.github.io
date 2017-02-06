@@ -10,7 +10,7 @@
 
   
   <meta name="description" content="rails-assets 02/01/2017 6:55 pm | Comments Gemas como twitter-bootstrap-rails, hacen que el trabajo con CSS complejas
-supuestamente se haga al click &hellip;">
+supuestamente se haga &ldquo; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -105,7 +105,7 @@ supuestamente se haga al click &hellip;">
 
 
 <div class="entry-content"><p>Gemas como twitter-bootstrap-rails, hacen que el trabajo con CSS complejas
-supuestamente se haga al click. Pero cuando deseas ir un poco más allá, por
+supuestamente se haga &ldquo;al click&rdquo;. Pero cuando deseas ir un poco más allá, por
 ejemplo, si quieres DataTables, notarás que tienes dos opciones, la primera,
 usar una gema desfasada (si hay, que casi siempre la hay, aunque buena para
 nada).</p>
@@ -122,11 +122,17 @@ automatizada en una gema de rails.</p>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span>  <span class="s1">&#39;https://rails-assets.org&#39;</span> <span class="k">do</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-bootstrap&#39;</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-underscore&#39;</span>
 </span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-DataTables&#39;</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-bootstrap&#39;</span>
 </span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-jquery-ui&#39;</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-stringjs&#39;</span>
 </span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-iCheck&#39;</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-jquery&#39;</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -139,11 +145,12 @@ una de las assets. Casi siempre es algo genérico al nombre, lo puedes intuir.</
 
 <p>De todas maneras, el fracasado proyecto de crear un jquery unobstructive;
 condujo a que jquery fuera expulsada del core de rails. Así que al parecer la
-tendencia de rails 5 en adelante, será usar las js aparte.</p>
+tendencia de rails 5 en adelante, será usar las js aparte. Más vale tener un
+buen jquery a mano.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -202,6 +209,22 @@ tendencia de rails 5 en adelante, será usar las js aparte.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/02/05/dns-con-vistas/">dns con vistas</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/02/01/ipfw-simple-y-consiso/">ipfw simple y conciso</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/01/28/freebsd-11/">mis crónicas con freebsd</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/01/21/palito/">animación del palito</a>

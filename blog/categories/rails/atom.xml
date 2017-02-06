@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-02-02T21:59:45-05:00</updated>
+  <updated>2017-02-05T23:07:15-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -72,7 +72,7 @@ buen desarrollador de rails, sabe que lo correcto sería usar la in API de i18n.
     <link href="http://uranio-235.github.io/blog/2016/12/09/rails-en-alpine/"/>
     <updated>2016-12-09T20:14:28-05:00</updated>
     <id>http://uranio-235.github.io/blog/2016/12/09/rails-en-alpine</id>
-    <content type="html"><![CDATA[<p>{% img right /images/shinkasen.jpg 400 500  %}</p>
+    <content type="html"><![CDATA[<p><img class="right" src="/images/shinkasen.jpg" width="400" height="500" title="" ></p>
 
 <p>Finalmente el boom de docker llegó a Cuba. En mi caso personal, hace rato lo uso
 para desplegar aplicaciones de Ruby on Rails y siempre me pareció que debian era

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: islam | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/islam/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-02-02T21:59:45-05:00</updated>
+  <updated>2017-02-05T23:07:15-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -62,7 +62,7 @@ que mejor aprender a leer árabe y listo.</p>
     <link href="http://uranio-235.github.io/blog/2015/06/21/se-dice-dios-no-ala/"/>
     <updated>2015-06-21T22:27:03-04:00</updated>
     <id>http://uranio-235.github.io/blog/2015/06/21/se-dice-dios-no-ala</id>
-    <content type="html"><![CDATA[<p>{% img right /images/ala.png 300 400  %}</p>
+    <content type="html"><![CDATA[<p><img class="right" src="/images/ala.png" width="300" height="400" title="" ></p>
 
 <p>Aunque el islam es algo poco común en cuba, cada día en el mundo, va tomando más
 fuerza. Nunca falta un curioso que se cree culto y te dice.</p>
@@ -71,9 +71,7 @@ fuerza. Nunca falta un curioso que se cree culto y te dice.</p>
 
 <p>Sin darse cuenta el disparate que están diciendo.</p>
 
-<p>   {% blockquote Wikipedia %}
-   Alá es la hispanización de la palabra árabe Al-lāh (الله), que en español significa <strong>Dios</strong>.
-   {% endblockquote %}</p>
+<p>   <blockquote><p>Alá es la hispanización de la palabra árabe Al-lāh (الله), que en español significa <strong>Dios</strong>.</p><footer><strong>Wikipedia</strong></footer></blockquote></p>
 
 <p>De hecho, los cristianos árabes (que hay) llaman a dios Alá, porque repito,
 <strong>significa dios LITERALMENTE</strong></p>
