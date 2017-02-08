@@ -105,8 +105,8 @@ funcional (statefull &hellip;">
 
 
 <div class="entry-content"><p>Las instrucciones para hacer un cortafuegos realmente <strong>SIMPLE</strong> y la vez
-funcional (statefull firewall) con ipfw; simplemente no existe, al menos de
-manera oficial. El cortafuegos ejemplificado en el handbook es bastante
+funcional (statefull firewall) con ipfw; sensillamente <em>&ldquo;no existen&rdquo;</em>, al menos
+No de manera oficial. El cortafuegos ejemplificado en el handbook es bastante
 complejo. Cosas como pasar los paquetes de conexiones relacionadas, hacer drop o
 &ldquo;reiniciar el cortafuegos&rdquo;, no se tomaron la molestia de documentarlas &ldquo;bien&rdquo;.
 Otras cosas como el filtrado por mac address, simplemente no funciona; a menos
@@ -122,6 +122,8 @@ añadiremos al <strong>/etc/rc.conf</strong></p>
 </span><span class='line'> <span class="nv">firewall_type</span><span class="o">=</span><span class="s2">&quot;/usr/local/etc/ipfw.rules&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p>Te recomiendo reiniciar ahora; para que todo se cargue correctamente.</p>
 
 <p>La <a href="https://www.freebsd.org/doc/handbook/firewalls-ipfw.html">documentación oficial</a> aclara que
 los firewall pueden ser (además) del tipo: open, client, simple, closed o
@@ -221,10 +223,70 @@ que en iptables sería DROP, debemos usar un action del tipo <strong>reset</stro
 hecho, hacer flush como primera linea puede causarte problemas muy serios. Por
 otro parte, reiniciar el cortafuegos sin hacer flush, provoca que se dupliquen
 las reglas.</p>
+
+<p>Al igual que iptables, que puede llegar a ser tan extrafalario como potente;
+ipfw, tiene cosas verdaderamente hermosas. Por ejemplo, en iptables hacíamos
+esto.</p>
+
+<figure class='code'><figcaption><span>&#8220;iptables&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>iptables -A INPUT -i eth0 -s 127.0.0.1/8 -j DROP
+</span><span class='line'>iptables -A INPUT -i eth0 -s 192.168.0.0/16 -j DROP
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Para evitar que direcciones provenientes de ip &ldquo;raras&rdquo; entraran a través de
+nuestro cortafuegos y nos hicieran un &ldquo;firewalking&rdquo;. Sin embargo, con ipfw,
+bastaría con:</p>
+
+<figure class='code'><figcaption><span>&#8220;ipfw&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw add deny ip from any to any not verrevpath in
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En iptables, hacemos DROP cuando queremos desechar paquetes. En ipfw hacemos
+<strong>reset</strong>; sin embargo, podemos hacer algo mucho más creativo. Por ejemplo,
+queremos hacer una putada y darle creer a alguien que haga ping en la LAN, que
+el servidor tiene muuuuucho tráfico. Esto desechará los paquetes con una
+probabilidad del 9%</p>
+
+<figure class='code'><figcaption><span>&#8220;ipfw&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw add prob 0.09 deny ip from any to any in
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Otro tema que le retraquetea el mango; es la gestión del ancho de vianda. Porque
+tc es asco. Sin embargo, si conocemos ipfw, sabremos que maneja el ancho de
+vianda de una menera muy peculiar. Este ejemplo, permite limitar el ancho de
+vianda para la red 192.168.1.0/24 a 128Kbit</p>
+
+<figure class='code'><figcaption><span>&#8220;ipfw&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw add pipe <span class="m">1</span> ip from 192.168.1.0/24 to any in via xn1
+</span><span class='line'>ipfw pipe <span class="m">1</span> config bw 128Kbit/s queue 25KBytes
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>O este otro, más estrafalario aún, permite limitar el ancho de vianda a cada
+host de manera individual. Además, en este ejemplo lo veremos de manera
+<strong>bidireccional</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;ipfw&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw add pipe <span class="m">1</span> ip from 192.168.2.0/24 to any out via xn1
+</span><span class='line'>ipfw add pipe <span class="m">2</span> ip from any to 192.168.2.0/24 in via xn1
+</span><span class='line'>ipfw pipe <span class="m">1</span> config mask src-ip 0x000000ff bw 200Kbit/s queue 20Kbytes
+</span><span class='line'>ipfw pipe <span class="m">2</span> config mask dst-ip 0x000000ff bw 200Kbit/s queue 20Kbytes
+</span></code></pre></td></tr></table></div></figure>
+
+
+
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
