@@ -221,7 +221,7 @@ la base de datos.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -320,7 +320,7 @@ cantaría.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -479,7 +479,7 @@ agarro y es que las Bases de datos, NO son sistemas de archivos.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -764,7 +764,212 @@ servidor para ver que pasa.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-04-18T21:14:10-04:00'><span class='date'>18/04/2014</span> <span class='time'>9:14 pm</span></time>
+        
+           | <a href="/blog/2014/04/18/lxc-en-salud/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/04/18/lxc-en-salud/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>¡Me han asignado mi segundo servidor en el calixto! Un cliente ligero con 2
+gigas de RAM, un buen micro y un disco duro de un tera. La fuente funciona de
+milagro y está sujeta al chásis mediante bridas.</p>
+
+<p>Le he instalado archlinux (para variar) a partir del que tengo en la laptop.
+Aquí pienso instalar el servidor de correo, un servidor web para una serie de
+aplicaciones y un pequeño servidor ftp para disponer instaladores y
+actualización de antivirus. No soporta virtualización (¿y con que se sienta la
+cucaracha si lo soportara?). Por tanto, usaremos archlinux como hypervisor de
+lxc.</p>
+
+<p>Por suerte, en infomed; hay un excelente repo de debian</p>
+
+<p>Para crear contenedores de debian en arch, necesitaremos <strong>debootstrap</strong>, que
+por suerte, viene en el repo de arch.</p>
+
+<figure class='code'><figcaption><span>&#8220;debootstrap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># pacman -Ss deboos</span>
+</span><span class='line'>community/debootstrap 1.0.88-1 <span class="o">[</span>installed<span class="o">]</span>
+</span><span class='line'>    Bootstrap a basic Debian system
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Este archlinux está instalado sobre BTRfs con el COW activado. Me imagino que
+crear snapshots de los contenedores sea mucho más óptimo.</p>
+
+<p>Creamos entonces el contenedor, usando el repo de infomed como mirror</p>
+
+<figure class='code'><figcaption><span>&#8220;lxc-create&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lxc-create -n debian -t <span class="se">\</span>
+</span><span class='line'>/usr/share/lxc/templates/lxc-debian -- -r jessie <span class="se">\</span>
+</span><span class='line'>--mirror<span class="o">=</span>http://ftp.sld.cu/debian <span class="se">\</span>
+</span><span class='line'>--security-mirror<span class="o">=</span>http://ftp.sld.cu/debian
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>O sea, crea un contenedor, llamado (-n) debian, del release (-r) jessie y usa
+como repo (&ndash;mirror y &ndash;security) al de infomed.</p>
+
+<p>Pasé toda la noche resando para que no se fuera a caer la conexión, ya que la
+operación create de LXC falla de nada. Por suerte todo salió de acorde al plan.</p>
+
+<figure class='code'><figcaption><span>&#8220;listo debian&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># du -hs /var/lib/lxc/</span>
+</span><span class='line'>248M  /var/lib/lxc/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La idea es, crear un snapshot del básico y restaurarlo con un nuevo nombre.</p>
+
+<p>Pero este está demasiado básico. DESNÚ más bien. Partiremos de ese contenedor
+como base para crear nuevos contenedores mediante snapshots. Así que a este le
+instalaremos una selección básica de software.
+Arrancamos el contenedor:</p>
+
+<figure class='code'><figcaption><span>&#8220;lxc-start&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-start -n debian</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y enclavamos (attach) la consola, o sea, básicamente, entramos al container</p>
+
+<figure class='code'><figcaption><span>&#8220;enclavando la consola&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-console -n debian</span>
+</span><span class='line'>
+</span><span class='line'>Connected to tty 1
+</span><span class='line'>       Type &lt;Ctrl+a q&gt; to <span class="nb">exit </span>the console, &lt;Ctrl+a Ctrl+a&gt; to enter Ctrl+a itself
+</span><span class='line'>
+</span><span class='line'>Debian GNU/Linux <span class="m">8</span> debian tty1
+</span><span class='line'>
+</span><span class='line'>debian login:
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Según la plantilla de archlinux, el password por defecto del container es
+&ldquo;root&rdquo;. Entramos al mismo y le cambiamos el password. Apto seguido, instalar el
+software.</p>
+
+<p>En mi opinión un container básico, requiere al menos:</p>
+
+<pre><code>mc, tmux, vim, aptitude, iputils-ping
+</code></pre>
+
+<p>Pero además, <em>puede que quizás te guste</em> añadirle:</p>
+
+<pre><code>manpages, resolvconf, telnet, iptables
+</code></pre>
+
+<p>Terminada la faena, damos logout y luego presionamos la combinación &ldquo;Ctrl+a q&rdquo;.
+O sea, &ldquo;control A&rdquo; primero, luego suelta ambas y presiona &ldquo;q&rdquo;. Con eso
+desenclavas (detach) la consola del container (que sigue corriendo).</p>
+
+<p>Bello verdad?! Linux es un sistema multitareas y multiusuario.</p>
+
+<p>Haremos un snapshot de <strong>debian</strong>, esto dará lugar a <strong>snap0</strong>. O sea primer,
+snapshot del container &ldquo;debian&rdquo;, lo podrás ver en <em>/var/lib/lxc/debian/snaps</em>.
+Ah! Para hacer un snapshot, <strong>paramos</strong> el container primero.</p>
+
+<figure class='code'><figcaption><span>&#8220;lxc-snapshot&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-stop -n debian </span>
+</span><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-snapshot -n debian </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y lo restauramos con el nombre del nuevo container</p>
+
+<figure class='code'><figcaption><span>&#8220;lxc-snapshot&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-snapshot -n debian -r snap0 -N mail</span>
+</span><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-snapshot -n debian -r snap0 -N web</span>
+</span><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-snapshot -n debian -r snap0 -N ftp</span>
+</span><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-ls -f</span>
+</span><span class='line'>NAME   STATE   AUTOSTART GROUPS IPV4 IPV6
+</span><span class='line'>debian STOPPED <span class="m">0</span>         -      -    -
+</span><span class='line'>mail   STOPPED <span class="m">0</span>         -      -    -
+</span><span class='line'>ftp    STOPPED <span class="m">0</span>         -      -    -
+</span><span class='line'>web    STOPPED <span class="m">0</span>         -      -    -
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya tenemos las tres máquinas. Por lo tanto, NO vale la pena conservar el
+snapshot ni la máquina base (¿o sí?). Yo opté por borrar ambos.</p>
+
+<figure class='code'><figcaption><span>&#8220;limpiando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-snapshot -n debian -d snap0</span>
+</span><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-destroy -n debian</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No vale pena tener ssh corriendo en los contenedores. Simplemente le haces ssh
+al servidor y attach al contenedor. Esto lo hace incluso hasta más seguro.</p>
+
+<p>La mecánica de trabajo en este esquema, es prácticamente la misma que vimos
+ahora. Arrancar el container y enclavar la consola.</p>
+
+<p>¿Notaste que puse a iptables como paquete opcional? Pues el iptables del
+hypervisor, o sea, del arch de afuera, controla todo el tráfico.</p>
+
+<p>Como no usamos red en bridge, todos los container tiran por la misma ip. En el
+servido web, se usa el puerto 80 y 443, en el de correo el 25 y 110; <strong>pero
+todos en la misma ip</strong>. Por esta razón, no corro ssh en los contenedores;
+diría que el puerto 22 ya se encuentra en eso.</p>
+
+<p>Por otra parte, cosas como el mysql, que el servidor de correo necesita
+encuestarlo, simplemente, podrías ponerlo a escuchar por la 127.0.0.1 y así el
+container del servidor sql, escucha por la 127 y los demás container (incluso el
+hypervisor) se conectan a la 127.0.0.1 donde está el mysql.</p>
+
+<p>Podemos confiarle ahora, a la frescura y robusteza de archlinux, la estabilidad
+de debian.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -857,72 +1062,13 @@ caso, con uno solo basta. Veamos de cerca la configuración.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-04-04T21:42:40-04:00'><span class='date'>04/04/2014</span> <span class='time'>9:42 pm</span></time>
-        
-           | <a href="/blog/2014/04/04/en-la-cumbre-del-vedado/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/04/04/en-la-cumbre-del-vedado/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>En la punta de loma más temida y respetada por cualquiera que estudie medicina;
-y en lo más alto de la educación Cubana, se encuentra:</p>
-
-<h3>El Hospital Universitario Calixto García</h3>
-
-<p>Se yergue sobre el resto de las instituciones de salud, por su altura sobre el
-nivel del mar; en comparación con el resto de otros hospital.</p>
-
-<p>Hace poco respondí con mucho estupor a la pregunta &ldquo;¿donde estás trabajando?&rdquo; y
-no fue hasta que escuche mi propia voz diciendo &ldquo;en el calisto&rdquo;; cuando hice
-consciencia del asunto. Al otro día me paré al fondo de la oficina y pensé:
-&ldquo;¿que hago yo aquí?&rdquo;. Salud para mi siempre había sido una asíntota. Estaba
-seguro que por cosas del destino, debía mantenerme al margen del MINSAP &ldquo;donde
-se come no se caga&rdquo;. Además, siempre dije que salud era el último lugar en el
-que trabajaría, quizás porque tantas personas me lo recomendaban.</p>
-
-<p>Tanto tiempo proveyéndole ayuda a los usuarios de infomed, sin imaginarme lo que
-me reservaba el destino. Nunca me imaginé que me sentiría TAN BIEN en algún
-lugar, me gusta como pasa el tiempo aquí.</p>
-
-<p>Creo que el Calixto será un antes y un después en mi vida profesional.</p>
-
-<p>Detrás del proxy de infomed, la vida es dura. Enferntaré las miserias
-tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
-
-<p>Esta primera entrada, marca el último día de mi antiguo blog: <a href="http://otherlinuxblog.blogspot.com">puheroska</a></p>
-
-<p>   <blockquote><p>Los ricos que viven de su patrimonio<br/>   no pueden hablar de &ldquo;su trabajo&rdquo;.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
-</div>
-  
-  
-
-
 <p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
   <div class="pagination">
+    
+      <a class="prev" href="/posts/17">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
@@ -1312,6 +1458,10 @@ tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
 		
 		<li class="post">
 			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
 		</li>
 		
 		<li class="post">

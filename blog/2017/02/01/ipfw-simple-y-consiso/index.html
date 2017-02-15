@@ -206,7 +206,7 @@ La interfaz xn0 es la WAN y xn1 es la LAN.</p>
 </span><span class='line'>ipfw -q add allow tcp from any to any dst-port <span class="m">80</span> via xn0
 </span><span class='line'>
 </span><span class='line'><span class="c"># descarta el resto</span>
-</span><span class='line'>ipfw -q add reset
+</span><span class='line'>ipfw -q add drop all from any to any
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -720,6 +720,10 @@ host de manera individual. Además, en este ejemplo lo veremos de manera
 		
 		<li class="post">
 			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
 		</li>
 		
 		<li class="post">
