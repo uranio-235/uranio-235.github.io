@@ -183,8 +183,6 @@ La interfaz xn0 es la WAN y xn1 es la LAN.</p>
 <span class='line-number'>18</span>
 <span class='line-number'>19</span>
 <span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># para afuera todo</span>
 </span><span class='line'>ipfw -q add allow all from any to any out
 </span><span class='line'>
@@ -192,9 +190,7 @@ La interfaz xn0 es la WAN y xn1 es la LAN.</p>
 </span><span class='line'>ipfw -q add allow all from any to any via lo0
 </span><span class='line'>
 </span><span class='line'><span class="c"># las conexiones que ya estén iniciadas, tíralas</span>
-</span><span class='line'>ipfw -q add check-state
 </span><span class='line'>ipfw -q add allow tcp from any to any established
-</span><span class='line'>ipfw -q add allow all from any to any out keep-state
 </span><span class='line'>
 </span><span class='line'><span class="c"># permite que te hagan ping desde la LAN con la ip</span>
 </span><span class='line'>ipfw -q add allow icmp from 10.1.1.0/24 to any via xn1
