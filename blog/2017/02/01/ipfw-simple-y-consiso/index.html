@@ -183,10 +183,8 @@ La interfaz xn0 es la WAN y xn1 es la LAN.</p>
 <span class='line-number'>18</span>
 <span class='line-number'>19</span>
 <span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># para afuera todo</span>
-</span><span class='line'>ipfw -q add allow all from any to any out
-</span><span class='line'>
-</span><span class='line'><span class="c"># permite todo por el localhost</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># permite todo por el localhost</span>
 </span><span class='line'>ipfw -q add allow all from any to any via lo0
 </span><span class='line'>
 </span><span class='line'><span class="c"># las conexiones que ya estén iniciadas, tíralas</span>
@@ -201,8 +199,12 @@ La interfaz xn0 es la WAN y xn1 es la LAN.</p>
 </span><span class='line'><span class="c"># permite el servidor web pero solo deade la WAN</span>
 </span><span class='line'>ipfw -q add allow tcp from any to any dst-port <span class="m">80</span> via xn0
 </span><span class='line'>
-</span><span class='line'><span class="c"># descarta el resto</span>
+</span><span class='line'><span class="c"># descarta el resto de los paquetes ENTRANTES</span>
 </span><span class='line'>ipfw -q add drop all from any to any
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c"># finalmente, PA AFUERA, permitimos todo</span>
+</span><span class='line'>ipfw -q add allow all from any to any out
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -249,36 +251,26 @@ probabilidad del 9%</p>
 
 <p>Otro tema que le retraquetea el mango; es la gestión del ancho de vianda. Porque
 tc es asco. Sin embargo, si conocemos ipfw, sabremos que maneja el ancho de
-vianda de una menera muy peculiar. Este ejemplo, permite limitar el ancho de
-vianda para la red 192.168.1.0/24 a 128Kbit</p>
+vianda de una menera muy peculiar usando un módulo llamado dummynet. Este
+ejemplo, permite limitar el ancho de vianda para la red 192.168.1.0/24 a 128Kbit</p>
 
 <figure class='code'><figcaption><span>&#8220;ipfw&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw add pipe <span class="m">1</span> ip from 192.168.1.0/24 to any in via xn1
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 192.168.1.0/24 out via xn0
 </span><span class='line'>ipfw pipe <span class="m">1</span> config bw 128Kbit/s queue 25KBytes
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>O este otro, más estrafalario aún, permite limitar el ancho de vianda a cada
-host de manera individual. Además, en este ejemplo lo veremos de manera
-<strong>bidireccional</strong></p>
+<p>Pero <strong>OJO</strong>, la regla machea la salida. Si la colocaras debajo de la regla que
+permite todo hacia afuera, simplemente, no pinchará porque no machea. Mache la
+regla de salida y nunca va al pipe. Debes poner el pipe arriba. De esta manera
+el paquete va al pipe y luego regresa al cortafuegos.</p>
 
-<figure class='code'><figcaption><span>&#8220;ipfw&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw add pipe <span class="m">1</span> ip from 192.168.2.0/24 to any out via xn1
-</span><span class='line'>ipfw add pipe <span class="m">2</span> ip from any to 192.168.2.0/24 in via xn1
-</span><span class='line'>ipfw pipe <span class="m">1</span> config mask src-ip 0x000000ff bw 200Kbit/s queue 20Kbytes
-</span><span class='line'>ipfw pipe <span class="m">2</span> config mask dst-ip 0x000000ff bw 200Kbit/s queue 20Kbytes
-</span></code></pre></td></tr></table></div></figure>
-
-
-
+<p>O sea, intenta poner siempre los pipe arriba y el cortafuegos abajo</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
