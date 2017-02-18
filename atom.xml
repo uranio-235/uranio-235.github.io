@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-02-17T13:32:01-05:00</updated>
+  <updated>2017-02-18T13:40:07-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -252,10 +252,7 @@ que ninguna pinche.</p>
     <content type="html"><![CDATA[<p>Las instrucciones para hacer un cortafuegos realmente <strong>SIMPLE</strong> y la vez
 funcional (statefull firewall) con ipfw; sensillamente <em>&ldquo;no existen&rdquo;</em>, al menos
 No de manera oficial. El cortafuegos ejemplificado en el handbook es bastante
-complejo. Cosas como pasar los paquetes de conexiones relacionadas, hacer drop o
-&ldquo;reiniciar el cortafuegos&rdquo;, no se tomaron la molestia de documentarlas &ldquo;bien&rdquo;.
-Otras cosas como el filtrado por mac address, simplemente no funciona; a menos
-que hagas un ritual previo que NO está documentado en el man.</p>
+ortodoxo y no muestra la flexibilidad de ipfw.</p>
 
 <p>Para empezar, el módulo debe ser cargado en el kernel, así que inicializaremos
 ipfw como si fuera un demonio más del sistema. Esto quiere decir que lo
@@ -276,8 +273,8 @@ UNKNOWN. Sin embargo, <strong>en mi opinión</strong> estas configuraciones pref
 son suficiente para un servidor (por ejemplo proxy).</p>
 
 <p>Para mantener la armonía chea y anticuada de freebsd; colocamos el cortafuegos
-en el /etc dentro /usr/local/. Ten en cuenta que casi todas las aplicaciones que
-instales, tendrán su /etc ahí.</p>
+en el etc/ que está bajo /usr/local/. Ten en cuenta que casi todas las
+aplicaciones que instales, tendrán su /etc ahí.</p>
 
 <p>Reiniciar ipfw no es tan jamón como un usuario de iptables haría. Hacer un flush
 de las reglas, significa quedarse trancado y perder la conexión por ssh. Para
@@ -302,8 +299,28 @@ cortafuegos</p>
 
 <p>La documentación oficial (y otras muchas) indican que cada regla se cree
 enumerada y que bebes mantener esta numeración manualmente. Sin embargo, esto no
-es estrictamente necesario. Cada regla incrementará el número de una manera
-automáticamente curiosa.</p>
+es estrictamente necesario. Cada regla incrementará el número de manera
+implícita.</p>
+
+<p>La mecánica de ipfw es más sencilla que cualquier firewall de linux en mi
+opinión.</p>
+
+<p>ipfw add accion argumento</p>
+
+<p>Algo de lo que linux se ha alejado mucho es el teorema de KISS. De esta manera,
+la acción allow, en su forma más simple, es casi lenguaje natural.</p>
+
+<p><strong>ipfw add allow all from 10.99 to me</strong></p>
+
+<p>O sea, permite todo lo que venga de 10.0.0.1 para mi. Pero podemos hacer algo
+más discriminatorio.</p>
+
+<p><strong>ipfw add allow tcp from 10.0.0.99 to 10.0.0.1 dst-port 22 in via xn0</strong></p>
+
+<p>Permite el tráfico tcp de 10.99 para 10.1 (mi ip quizás) que valla para el
+puerto 22 en sentido entrante (in) por al interfaz (via) xn0</p>
+
+<p>¿Te la llevaste? Jamón de pollo! ¿Verdad?</p>
 
 <p>Veamos pues un <strong>ipfw.rules</strong> bien básico. La interfaz <strong>lo0</strong> es el localhost.
 La interfaz xn0 es la WAN y xn1 es la LAN.</p>
@@ -329,24 +346,36 @@ La interfaz xn0 es la WAN y xn1 es la LAN.</p>
 <span class='line-number'>19</span>
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># permite todo por el localhost</span>
 </span><span class='line'>ipfw -q add allow all from any to any via lo0
 </span><span class='line'>
-</span><span class='line'><span class="c"># las conexiones que ya estén iniciadas, tíralas</span>
+</span><span class='line'><span class="c"># las conexiones que ya estén iniciadas, pásalas</span>
+</span><span class='line'><span class="c"># compara eso con el de iptables</span>
 </span><span class='line'>ipfw -q add allow tcp from any to any established
 </span><span class='line'>
-</span><span class='line'><span class="c"># permite que te hagan ping desde la LAN con la ip</span>
-</span><span class='line'>ipfw -q add allow icmp from 10.1.1.0/24 to any via xn1
+</span><span class='line'><span class="c"># permite que te hagan ping desde la LAN </span>
+</span><span class='line'><span class="c"># pero no mucho icmp para que no hagan flood</span>
+</span><span class='line'>ipfw pipe <span class="m">1</span> config bw 30KBytes
+</span><span class='line'>ipfw -q add pipe <span class="m">1</span> icmp from 192.168.1.0/24 to me in via xn1
+</span><span class='line'>ipfw -q add allow  icmp from 192.168.1.0/24 to me in via xn1
 </span><span class='line'>
 </span><span class='line'><span class="c"># permite que accedan al proxy desde la LAN</span>
-</span><span class='line'>ipfw -q add allow tcp from any to any dst-port <span class="m">3128</span> via xn1
+</span><span class='line'>ipfw -q add allow tcp from 192.168.1.0/24 to me <span class="m">3128</span> via xn1
 </span><span class='line'>
 </span><span class='line'><span class="c"># permite el servidor web pero solo deade la WAN</span>
-</span><span class='line'>ipfw -q add allow tcp from any to any dst-port <span class="m">80</span> via xn0
+</span><span class='line'><span class="c"># en este caso &quot;me&quot; será la ip de la WAN</span>
+</span><span class='line'>ipfw -q add allow tcp from any to me dst-port <span class="m">80</span> via xn0
 </span><span class='line'>
 </span><span class='line'><span class="c"># descarta el resto de los paquetes ENTRANTES</span>
+</span><span class='line'><span class="c"># esta regla casi nunca es necesaria, ya que</span>
+</span><span class='line'><span class="c"># suele ser implícita, o sea, drop por defecto</span>
 </span><span class='line'>ipfw -q add drop all from any to any
-</span><span class='line'>
 </span><span class='line'>
 </span><span class='line'><span class="c"># finalmente, PA AFUERA, permitimos todo</span>
 </span><span class='line'>ipfw -q add allow all from any to any out
@@ -355,63 +384,119 @@ La interfaz xn0 es la WAN y xn1 es la LAN.</p>
 
 <p>Veamos algunas características de este cortafuegos&hellip;</p>
 
-<p>La salida, por definición, está bloqueada. La primera regla; autoriza la salida
-del tráfico.</p>
+<p>Como ven, no arranca haciendo flush como los de iptables. De hecho, hacer flush
+como primera linea puede causarte problemas muy serios. Por otro parte,
+reiniciar el cortafuegos sin hacer flush, provoca que se dupliquen las reglas.</p>
 
-<p>Como ven, este cortafuegos no arranca haciendo flush como los de iptables. De
-hecho, hacer flush como primera linea puede causarte problemas muy serios. Por
-otro parte, reiniciar el cortafuegos sin hacer flush, provoca que se dupliquen
-las reglas.</p>
+<p>La salida, por definición, está bloqueada. La última regla; autoriza la salida
+del tráfico. ¿Por qué la última? ¿Por qué no al principio? Pues por si hacemos
+un pipe de salida. Aveces regular el ancho de banda de salida, es más útil que
+regular el de entrada. Por ejemplo, si queremos moderar la cantidad de tráfico
+que un servidor web exporta. Más adelante veremos dummynet y los pipe.</p>
 
-<p>Al igual que iptables, que puede llegar a ser tan extrafalario como potente;
-ipfw, tiene cosas verdaderamente hermosas. Por ejemplo, en iptables hacíamos
-esto.</p>
+<p>En iptables, hacemos DROP cuando queremos desechar paquetes. En ipfw usamos
+<strong>deny</strong>, aunque también puedes usar <strong>drop</strong> que es sinónimo de deny. El
+cortafuego lo sustituirá por deny. Lo puedes ver al usar: ipfw show</p>
 
-<figure class='code'><figcaption><span>&#8220;iptables&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>Note que &ldquo;<strong>from me</strong>&rdquo; para ipfw, significa un paquete que provenga de cualquiera de
+las ip que tiene configurada el servidor. En este caso, la interfaz xn0 debe
+tener alguna de la red 192.168.1.0/24 así que <strong>me</strong> será dicha ip.</p>
+
+<p>Una característica de ipfw <strong>bien peligrosa</strong> es que tiene muchas cosas
+<strong>implícitas</strong>. Como lo de la numeración. Cuando digo implícita me refrito a que
+si no las pones, ipfw las asume. Fíjate bien como se maneja el tema de los
+puertos en la siguientes reglas.</p>
+
+<figure class='code'><figcaption><span>&#8220;ipfw dst-port&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iptables -A INPUT -i eth0 -s 127.0.0.1/8 -j DROP
-</span><span class='line'>iptables -A INPUT -i eth0 -s 192.168.0.0/16 -j DROP
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># permite que accedan al proxy desde la LAN</span>
+</span><span class='line'>ipfw -q add allow tcp from 192.168.1.0/24 to me <span class="m">3128</span> via xn1
+</span><span class='line'>
+</span><span class='line'><span class="c"># permite el servidor web pero solo deade la WAN</span>
+</span><span class='line'><span class="c"># en este caso &quot;me&quot; será la ip de la WAN</span>
+</span><span class='line'>ipfw -q add allow tcp from any to me dst-port <span class="m">80</span> via xn0
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Para evitar que direcciones provenientes de ip &ldquo;raras&rdquo; entraran a través de
-nuestro cortafuegos y nos hicieran un &ldquo;firewalking&rdquo;. Sin embargo, con ipfw,
-bastaría con:</p>
+<p>En la primera regla, declaramos &ldquo;<strong>me 3128</strong>&rdquo;, esto significa &ldquo;para mi ip por el
+puerto 3128&rdquo;. Realmente ipfw lo reescribe (puedes verlo con &ldquo;show&rdquo;) y pondrá la
+cláusula <strong>dst-port</strong> al igual que la siguiente linea, detrás de <strong>me</strong> viene la
+cláusula <strong>dst-port</strong> seguida por el puerto. Pero si no la pones, se asume como
+implícita. En poca palabras:</p>
 
-<figure class='code'><figcaption><span>&#8220;ipfw&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw add deny ip from any to any not verrevpath in
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En iptables, hacemos DROP cuando queremos desechar paquetes. En ipfw hacemos
-<strong>reset</strong>; sin embargo, podemos hacer algo mucho más creativo. Por ejemplo,
-queremos hacer una putada y darle creer a alguien que haga ping en la LAN, que
-el servidor tiene muuuuucho tráfico. Esto desechará los paquetes con una
-probabilidad del 9%</p>
-
-<figure class='code'><figcaption><span>&#8220;ipfw&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw add prob 0.09 deny ip from any to any in
-</span></code></pre></td></tr></table></div></figure>
-
+<p>&ldquo;to me 3128&rdquo; y &ldquo;to me dst-port 3128&rdquo; es exactamente lo mismo.</p>
 
 <p>Otro tema que le retraquetea el mango; es la gestión del ancho de vianda. Porque
-tc es asco. Sin embargo, si conocemos ipfw, sabremos que maneja el ancho de
-vianda de una menera muy peculiar usando un módulo llamado dummynet. Este
-ejemplo, permite limitar el ancho de vianda para la red 192.168.1.0/24 a 128Kbit</p>
+tc de iproute (en linux) es un asco. Pero si conocemos ipfw, sabremos que maneja
+el ancho de vianda de una menera muy peculiar; usando un módulo llamado
+dummynet. No esperes ver la palabra &ldquo;dummynet&rdquo; escrita en el cortafuegos. En
+fin; analiza este ejemplo:</p>
 
-<figure class='code'><figcaption><span>&#8220;ipfw&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>&#8220;ipfw y dummynet&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 192.168.1.0/24 out via xn0
-</span><span class='line'>ipfw pipe <span class="m">1</span> config bw 128Kbit/s queue 25KBytes
+</span><span class='line'>ipfw pipe <span class="m">1</span> config bw 128KBytes
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Pero <strong>OJO</strong>, la regla machea la salida. Si la colocaras debajo de la regla que
-permite todo hacia afuera, simplemente, no pinchará porque no machea. Mache la
-regla de salida y nunca va al pipe. Debes poner el pipe arriba. De esta manera
-el paquete va al pipe y luego regresa al cortafuegos.</p>
+<p>Se crea el pipe número 1, con un ancho de banda de 128 KyloBytes. En la regla de
+arriba, se dijo que todo el tráfico de la interfaz xn0, proveniente de el
+servidor hacia la red 192.168.1.0/24 y en sentido saliente; será a 128K. O sea,
+modificamos el ancho de banda <strong>que sale</strong> del servidor, lo cual es bastante
+útil para un servidor web o ftp.</p>
 
-<p>O sea, intenta poner siempre los pipe arriba y el cortafuegos abajo</p>
+<p>En el caso de un servidor proxy, no vale la pena modificar el ancho de banda de
+<strong>salida</strong>, ya que las páginas son enviadas al cliente una vez bajadas y si ya
+nos hicimos el arakiri de bajarla: ¿Pa que demorarlas más? Para un servidor
+proxy usamos una regla bidireccional. O sea, creamos el pipe 1 y el pipe 2 con
+igual o diferente ancho de banda y aplicamos una regla pa afuera y otra pa
+adentro.</p>
+
+<p>Tenga en cuenta que el las conexiones HDSL tiene más ancho de vianda pa abajo
+que pa arriba. Osea, que salida a la WAN (el router) debe ser más estrecha que
+salida a la LAN.</p>
+
+<p>En un servidor de correo sí sería útil regular la entrada, ya que hay gente que
+manda elefantes por el puerto 25. Sobre todo en redes conmutadas o muy lentas.
+También sería útil moderar la entrada en un servidor que involucre subida de
+ficheros, por ejemplo, una nube, un servidor de carpetas compartidas.</p>
+
+<p>Ah! por cierto:</p>
+
+<p>Si crearas un pipe y le dijeras que 3 ip, lo usan, el ancho de vianda sería
+compartido para esas 3 ip. O sea</p>
+
+<figure class='code'><figcaption><span>&#8220;ipfw y dummynet&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 192.168.1.10/24 out via xn0
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 192.168.1.11/24 out via xn0
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 192.168.1.12/24 out via xn0
+</span><span class='line'>ipfw pipe <span class="m">1</span> config bw 128KBytes
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En este caso, 10, 11 y 12, tienen un total de 128KB/s, si 10 acapara todo el
+ancho de banda (los 128) entonces 11 y 12 tendrán unos bellos timeout como
+respuesta. Piensa en todo lo que puedes hacer con eso.</p>
+
+<p><strong>OJO CON EL ÓRDEN!!!</strong></p>
+
+<p>Esa regla machea <strong>la salida</strong>. Si la colocaras <strong>debajo</strong> de la regla que
+permite todo hacia afuera, simplemente, <strong>no pinchará</strong> porque <strong>no machea</strong>.
+Coge por la regla de salida y nunca va al pipe. Como diría los yumas &ldquo;rule of
+thumbs&rdquo;</p>
+
+<p><strong>Las reglas que envían el tráfico al pipe, debes ponerlas arriba de la regla
+&ldquo;destino final&rdquo; del paquete.</strong></p>
+
+<p>De esta manera el paquete va al pipe y luego regresa al cortafuegos. O sea,
+intenta poner siempre los pipe arriba y el cortafuegos abajo</p>
 ]]></content>
   </entry>
   
@@ -440,14 +525,15 @@ permite un manejo del ancho de banda con una simpleza que ya quisiera <strong>tc
 solo pipe puede tener valores diferentes para su ancho de banda, encolamiento y
 delay.</p>
 
-<p>Por otra parte, el sistema de <a href="https://www.freebsd.org/doc/handbook/jails.html">jails</a>
-es un batazo. Sobre todo en ambientes donde te ves obligado a meter la pata y no
-dispones de virtualización. Los jails combinado con ZFS, permiten hacer cosas
-alucinantes.</p>
+<p>Por otra parte, el sistema de
+<a href="https://www.freebsd.org/doc/handbook/jails.html">jails</a> es un batazo. Sobre
+todo en ambientes donde te ves obligado a meter la pata y no dispones de
+virtualización. Lo único equivalente a esto en linux, seraá LXC, pero no es ni
+la chancleta. Los jails combinado con ZFS, permiten hacer cosas alucinantes.</p>
 
 <p>El gestor de paquetes ha mejorado muchísimo. En cuanto a resolución de
 dependencias y velocidad. Lo han optimizado bastante en mi opinión y ahora
-maneja mejor el tema de las redes lentas.</p>
+maneja mejor el tema de las redes lentas; sobre todo detrás de proxy.</p>
 
 <p>Cada versión nueva que sale la pruebo; y aunque había hecho mis cositas con él,
 siempre acababa dejándolo de lado por el tema del ancho de banda. Cualquier
