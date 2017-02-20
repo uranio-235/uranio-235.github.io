@@ -4,7 +4,7 @@
   <title><![CDATA[Category: bsd | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/bsd/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-02-18T13:40:07-05:00</updated>
+  <updated>2017-02-20T16:35:26-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -41,7 +41,7 @@ delay.</p>
 <p>Por otra parte, el sistema de
 <a href="https://www.freebsd.org/doc/handbook/jails.html">jails</a> es un batazo. Sobre
 todo en ambientes donde te ves obligado a meter la pata y no dispones de
-virtualización. Lo único equivalente a esto en linux, seraá LXC, pero no es ni
+virtualización. Lo único equivalente a esto en linux, sería LXC, pero no es ni
 la chancleta. Los jails combinado con ZFS, permiten hacer cosas alucinantes.</p>
 
 <p>El gestor de paquetes ha mejorado muchísimo. En cuanto a resolución de
@@ -83,16 +83,18 @@ costó perder mi empleo y quedarme sentado un buen rato. Instalé ArchLinux en l
 laptop nueva para conservar las configuraciones de la anterior. Para este
 entonces me consideraba usuario de archlinux &ldquo;por casualidad&rdquo;. Me soñaba como un
 feliz usuario de Fedora. Consideraba ya a Debian; única y expresamente una
-herramienta para servidores.</p>
-
-<p>A todas esas: ¿¿¿FreeBSD??? Relegado a: &ldquo;proyecto para cuando tenga tiempo&rdquo;</p>
+herramienta para servidores. Seguía teniendo a FreeBSD en al mira, pero para
+cuando consiguiera un trabajo con un internet &ldquo;decente&rdquo; y tuviera algo de
+tiempo.</p>
 
 <p>El período más jodido de mi vida estaba aconteciendo en ese momento. No voy a
-escribir aquí mis problemas personales; pero hasta sin donde vivir me quedé. Por
-tanto, el único producto que podía ofrecer eran servidores con debian. A
-mediados del 2014, arranqué en el calixto, pero el ancho de vianda seguía siendo
-un problema; también el tema de la cuota. ¿¿FreeBSD?? Simplemente olvidado hasta
-entonces.</p>
+escribir aquí mis problemas personales; pero a modo de resumen diré que la
+última enfermera que tuve como pareja me calló a tarros y la casa donde nací, la
+vendieron sin decirme nada. Al estilo país capitalista &ldquo;me quede en la calle&rdquo;.
+Con el ánimo y la autoestima en el piso; el único producto que podía ofrecer
+eran servidores con debian. A mediados del 2014, empecé en el calixto, de vuelta
+al trabajo estatal. El ancho de vianda seguía siendo un problema; también el
+tema de la cuota. FreeBSD seguía &ldquo;pospuesto pero no olvidado&rdquo;.</p>
 
 <p>A finales del 2016, me trajeron el servidor de gama media para remplazar el
 totem de servidores. Además, habían ampliado el susodicho ancho de vianda. Fue
@@ -101,18 +103,16 @@ pasa al squid en linux; muchísimo menos con el micro tan poco potente del
 servidor (gama media).</p>
 
 <p>Para mi sopresa, FreeBSD andaba por la 11 (yo lo hacía por la 10 todavía) por lo
-lento que se desarrolla; el pobre. Ahora estoy muy contento con mi
-squid+squidGuard sobre FreeBSD 11. Que si bien también se marea, lo hace
-bastante poco y se recupera rápido.</p>
+lento que se desarrolla; el pobre. Ahora estoy muy contento con mi squid sobre
+FreeBSD 11. Que si bien también se marea, lo hace bastante poco y se recupera
+rápido.</p>
 
 <p>Por lo que veo ya no son tan retrógrados como antes; han mejorado mucho en ese
 aspecto, aunque siguen siendo una mirada al futuro desde el pasado. Mantienen la
 onda chea reflejada en su configuración; pero todo bien afinado, fresco y
-modernizado.</p>
+modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
 
 <p>Dejaron de ser retrógrados para convertirse en modernos pero anticuados.</p>
-
-<p>FreeBSD es un buen sistema operativo para los enemigos de systemd.</p>
 ]]></content>
   </entry>
   

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: destacado | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/destacado/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-02-18T13:40:07-05:00</updated>
+  <updated>2017-02-20T16:35:26-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -48,11 +48,11 @@ reiniciar el cortafuegos, deberás tener un script que haga flush y además,
 reiniciar el servicio. Este scriptsito me lo hice para la faena de toquetear el
 cortafuegos</p>
 
-<pre><code class="bash "/usr/local/bin/reiniciar_ipfw.sh"">#!/bin/csh
-service ipfw stop
-ipfw -q flush
-service ipfw start
-ipfw show
+<pre><code class="bash "/usr/local/bin/reiniciar_ipfw.sh""> #!/bin/csh
+ service ipfw stop
+ ipfw -q flush
+ service ipfw start
+ ipfw show
 </code></pre>
 
 <p>La documentación oficial (y otras muchas) indican que cada regla se cree
@@ -63,10 +63,15 @@ implícita.</p>
 <p>La mecánica de ipfw es más sencilla que cualquier firewall de linux en mi
 opinión.</p>
 
-<p>ipfw add accion argumento</p>
+<p><strong>ipfw add accion argumento</strong></p>
 
-<p>Algo de lo que linux se ha alejado mucho es el teorema de KISS. De esta manera,
-la acción allow, en su forma más simple, es casi lenguaje natural.</p>
+<p>Si ya conoces <strong>ufw</strong>, te darás cuenta de que es una copia bastante mala de
+ipfw, sobre todo; teniendo cuenta que ipfw es un firewall en sí, mientras que
+ufw, es un stack que genera instrucciones de iptables.</p>
+
+<p>Algo de lo que linux se ha alejado mucho es el teorema de KISS, pero en BSD, que
+es unix ortodoxo, mantiene la simpleza como pilar. De esta manera, una acción
+allow, en su forma más simple, es casi lenguaje natural.</p>
 
 <p><strong>ipfw add allow all from 10.99 to me</strong></p>
 
@@ -75,41 +80,41 @@ más discriminatorio.</p>
 
 <p><strong>ipfw add allow tcp from 10.0.0.99 to 10.0.0.1 dst-port 22 in via xn0</strong></p>
 
-<p>Permite el tráfico tcp de 10.99 para 10.1 (mi ip quizás) que valla para el
-puerto 22 en sentido entrante (in) por al interfaz (via) xn0</p>
+<p>Permite el tráfico tcp de 10.99 para 10.1 que valla para el puerto 22 en sentido
+entrante (in) por la interfaz (via) xn0</p>
 
 <p>¿Te la llevaste? Jamón de pollo! ¿Verdad?</p>
 
-<p>Veamos pues un <strong>ipfw.rules</strong> bien básico. La interfaz <strong>lo0</strong> es el localhost.
-La interfaz xn0 es la WAN y xn1 es la LAN.</p>
+<p>Veamos pues un <strong>ipfw.rules</strong> bien básico. La interfaz <strong>lo0</strong> (lo con un cero)
+es el localhost. La interfaz xn0 es la WAN y xn1 es la LAN.</p>
 
-<pre><code class="bash "ipfw.rules""># permite todo por el localhost
-ipfw -q add allow all from any to any via lo0
+<pre><code class="bash "ipfw.rules""> # permite todo por el localhost
+ ipfw -q add allow all from any to any via lo0
 
-# las conexiones que ya estén iniciadas, pásalas
-# compara eso con el de iptables
-ipfw -q add allow tcp from any to any established
+ # las conexiones que ya estén iniciadas, pásalas
+ # compara eso con el de iptables
+ ipfw -q add allow tcp from any to any established
 
-# permite que te hagan ping desde la LAN 
-# pero no mucho icmp para que no hagan flood
-ipfw pipe 1 config bw 30KBytes
-ipfw -q add pipe 1 icmp from 192.168.1.0/24 to me in via xn1
-ipfw -q add allow  icmp from 192.168.1.0/24 to me in via xn1
+ # permite que te hagan ping desde la LAN 
+ # pero no mucho icmp para que no hagan flood
+ ipfw pipe 1 config bw 30KBytes
+ ipfw -q add pipe 1 icmp from 192.168.1.0/24 to me in via xn1
+ ipfw -q add allow  icmp from 192.168.1.0/24 to me in via xn1
 
-# permite que accedan al proxy desde la LAN
-ipfw -q add allow tcp from 192.168.1.0/24 to me 3128 via xn1
+ # permite que accedan al proxy desde la LAN
+ ipfw -q add allow tcp from 192.168.1.0/24 to me 3128 via xn1
 
-# permite el servidor web pero solo deade la WAN
-# en este caso "me" será la ip de la WAN
-ipfw -q add allow tcp from any to me dst-port 80 via xn0
+ # permite el servidor web pero solo deade la WAN
+ # en este caso "me" será la ip de la WAN
+ ipfw -q add allow tcp from any to me dst-port 80 via xn0
 
-# descarta el resto de los paquetes ENTRANTES
-# esta regla casi nunca es necesaria, ya que
-# suele ser implícita, o sea, drop por defecto
-ipfw -q add drop all from any to any
+ # descarta el resto de los paquetes ENTRANTES
+ # esta regla casi nunca es necesaria, ya que
+ # suele ser implícita, o sea, drop por defecto
+ ipfw -q add drop all from any to any
 
-# finalmente, PA AFUERA, permitimos todo
-ipfw -q add allow all from any to any out
+ # finalmente, PA AFUERA, permitimos todo
+ ipfw -q add allow all from any to any out
 </code></pre>
 
 <p>Veamos algunas características de este cortafuegos&hellip;</p>
@@ -137,12 +142,12 @@ tener alguna de la red 192.168.1.0/24 así que <strong>me</strong> será dicha i
 si no las pones, ipfw las asume. Fíjate bien como se maneja el tema de los
 puertos en la siguientes reglas.</p>
 
-<pre><code class="bash "ipfw dst-port""># permite que accedan al proxy desde la LAN
-ipfw -q add allow tcp from 192.168.1.0/24 to me 3128 via xn1
+<pre><code class="bash "ipfw dst-port""> # permite que accedan al proxy desde la LAN
+ ipfw -q add allow tcp from 192.168.1.0/24 to me 3128 via xn1
 
-# permite el servidor web pero solo deade la WAN
-# en este caso "me" será la ip de la WAN
-ipfw -q add allow tcp from any to me dst-port 80 via xn0
+ # permite el servidor web pero solo deade la WAN
+ # en este caso "me" será la ip de la WAN
+ ipfw -q add allow tcp from any to me dst-port 80 via xn0
 </code></pre>
 
 <p>En la primera regla, declaramos &ldquo;<strong>me 3128</strong>&rdquo;, esto significa &ldquo;para mi ip por el
@@ -159,8 +164,8 @@ el ancho de vianda de una menera muy peculiar; usando un módulo llamado
 dummynet. No esperes ver la palabra &ldquo;dummynet&rdquo; escrita en el cortafuegos. En
 fin; analiza este ejemplo:</p>
 
-<pre><code class="bash "ipfw y dummynet"">ipfw add pipe 1 ip from me to 192.168.1.0/24 out via xn0
-ipfw pipe 1 config bw 128KBytes
+<pre><code class="bash "ipfw y dummynet""> ipfw add pipe 1 ip from me to 192.168.1.0/24 out via xn0
+ ipfw pipe 1 config bw 128KBytes
 </code></pre>
 
 <p>Se crea el pipe número 1, con un ancho de banda de 128 KyloBytes. En la regla de
@@ -190,10 +195,10 @@ ficheros, por ejemplo, una nube, un servidor de carpetas compartidas.</p>
 <p>Si crearas un pipe y le dijeras que 3 ip, lo usan, el ancho de vianda sería
 compartido para esas 3 ip. O sea</p>
 
-<pre><code class="bash "ipfw y dummynet"">ipfw add pipe 1 ip from me to 192.168.1.10/24 out via xn0
-ipfw add pipe 1 ip from me to 192.168.1.11/24 out via xn0
-ipfw add pipe 1 ip from me to 192.168.1.12/24 out via xn0
-ipfw pipe 1 config bw 128KBytes
+<pre><code class="bash "ipfw y dummynet""> ipfw add pipe 1 ip from me to 192.168.1.10/24 out via xn0
+ ipfw add pipe 1 ip from me to 192.168.1.11/24 out via xn0
+ ipfw add pipe 1 ip from me to 192.168.1.12/24 out via xn0
+ ipfw pipe 1 config bw 128KBytes
 </code></pre>
 
 <p>En este caso, 10, 11 y 12, tienen un total de 128KB/s, si 10 acapara todo el

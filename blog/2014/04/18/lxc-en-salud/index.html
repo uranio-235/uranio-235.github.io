@@ -120,15 +120,6 @@ lxc.</p>
 <p>Para crear contenedores de debian en arch, necesitaremos <strong>debootstrap</strong>, que
 por suerte, viene en el repo de arch.</p>
 
-<figure class='code'><figcaption><span>&#8220;debootstrap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># pacman -Ss deboos</span>
-</span><span class='line'>community/debootstrap 1.0.88-1 <span class="o">[</span>installed<span class="o">]</span>
-</span><span class='line'>    Bootstrap a basic Debian system
-</span></code></pre></td></tr></table></div></figure>
-
-
 <p>Este archlinux está instalado sobre BTRfs con el COW activado. Me imagino que
 crear snapshots de los contenedores sea mucho más óptimo.</p>
 
@@ -269,17 +260,40 @@ servido web, se usa el puerto 80 y 443, en el de correo el 25 y 110; <strong>per
 todos en la misma ip</strong>. Por esta razón, no corro ssh en los contenedores;
 diría que el puerto 22 ya se encuentra en eso.</p>
 
+<p>Aquí les dejo entonces la configuración de este container, con red del tipo
+&ldquo;none&rdquo;</p>
+
+<figure class='code'><figcaption><span>&#8220;config de&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># cat /var/lib/lxc/debian/config |grep -v &#39;#&#39;</span>
+</span><span class='line'> lxc.include <span class="o">=</span> /usr/share/lxc/config/debian.common.conf
+</span><span class='line'> lxc.tty <span class="o">=</span> 4
+</span><span class='line'> lxc.arch <span class="o">=</span> amd64
+</span><span class='line'> lxc.network.type <span class="o">=</span> none
+</span><span class='line'> lxc.rootfs <span class="o">=</span> /var/lib/lxc/debian/rootfs
+</span><span class='line'> lxc.rootfs.backend <span class="o">=</span> dir
+</span><span class='line'> lxc.utsname <span class="o">=</span> debian
+</span></code></pre></td></tr></table></div></figure>
+
+
 <p>Por otra parte, cosas como el mysql, que el servidor de correo necesita
 encuestarlo, simplemente, podrías ponerlo a escuchar por la 127.0.0.1 y así el
 container del servidor sql, escucha por la 127 y los demás container (incluso el
-hypervisor) se conectan a la 127.0.0.1 donde está el mysql.</p>
+hypervisor) se conectan al localhost donde está el mysql. O sea, la 127.0.0.1
+sería como la red interna de todos los container. ¿Es seguro verdad?</p>
 
 <p>Podemos confiarle ahora, a la frescura y robusteza de archlinux, la estabilidad
 de debian.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
