@@ -52,7 +52,7 @@ viendo que otra gangarrea &hellip;">
   <header role="banner"><hgroup>
   <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
   
-    <h2>luchando contra el subdesarrollo en todos los frentes</h2>
+    <h2>todo lo que expliqué mientras nadie prestaba atención</h2>
   
 </hgroup>
 
@@ -150,27 +150,27 @@ cual declaras que interface quieres unir.</p>
 <span class='line-number'>19</span>
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@ganker:~# cat /etc/network/interfaces
-</span><span class='line'><span class="c"># This file describes the network interfaces available on your system</span>
-</span><span class='line'><span class="c"># and how to activate them. For more information, see interfaces(5).</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">root@ganker:~#</span> cat /etc/network/interfaces
+</span><span class='line'><span class="gp">#</span> This file describes the network interfaces available on your system
+</span><span class='line'><span class="gp">#</span> and how to activate them. For more information, see interfaces<span class="o">(</span>5<span class="o">)</span>.
 </span><span class='line'>
-</span><span class='line'><span class="nb">source</span> /etc/network/interfaces.d/*
+</span><span class='line'><span class="go">source /etc/network/interfaces.d/*</span>
 </span><span class='line'>
-</span><span class='line'><span class="c"># The loopback network interface</span>
-</span><span class='line'>auto lo
-</span><span class='line'>iface lo inet loopback
+</span><span class='line'><span class="gp">#</span> The loopback network interface
+</span><span class='line'><span class="go">auto lo</span>
+</span><span class='line'><span class="go">iface lo inet loopback</span>
 </span><span class='line'>
 </span><span class='line'>
-</span><span class='line'>auto bond0
-</span><span class='line'>iface bond0 inet static
-</span><span class='line'>    address 10.1.1.3
-</span><span class='line'>    netmask 255.255.255.0
-</span><span class='line'>    network 10.1.1.0
-</span><span class='line'>    gateway 10.1.1.1
-</span><span class='line'>    dns-nameservers 10.1.1.1
-</span><span class='line'>    dns-search hcg.sld.cu
-</span><span class='line'>    slaves eth0 eth1
-</span><span class='line'>    bond_mode 2
+</span><span class='line'><span class="go">auto bond0</span>
+</span><span class='line'><span class="go">iface bond0 inet static</span>
+</span><span class='line'><span class="go">    address 10.1.1.3</span>
+</span><span class='line'><span class="go">    netmask 255.255.255.0</span>
+</span><span class='line'><span class="go">    network 10.1.1.0</span>
+</span><span class='line'><span class="go">    gateway 10.1.1.1</span>
+</span><span class='line'><span class="go">    dns-nameservers 10.1.1.1</span>
+</span><span class='line'><span class="go">    dns-search hcg.sld.cu</span>
+</span><span class='line'><span class="go">    slaves eth0 eth1</span>
+</span><span class='line'><span class="go">    bond_mode 2</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -181,7 +181,7 @@ pa la casa.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -246,6 +246,10 @@ pa la casa.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a>

@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>assets por controlador - El SysAdmin del 3er Mundo</title>
+  <title>bind personal - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="assets por controlador 05/10/2015 9:45 pm | Comments NUNCA, he logrado entender, porque el asset pipeline de Rails carga
-TODAS las porquerías de &hellip;">
+  <meta name="description" content="bind personal 22/02/2017 9:05 pm | Comments Una cosa que me jode, es que linux el tema de los múltiples DNS no los maneje
+bien. Por ejemplo, estamos &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ TODAS las porquerías de &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/10/05/assets-por-controlador/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2017/02/22/bind-personal/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -85,7 +85,7 @@ TODAS las porquerías de &hellip;">
   
   <header>
     
-      <h1 class="entry-title">assets por controlador</h1>
+      <h1 class="entry-title">bind personal</h1>
     
     
       <p class="meta">
@@ -94,7 +94,7 @@ TODAS las porquerías de &hellip;">
 
 
 
-<time class='entry-date' datetime='2015-10-05T21:45:45-04:00'><span class='date'>05/10/2015</span> <span class='time'>9:45 pm</span></time>
+<time class='entry-date' datetime='2017-02-22T21:05:26-05:00'><span class='date'>22/02/2017</span> <span class='time'>9:05 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -104,26 +104,20 @@ TODAS las porquerías de &hellip;">
   </header>
 
 
-<div class="entry-content"><p><strong>NUNCA</strong>, he logrado entender, porque el asset pipeline de Rails carga
-<strong>TODAS</strong> las porquerías de todos los controladores en todas las vistas.</p>
+<div class="entry-content"><p>Una cosa que me jode, es que linux el tema de los múltiples DNS no los maneje
+bien. Por ejemplo, estamos en una LAN con red 192.168.1.0/24 y además,
+tenemos una conexión a internet.</p>
 
-<p>¡¡¡Como si fuese poco tener que cargar el mismo javascript por controlador!!!</p>
+<p>Entonces seteas dos DNS en el resolv.conf y no pincha!</p>
 
-<p>La documentación dice que puedes cargar solamente el del controlador; pero
-cuando la sigues al pie de la letra; Rails te da tremendo palo, diciendo que una
-asset se escapó sin compilar. La &ldquo;una&rdquo; suele ser la del controlador que estés
-cargando, o sea, todas.</p>
+<p>Además, si la situación es itinerante (vas a múltiples LAN) mantener la
+configuración DNS se vuelve un rollo. Aunque el networkmanager te permita
+configurarlo, volvemos a la situación anterior.</p>
 
-<p>La solución que plantea la documentación, es un Proc asqueroso que tampoco
-pincha.</p>
+<p>Solución, tenemos un bin con sus debidos forwarders para cada red. En mi caso,
+el <strong>/etc/named.conf</strong> me quedó así:</p>
 
-<p>Te cuento como lo hice:</p>
-
-<p>Primero tienes que quitar la cláusula &ldquo;<strong>require_tree .</strong>&rdquo; del <strong>application.js</strong></p>
-
-<p>A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>application.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>&#8220;/etc/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -140,120 +134,72 @@ pincha.</p>
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">// This is a manifest file that&#39;ll be compiled into application.js, which will include all the files</span>
-</span><span class='line'><span class="c1">// listed below.</span>
-</span><span class='line'><span class="c1">//</span>
-</span><span class='line'><span class="c1">// Any JavaScript/Coffee file within this directory, lib/assets/javascripts, vendor/assets/javascripts,</span>
-</span><span class='line'><span class="c1">// or any plugin&#39;s vendor/assets/javascripts directory can be referenced here using a relative path.</span>
-</span><span class='line'><span class="c1">//</span>
-</span><span class='line'><span class="c1">// It&#39;s not advisable to add code directly here, but if you do, it&#39;ll appear at the bottom of the</span>
-</span><span class='line'><span class="c1">// compiled file.</span>
-</span><span class='line'><span class="c1">//</span>
-</span><span class='line'><span class="c1">// Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details</span>
-</span><span class='line'><span class="c1">// about supported directives.</span>
-</span><span class='line'><span class="c1">//</span>
-</span><span class='line'><span class="c1">//= require jquery</span>
-</span><span class='line'><span class="c1">//= require jquery_ujs</span>
-</span><span class='line'><span class="c1">//= require turbolinks</span>
-</span><span class='line'><span class="c1">//  require_tree . fíjate que quitamos el =</span>
-</span><span class='line'><span class="nx">Turbolinks</span><span class="p">.</span><span class="nx">enableProgressBar</span><span class="p">();</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">// vim:set ts=4 sw=4 et:</span>
+</span><span class='line'><span class="n">options</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">recursion</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>        <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">recursion</span> <span class="n">yes</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">auth</span><span class="o">-</span><span class="n">nxdomain</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// la lan por su DNS local</span>
+</span><span class='line'><span class="n">zone</span> <span class="s">&quot;dominio.cu&quot;</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">192.168.1.3</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// lo demás por google</span>
+</span><span class='line'><span class="n">zone</span> <span class="s">&quot;.&quot;</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">8.8.8.8</span><span class="p">;</span> <span class="mf">8.8.4.4</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'><span class="p">};</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Ahora vamos a dar un toque mágico para que las assets se compilen de manera
-dinámica, sin tener que colocarle manualmente al arreglo los nuevos .js
-generados. El fichero <strong>config/initializers/assets.rb</strong> me quedó así; <strong>OJO</strong> que es
-una linea bien larga:</p>
+<p>De esta manera, el dominio de la LAN (<strong>dominio.cu</strong>), será resuelto a través
+del servidor DNS 192.168.1.3; que es el de la LAN. Para eso usamos la zona
+&ldquo;dominio.cu&rdquo; del tipo forward y especificamos a 192.168.1.3 como su forward.</p>
 
-<figure class='code'><figcaption><span>&#8220;assets.rb - ojo con la linea larga&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>El resto, o sea, la zona &ldquo;.&rdquo;, será también del tipo forward y para este ejemplo,
+usamos los dns de google como forward.</p>
+
+<p>Ahora solo te queda actualizar el <strong>/etc/resolv.conf</strong> y setear a 127.0.0.1
+como tu servidor dns</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/resolv.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Be sure to restart your server when you modify this file.</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Version of your assets, change this if you want to expire all your assets.</span>
-</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;1.0&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Add additional assets to the asset load path</span>
-</span><span class='line'><span class="c1"># Rails.application.config.assets.paths &lt;&lt; Emoji.images_path</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Precompile additional assets.</span>
-</span><span class='line'><span class="c1"># application.js, application.css, and all non-JS/CSS in app/assets folder are already added.</span>
-</span><span class='line'><span class="c1"># Rails.application.config.assets.precompile += %w( search.js )</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># compila todo lo que te encuentres por el camino</span>
-</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">precompile</span> <span class="o">+=</span> <span class="no">Dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">to_path</span><span class="p">,</span><span class="s1">&#39;app/assets/javascripts/*.j*&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">1</span><span class="o">].</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># activa el debug de la asset pipeline, solo en entorno de desarrollo</span>
-</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RAILS_ENV&#39;</span><span class="o">]</span> <span class="ow">and</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RAILS_ENV&#39;</span><span class="o">].</span><span class="n">include?</span> <span class="s1">&#39;development&#39;</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp"># Generated by resolvconf</span>
+</span><span class='line'><span class="n">nameserver</span> <span class="mf">127.0.0.1</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Podría hacer lo mismo con las CSS si usa un poquito la células grises. Note como
-además, agregamos que se debugue la asset pipeline si y solo si estamos en
-development.</p>
-
-<p>Pero no hemos terminado, la vista lleva unos toques&hellip; pues debemos decirle lo
-más importante, que cargue solo las .js de su controlador. A mi me quedó así:</p>
-
-<p>  &lt;%= javascript_include_tag params[:controller] %></p>
-
-<figure class='code'><figcaption><span>&#8220;app/views/layouts/application.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
-</span><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;title&gt;</span>El Título<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'>  <span class="err">&lt;</span>%= stylesheet_link_tag    &#39;application&#39;, media: &#39;all&#39;, &#39;data-turbolinks-track&#39; =&gt; true %&gt;
-</span><span class='line'>  <span class="err">&lt;</span>%= javascript_include_tag &#39;application&#39;, &#39;data-turbolinks-track&#39; =&gt; true %&gt;
-</span><span class='line'>  <span class="c">&lt;!-- carga solo las .js del controlador dado --&gt;</span>
-</span><span class='line'>  <span class="err">&lt;</span>%= javascript_include_tag params[:controller] %&gt;
-</span><span class='line'>  <span class="err">&lt;</span>%= csrf_meta_tags %&gt;
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">&lt;</span>%= yield %&gt;
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahí te das cuenta que el que carga todo, es el manifest (application.js) con su
-&ldquo;requiere_tree .&rdquo; pero la cláusula en la línea 8 le dice que cargue la .js del
-controlador especificado en <strong>params[:controller]</strong></p>
-
-<p>Bueno así debe pinchar con javascript y con CoffeScript, al menos a mi me pinchó
-con ambos. Veamos que trae rails 5 con esto, porque la mejora urge&hellip;</p>
-
-<p>Si la cosa sigue así en la versión 5, me estoy mudando para Volt</p>
+<p>Recuerda que cada configuración automatizada, actualiza este fichero. Te
+recomiendo que no te fajes con el fichero, si no que en cada conexión que desees
+usar tu servidor, se lo especifiques. Por ejemplo, con networkmanager, le dices
+a N conexión, que el servidor dns es manual y será <em>127.0.0.1</em>. Si usas Gnome
+(NetworkManager), te recomiendo usar la utilidad <strong>nm-connection-editor</strong>. Te
+permitirá especificar el dominio de búsqueda, cosa que no he visto como hacer
+con el administrador de conexiones de gnome.</p>
 </div>
 
 
@@ -271,21 +217,15 @@ con ambos. Veamos que trae rails 5 con esto, porque la mejora urge&hellip;</p>
 
 
 
-<time class='entry-date' datetime='2015-10-05T21:45:45-04:00'><span class='date'>05/10/2015</span> <span class='time'>9:45 pm</span></time>
+<time class='entry-date' datetime='2017-02-22T21:05:26-05:00'><span class='date'>22/02/2017</span> <span class='time'>9:05 pm</span></time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/rails/'>rails</a>
-  
-</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/10/05/assets-por-controlador/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/10/05/assets-por-controlador/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2017/02/22/bind-personal/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2017/02/22/bind-personal/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -298,10 +238,8 @@ con ambos. Veamos que trae rails 5 con esto, porque la mejora urge&hellip;</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/09/17/dhcp-por-grupos/" title="Previous Post: dhcp por grupos">&laquo; dhcp por grupos</a>
+        <a class="basic-alignment left" href="/blog/2017/02/05/a-las-puertas-del-3g/" title="Previous Post: a las puertas del 3g">&laquo; a las puertas del 3g</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2015/10/08/prawn-pdf-con-ruby/" title="Next Post: prawn, pdf con ruby">prawn, pdf con ruby &raquo;</a>
       
     </p>
   </footer>
@@ -755,8 +693,8 @@ con ambos. Veamos que trae rails 5 con esto, porque la mejora urge&hellip;</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2015/10/05/assets-por-controlador/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2015/10/05/assets-por-controlador/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2017/02/22/bind-personal/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2017/02/22/bind-personal/';
         var disqus_script = 'embed.js';
       
     (function () {

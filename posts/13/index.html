@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="pacman bajo el microscopio 01/06/2015 9:13 pm | Comments En este post, me propongo mostrarle algunas de las bondades de pacman. Cualquier
-que &hellip;">
+  <meta name="description" content="transando a ext4 03/06/2015 11:08 pm | Comments Una de mis grandes testarudeces (profesionales) siempre ha sido la negativa a
+usar ext4. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -52,7 +52,7 @@ que &hellip;">
   <header role="banner"><hgroup>
   <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
   
-    <h2>luchando contra el subdesarrollo en todos los frentes</h2>
+    <h2>todo lo que expliqué mientras nadie prestaba atención</h2>
   
 </hgroup>
 
@@ -82,6 +82,75 @@ que &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-03T23:08:27-04:00'><span class='date'>03/06/2015</span> <span class='time'>11:08 pm</span></time>
+        
+           | <a href="/blog/2015/06/03/transando-a-ext4/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/03/transando-a-ext4/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Una de mis grandes testarudeces (profesionales) siempre ha sido la negativa a
+usar ext4. Acostumbrado a los discos IDE, siempre me pareció que el journal
+escribía demasiado en el disco. Además, solía verse ext4dev y eso me sonaba a
+que se usaría mi sistema como ratón de laboratorio.</p>
+
+<p>Tanta fue mi fobia, que hoy en día aún uso discos montados en ext2. Por ejemplo,
+mi laptop estaba montada en ext2 hasta ahora mismo; también la partición /home
+del servidor LTSP.</p>
+
+<p>Un fallo eléctrico reciente, me demostró que el journal es un mal necesario. En
+discos de tanta escritura, como es el caso del /home de los clientes ligeros, la
+integridad de los datos es definitivamente una clave para el sistema. Además,
+todo el que usó ext4dev no se quejó nunca.</p>
+
+<figure class='code'><figcaption><span>&#8220;tune2fs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>tune2fs -O extents,uninit_bg,dir_index /dev/sda2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso, le pones a tu ext2 todas las gangarreas del 4. A este punto, reza
+porque no se valla luz! Hay que dar otro paso y es pasar un fsck.</p>
+
+<figure class='code'><figcaption><span>&#8220;tune2fs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>tune2fs -c <span class="m">0</span> /dev/sda <span class="o">&amp;&amp;</span> reboot
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Marca el disco para chequear y reinicia. Cuando levante, verás que da unos palos
+raros ahí pero tú tranquilo.</p>
+
+<p>Las memorias si las dejo con ext2. Pues no necesitan un journal escribiendo
+tanto y acortando su vida útil.</p>
+
+<p>Lo próximo que instale, lo haré con BtrFS que está <em>más mejoL en todavía</em>. Dice
+tener un soporte especial para discos SSD con lo cual me imagino que para las
+memorias flash sea más óptimo.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -137,22 +206,22 @@ paquete de pacman y se usa para crear repositorios personalizados.</p>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>repo-elephant
-</span><span class='line'>     __
-</span><span class='line'>    <span class="s1">&#39;. \</span>
-</span><span class='line'><span class="s1">     &#39;</span>- <span class="se">\</span>
-</span><span class='line'>      / /_         .---.
-</span><span class='line'>     / <span class="p">|</span> <span class="se">\\</span>,.<span class="se">\/</span>--.//    <span class="o">)</span>
-</span><span class='line'>     <span class="p">|</span>  <span class="se">\/</span>/        <span class="o">)</span>/  /
-</span><span class='line'>      <span class="se">\ </span> <span class="s1">&#39; ^ ^    /    )____.----..  6</span>
-</span><span class='line'><span class="s1">       &#39;</span>.____.    .___/            <span class="se">\.</span>_<span class="o">)</span>
-</span><span class='line'>          .<span class="se">\/</span>.                      <span class="o">)</span>
-</span><span class='line'>           <span class="s1">&#39;\                       /</span>
-</span><span class='line'><span class="s1">           _/ \/    ).        )    (</span>
-</span><span class='line'><span class="s1">          /#  .!    |        /\    /</span>
-</span><span class='line'><span class="s1">          \  C// #  /&#39;</span>-----<span class="s1">&#39;&#39;</span>/ <span class="c">#  /</span>
-</span><span class='line'>       .   <span class="s1">&#39;C/ |    |    |   |    |mrf  ,</span>
-</span><span class='line'><span class="s1">       \), .. .&#39;</span>OOO-<span class="s1">&#39;. ..&#39;</span>OOO<span class="s1">&#39;OOO-&#39;</span>. ..<span class="se">\(</span>,
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[lazaro@artema ~]$ repo-elephant </span>
+</span><span class='line'><span class="go">     __</span>
+</span><span class='line'><span class="go">    &#39;. \</span>
+</span><span class='line'><span class="go">     &#39;- \</span>
+</span><span class='line'><span class="go">      / /_         .---.</span>
+</span><span class='line'><span class="go">     / | \\,.\/--.//    )</span>
+</span><span class='line'><span class="go">     |  \//        )/  /</span>
+</span><span class='line'><span class="go">      \  &#39; ^ ^    /    )____.----..  6</span>
+</span><span class='line'><span class="go">       &#39;.____.    .___/            \._)</span>
+</span><span class='line'><span class="go">          .\/.                      )</span>
+</span><span class='line'><span class="go">           &#39;\                       /</span>
+</span><span class='line'><span class="go">           _/ \/    ).        )    (</span>
+</span><span class='line'><span class="go">          /#  .!    |        /\    /</span>
+</span><span class='line'><span class="go">          \  C// #  /&#39;-----&#39;&#39;/ #  /</span>
+</span><span class='line'><span class="go">       .   &#39;C/ |    |    |   |    |mrf  ,</span>
+</span><span class='line'><span class="go">       \), .. .&#39;OOO-&#39;. ..&#39;OOO&#39;OOO-&#39;. ..\(,</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -208,11 +277,11 @@ y bajará esos ficheros. Seguidamente los depositará en el directorio /var/lib/
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>file /var/lib/pacman/sync/*.db
-</span><span class='line'>/var/lib/pacman/sync/archlinuxfr.db: gzip compressed data, last modified: Thu May <span class="m">21</span> 04:31:59 2015, from Unix
-</span><span class='line'>/var/lib/pacman/sync/community.db:   gzip compressed data, last modified: Fri May <span class="m">29</span> 08:47:01 2015, from Unix
-</span><span class='line'>/var/lib/pacman/sync/core.db:        gzip compressed data, last modified: Wed May <span class="m">27</span> 19:02:40 2015, from Unix
-</span><span class='line'>/var/lib/pacman/sync/extra.db:       gzip compressed data, last modified: Fri May <span class="m">29</span> 04:27:15 2015, from Unix
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[lazaro@artema ~]$ file /var/lib/pacman/sync/*.db</span>
+</span><span class='line'><span class="go">/var/lib/pacman/sync/archlinuxfr.db: gzip compressed data, last modified: Thu May 21 04:31:59 2015, from Unix</span>
+</span><span class='line'><span class="go">/var/lib/pacman/sync/community.db:   gzip compressed data, last modified: Fri May 29 08:47:01 2015, from Unix</span>
+</span><span class='line'><span class="go">/var/lib/pacman/sync/core.db:        gzip compressed data, last modified: Wed May 27 19:02:40 2015, from Unix</span>
+</span><span class='line'><span class="go">/var/lib/pacman/sync/extra.db:       gzip compressed data, last modified: Fri May 29 04:27:15 2015, from Unix</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -232,8 +301,8 @@ directorio <strong>/var/lib/pacman/local/ruby-2.2.2-1</strong></p>
 
 <figure class='code'><figcaption><span>&#8220;metainfo de un paquete instalado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>ls /var/lib/pacman/local/ruby-2.2.2-1/
-</span><span class='line'>desc  files  install  mtree
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[lazaro@artema ~]$ ls /var/lib/pacman/local/ruby-2.2.2-1/</span>
+</span><span class='line'><span class="go">desc  files  install  mtree</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -263,15 +332,15 @@ ver el contenido del fichero <strong>files</strong> pero sería más fácil usar
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>pacman -Ql ruby<span class="p">|</span>grep <span class="s1">&#39;/usr/bin/&#39;</span>
-</span><span class='line'>ruby /usr/bin/
-</span><span class='line'>ruby /usr/bin/erb
-</span><span class='line'>ruby /usr/bin/gem
-</span><span class='line'>ruby /usr/bin/irb
-</span><span class='line'>ruby /usr/bin/rake
-</span><span class='line'>ruby /usr/bin/rdoc
-</span><span class='line'>ruby /usr/bin/ri
-</span><span class='line'>ruby /usr/bin/ruby
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[lazaro@artema ~]$ pacman -Ql ruby|grep &#39;/usr/bin/&#39;</span>
+</span><span class='line'><span class="go">ruby /usr/bin/</span>
+</span><span class='line'><span class="go">ruby /usr/bin/erb</span>
+</span><span class='line'><span class="go">ruby /usr/bin/gem</span>
+</span><span class='line'><span class="go">ruby /usr/bin/irb</span>
+</span><span class='line'><span class="go">ruby /usr/bin/rake</span>
+</span><span class='line'><span class="go">ruby /usr/bin/rdoc</span>
+</span><span class='line'><span class="go">ruby /usr/bin/ri</span>
+</span><span class='line'><span class="go">ruby /usr/bin/ruby</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -282,12 +351,12 @@ package managers, este es bien sencillo. Además, es MUY personalizable.</p>
 bajar los paquetes. Las variables, %u y %o serán enviadas como URL del paquetes
 y fichero en disco.</p>
 
-<figure class='code'><figcaption><span>&#8216;scope de</span><a href='/etc/pacman.conf''>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>&#8220;scope de pacman.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/pacman.conf<span class="p">|</span>grep Xfer
-</span><span class='line'><span class="c">#XferCommand = /usr/bin/curl --retry-delay 5 --progress-bar -C - -f %u &gt; %o</span>
-</span><span class='line'><span class="nv">XferCommand</span> <span class="o">=</span> /usr/bin/wget --no-cache -t <span class="m">0</span> -T <span class="m">10</span> --max-redirect<span class="o">=</span><span class="m">0</span> -w <span class="m">5</span> --passive-ftp -c -O %o %u
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[lazaro@artema ~]$ cat /etc/pacman.conf|grep Xfer</span>
+</span><span class='line'><span class="gp">#</span><span class="nv">XferCommand</span> <span class="o">=</span> /usr/bin/curl --retry-delay <span class="m">5</span> --progress-bar -C - -f %u &gt; %o
+</span><span class='line'><span class="go">XferCommand = /usr/bin/wget --no-cache -t 0 -T 10 --max-redirect=0 -w 5 --passive-ftp -c -O %o %u</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -296,8 +365,8 @@ Para que tengas una idea de cuan personalizable puede llegar a ser:</p>
 
 <figure class='code'><figcaption><span>&#8220;NoExtract&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/pacman.conf<span class="p">|</span>grep NoEx
-</span><span class='line'><span class="nv">NoExtract</span> <span class="o">=</span> *.mo
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[lazaro@artema ~]$ cat /etc/pacman.conf|grep NoEx</span>
+</span><span class='line'><span class="go">NoExtract = *.mo</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -319,8 +388,8 @@ instalé 3 servidores con arch <strong>sin conectarme a internet</strong> (vergo
 
 <figure class='code'><figcaption><span>&#8220;mantener paquetes&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/pacman.conf<span class="p">|</span>grep Clea
-</span><span class='line'><span class="nv">CleanMethod</span> <span class="o">=</span> KeepCurrent
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[lazaro@artema ~]$ cat /etc/pacman.conf|grep Clea</span>
+</span><span class='line'><span class="go">CleanMethod = KeepCurrent</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -329,7 +398,7 @@ que quieres tener en la otra máquina (la de tu casa) &ldquo;geary&rdquo; el cli
 correo. Simplemente lo instalas y lo desinstalas en la máquina privilegiada.</p>
 
 <figure class='code'><figcaption><span>&#8220;cacheando paquetes&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S geary <span class="o">&amp;&amp;</span> pacman -R geary
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">pacman -S geary &amp;&amp; pacman -R geary</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -355,22 +424,22 @@ que no se bajarán actualizaciones para ese paquete.</p>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">#</span>!/bin/bash
 </span><span class='line'>
-</span><span class='line'><span class="c"># elimina esa base de datos</span>
-</span><span class='line'>rm /var/cache/pacman/pkg/custom.db.tar.gz
+</span><span class='line'><span class="gp">#</span> elimina esa base de datos
+</span><span class='line'><span class="go">rm /var/cache/pacman/pkg/custom.db.tar.gz</span>
 </span><span class='line'>
-</span><span class='line'><span class="c"># crea una nueva</span>
-</span><span class='line'>repo-add /var/cache/pacman/pkg/custom.db.tar.gz /var/cache/pacman/pkg/*.pkg.tar.xz
+</span><span class='line'><span class="gp">#</span> crea una nueva
+</span><span class='line'><span class="go">repo-add /var/cache/pacman/pkg/custom.db.tar.gz /var/cache/pacman/pkg/*.pkg.tar.xz</span>
 </span><span class='line'>
-</span><span class='line'><span class="c"># dime que tengo que poner</span>
-</span><span class='line'><span class="nb">echo</span> <span class="s1">&#39;&#39;&#39;</span>
-</span><span class='line'><span class="s1">[mirepo]</span>
-</span><span class='line'><span class="s1">SigLevel = Optional TrustAll</span>
-</span><span class='line'><span class="s1">Server = http://localhost:8080</span>
-</span><span class='line'><span class="s1">&#39;&#39;&#39;</span>
-</span><span class='line'><span class="c"># sírvelo con darkhttpd</span>
-</span><span class='line'>darkhttpd /var/cache/pacman/pkg/ --chroot --port 8080
+</span><span class='line'><span class="gp">#</span> dime que tengo que poner
+</span><span class='line'><span class="go">echo &#39;&#39;&#39;</span>
+</span><span class='line'><span class="go">[mirepo]</span>
+</span><span class='line'><span class="go">SigLevel = Optional TrustAll</span>
+</span><span class='line'><span class="go">Server = http://localhost:8080</span>
+</span><span class='line'><span class="go">&#39;&#39;&#39;</span>
+</span><span class='line'><span class="gp">#</span> sírvelo con darkhttpd
+</span><span class='line'><span class="go">darkhttpd /var/cache/pacman/pkg/ --chroot --port 8080</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -397,7 +466,7 @@ ahora ya sabes una parte, te dejo que investigues el resto.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -443,8 +512,8 @@ todas salen de un supuesto firefox.</p>
 
 <figure class='code'><figcaption><span>&#8220;/etc/squid/squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>request_header_access User-Agent deny all
-</span><span class='line'>request_header_replace User-Agent Mozilla/5.0 <span class="o">(</span>X11<span class="p">;</span> U<span class="p">;</span> Linux i686<span class="p">;</span> en-US<span class="p">;</span> rv:1.8.1.4<span class="o">)</span> Gecko/20070515 Firefox/2.0.0.4
+</pre></td><td class='code'><pre><code class='squidconf'><span class='line'>request_header_access<span class="w"> </span><span class="k">User</span>-Agent<span class="w"> </span><span class="no">deny</span><span class="w"> </span><span class="no">all</span><span class="w"></span>
+</span><span class='line'>request_header_replace<span class="w"> </span><span class="k">User</span>-Agent<span class="w"> </span>Mozilla/5.0<span class="w"> </span>(X11;<span class="w"> </span>U;<span class="w"> </span>Linux<span class="w"> </span>i686;<span class="w"> </span>en-US;<span class="w"> </span>rv:1.8.1.4)<span class="w"> </span>Gecko/20070515<span class="w"> </span>Firefox/2.0.0.4<span class="w"></span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -454,7 +523,7 @@ todas salen de un supuesto firefox.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -528,27 +597,27 @@ cual declaras que interface quieres unir.</p>
 <span class='line-number'>19</span>
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@ganker:~# cat /etc/network/interfaces
-</span><span class='line'><span class="c"># This file describes the network interfaces available on your system</span>
-</span><span class='line'><span class="c"># and how to activate them. For more information, see interfaces(5).</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">root@ganker:~#</span> cat /etc/network/interfaces
+</span><span class='line'><span class="gp">#</span> This file describes the network interfaces available on your system
+</span><span class='line'><span class="gp">#</span> and how to activate them. For more information, see interfaces<span class="o">(</span>5<span class="o">)</span>.
 </span><span class='line'>
-</span><span class='line'><span class="nb">source</span> /etc/network/interfaces.d/*
+</span><span class='line'><span class="go">source /etc/network/interfaces.d/*</span>
 </span><span class='line'>
-</span><span class='line'><span class="c"># The loopback network interface</span>
-</span><span class='line'>auto lo
-</span><span class='line'>iface lo inet loopback
+</span><span class='line'><span class="gp">#</span> The loopback network interface
+</span><span class='line'><span class="go">auto lo</span>
+</span><span class='line'><span class="go">iface lo inet loopback</span>
 </span><span class='line'>
 </span><span class='line'>
-</span><span class='line'>auto bond0
-</span><span class='line'>iface bond0 inet static
-</span><span class='line'>    address 10.1.1.3
-</span><span class='line'>    netmask 255.255.255.0
-</span><span class='line'>    network 10.1.1.0
-</span><span class='line'>    gateway 10.1.1.1
-</span><span class='line'>    dns-nameservers 10.1.1.1
-</span><span class='line'>    dns-search hcg.sld.cu
-</span><span class='line'>    slaves eth0 eth1
-</span><span class='line'>    bond_mode 2
+</span><span class='line'><span class="go">auto bond0</span>
+</span><span class='line'><span class="go">iface bond0 inet static</span>
+</span><span class='line'><span class="go">    address 10.1.1.3</span>
+</span><span class='line'><span class="go">    netmask 255.255.255.0</span>
+</span><span class='line'><span class="go">    network 10.1.1.0</span>
+</span><span class='line'><span class="go">    gateway 10.1.1.1</span>
+</span><span class='line'><span class="go">    dns-nameservers 10.1.1.1</span>
+</span><span class='line'><span class="go">    dns-search hcg.sld.cu</span>
+</span><span class='line'><span class="go">    slaves eth0 eth1</span>
+</span><span class='line'><span class="go">    bond_mode 2</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -561,7 +630,7 @@ pa la casa.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -636,27 +705,27 @@ que requiere NFS.</p>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> ltsp-build-client --http-proxy http://127.0.0.1:3128 <span class="se">\</span>
-</span><span class='line'> --mirror http://ftp.sld.cu/debian <span class="se">\</span>
-</span><span class='line'> --security-mirror http://ftp.sld.cu/debian-security <span class="se">\</span>
-</span><span class='line'> --copy-sourceslist --copy-package-cache --accept-unsigned-packages
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> ltsp-build-client --http-proxy http://127.0.0.1:3128 \</span>
+</span><span class='line'><span class="go"> --mirror http://ftp.sld.cu/debian \</span>
+</span><span class='line'><span class="go"> --security-mirror http://ftp.sld.cu/debian-security \</span>
+</span><span class='line'><span class="go"> --copy-sourceslist --copy-package-cache --accept-unsigned-packages</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>El comando que corriste, generó un fichero de configuración para el servidor
 dhcp de isc. Te sugiero que lo uses como DHCP.</p>
 
-<figure class='code'><figcaption><span>&#8220;ltsp-build-client&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp /etc/ltsp/dhcpd.conf /etc/dhcp/dhcpd.conf
-</span><span class='line'>systemctl restart isc-dhcp-server
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">cp /etc/ltsp/dhcpd.conf /etc/dhcp/dhcpd.conf</span>
+</span><span class='line'><span class="go">systemctl restart isc-dhcp-server</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>Muy importante NFS. En el fichero <strong>/etc/exports</strong> ponemos esto:</p>
 
-<figure class='code'><figcaption><span>&#8220;contenido de</span><a href='/etc/exports"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/opt/ltsp *<span class="o">(</span>ro,no_root_squash,async,no_subtree_check<span class="o">)</span>
+<figure class='code'><figcaption><span>&#8220;/etc/exports&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ltsp</span> <span class="o">*</span><span class="p">(</span><span class="n">ro</span><span class="p">,</span><span class="n">no_root_squash</span><span class="p">,</span><span class="n">async</span><span class="p">,</span><span class="n">no_subtree_check</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -714,12 +783,12 @@ mi me quedó así la primera versión de este fichero.</p>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>default<span class="o">]</span>
-</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">[default]</span>
+</span><span class='line'>    <span class="na">LTSP_CONFIG</span><span class="o">=</span><span class="s">True</span>
+</span><span class='line'><span class="s">    SOUND=True</span>
+</span><span class='line'><span class="s">    LOCALDEV=True</span>
+</span><span class='line'><span class="s">    CONFIGURE_X=True</span>
+</span><span class='line'><span class="s">    LDM_SESSION=/usr/bin/startlxde</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -735,7 +804,7 @@ había visto cosa igual.</p>
 Ctrl+Alt+F1) y ejecuta:</p>
 
 <figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>X -configure
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">X</span> <span class="err">-configure</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -761,16 +830,16 @@ y que en cambio, usen el fichero dado. Todo eso lo haremos en /opt/ltsp/i386/etc
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>default<span class="o">]</span>
-</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
-</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>False
-</span><span class='line'>    <span class="nv">X_CONF</span><span class="o">=</span>/etc/X11/xorg.conf
-</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
-</span><span class='line'>    <span class="nv">MODULE_01</span> <span class="o">=</span> <span class="s2">&quot;usb-storage&quot;</span>
-</span><span class='line'>    <span class="nv">MODULE_02</span> <span class="o">=</span> <span class="s2">&quot;sd_mod&quot;</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="k">[default]</span>
+</span><span class='line'>    <span class="na">LTSP_CONFIG</span><span class="o">=</span><span class="s">True</span>
+</span><span class='line'><span class="s">    SOUND=True</span>
+</span><span class='line'><span class="s">    LOCALDEV=True</span>
+</span><span class='line'><span class="s">    LDM_SESSION=/usr/bin/startlxde</span>
+</span><span class='line'><span class="s">    CONFIGURE_X=False</span>
+</span><span class='line'><span class="s">    X_CONF=/etc/X11/xorg.conf</span>
+</span><span class='line'><span class="s">    X_MODE_0=1024x768</span>
+</span><span class='line'><span class="s">    MODULE_01 = &quot;usb-storage&quot;</span>
+</span><span class='line'><span class="s">    MODULE_02 = &quot;sd_mod&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -886,30 +955,30 @@ cliente.</p>
 <span class='line-number'>22</span>
 <span class='line-number'>23</span>
 <span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># configuración genérica</span>
-</span><span class='line'><span class="o">[</span>default<span class="o">]</span>
-</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
-</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>False
-</span><span class='line'>    <span class="nv">X_CONF</span><span class="o">=</span>/etc/X11/xorg.conf
-</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
-</span><span class='line'>    <span class="nv">MODULE_01</span> <span class="o">=</span> <span class="s2">&quot;usb-storage&quot;</span>
-</span><span class='line'>    <span class="nv">MODULE_02</span> <span class="o">=</span> <span class="s2">&quot;sd_mod&quot;</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="c1"># configuración genérica</span>
+</span><span class='line'><span class="k">[default]</span>
+</span><span class='line'>    <span class="na">LTSP_CONFIG</span><span class="o">=</span><span class="s">True</span>
+</span><span class='line'><span class="s">    SOUND=True</span>
+</span><span class='line'><span class="s">    LOCALDEV=True</span>
+</span><span class='line'><span class="s">    LDM_SESSION=/usr/bin/startlxde</span>
+</span><span class='line'><span class="s">    CONFIGURE_X=False</span>
+</span><span class='line'><span class="s">    X_CONF=/etc/X11/xorg.conf</span>
+</span><span class='line'><span class="s">    X_MODE_0=1024x768</span>
+</span><span class='line'><span class="s">    MODULE_01 = &quot;usb-storage&quot;</span>
+</span><span class='line'><span class="s">    MODULE_02 = &quot;sd_mod&quot;</span>
 </span><span class='line'>
-</span><span class='line'><span class="c"># configuración de un cliente individual el</span>
-</span><span class='line'><span class="c"># jefe no quiere que oiga música ni use</span>
-</span><span class='line'><span class="c"># memorias flash</span>
-</span><span class='line'><span class="o">[</span>00:90:4b:a2:55:05<span class="o">]</span>
-</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>False
-</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>False
-</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
-</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
+</span><span class='line'><span class="c1"># configuración de un cliente individual el</span>
+</span><span class='line'><span class="c1"># jefe no quiere que oiga música ni use</span>
+</span><span class='line'><span class="c1"># memorias flash</span>
+</span><span class='line'><span class="k">[00:90:4b:a2:55:05]</span>
+</span><span class='line'>    <span class="na">LTSP_CONFIG</span><span class="o">=</span><span class="s">True</span>
+</span><span class='line'><span class="s">    SOUND=False</span>
+</span><span class='line'><span class="s">    LOCALDEV=False</span>
+</span><span class='line'><span class="s">    LDM_SESSION=/usr/bin/startlxde</span>
+</span><span class='line'><span class="s">    CONFIGURE_X=True</span>
+</span><span class='line'><span class="s">    X_MODE_0=1024x768</span>
 </span><span class='line'>
-</span><span class='line'><span class="c"># EOF</span>
+</span><span class='line'><span class="c1"># EOF</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -946,7 +1015,7 @@ ser alcanzado por otra máquina.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -989,8 +1058,8 @@ otras muchas cosas que no imaginamos.</p>
 
 <figure class='code'><figcaption><span>&#8220;scope del main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># sasl solo para nuestra red local</span>
-</span><span class='line'><span class="nv">smtpd_sasl_exceptions_networks</span> <span class="o">=</span> !10.1.1.0/24
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp"># sasl solo para nuestra red local</span>
+</span><span class='line'><span class="n">smtpd_sasl_exceptions_networks</span> <span class="o">=</span> <span class="o">!</span><span class="mf">10.1.1.0</span><span class="o">/</span><span class="mi">24</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -1004,185 +1073,7 @@ otras muchas cosas que no imaginamos.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/19/delay-pools-de-squid/">delay pools de squid</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-02-19T12:03:48-05:00'><span class='date'>19/02/2015</span> <span class='time'>12:03 pm</span></time>
-        
-           | <a href="/blog/2015/02/19/delay-pools-de-squid/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/19/delay-pools-de-squid/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Los delay pool de squid, son una herramienta que permite determinar cuanto ancho
-de vianda le corresponde a ciertas conexiones. A mi en lo personal su uso me
-disgusta bastante; por el mero hecho de que pone a squid leeeeento. Cuando los
-delay pools están pinchando, las peticiones se demoran más al ser respondidas y
-el proto cache manager empieza a hacer cosas raras.</p>
-
-<p>En fin, cierra el chat, apriétate el cinto y abre las entendederas que esto es
-complicado&hellip;</p>
-
-<p>Supón que tienes 128Kbit y queremos repartir el ancho de vianda de manera
-&ldquo;equitativa&rdquo;</p>
-
-<p>El ancho de vianda se vende en KBit pero squid entiende de K Bytes.</p>
-
-<figure class='code'><figcaption><span>&#8216;conversion de Kbit/s a KBytes/s&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:611:0&gt; 128/8
-</span><span class='line'><span class="o">=</span>&gt; 16
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>O sea, que tú canal llega a los 16 Kylo Bytes por segundos&hellip;</p>
-
-<p>Nuestro discriminante sistema de castas, tendrá 2 clases</p>
-
-<p>&ldquo;lo dioses&rdquo; y &ldquo;los mortales&rdquo;</p>
-
-<p>Los dioses cuentan con el 60% del ancho de vianda disponible, mientras que los
-mortales solo cuentan con el 20%.</p>
-
-<p>OJO: No des a nadie el 100%, ya que podría acaparar todo el canal y dejar a todo
-el mundo sin navegación.</p>
-
-<p>Los delay pool de clase 2, son los que reparten &ldquo;ancho de banda por cabeza&rdquo;
-Osease, &ldquo;esto es lo que le toca a esa persona&rdquo;. Los parámetros de los delay pool
-de la clase dos son sucesivamente: ancho de banda y ráfaga</p>
-
-<p>El ancho de banda, no puede ser una cosa rígida, porque los datos no
-se transmiten de manera rígida. Aveces se requiere mucho ancho de banda
-durante 2 milisegundos para establecer una conexión SSL.</p>
-
-<p>Ahí es donde viene a jugar la ráfaga. Osea: &ldquo;cuanto ancho de banda
-máximo tendrá durante los picos&rdquo;</p>
-
-<p>Digamos que el delay pool será un 20% del canal</p>
-
-<figure class='code'><figcaption><span>&#8220;el 20%&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">612</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">16</span><span class="o">*</span><span class="mi">20</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="mi">1024</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">3072</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A la ráfaga le das un Kylo más</p>
-
-<figure class='code'><figcaption><span>&#8220;un kylo más&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">613</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">3072</span><span class="o">+</span><span class="mi">1024</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">4096</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El delay_pool te viene quedando así:</p>
-
-<figure class='code'><figcaption><span>&#8220;delay_pool #1&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>delay_parameters <span class="m">1</span> 3072/3072 4096/4096
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora creamos un delay_pool que tiene el 80% del ancho de banda</p>
-
-<figure class='code'><figcaption><span>&#8220;el 80%&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">614</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">16</span><span class="o">*</span><span class="mi">80</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="mi">1024</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">12288</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Sea entonces el delay_pool 2 así:</p>
-
-<figure class='code'><figcaption><span>&#8220;delay_pool #2&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>delay_parameters <span class="m">2</span> 12288/12288 13312/13312
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Al final el squid.con</p>
-
-<figure class='code'><figcaption><span>&#8216;squid.conf&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># tendremos 2 delai puls</span>
-</span><span class='line'>delay_pools 2
-</span><span class='line'>
-</span><span class='line'><span class="c"># ambos de la clase 2</span>
-</span><span class='line'>delay_class <span class="m">1</span> 2
-</span><span class='line'>delay_class <span class="m">2</span> 2
-</span><span class='line'>
-</span><span class='line'><span class="c"># los mortales van al 20%</span>
-</span><span class='line'>delay_parameters <span class="m">1</span> 3072/3072 4096/4096
-</span><span class='line'>
-</span><span class='line'><span class="c"># y los dioses van al 80%</span>
-</span><span class='line'>delay_parameters <span class="m">2</span> 12288/12288 13312/13312
-</span><span class='line'>
-</span><span class='line'><span class="c"># los dioses, aquellos cuyo nombre de usuario machee esta lista</span>
-</span><span class='line'>acl dioses proxy_auth tuusuario eljefe eldirector lajevita lasecretaria
-</span><span class='line'>
-</span><span class='line'><span class="c"># en el 1 metemos a los dioses</span>
-</span><span class='line'>delay_access <span class="m">1</span> allow dioses
-</span><span class='line'>delay_access <span class="m">1</span> deny all
-</span><span class='line'>
-</span><span class='line'><span class="c"># el resto, pal 2</span>
-</span><span class='line'>delay_access <span class="m">2</span> allow all
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ah otra cosa! MUY IMPORTANTE</p>
-
-<h4>NADIE debe quedar fuera de delay pool una vez que creas el primero.</h4>
-
-<p>Si quieres TÚ (el informático que es tremendo decarao) quires navegar más rápido
-que nadie, create un delay pool con el 100% del ancho de banda, pero no te
-quedes fuera de ningún delaypool.</p>
-
-<p>Desde ese momento empezarás a acaparar todo el canal al punto de que NO se podrá
-navegar. A ese punto te buscarás un lío, no reserves para ti solo más del 80%
-del canal y navega con cordura.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1203,6 +1094,10 @@ del canal y navega con cordura.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a>

@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-02-20T16:35:26-05:00</updated>
+  <updated>2017-02-22T22:59:06-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,110 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[bind personal]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/02/22/bind-personal/"/>
+    <updated>2017-02-22T21:05:26-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/02/22/bind-personal</id>
+    <content type="html"><![CDATA[<p>Una cosa que me jode, es que linux el tema de los múltiples DNS no los maneje
+bien. Por ejemplo, estamos en una LAN con red 192.168.1.0/24 y además,
+tenemos una conexión a internet.</p>
+
+<p>Entonces seteas dos DNS en el resolv.conf y no pincha!</p>
+
+<p>Además, si la situación es itinerante (vas a múltiples LAN) mantener la
+configuración DNS se vuelve un rollo. Aunque el networkmanager te permita
+configurarlo, volvemos a la situación anterior.</p>
+
+<p>Solución, tenemos un bin con sus debidos forwarders para cada red. En mi caso,
+el <strong>/etc/named.conf</strong> me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">// vim:set ts=4 sw=4 et:</span>
+</span><span class='line'><span class="n">options</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">recursion</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>        <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">recursion</span> <span class="n">yes</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">auth</span><span class="o">-</span><span class="n">nxdomain</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// la lan por su DNS local</span>
+</span><span class='line'><span class="n">zone</span> <span class="s">&quot;dominio.cu&quot;</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">192.168.1.3</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// lo demás por google</span>
+</span><span class='line'><span class="n">zone</span> <span class="s">&quot;.&quot;</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">8.8.8.8</span><span class="p">;</span> <span class="mf">8.8.4.4</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>De esta manera, el dominio de la LAN (<strong>dominio.cu</strong>), será resuelto a través
+del servidor DNS 192.168.1.3; que es el de la LAN. Para eso usamos la zona
+&ldquo;dominio.cu&rdquo; del tipo forward y especificamos a 192.168.1.3 como su forward.</p>
+
+<p>El resto, o sea, la zona &ldquo;.&rdquo;, será también del tipo forward y para este ejemplo,
+usamos los dns de google como forward.</p>
+
+<p>Ahora solo te queda actualizar el <strong>/etc/resolv.conf</strong> y setear a 127.0.0.1
+como tu servidor dns</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/resolv.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp"># Generated by resolvconf</span>
+</span><span class='line'><span class="n">nameserver</span> <span class="mf">127.0.0.1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Recuerda que cada configuración automatizada, actualiza este fichero. Te
+recomiendo que no te fajes con el fichero, si no que en cada conexión que desees
+usar tu servidor, se lo especifiques. Por ejemplo, con networkmanager, le dices
+a N conexión, que el servidor dns es manual y será <em>127.0.0.1</em>. Si usas Gnome
+(NetworkManager), te recomiendo usar la utilidad <strong>nm-connection-editor</strong>. Te
+permitirá especificar el dominio de búsqueda, cosa que no he visto como hacer
+con el administrador de conexiones de gnome.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[a las puertas del 3g]]></title>
@@ -143,78 +247,78 @@ tráfico real por alguna pif.</p>
 <span class='line-number'>70</span>
 <span class='line-number'>71</span>
 <span class='line-number'>72</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>// vim:set <span class="nv">ts</span><span class="o">=</span><span class="m">4</span> <span class="nv">sw</span><span class="o">=</span><span class="m">4</span> et:
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">// vim:set ts=4 sw=4 et:</span>
 </span><span class='line'>
-</span><span class='line'>options <span class="o">{</span>
+</span><span class='line'><span class="n">options</span> <span class="p">{</span>
 </span><span class='line'>
-</span><span class='line'>   directory <span class="s2">&quot;/etc/bind/&quot;</span><span class="p">;</span>
-</span><span class='line'>   pid-file <span class="s2">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
-</span><span class='line'>   listen-on-v6 <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
-</span><span class='line'>   listen-on <span class="o">{</span> 169.254.0.0/16<span class="p">;</span> localhost<span class="p">;</span> 192.168.1.0/24<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
-</span><span class='line'>   allow-transfer <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
-</span><span class='line'>   allow-update <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
-</span><span class='line'>   version none<span class="p">;</span>
-</span><span class='line'>   hostname none<span class="p">;</span>
-</span><span class='line'>   server-id none<span class="p">;</span>
+</span><span class='line'>   <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">v6</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;</span> <span class="mf">192.168.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
 </span><span class='line'>
-</span><span class='line'>   // los servidores hacen recursion
-</span><span class='line'>   allow-recursion <span class="o">{</span> 169.254.0.0/16<span class="p">;</span> localhost<span class="p">;</span><span class="o">}</span><span class="p">;</span>
-</span><span class='line'>   recursion yes<span class="p">;</span>
+</span><span class='line'>   <span class="c1">// los servidores hacen recursion</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">recursion</span> <span class="p">{</span> <span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;};</span>
+</span><span class='line'>   <span class="n">recursion</span> <span class="n">yes</span><span class="p">;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">}</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
 </span><span class='line'>
-</span><span class='line'>view lan  <span class="o">{</span> // la red LAN
+</span><span class='line'><span class="n">view</span> <span class="n">lan</span>  <span class="p">{</span> <span class="c1">// la red LAN</span>
 </span><span class='line'>
-</span><span class='line'>   match-clients <span class="o">{</span>192.168.1.0/24<span class="p">;</span><span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">192.168.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;};</span>
 </span><span class='line'>
-</span><span class='line'>   zone <span class="s2">&quot;localhost&quot;</span> IN <span class="o">{</span>
-</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
-</span><span class='line'>      file <span class="s2">&quot;localhost.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
 </span><span class='line'>
-</span><span class='line'>   zone <span class="s2">&quot;hcg.sld.cu&quot;</span> IN <span class="o">{</span>
-</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
-</span><span class='line'>      file <span class="s2">&quot;hcg.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>      notify no<span class="p">;</span>
-</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
 </span><span class='line'>
-</span><span class='line'>   zone <span class="s2">&quot;.&quot;</span> <span class="o">{</span>
-</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
-</span><span class='line'>      file <span class="s2">&quot;fakeroot.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;.&quot;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;fakeroot.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">}</span><span class="p">;</span> // view lan
+</span><span class='line'><span class="p">};</span> <span class="c1">// view lan</span>
 </span><span class='line'>
 </span><span class='line'>
 </span><span class='line'>
-</span><span class='line'>view xen <span class="o">{</span> // la red interna de XenServer
+</span><span class='line'><span class="n">view</span> <span class="n">xen</span> <span class="p">{</span> <span class="c1">// la red interna de XenServer</span>
 </span><span class='line'>
-</span><span class='line'>   match-clients <span class="o">{</span>169.254.0.0/16<span class="p">;</span> localhost<span class="p">;</span><span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;};</span>
 </span><span class='line'>
-</span><span class='line'>   zone <span class="s2">&quot;localhost&quot;</span> IN <span class="o">{</span>
-</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
-</span><span class='line'>      file <span class="s2">&quot;localhost.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
 </span><span class='line'>
-</span><span class='line'>   zone <span class="s2">&quot;xen&quot;</span> IN <span class="o">{</span>
-</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
-</span><span class='line'>      file <span class="s2">&quot;xen.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>      notify no<span class="p">;</span>
-</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;xen&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;xen.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
 </span><span class='line'>
-</span><span class='line'>   zone <span class="s2">&quot;hcg.sld.cu&quot;</span> IN <span class="o">{</span>
-</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
-</span><span class='line'>      file <span class="s2">&quot;hcg.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>      notify no<span class="p">;</span>
-</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
 </span><span class='line'>
-</span><span class='line'>   zone <span class="s2">&quot;sld.cu&quot;</span> <span class="o">{</span>
-</span><span class='line'>      forwarders <span class="o">{</span> 201.220.222.131<span class="p">;</span> 201.220.222.132<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
-</span><span class='line'>      <span class="nb">type </span>forward<span class="p">;</span>
-</span><span class='line'>      forward only<span class="p">;</span>
-</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;sld.cu&quot;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">201.220.222.131</span><span class="p">;</span> <span class="mf">201.220.222.132</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">forward</span> <span class="n">only</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">}</span><span class="p">;</span> // view xen
+</span><span class='line'><span class="p">};</span> <span class="c1">// view xen</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -2067,51 +2171,6 @@ destinatario en un encabezado &ldquo;Envelope-To&rdquo;</p>
 
 
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[domainpop con postfix]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/10/22/domainpop-con-postfix/"/>
-    <updated>2016-10-22T17:35:46-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/10/22/domainpop-con-postfix</id>
-    <content type="html"><![CDATA[<p>Otra importante entrada que decidí migrar de <a href="http://otherlinuxblog.blogspot.com">puheroska</a></p>
-
-<p>Es tan sencillo como crear un dominio virtual y asignarle usuarios reales. Para
-no volverte loco pon el nombre del usaurio igual que el del dominoio.</p>
-
-<p>Por ejemplo, crea dos usuarios, uno llamado <em>subdom</em> y un segndo llamado <em>otro</em>.
-Luego crea el fichero /etc/postfix/virtual y ponle esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/postfix/virtual&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>@subdom.tudomionio.cu   subdom
-</span><span class='line'>@otro.tudominio.cu      otro
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>postmap</strong> que tú conoces y <strong>postfix reload</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;postmap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>postmap /etc/postfix/virtual
-</span><span class='line'>postfix reload
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ya hemos declarado que <em>subdom</em> y <em>otro</em>, serán usuarios y que todo lo que se envíe
-a los dominios virtuales @otro.tudominio.cu será almacenado en /var/mail/otro</p>
-
-<p>Finalmente en el /etc/main.cf pones:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/postfix/main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">virtual_alias_domains</span> <span class="o">=</span> subdom.tudominio.cu otro.tudominio.cu
-</span><span class='line'><span class="nv">virtual_alias_maps</span> <span class="o">=</span> <span class="nb">hash</span>:/etc/postfix/virtual
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>OJO no olvides que en <strong>mydestination</strong> y debes incluir ambos dominios virtuales.</p>
 ]]></content>
   </entry>
   

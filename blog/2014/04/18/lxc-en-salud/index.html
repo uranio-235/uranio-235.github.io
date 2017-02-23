@@ -52,7 +52,7 @@ gigas de RAM, un buen micro y &hellip;">
   <header role="banner"><hgroup>
   <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
   
-    <h2>luchando contra el subdesarrollo en todos los frentes</h2>
+    <h2>todo lo que expliqué mientras nadie prestaba atención</h2>
   
 </hgroup>
 
@@ -129,10 +129,10 @@ crear snapshots de los contenedores sea mucho más óptimo.</p>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lxc-create -n debian -t <span class="se">\</span>
-</span><span class='line'>/usr/share/lxc/templates/lxc-debian -- -r jessie <span class="se">\</span>
-</span><span class='line'>--mirror<span class="o">=</span>http://ftp.sld.cu/debian <span class="se">\</span>
-</span><span class='line'>--security-mirror<span class="o">=</span>http://ftp.sld.cu/debian
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">lxc-create -n debian -t \</span>
+</span><span class='line'><span class="go">/usr/share/lxc/templates/lxc-debian -- -r jessie \</span>
+</span><span class='line'><span class="go">--mirror=http://ftp.sld.cu/debian \</span>
+</span><span class='line'><span class="go">--security-mirror=http://ftp.sld.cu/debian</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -144,8 +144,8 @@ operación create de LXC falla de nada. Por suerte todo salió de acorde al plan
 
 <figure class='code'><figcaption><span>&#8220;listo debian&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># du -hs /var/lib/lxc/</span>
-</span><span class='line'>248M  /var/lib/lxc/
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[root@leviatan ~]# du -hs /var/lib/lxc/</span>
+</span><span class='line'><span class="go">248M /var/lib/lxc/</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -157,7 +157,7 @@ instalaremos una selección básica de software.
 Arrancamos el contenedor:</p>
 
 <figure class='code'><figcaption><span>&#8220;lxc-start&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-start -n debian</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[root@leviatan ~]# lxc-start -n debian</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -171,14 +171,14 @@ Arrancamos el contenedor:</p>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-console -n debian</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[root@leviatan ~]# lxc-console -n debian</span>
 </span><span class='line'>
-</span><span class='line'>Connected to tty 1
-</span><span class='line'>       Type &lt;Ctrl+a q&gt; to <span class="nb">exit </span>the console, &lt;Ctrl+a Ctrl+a&gt; to enter Ctrl+a itself
+</span><span class='line'><span class="go">Connected to tty 1</span>
+</span><span class='line'><span class="go">       Type &lt;Ctrl+a q&gt; to exit the console, &lt;Ctrl+a Ctrl+a&gt; to enter Ctrl+a itself</span>
 </span><span class='line'>
-</span><span class='line'>Debian GNU/Linux <span class="m">8</span> debian tty1
+</span><span class='line'><span class="go">Debian GNU/Linux 8 debian tty1</span>
 </span><span class='line'>
-</span><span class='line'>debian login:
+</span><span class='line'><span class="go">debian login: </span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -208,8 +208,8 @@ Ah! Para hacer un snapshot, <strong>paramos</strong> el container primero.</p>
 
 <figure class='code'><figcaption><span>&#8220;lxc-snapshot&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-stop -n debian </span>
-</span><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-snapshot -n debian </span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[root@leviatan ~]# lxc-stop -n debian </span>
+</span><span class='line'><span class="go">[root@leviatan ~]# lxc-snapshot -n debian </span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -224,15 +224,15 @@ Ah! Para hacer un snapshot, <strong>paramos</strong> el container primero.</p>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-snapshot -n debian -r snap0 -N mail</span>
-</span><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-snapshot -n debian -r snap0 -N web</span>
-</span><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-snapshot -n debian -r snap0 -N ftp</span>
-</span><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-ls -f</span>
-</span><span class='line'>NAME   STATE   AUTOSTART GROUPS IPV4 IPV6
-</span><span class='line'>debian STOPPED <span class="m">0</span>         -      -    -
-</span><span class='line'>mail   STOPPED <span class="m">0</span>         -      -    -
-</span><span class='line'>ftp    STOPPED <span class="m">0</span>         -      -    -
-</span><span class='line'>web    STOPPED <span class="m">0</span>         -      -    -
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[root@leviatan ~]# lxc-snapshot -n debian -r snap0 -N mail</span>
+</span><span class='line'><span class="go">[root@leviatan ~]# lxc-snapshot -n debian -r snap0 -N web</span>
+</span><span class='line'><span class="go">[root@leviatan ~]# lxc-snapshot -n debian -r snap0 -N ftp</span>
+</span><span class='line'><span class="go">[root@leviatan ~]# lxc-ls -f</span>
+</span><span class='line'><span class="go">NAME   STATE   AUTOSTART GROUPS IPV4 IPV6</span>
+</span><span class='line'><span class="go">debian STOPPED 0         -      -    -</span>
+</span><span class='line'><span class="go">mail   STOPPED 0         -      -    -</span>
+</span><span class='line'><span class="go">ftp    STOPPED 0         -      -    -</span>
+</span><span class='line'><span class="go">web    STOPPED 0         -      -    -</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -241,8 +241,8 @@ snapshot ni la máquina base (¿o sí?). Yo opté por borrar ambos.</p>
 
 <figure class='code'><figcaption><span>&#8220;limpiando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-snapshot -n debian -d snap0</span>
-</span><span class='line'><span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># lxc-destroy -n debian</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[root@leviatan ~]# lxc-snapshot -n debian -d snap0</span>
+</span><span class='line'><span class="go">[root@leviatan ~]# lxc-destroy -n debian</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -271,14 +271,14 @@ diría que el puerto 22 ya se encuentra en eso.</p>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="o">[</span>root@leviatan ~<span class="o">]</span><span class="c"># cat /var/lib/lxc/debian/config |grep -v &#39;#&#39;</span>
-</span><span class='line'> lxc.include <span class="o">=</span> /usr/share/lxc/config/debian.common.conf
-</span><span class='line'> lxc.tty <span class="o">=</span> 4
-</span><span class='line'> lxc.arch <span class="o">=</span> amd64
-</span><span class='line'> lxc.network.type <span class="o">=</span> none
-</span><span class='line'> lxc.rootfs <span class="o">=</span> /var/lib/lxc/debian/rootfs
-</span><span class='line'> lxc.rootfs.backend <span class="o">=</span> dir
-</span><span class='line'> lxc.utsname <span class="o">=</span> debian
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> [root@leviatan ~]# cat /var/lib/lxc/debian/config |grep -v &#39;#&#39;</span>
+</span><span class='line'><span class="go"> lxc.include = /usr/share/lxc/config/debian.common.conf</span>
+</span><span class='line'><span class="go"> lxc.tty = 4</span>
+</span><span class='line'><span class="go"> lxc.arch = amd64</span>
+</span><span class='line'><span class="go"> lxc.network.type = none</span>
+</span><span class='line'><span class="go"> lxc.rootfs = /var/lib/lxc/debian/rootfs</span>
+</span><span class='line'><span class="go"> lxc.rootfs.backend = dir</span>
+</span><span class='line'><span class="go"> lxc.utsname = debian</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -293,7 +293,7 @@ de debian.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -352,6 +352,10 @@ de debian.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a>

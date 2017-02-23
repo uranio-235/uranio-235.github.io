@@ -52,7 +52,7 @@ que quería &hellip;">
   <header role="banner"><hgroup>
   <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
   
-    <h2>luchando contra el subdesarrollo en todos los frentes</h2>
+    <h2>todo lo que expliqué mientras nadie prestaba atención</h2>
   
 </hgroup>
 
@@ -136,28 +136,28 @@ debería ir la contraseña.</p>
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">set </span>daemon 60
-</span><span class='line'><span class="nb">set </span>postmaster <span class="s2">&quot;root&quot;</span>
-</span><span class='line'><span class="nb">set </span>no bouncemail
-</span><span class='line'><span class="nb">set </span>no spambounce
-</span><span class='line'><span class="nb">set </span>logfile /var/log/fetchmail/fetchmail.log
-</span><span class='line'><span class="nb">set </span>no syslog
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">set</span> <span class="n">daemon</span> <span class="mi">60</span>
+</span><span class='line'><span class="n">set</span> <span class="n">postmaster</span> <span class="s">&quot;root&quot;</span>
+</span><span class='line'><span class="n">set</span> <span class="n">no</span> <span class="n">bouncemail</span>
+</span><span class='line'><span class="n">set</span> <span class="n">no</span> <span class="n">spambounce</span>
+</span><span class='line'><span class="n">set</span> <span class="n">logfile</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">fetchmail</span><span class="o">/</span><span class="n">fetchmail</span><span class="p">.</span><span class="n">log</span>
+</span><span class='line'><span class="n">set</span> <span class="n">no</span> <span class="n">syslog</span>
 </span><span class='line'>
-</span><span class='line'>defaults
-</span><span class='line'>    timeout 10
-</span><span class='line'>    no keep
-</span><span class='line'>    fetchall
-</span><span class='line'>    expunge 5
-</span><span class='line'>    dropstatus
+</span><span class='line'><span class="n">defaults</span>
+</span><span class='line'>    <span class="n">timeout</span> <span class="mi">10</span>
+</span><span class='line'>    <span class="n">no</span> <span class="n">keep</span>
+</span><span class='line'>    <span class="n">fetchall</span>
+</span><span class='line'>    <span class="n">expunge</span> <span class="mi">5</span>
+</span><span class='line'>    <span class="n">dropstatus</span>
 </span><span class='line'>
-</span><span class='line'>poll multipop.sld.cu port <span class="m">110</span> protocol pop3 localdomains hcg.sld.cu
-</span><span class='line'>    envelope <span class="m">1</span> <span class="s2">&quot;Delivered-To&quot;</span>
-</span><span class='line'>    no dns
-</span><span class='line'>    username ????
-</span><span class='line'>    password ?????????
-</span><span class='line'>    to * here
-</span><span class='line'>    limitflush
-</span><span class='line'>    smtphost localhost
+</span><span class='line'><span class="n">poll</span> <span class="n">multipop</span><span class="p">.</span><span class="n">sld</span><span class="p">.</span><span class="n">cu</span> <span class="n">port</span> <span class="mi">110</span> <span class="n">protocol</span> <span class="n">pop3</span> <span class="n">localdomains</span> <span class="n">hcg</span><span class="p">.</span><span class="n">sld</span><span class="p">.</span><span class="n">cu</span>
+</span><span class='line'>    <span class="n">envelope</span> <span class="mi">1</span> <span class="s">&quot;Delivered-To&quot;</span>
+</span><span class='line'>    <span class="n">no</span> <span class="n">dns</span>
+</span><span class='line'>    <span class="n">username</span> <span class="o">????</span>
+</span><span class='line'>    <span class="n">password</span> <span class="o">?????????</span>
+</span><span class='line'>    <span class="n">to</span> <span class="o">*</span> <span class="n">here</span>
+</span><span class='line'>    <span class="n">limitflush</span>
+</span><span class='line'>    <span class="n">smtphost</span> <span class="n">localhost</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -173,7 +173,7 @@ infomed me dijeron que fuera al &ldquo;GAU&rdquo; para renovar el contrato.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -232,6 +232,10 @@ infomed me dijeron que fuera al &ldquo;GAU&rdquo; para renovar el contrato.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a>

@@ -9,8 +9,7 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="el "calisto" garcía 04/04/2014 9:42 pm | Comments En la punta de loma más temida y respetada por cualquiera que estudie medicina;
-y en lo más alto &hellip;">
+  <meta name="description" content="el toten de proxies 06/04/2014 1:06 pm | Comments Bienvenido al 5to infierno de infomed. Un sitio donde toda la comunicacion mas alla del mar, sale &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -52,7 +51,7 @@ y en lo más alto &hellip;">
   <header role="banner"><hgroup>
   <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
   
-    <h2>luchando contra el subdesarrollo en todos los frentes</h2>
+    <h2>todo lo que expliqué mientras nadie prestaba atención</h2>
   
 </hgroup>
 
@@ -82,6 +81,99 @@ y en lo más alto &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-04-06T13:06:35-04:00'><span class='date'>06/04/2014</span> <span class='time'>1:06 pm</span></time>
+        
+           | <a href="/blog/2014/04/06/squid-en-infomed/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/04/06/squid-en-infomed/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Bienvenido al 5to infierno de infomed.</p>
+
+<p>Un sitio donde toda la comunicacion mas alla del mar, sale a traves del llamado
+<em>&ldquo;proxy padre&rdquo;</em>. Siempre habia oido hablar de casos como estos, pero nunca lo
+habia vivido.</p>
+
+<p>Aun no me he tomado ni tan siquiera la molestia de configurar un teclado <em>intl</em>
+porque no he tenido tiempo, por tanto, pido disculpas por escribir en ASCII
+plano&hellip; en fin.</p>
+
+<p>El problema:</p>
+
+<p>Resulta que este lugar se habia vuelto famoso, porque cuando se navegaba en
+infomed, no se podia navegar en internet y viceversa.</p>
+
+<p>Toda la navegacion aqui que va mas alla del nodo de infomed, se realiza atreves
+de un SIN&hellip; simpatico proxy padre, que escucha por el puerto 3128.</p>
+
+<p>Drama descomunal! Si en tu proxy local, declaras un proxy padre (en squid:
+&ldquo;cache peer&rdquo;) desembocara directamente en un nuevo problema; y es que entonces
+las paginas de infomed, NO se ven. Los del nodo no dejan acceder a infomed desde
+afuera porque eso seria jamarse el ancho de vianda por gusto. Simplemente te
+sale un html sato, diciendo que debes configurar debidamente tu proxy; haciendo
+una excepcion para las direcciones &ldquo;*.sld.cu&rdquo;</p>
+
+<p>Pero por suerte, squid tiene un mecanismo para usar multiples proxies. En este
+caso, con uno solo basta. Veamos de cerca la configuración.</p>
+
+<figure class='code'><figcaption><span>/etc/squid/squid.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='squidconf'><span class='line'><span class="c"># el proxy padre de infomed</span><span class="w"></span>
+</span><span class='line'><span class="k">cache_peer</span><span class="w"> </span><span class="mf">201.220.211.7</span><span class="w"> </span><span class="no">parent</span><span class="w"> </span><span class="m">3128</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="no">default</span><span class="w"></span>
+</span><span class='line'>cache_peer_domain<span class="w"> </span><span class="mf">201.220.211.7</span><span class="w"> </span>!.sld.cu<span class="w"></span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># infomed no sale a traves del proxy</span><span class="w"></span>
+</span><span class='line'><span class="k">acl</span><span class="w"> </span>sitios_salud<span class="w"> </span><span class="k">dstdomain</span><span class="w"> </span>.sld.cu<span class="w"></span>
+</span><span class='line'><span class="k">always_direct</span><span class="w"> </span><span class="no">allow</span><span class="w"> </span>sitios_salud<span class="w"></span>
+</span><span class='line'><span class="k">never_direct</span><span class="w"> </span><span class="no">allow</span><span class="w"> </span><span class="no">all</span><span class="w"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Dividido en silabas pa los mentequita, linea por linea.</p>
+
+<p>2 - declaramos el proxy</p>
+
+<p>3 - decimos que a traves de ese proxy, se usara todo lo que NO sea .sld.cu</p>
+
+<p>6 - los sitios de salud, son aquellos que digan &ldquo;.sld.cu&rdquo;</p>
+
+<p>7 - los sitios de salud, van directo (sin proxy)</p>
+
+<p>8 - el resto, no se permite directo (van via proxy)</p>
+
+<p>Problema <em>&ldquo;resolvido&rdquo;</em></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -159,6 +251,10 @@ tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a>

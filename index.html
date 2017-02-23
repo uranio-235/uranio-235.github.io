@@ -9,7 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="a las puertas del 3g 05/02/2017 9:24 pm | Comments Oficialmente, han anunciado en la mesa redonda que se proveerá internet por 3G. La noticia me &hellip;">
+  <meta name="description" content="bind personal 22/02/2017 9:05 pm | Comments Una cosa que me jode, es que linux el tema de los múltiples DNS no los maneje
+bien. Por ejemplo, estamos &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -51,7 +52,7 @@
   <header role="banner"><hgroup>
   <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
   
-    <h2>luchando contra el subdesarrollo en todos los frentes</h2>
+    <h2>todo lo que expliqué mientras nadie prestaba atención</h2>
   
 </hgroup>
 
@@ -81,6 +82,135 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/02/22/bind-personal/">bind personal</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-02-22T21:05:26-05:00'><span class='date'>22/02/2017</span> <span class='time'>9:05 pm</span></time>
+        
+           | <a href="/blog/2017/02/22/bind-personal/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/02/22/bind-personal/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Una cosa que me jode, es que linux el tema de los múltiples DNS no los maneje
+bien. Por ejemplo, estamos en una LAN con red 192.168.1.0/24 y además,
+tenemos una conexión a internet.</p>
+
+<p>Entonces seteas dos DNS en el resolv.conf y no pincha!</p>
+
+<p>Además, si la situación es itinerante (vas a múltiples LAN) mantener la
+configuración DNS se vuelve un rollo. Aunque el networkmanager te permita
+configurarlo, volvemos a la situación anterior.</p>
+
+<p>Solución, tenemos un bin con sus debidos forwarders para cada red. En mi caso,
+el <strong>/etc/named.conf</strong> me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">// vim:set ts=4 sw=4 et:</span>
+</span><span class='line'><span class="n">options</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">recursion</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>        <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">recursion</span> <span class="n">yes</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">auth</span><span class="o">-</span><span class="n">nxdomain</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// la lan por su DNS local</span>
+</span><span class='line'><span class="n">zone</span> <span class="s">&quot;dominio.cu&quot;</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">192.168.1.3</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// lo demás por google</span>
+</span><span class='line'><span class="n">zone</span> <span class="s">&quot;.&quot;</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">8.8.8.8</span><span class="p">;</span> <span class="mf">8.8.4.4</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>De esta manera, el dominio de la LAN (<strong>dominio.cu</strong>), será resuelto a través
+del servidor DNS 192.168.1.3; que es el de la LAN. Para eso usamos la zona
+&ldquo;dominio.cu&rdquo; del tipo forward y especificamos a 192.168.1.3 como su forward.</p>
+
+<p>El resto, o sea, la zona &ldquo;.&rdquo;, será también del tipo forward y para este ejemplo,
+usamos los dns de google como forward.</p>
+
+<p>Ahora solo te queda actualizar el <strong>/etc/resolv.conf</strong> y setear a 127.0.0.1
+como tu servidor dns</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/resolv.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp"># Generated by resolvconf</span>
+</span><span class='line'><span class="n">nameserver</span> <span class="mf">127.0.0.1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Recuerda que cada configuración automatizada, actualiza este fichero. Te
+recomiendo que no te fajes con el fichero, si no que en cada conexión que desees
+usar tu servidor, se lo especifiques. Por ejemplo, con networkmanager, le dices
+a N conexión, que el servidor dns es manual y será <em>127.0.0.1</em>. Si usas Gnome
+(NetworkManager), te recomiendo usar la utilidad <strong>nm-connection-editor</strong>. Te
+permitirá especificar el dominio de búsqueda, cosa que no he visto como hacer
+con el administrador de conexiones de gnome.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -256,78 +386,78 @@ tráfico real por alguna pif.</p>
 <span class='line-number'>70</span>
 <span class='line-number'>71</span>
 <span class='line-number'>72</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>// vim:set <span class="nv">ts</span><span class="o">=</span><span class="m">4</span> <span class="nv">sw</span><span class="o">=</span><span class="m">4</span> et:
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">// vim:set ts=4 sw=4 et:</span>
 </span><span class='line'>
-</span><span class='line'>options <span class="o">{</span>
+</span><span class='line'><span class="n">options</span> <span class="p">{</span>
 </span><span class='line'>
-</span><span class='line'>   directory <span class="s2">&quot;/etc/bind/&quot;</span><span class="p">;</span>
-</span><span class='line'>   pid-file <span class="s2">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
-</span><span class='line'>   listen-on-v6 <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
-</span><span class='line'>   listen-on <span class="o">{</span> 169.254.0.0/16<span class="p">;</span> localhost<span class="p">;</span> 192.168.1.0/24<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
-</span><span class='line'>   allow-transfer <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
-</span><span class='line'>   allow-update <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
-</span><span class='line'>   version none<span class="p">;</span>
-</span><span class='line'>   hostname none<span class="p">;</span>
-</span><span class='line'>   server-id none<span class="p">;</span>
+</span><span class='line'>   <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">v6</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;</span> <span class="mf">192.168.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
 </span><span class='line'>
-</span><span class='line'>   // los servidores hacen recursion
-</span><span class='line'>   allow-recursion <span class="o">{</span> 169.254.0.0/16<span class="p">;</span> localhost<span class="p">;</span><span class="o">}</span><span class="p">;</span>
-</span><span class='line'>   recursion yes<span class="p">;</span>
+</span><span class='line'>   <span class="c1">// los servidores hacen recursion</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">recursion</span> <span class="p">{</span> <span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;};</span>
+</span><span class='line'>   <span class="n">recursion</span> <span class="n">yes</span><span class="p">;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">}</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
 </span><span class='line'>
-</span><span class='line'>view lan  <span class="o">{</span> // la red LAN
+</span><span class='line'><span class="n">view</span> <span class="n">lan</span>  <span class="p">{</span> <span class="c1">// la red LAN</span>
 </span><span class='line'>
-</span><span class='line'>   match-clients <span class="o">{</span>192.168.1.0/24<span class="p">;</span><span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">192.168.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;};</span>
 </span><span class='line'>
-</span><span class='line'>   zone <span class="s2">&quot;localhost&quot;</span> IN <span class="o">{</span>
-</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
-</span><span class='line'>      file <span class="s2">&quot;localhost.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
 </span><span class='line'>
-</span><span class='line'>   zone <span class="s2">&quot;hcg.sld.cu&quot;</span> IN <span class="o">{</span>
-</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
-</span><span class='line'>      file <span class="s2">&quot;hcg.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>      notify no<span class="p">;</span>
-</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
 </span><span class='line'>
-</span><span class='line'>   zone <span class="s2">&quot;.&quot;</span> <span class="o">{</span>
-</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
-</span><span class='line'>      file <span class="s2">&quot;fakeroot.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;.&quot;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;fakeroot.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">}</span><span class="p">;</span> // view lan
+</span><span class='line'><span class="p">};</span> <span class="c1">// view lan</span>
 </span><span class='line'>
 </span><span class='line'>
 </span><span class='line'>
-</span><span class='line'>view xen <span class="o">{</span> // la red interna de XenServer
+</span><span class='line'><span class="n">view</span> <span class="n">xen</span> <span class="p">{</span> <span class="c1">// la red interna de XenServer</span>
 </span><span class='line'>
-</span><span class='line'>   match-clients <span class="o">{</span>169.254.0.0/16<span class="p">;</span> localhost<span class="p">;</span><span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;};</span>
 </span><span class='line'>
-</span><span class='line'>   zone <span class="s2">&quot;localhost&quot;</span> IN <span class="o">{</span>
-</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
-</span><span class='line'>      file <span class="s2">&quot;localhost.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
 </span><span class='line'>
-</span><span class='line'>   zone <span class="s2">&quot;xen&quot;</span> IN <span class="o">{</span>
-</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
-</span><span class='line'>      file <span class="s2">&quot;xen.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>      notify no<span class="p">;</span>
-</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;xen&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;xen.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
 </span><span class='line'>
-</span><span class='line'>   zone <span class="s2">&quot;hcg.sld.cu&quot;</span> IN <span class="o">{</span>
-</span><span class='line'>      <span class="nb">type </span>master<span class="p">;</span>
-</span><span class='line'>      file <span class="s2">&quot;hcg.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>      notify no<span class="p">;</span>
-</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
 </span><span class='line'>
-</span><span class='line'>   zone <span class="s2">&quot;sld.cu&quot;</span> <span class="o">{</span>
-</span><span class='line'>      forwarders <span class="o">{</span> 201.220.222.131<span class="p">;</span> 201.220.222.132<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
-</span><span class='line'>      <span class="nb">type </span>forward<span class="p">;</span>
-</span><span class='line'>      forward only<span class="p">;</span>
-</span><span class='line'>   <span class="o">}</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;sld.cu&quot;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">201.220.222.131</span><span class="p">;</span> <span class="mf">201.220.222.132</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">forward</span> <span class="n">only</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">}</span><span class="p">;</span> // view xen
+</span><span class='line'><span class="p">};</span> <span class="c1">// view xen</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -359,7 +489,7 @@ que ninguna pinche.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -645,7 +775,7 @@ intenta poner siempre los pipe arriba y el cortafuegos abajo</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -773,7 +903,7 @@ modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -856,119 +986,7 @@ el compilador suele interpretarlo como que estás escapando la comilla simple.</
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/20/datatables-espanol/">DataTables en español</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-20T16:39:32-05:00'><span class='date'>20/01/2017</span> <span class='time'>4:39 pm</span></time>
-        
-           | <a href="/blog/2017/01/20/datatables-espanol/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/20/datatables-espanol/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Siempre hay un cliente exquisito que le molesta la aplicación completa en
-español, a excepción del puñetero paginador que está en inglés.</p>
-
-<p>Como ya no uso kaminari ni will_paginate la cosa se complica. Decidí llamar a
-todas las tables id=&ldquo;latabla&rdquo; y en el <strong>application.js</strong>, según la
-documentación de la API de DataTables, le ponemos la clave <em>language</em> con sus
-pertinentes componentes.</p>
-
-<figure class='code'><figcaption><span>&#8220;application.js&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#latabla&#39;</span><span class="p">).</span><span class="nx">DataTable</span><span class="p">(</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="s2">&quot;language&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;decimal&quot;</span><span class="o">:</span>        <span class="s2">&quot;.&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;emptyTable&quot;</span><span class="o">:</span>     <span class="s2">&quot;No hay datos para mostrar&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;info&quot;</span><span class="o">:</span>           <span class="s2">&quot;del _START_ al _END_ (_TOTAL_ total)&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;infoEmpty&quot;</span><span class="o">:</span>      <span class="s2">&quot;del 0 al 0 (0 total)&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;infoFiltered&quot;</span><span class="o">:</span>   <span class="s2">&quot;(filtrado de todas las _MAX_ entradas)&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;infoPostFix&quot;</span><span class="o">:</span>    <span class="s2">&quot;&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;thousands&quot;</span><span class="o">:</span>      <span class="s2">&quot;&#39;&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;lengthMenu&quot;</span><span class="o">:</span>     <span class="s2">&quot;Mostrar _MENU_ entradas&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;loadingRecords&quot;</span><span class="o">:</span> <span class="s2">&quot;Cargando...&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;processing&quot;</span><span class="o">:</span>     <span class="s2">&quot;Procesando...&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;search&quot;</span><span class="o">:</span>         <span class="s2">&quot;Buscar:&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;zeroRecords&quot;</span><span class="o">:</span>    <span class="s2">&quot;No hay resultados&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;paginate&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="s2">&quot;first&quot;</span><span class="o">:</span>      <span class="s2">&quot;Primero&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="s2">&quot;last&quot;</span><span class="o">:</span>       <span class="s2">&quot;Último&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="s2">&quot;next&quot;</span><span class="o">:</span>       <span class="s2">&quot;Siguiente&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="s2">&quot;previous&quot;</span><span class="o">:</span>   <span class="s2">&quot;Anterior&quot;</span>
-</span><span class='line'>        <span class="p">},</span>
-</span><span class='line'>        <span class="s2">&quot;aria&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="s2">&quot;sortAscending&quot;</span><span class="o">:</span>  <span class="s2">&quot;: ordenar de manera Ascendente&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="s2">&quot;sortDescending&quot;</span><span class="o">:</span> <span class="s2">&quot;: ordenar de manera Descendente &quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">}</span> <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span> <span class="p">);</span> <span class="c1">// document ready</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Claro, realmente no lo hice así, ya que en vez de <strong>&ldquo;Anterior&rdquo;</strong> puse
-<strong>t(:dt_prev)</strong>  y cree su pertinente fichero de idioma con la traducción, pero
-escribí esta entrada pensando en gente que puede o no usar RoR. No obstante, el
-buen desarrollador de rails, sabe que lo correcto sería usar la in API de i18n.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -987,6 +1005,10 @@ buen desarrollador de rails, sabe que lo correcto sería usar la in API de i18n.
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a>

@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="squid transparente 01/09/2015 2:23 pm | Comments La era de SSL, parece haber dejado a los proxies trasparentes un tanto pasados
-de moda. Los tiempos &hellip;">
+  <meta name="description" content="archlinux con dos kernel 07/09/2015 8:32 pm | Comments Tener los dos kernel y elegir cual butear con el grub al principio; no es algo
+sencillo en &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -52,7 +52,7 @@ de moda. Los tiempos &hellip;">
   <header role="banner"><hgroup>
   <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
   
-    <h2>luchando contra el subdesarrollo en todos los frentes</h2>
+    <h2>todo lo que expliqué mientras nadie prestaba atención</h2>
   
 </hgroup>
 
@@ -82,6 +82,96 @@ de moda. Los tiempos &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/07/archlinux-dos-kernel/">archlinux con dos kernel</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-07T20:32:57-04:00'><span class='date'>07/09/2015</span> <span class='time'>8:32 pm</span></time>
+        
+           | <a href="/blog/2015/09/07/archlinux-dos-kernel/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/09/07/archlinux-dos-kernel/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Tener los dos kernel y elegir cual butear con el grub al principio; no es algo
+sencillo en archlinux.</p>
+
+<p>Por defecto, el grub dice tener dichas entradas en un submenú que nunca se ve.
+Para lograrlo, tenemos que hacer unos paces mágicos en el fichero:</p>
+
+<h4>/etc/default/grub</h4>
+
+<p>Primero instalamos los kernels; el lts y el fresco.</p>
+
+<figure class='code'><figcaption><span>&#8220;los kernels&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S linux linux-lts
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora la configuración con la que logré eso, fue agregándole al final estas
+lineas:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/default/grub&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">GRUB_DISABLE_SUBMENU</span><span class="o">=</span>y
+</span><span class='line'><span class="nv">GRUB_DEFAULT</span><span class="o">=</span>saved
+</span><span class='line'><span class="nv">GRUB_SAVEDEFAULT</span><span class="o">=</span><span class="nb">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso, se salva la última entrada ejecutada. Por que, lo más obvio, es que la
+próxima vez que arranques, se cargue el último kernel que usaste. Lo inusual
+sería que cambies de opinión y cargues otro. Desgraciadamente, si como yo, usas
+btrfs como sistema de archivo, grub no podrá escribir el fichero con la última
+entrada seleccionada. Incluso te dará un error, diciendo que no puede escribir
+el fichero no se que.</p>
+
+<p>Seguimos&hellip; Localiza y la linea de recovery y ponla en false:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/default/grub&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Uncomment to disable generation of recovery mode menu entries</span>
+</span><span class='line'><span class="nv">GRUB_DISABLE_RECOVERY</span><span class="o">=</span><span class="nb">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>NO SE POR QUE</strong>, pero no se generan las dichosas entradas si eso no está en
+false. Además, tener el menú de recovery es bastante útil, en estas distros
+volátiles, uno nunca sabe cuando le va a hacer falta.</p>
+
+<p>Paso final, generar el grub.cfg</p>
+
+<figure class='code'><figcaption><span>&#8220;grub-mkconfig&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>grub-mkconfig -o /boot/grub/grub.cfg
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Va y si quieres, no es obligado, pero para probar, <strong>REINICIA</strong>.</p>
+
+<p>   <blockquote><p>Prefiero lidiar con las pifias de una comunidad<br/>   que con las mazmorras de una compañía.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -212,7 +302,7 @@ direcciones URL a tu proxy.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -285,7 +375,7 @@ encendida y el uptime dice lo contrario.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -533,7 +623,7 @@ ponerlos a tu manera. Osea, el contenido de ese YAML se lo adicionas al tuyo.</p
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -690,112 +780,7 @@ la solución, como es el ejemplo de esta:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/">añadir verbo a un scaffold</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-07-05T21:35:54-04:00'><span class='date'>05/07/2015</span> <span class='time'>9:35 pm</span></time>
-        
-           | <a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/07/05/anadir-verbo-a-un-scaffold/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Cualquiera que sepa como usar debidamente los scaffolds, o sea, cualquiera que
-sepa como hacerle la paja a ruby on rails para que haga lo que queremos; seguro
-habrá intentado en algún momento, añadir un nuevo método a un scaffold. Además,
-de seguro quisiste luego poder llamarlo con los métodos &ldquo;metodo_user_path&rdquo; y que
-la ruta se cree de manera automática.</p>
-
-<p>Por ejemplo, en este caso, tengo el scaffold <strong>user</strong> y le agregué el método
-<strong>cambiar</strong> aparte de los clásicos PUT y DELETE.</p>
-
-<figure class='code'><figcaption><span>&#8220;scope de users_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="c1"># cambia el estado de habilitación del usuarios</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">cambiar</span>
-</span><span class='line'>     <span class="vi">@user</span><span class="o">.</span><span class="n">enabled</span><span class="o">=!</span><span class="vi">@user</span><span class="o">.</span><span class="n">enabled</span>
-</span><span class='line'>     <span class="vi">@user</span><span class="o">.</span><span class="n">save</span>
-</span><span class='line'>     <span class="n">redirect_to</span> <span class="ss">:back</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># GET /users</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
-</span><span class='line'>    <span class="vi">@users</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">all</span>
-</span><span class='line'>  <span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Pero el método cambiar no aparece en rails hasta que no hagas lo siguiente en el
-fichero de las rutas.</p>
-
-<figure class='code'><figcaption><span>&#8220;config/routes.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>   <span class="c1"># el scaffold de los usuarios</span>
-</span><span class='line'>   <span class="n">resources</span> <span class="ss">:users</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="c1"># agregamos el verbo cambiar usado para</span>
-</span><span class='line'>      <span class="c1"># @user.enabled=!@user.enabled</span>
-</span><span class='line'>      <span class="c1"># para que exista: cambiar_user_path</span>
-</span><span class='line'>      <span class="n">member</span> <span class="k">do</span>
-</span><span class='line'>         <span class="n">get</span> <span class="s1">&#39;cambiar&#39;</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora existirá el método <strong>cambiar_user_path</strong> que toma como argumento el
-usuario.</p>
-
-<p>   cambiar_user_path(user)</p>
-
-<p>De esta manera, se le manda el objeto usuario y genera una URL como</p>
-
-<p>   /users/345/cambiar</p>
-
-<p>Dicha ruta macheará el método User#cambiar</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -816,6 +801,10 @@ usuario.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a>

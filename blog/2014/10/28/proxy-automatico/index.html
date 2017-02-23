@@ -52,7 +52,7 @@ halla configurado un &hellip;">
   <header role="banner"><hgroup>
   <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
   
-    <h2>luchando contra el subdesarrollo en todos los frentes</h2>
+    <h2>todo lo que expliqué mientras nadie prestaba atención</h2>
   
 </hgroup>
 
@@ -181,7 +181,7 @@ aclaramos el nuevo; a mi me quedó así:</p>
 <p>Primero el método DHCP, declaramos una option cuyo código sea 252</p>
 
 <figure class='code'><figcaption><span>&#8220;/etc/dnsmasq.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">option</span><span class="o">=</span>252,http://10.1.1.1/wpad.dat
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">option</span><span class="o">=</span><span class="mi">252</span><span class="p">,</span><span class="nl">http</span><span class="p">:</span><span class="c1">//10.1.1.1/wpad.dat</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -255,16 +255,16 @@ donde descansa el <strong>wpad.dat</strong></p>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>servidor1    IN A     10.1.1.1
-</span><span class='line'>servidor2    IN A     10.1.1.2
-</span><span class='line'>mail         IN CNAME servidor2.dominio.cu.
-</span><span class='line'>pop          IN CNAME servidor2.dominio.cu.
-</span><span class='line'>pop3         IN CNAME servidor2.dominio.cu.
-</span><span class='line'>smtp         IN CNAME servidor2.dominio.cu.
-</span><span class='line'>proxy        IN CNAME servidor1.dominio.cu.
-</span><span class='line'>gateway      IN CNAME servidor1.dominio.cu.
-</span><span class='line'><span class="p">;</span> envía el proxy automático
-</span><span class='line'>wpad         IN CNAME servidor1.dominio.cu.
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">servidor1</span>    <span class="n">IN</span> <span class="n">A</span>     <span class="mf">10.1.1.1</span>
+</span><span class='line'><span class="n">servidor2</span>    <span class="n">IN</span> <span class="n">A</span>     <span class="mf">10.1.1.2</span>
+</span><span class='line'><span class="n">mail</span>         <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor2</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="n">pop</span>          <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor2</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="n">pop3</span>         <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor2</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="n">smtp</span>         <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor2</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="n">proxy</span>        <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor1</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="n">gateway</span>      <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor1</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="p">;</span> <span class="n">env</span><span class="err">í</span><span class="n">a</span> <span class="n">el</span> <span class="n">proxy</span> <span class="n">autom</span><span class="err">á</span><span class="n">tico</span>
+</span><span class='line'><span class="n">wpad</span>         <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor1</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -337,6 +337,10 @@ donde descansa el <strong>wpad.dat</strong></p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a>

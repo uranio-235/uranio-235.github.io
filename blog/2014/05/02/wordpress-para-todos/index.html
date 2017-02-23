@@ -52,7 +52,7 @@ un &hellip;">
   <header role="banner"><hgroup>
   <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
   
-    <h2>luchando contra el subdesarrollo en todos los frentes</h2>
+    <h2>todo lo que expliqué mientras nadie prestaba atención</h2>
   
 </hgroup>
 
@@ -174,18 +174,18 @@ virtuahost.</p>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@blackjack:~# cat /etc/hosts<span class="p">|</span>grep intranet
-</span><span class='line'>10.1.1.14   intranet.hcg.sld.cu
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">root@blackjack:~#</span> cat /etc/hosts<span class="p">|</span>grep intranet
+</span><span class='line'><span class="go">10.1.1.14   intranet.hcg.sld.cu</span>
 </span><span class='line'>
-</span><span class='line'>root@blackjack:~# /etc/init.d/dnsmasq restart
-</span><span class='line'>Restarting DNS forwarder and DHCP server: dnsmasq.
+</span><span class='line'><span class="gp">root@blackjack:~#</span> /etc/init.d/dnsmasq restart
+</span><span class='line'><span class="go">Restarting DNS forwarder and DHCP server: dnsmasq.</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>E instalar wordpress:</p>
 
 <figure class='code'><figcaption><span>aptitude</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@leviatan:~# aptitude install wordpress
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">root@leviatan:~#</span> aptitude install wordpress
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -196,7 +196,7 @@ wordpress, es simplemente una configuración y una base de datos.</p>
 prefijo <strong>config-</strong> seguido del nombre del virtualhost.</p>
 
 <figure class='code'><figcaption><span>cp</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/octopress<span class="nv">$ </span> cp /usr/share/wordpress/wp-config-sample.php /etc/wordpress/config-intranet.hcg.sld.cu.php
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">lazaro@leviatan:~/octopress$</span>  cp /usr/share/wordpress/wp-config-sample.php /etc/wordpress/config-intranet.hcg.sld.cu.php
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -319,36 +319,36 @@ usuario con el mismo nombre de la base y le daremos todos los permisos.</p>
 <span class='line-number'>28</span>
 <span class='line-number'>29</span>
 <span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@leviatan:~/octopress<span class="nv">$ </span>mysql -u root -p
-</span><span class='line'>Enter password:
-</span><span class='line'>Welcome to the MySQL monitor.  Commands end with <span class="p">;</span> or <span class="se">\g</span>.
-</span><span class='line'>Your MySQL connection id is 42
-</span><span class='line'>Server version: 5.5.30-1.1 <span class="o">(</span>Debian<span class="o">)</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">lazaro@leviatan:~/octopress$</span> mysql -u root -p
+</span><span class='line'><span class="go">Enter password:</span>
+</span><span class='line'><span class="go">Welcome to the MySQL monitor.  Commands end with ; or \g.</span>
+</span><span class='line'><span class="go">Your MySQL connection id is 42</span>
+</span><span class='line'><span class="go">Server version: 5.5.30-1.1 (Debian)</span>
 </span><span class='line'>
-</span><span class='line'>Copyright <span class="o">(</span>c<span class="o">)</span> 2000, 2013, Oracle and/or its affiliates. All rights reserved.
+</span><span class='line'><span class="go">Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.</span>
 </span><span class='line'>
-</span><span class='line'>Oracle is a registered trademark of Oracle Corporation and/or its
-</span><span class='line'>affiliates. Other names may be trademarks of their respective
-</span><span class='line'>owners.
+</span><span class='line'><span class="go">Oracle is a registered trademark of Oracle Corporation and/or its</span>
+</span><span class='line'><span class="go">affiliates. Other names may be trademarks of their respective</span>
+</span><span class='line'><span class="go">owners.</span>
 </span><span class='line'>
-</span><span class='line'>Type <span class="s1">&#39;help;&#39;</span> or <span class="s1">&#39;\h&#39;</span> <span class="k">for</span> help. Type <span class="s1">&#39;\c&#39;</span> to clear the current input statement.
+</span><span class='line'><span class="go">Type &#39;help;&#39; or &#39;\h&#39; for help. Type &#39;\c&#39; to clear the current input statement.</span>
 </span><span class='line'>
-</span><span class='line'>mysql&gt;
+</span><span class='line'><span class="go">mysql&gt;</span>
 </span><span class='line'>
-</span><span class='line'>Y ahora creamos la base de datos y el usuario con estas sentencias
-</span><span class='line'>NOTA: en nuestro ejemplo tanto la base de datos como el usuario son wordpress, reemplazar PASSWORD_DB por el password que deseen asignarle a la base de datos.
+</span><span class='line'><span class="go">Y ahora creamos la base de datos y el usuario con estas sentencias</span>
+</span><span class='line'><span class="go">NOTA: en nuestro ejemplo tanto la base de datos como el usuario son wordpress, reemplazar PASSWORD_DB por el password que deseen asignarle a la base de datos.</span>
 </span><span class='line'>
-</span><span class='line'>mysql&gt; CREATE DATABASE wordpress<span class="p">;</span>
-</span><span class='line'>Query OK, <span class="m">1</span> row affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+</span><span class='line'><span class="go">mysql&gt; CREATE DATABASE wordpress;</span>
+</span><span class='line'><span class="go">Query OK, 1 row affected (0.00 sec)</span>
 </span><span class='line'>
-</span><span class='line'>mysql&gt; GRANT ALL ON wordpress.* TO wordpress@localhost IDENTIFIED BY <span class="s1">&#39;secretisimo&#39;</span><span class="p">;</span>
-</span><span class='line'>Query OK, <span class="m">0</span> rows affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+</span><span class='line'><span class="go">mysql&gt; GRANT ALL ON wordpress.* TO wordpress@localhost IDENTIFIED BY &#39;secretisimo&#39;;</span>
+</span><span class='line'><span class="go">Query OK, 0 rows affected (0.00 sec)</span>
 </span><span class='line'>
-</span><span class='line'>mysql&gt; FLUSH PRIVILEGES<span class="p">;</span>
-</span><span class='line'>Query OK, <span class="m">0</span> rows affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+</span><span class='line'><span class="go">mysql&gt; FLUSH PRIVILEGES;</span>
+</span><span class='line'><span class="go">Query OK, 0 rows affected (0.00 sec)</span>
 </span><span class='line'>
-</span><span class='line'>mysql&gt; <span class="se">\q</span>
-</span><span class='line'>Bye
+</span><span class='line'><span class="go">mysql&gt; \q</span>
+</span><span class='line'><span class="go">Bye</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -359,7 +359,7 @@ servidor para ver que pasa.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -418,6 +418,10 @@ servidor para ver que pasa.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a>

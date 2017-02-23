@@ -52,7 +52,7 @@ de vianda le &hellip;">
   <header role="banner"><hgroup>
   <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
   
-    <h2>luchando contra el subdesarrollo en todos los frentes</h2>
+    <h2>todo lo que expliqué mientras nadie prestaba atención</h2>
   
 </hgroup>
 
@@ -120,8 +120,8 @@ complicado&hellip;</p>
 
 <figure class='code'><figcaption><span>&#8216;conversion de Kbit/s a KBytes/s&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:611:0&gt; 128/8
-</span><span class='line'><span class="o">=</span>&gt; 16
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">irb(main):611:0&gt; 128/8</span>
+</span><span class='line'><span class="go">=&gt; 16</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -152,8 +152,8 @@ máximo tendrá durante los picos&rdquo;</p>
 
 <figure class='code'><figcaption><span>&#8220;el 20%&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">612</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">16</span><span class="o">*</span><span class="mi">20</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="mi">1024</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">3072</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">irb(main):612:0&gt; 16*20/100*1024</span>
+</span><span class='line'><span class="go">=&gt; 3072</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -161,8 +161,8 @@ máximo tendrá durante los picos&rdquo;</p>
 
 <figure class='code'><figcaption><span>&#8220;un kylo más&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">613</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">3072</span><span class="o">+</span><span class="mi">1024</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">4096</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">irb(main):613:0&gt; 3072+1024</span>
+</span><span class='line'><span class="go">=&gt; 4096</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -177,15 +177,15 @@ máximo tendrá durante los picos&rdquo;</p>
 
 <figure class='code'><figcaption><span>&#8220;el 80%&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mi">614</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">16</span><span class="o">*</span><span class="mi">80</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="mi">1024</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">12288</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">irb(main):614:0&gt; 16*80/100*1024</span>
+</span><span class='line'><span class="go">=&gt; 12288</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>Sea entonces el delay_pool 2 así:</p>
 
 <figure class='code'><figcaption><span>&#8220;delay_pool #2&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>delay_parameters <span class="m">2</span> 12288/12288 13312/13312
+</pre></td><td class='code'><pre><code class='squidconf'><span class='line'><span class="k">delay_parameters</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">12288</span>/12288<span class="w"> </span><span class="m">13312</span>/13312<span class="w"></span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -213,28 +213,28 @@ máximo tendrá durante los picos&rdquo;</p>
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># tendremos 2 delai puls</span>
-</span><span class='line'>delay_pools 2
+</pre></td><td class='code'><pre><code class='squidconf'><span class='line'><span class="c"># tendremos 2 delai puls</span><span class="w"></span>
+</span><span class='line'><span class="k">delay_pools</span><span class="w"> </span><span class="m">2</span><span class="w"></span>
 </span><span class='line'>
-</span><span class='line'><span class="c"># ambos de la clase 2</span>
-</span><span class='line'>delay_class <span class="m">1</span> 2
-</span><span class='line'>delay_class <span class="m">2</span> 2
+</span><span class='line'><span class="c"># ambos de la clase 2</span><span class="w"></span>
+</span><span class='line'><span class="k">delay_class</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">2</span><span class="w"></span>
+</span><span class='line'><span class="k">delay_class</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">2</span><span class="w"></span>
 </span><span class='line'>
-</span><span class='line'><span class="c"># los mortales van al 20%</span>
-</span><span class='line'>delay_parameters <span class="m">1</span> 3072/3072 4096/4096
+</span><span class='line'><span class="c"># los mortales van al 20%</span><span class="w"></span>
+</span><span class='line'><span class="k">delay_parameters</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">3072</span>/3072<span class="w"> </span><span class="m">4096</span>/4096<span class="w"></span>
 </span><span class='line'>
-</span><span class='line'><span class="c"># y los dioses van al 80%</span>
-</span><span class='line'>delay_parameters <span class="m">2</span> 12288/12288 13312/13312
+</span><span class='line'><span class="c"># y los dioses van al 80%</span><span class="w"></span>
+</span><span class='line'><span class="k">delay_parameters</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">12288</span>/12288<span class="w"> </span><span class="m">13312</span>/13312<span class="w"></span>
 </span><span class='line'>
-</span><span class='line'><span class="c"># los dioses, aquellos cuyo nombre de usuario machee esta lista</span>
-</span><span class='line'>acl dioses proxy_auth tuusuario eljefe eldirector lajevita lasecretaria
+</span><span class='line'><span class="c"># los dioses, aquellos cuyo nombre de usuario machee esta lista</span><span class="w"></span>
+</span><span class='line'><span class="k">acl</span><span class="w"> </span>dioses<span class="w"> </span><span class="k">proxy_auth</span><span class="w"> </span>tuusuario<span class="w"> </span>eljefe<span class="w"> </span>eldirector<span class="w"> </span>lajevita<span class="w"> </span>lasecretaria<span class="w"></span>
 </span><span class='line'>
-</span><span class='line'><span class="c"># en el 1 metemos a los dioses</span>
-</span><span class='line'>delay_access <span class="m">1</span> allow dioses
-</span><span class='line'>delay_access <span class="m">1</span> deny all
+</span><span class='line'><span class="c"># en el 1 metemos a los dioses</span><span class="w"></span>
+</span><span class='line'><span class="k">delay_access</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="no">allow</span><span class="w"> </span>dioses<span class="w"></span>
+</span><span class='line'><span class="k">delay_access</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="no">deny</span><span class="w"> </span><span class="no">all</span><span class="w"> </span>
 </span><span class='line'>
-</span><span class='line'><span class="c"># el resto, pal 2</span>
-</span><span class='line'>delay_access <span class="m">2</span> allow all
+</span><span class='line'><span class="c"># el resto, pal 2</span><span class="w"></span>
+</span><span class='line'><span class="k">delay_access</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="no">allow</span><span class="w"> </span><span class="no">all</span><span class="w"></span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -252,7 +252,7 @@ del canal y navega con cordura.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -311,6 +311,10 @@ del canal y navega con cordura.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a>

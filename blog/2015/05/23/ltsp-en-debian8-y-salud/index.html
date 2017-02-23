@@ -52,7 +52,7 @@ servidor &hellip;">
   <header role="banner"><hgroup>
   <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
   
-    <h2>luchando contra el subdesarrollo en todos los frentes</h2>
+    <h2>todo lo que expliqué mientras nadie prestaba atención</h2>
   
 </hgroup>
 
@@ -151,27 +151,27 @@ que requiere NFS.</p>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> ltsp-build-client --http-proxy http://127.0.0.1:3128 <span class="se">\</span>
-</span><span class='line'> --mirror http://ftp.sld.cu/debian <span class="se">\</span>
-</span><span class='line'> --security-mirror http://ftp.sld.cu/debian-security <span class="se">\</span>
-</span><span class='line'> --copy-sourceslist --copy-package-cache --accept-unsigned-packages
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> ltsp-build-client --http-proxy http://127.0.0.1:3128 \</span>
+</span><span class='line'><span class="go"> --mirror http://ftp.sld.cu/debian \</span>
+</span><span class='line'><span class="go"> --security-mirror http://ftp.sld.cu/debian-security \</span>
+</span><span class='line'><span class="go"> --copy-sourceslist --copy-package-cache --accept-unsigned-packages</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>El comando que corriste, generó un fichero de configuración para el servidor
 dhcp de isc. Te sugiero que lo uses como DHCP.</p>
 
-<figure class='code'><figcaption><span>&#8220;ltsp-build-client&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp /etc/ltsp/dhcpd.conf /etc/dhcp/dhcpd.conf
-</span><span class='line'>systemctl restart isc-dhcp-server
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">cp /etc/ltsp/dhcpd.conf /etc/dhcp/dhcpd.conf</span>
+</span><span class='line'><span class="go">systemctl restart isc-dhcp-server</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>Muy importante NFS. En el fichero <strong>/etc/exports</strong> ponemos esto:</p>
 
-<figure class='code'><figcaption><span>&#8220;contenido de</span><a href='/etc/exports"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/opt/ltsp *<span class="o">(</span>ro,no_root_squash,async,no_subtree_check<span class="o">)</span>
+<figure class='code'><figcaption><span>&#8220;/etc/exports&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ltsp</span> <span class="o">*</span><span class="p">(</span><span class="n">ro</span><span class="p">,</span><span class="n">no_root_squash</span><span class="p">,</span><span class="n">async</span><span class="p">,</span><span class="n">no_subtree_check</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -229,12 +229,12 @@ mi me quedó así la primera versión de este fichero.</p>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>default<span class="o">]</span>
-</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">[default]</span>
+</span><span class='line'>    <span class="na">LTSP_CONFIG</span><span class="o">=</span><span class="s">True</span>
+</span><span class='line'><span class="s">    SOUND=True</span>
+</span><span class='line'><span class="s">    LOCALDEV=True</span>
+</span><span class='line'><span class="s">    CONFIGURE_X=True</span>
+</span><span class='line'><span class="s">    LDM_SESSION=/usr/bin/startlxde</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -250,7 +250,7 @@ había visto cosa igual.</p>
 Ctrl+Alt+F1) y ejecuta:</p>
 
 <figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>X -configure
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">X</span> <span class="err">-configure</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -276,16 +276,16 @@ y que en cambio, usen el fichero dado. Todo eso lo haremos en /opt/ltsp/i386/etc
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>default<span class="o">]</span>
-</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
-</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>False
-</span><span class='line'>    <span class="nv">X_CONF</span><span class="o">=</span>/etc/X11/xorg.conf
-</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
-</span><span class='line'>    <span class="nv">MODULE_01</span> <span class="o">=</span> <span class="s2">&quot;usb-storage&quot;</span>
-</span><span class='line'>    <span class="nv">MODULE_02</span> <span class="o">=</span> <span class="s2">&quot;sd_mod&quot;</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="k">[default]</span>
+</span><span class='line'>    <span class="na">LTSP_CONFIG</span><span class="o">=</span><span class="s">True</span>
+</span><span class='line'><span class="s">    SOUND=True</span>
+</span><span class='line'><span class="s">    LOCALDEV=True</span>
+</span><span class='line'><span class="s">    LDM_SESSION=/usr/bin/startlxde</span>
+</span><span class='line'><span class="s">    CONFIGURE_X=False</span>
+</span><span class='line'><span class="s">    X_CONF=/etc/X11/xorg.conf</span>
+</span><span class='line'><span class="s">    X_MODE_0=1024x768</span>
+</span><span class='line'><span class="s">    MODULE_01 = &quot;usb-storage&quot;</span>
+</span><span class='line'><span class="s">    MODULE_02 = &quot;sd_mod&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -401,30 +401,30 @@ cliente.</p>
 <span class='line-number'>22</span>
 <span class='line-number'>23</span>
 <span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># configuración genérica</span>
-</span><span class='line'><span class="o">[</span>default<span class="o">]</span>
-</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
-</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>False
-</span><span class='line'>    <span class="nv">X_CONF</span><span class="o">=</span>/etc/X11/xorg.conf
-</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
-</span><span class='line'>    <span class="nv">MODULE_01</span> <span class="o">=</span> <span class="s2">&quot;usb-storage&quot;</span>
-</span><span class='line'>    <span class="nv">MODULE_02</span> <span class="o">=</span> <span class="s2">&quot;sd_mod&quot;</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="c1"># configuración genérica</span>
+</span><span class='line'><span class="k">[default]</span>
+</span><span class='line'>    <span class="na">LTSP_CONFIG</span><span class="o">=</span><span class="s">True</span>
+</span><span class='line'><span class="s">    SOUND=True</span>
+</span><span class='line'><span class="s">    LOCALDEV=True</span>
+</span><span class='line'><span class="s">    LDM_SESSION=/usr/bin/startlxde</span>
+</span><span class='line'><span class="s">    CONFIGURE_X=False</span>
+</span><span class='line'><span class="s">    X_CONF=/etc/X11/xorg.conf</span>
+</span><span class='line'><span class="s">    X_MODE_0=1024x768</span>
+</span><span class='line'><span class="s">    MODULE_01 = &quot;usb-storage&quot;</span>
+</span><span class='line'><span class="s">    MODULE_02 = &quot;sd_mod&quot;</span>
 </span><span class='line'>
-</span><span class='line'><span class="c"># configuración de un cliente individual el</span>
-</span><span class='line'><span class="c"># jefe no quiere que oiga música ni use</span>
-</span><span class='line'><span class="c"># memorias flash</span>
-</span><span class='line'><span class="o">[</span>00:90:4b:a2:55:05<span class="o">]</span>
-</span><span class='line'>    <span class="nv">LTSP_CONFIG</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">SOUND</span><span class="o">=</span>False
-</span><span class='line'>    <span class="nv">LOCALDEV</span><span class="o">=</span>False
-</span><span class='line'>    <span class="nv">LDM_SESSION</span><span class="o">=</span>/usr/bin/startlxde
-</span><span class='line'>    <span class="nv">CONFIGURE_X</span><span class="o">=</span>True
-</span><span class='line'>    <span class="nv">X_MODE_0</span><span class="o">=</span>1024x768
+</span><span class='line'><span class="c1"># configuración de un cliente individual el</span>
+</span><span class='line'><span class="c1"># jefe no quiere que oiga música ni use</span>
+</span><span class='line'><span class="c1"># memorias flash</span>
+</span><span class='line'><span class="k">[00:90:4b:a2:55:05]</span>
+</span><span class='line'>    <span class="na">LTSP_CONFIG</span><span class="o">=</span><span class="s">True</span>
+</span><span class='line'><span class="s">    SOUND=False</span>
+</span><span class='line'><span class="s">    LOCALDEV=False</span>
+</span><span class='line'><span class="s">    LDM_SESSION=/usr/bin/startlxde</span>
+</span><span class='line'><span class="s">    CONFIGURE_X=True</span>
+</span><span class='line'><span class="s">    X_MODE_0=1024x768</span>
 </span><span class='line'>
-</span><span class='line'><span class="c"># EOF</span>
+</span><span class='line'><span class="c1"># EOF</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -459,7 +459,7 @@ ser alcanzado por otra máquina.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -524,6 +524,10 @@ ser alcanzado por otra máquina.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a>

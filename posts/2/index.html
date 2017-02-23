@@ -9,7 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="tendencias tecnológicas 09/01/2017 9:04 pm | Comments Por suerte, la era de Zentyal está a punto de terminar. Ahora tenemos tocadores de pfSense, &hellip;">
+  <meta name="description" content="DataTables en español 20/01/2017 4:39 pm | Comments Siempre hay un cliente exquisito que le molesta la aplicación completa en
+español, a excepción &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -51,7 +52,7 @@
   <header role="banner"><hgroup>
   <h1><a href="/">El SysAdmin del 3er Mundo</a></h1>
   
-    <h2>luchando contra el subdesarrollo en todos los frentes</h2>
+    <h2>todo lo que expliqué mientras nadie prestaba atención</h2>
   
 </hgroup>
 
@@ -81,6 +82,118 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/01/20/datatables-espanol/">DataTables en español</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-01-20T16:39:32-05:00'><span class='date'>20/01/2017</span> <span class='time'>4:39 pm</span></time>
+        
+           | <a href="/blog/2017/01/20/datatables-espanol/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/20/datatables-espanol/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Siempre hay un cliente exquisito que le molesta la aplicación completa en
+español, a excepción del puñetero paginador que está en inglés.</p>
+
+<p>Como ya no uso kaminari ni will_paginate la cosa se complica. Decidí llamar a
+todas las tables id=&ldquo;latabla&rdquo; y en el <strong>application.js</strong>, según la
+documentación de la API de DataTables, le ponemos la clave <em>language</em> con sus
+pertinentes componentes.</p>
+
+<figure class='code'><figcaption><span>&#8220;application.js&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#latabla&#39;</span><span class="p">).</span><span class="nx">DataTable</span><span class="p">(</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="s2">&quot;language&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;decimal&quot;</span><span class="o">:</span>        <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;emptyTable&quot;</span><span class="o">:</span>     <span class="s2">&quot;No hay datos para mostrar&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;info&quot;</span><span class="o">:</span>           <span class="s2">&quot;del _START_ al _END_ (_TOTAL_ total)&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;infoEmpty&quot;</span><span class="o">:</span>      <span class="s2">&quot;del 0 al 0 (0 total)&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;infoFiltered&quot;</span><span class="o">:</span>   <span class="s2">&quot;(filtrado de todas las _MAX_ entradas)&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;infoPostFix&quot;</span><span class="o">:</span>    <span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;thousands&quot;</span><span class="o">:</span>      <span class="s2">&quot;&#39;&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;lengthMenu&quot;</span><span class="o">:</span>     <span class="s2">&quot;Mostrar _MENU_ entradas&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;loadingRecords&quot;</span><span class="o">:</span> <span class="s2">&quot;Cargando...&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;processing&quot;</span><span class="o">:</span>     <span class="s2">&quot;Procesando...&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;search&quot;</span><span class="o">:</span>         <span class="s2">&quot;Buscar:&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;zeroRecords&quot;</span><span class="o">:</span>    <span class="s2">&quot;No hay resultados&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;paginate&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="s2">&quot;first&quot;</span><span class="o">:</span>      <span class="s2">&quot;Primero&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;last&quot;</span><span class="o">:</span>       <span class="s2">&quot;Último&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;next&quot;</span><span class="o">:</span>       <span class="s2">&quot;Siguiente&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;previous&quot;</span><span class="o">:</span>   <span class="s2">&quot;Anterior&quot;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="s2">&quot;aria&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="s2">&quot;sortAscending&quot;</span><span class="o">:</span>  <span class="s2">&quot;: ordenar de manera Ascendente&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;sortDescending&quot;</span><span class="o">:</span> <span class="s2">&quot;: ordenar de manera Descendente &quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span> <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span> <span class="p">);</span> <span class="c1">// document ready</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Claro, realmente no lo hice así, ya que en vez de <strong>&ldquo;Anterior&rdquo;</strong> puse
+<strong>t(:dt_prev)</strong>  y cree su pertinente fichero de idioma con la traducción, pero
+escribí esta entrada pensando en gente que puede o no usar RoR. No obstante, el
+buen desarrollador de rails, sabe que lo correcto sería usar la in API de i18n.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -221,7 +334,7 @@ ha pasado parecido.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -324,7 +437,7 @@ pronto.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -400,7 +513,7 @@ buen jquery a mano.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -552,7 +665,7 @@ te vuelvas a loguear el lunes, solo tienes que mirarlas. Consejo, haste una
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -646,152 +759,7 @@ control de acceso&hellip;</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/12/19/phpmyadmin-multiples-servidores/">phpmyadmin múltiples servidores</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-12-19T14:50:26-05:00'><span class='date'>19/12/2016</span> <span class='time'>2:50 pm</span></time>
-        
-           | <a href="/blog/2016/12/19/phpmyadmin-multiples-servidores/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/12/19/phpmyadmin-multiples-servidores/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Cuando tienes que manejar múltiples servidores SQL, no da la talla tener un
-phpmyadmin por cada servidor. Opté por tener un phpmyadmin instalado en mi
-laptop.</p>
-
-<p>Una manera muy sencilla de hacer la pincha, es mapear con SSH el puerto de mysql
-y conectar a todo el mundo como si fuera localhost.</p>
-
-<figure class='code'><figcaption><span>&#8220;ssh y mysql&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ssh root@192.168.0.9 -L 3306:127.0.0.1:3306 -N
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Pero en algunos casos, no hay SSH, el servidor no escucha por TCP, etc&hellip; En tal
-caso, podrías permitir que el root se administre remotamente.</p>
-
-<p>Para lograrlo hay que decirle a mysql que escuche por la dirección ip además de
-por el socket local. En infraestructuras grandes, por lo general, ya está hecho.
-Localiza en <strong>/etc/mysql/my.cnf</strong> el parámetro llamado <strong>bind-address</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/mysql/my.cnf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># Instead of skip-networking the default is now to listen only on</span>
-</span><span class='line'><span class="c"># localhost which is more compatible and is not less secure.</span>
-</span><span class='line'><span class="nb">bind</span>-address      <span class="o">=</span> 0.0.0.0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>y reinicia el mysql, claro está&hellip;</p>
-
-<p>Ahora hacemos una consulta SQL, en la cual le daremos al usuario root, el
-permiso para conectarse de una ip dada. Por ejemplo, la computadora del sysadmin
-está en 192.168.0.222</p>
-
-<figure class='code'><figcaption><span>&#8220;grant root&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">ON</span> <span class="o">*</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="n">root</span><span class="o">@</span><span class="s1">&#39;192.168.0.222&#39;</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">&#39;tupassword&#39;</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora viene el truco mágico en la configuración de phpmyadmin. El fichero de
-configuración de phpmyadmin, en el caso de arch, está en
-/etc/webapps/phpmyadmin/config.inc.php en otras distros, no sé, pero siempre se
-llama <strong>config.inc.php</strong></p>
-
-<p>En ese fichero, localiza la cadena de texto &ldquo;First Server&rdquo;, debes ver algo como
-esto pero con muchos comentarios:</p>
-
-<figure class='code'><figcaption><span>&#8220;config.inc.php&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$i</span><span class="o">++</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;auth_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;cookie&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;connect_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tcp&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;compress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;AllowNoPassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Solo tienes que añadirle otra <strong>$i++;</strong> y poner los parámetros en el array $cfg</p>
-
-<figure class='code'><figcaption><span>&#8220;ejemplo de múltiples servidores&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$i</span><span class="o">++</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;auth_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;cookie&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;connect_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tcp&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;compress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;AllowNoPassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$i</span><span class="o">++</span><span class="p">;</span> <span class="c1">// otro servidor</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;verbose&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;otro servidor&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;192.168.1.9&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;connect_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tcp&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;compress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;AllowNoPassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$i</span><span class="o">++</span><span class="p">;</span> <span class="c1">// el leviatand de los mares</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;verbose&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;otro servidor mas&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;192.168.2.9&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;connect_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tcp&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;compress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;AllowNoPassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Cuantos servidores quieras añadirle&hellip; Cuando vallas a loguearte en el
-phpmyadmin verás debajo de la caja de login, un select, con el servidor que
-quieres acceder.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -812,6 +780,10 @@ quieres acceder.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a>
