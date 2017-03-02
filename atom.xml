@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-03-01T10:32:52-05:00</updated>
+  <updated>2017-03-02T16:46:57-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,162 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[portknocking en freebsd]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd/"/>
+    <updated>2017-03-01T23:53:01-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd</id>
+    <content type="html"><![CDATA[<p>La técnica port-knocking o knockd para otros, es en mi opinión, <strong>pilar de la
+seguridad</strong> en cualquier servidor que use SSH. Aunque es bastante versátil y
+puede ser usado hasta para reiniciar servicios sin loguearte.</p>
+
+<p>Una de las cosas que empece a extrañar en FreeBSD fue knockd, pero gracias a la
+flexbilidad de ipfw, podemos usar este poderoso software. En FreeBSD el fichero
+se encuentra en <strong>/usr/local/etc/knockd.conf.sample</strong> y el paquete se llama
+<strong>knock</strong>.</p>
+
+<p>OJO!! Muy importante especificarle la interfaz por la cual va a escuchar.</p>
+
+<figure class='code'><figcaption><span>&#8220;/usr/local/etc/knockd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="k">[options]</span>
+</span><span class='line'>        <span class="na">logfile</span> <span class="o">=</span> <span class="s">/var/log/knockd.log</span>
+</span><span class='line'><span class="s">        interface = xn0</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[openSSH]</span>
+</span><span class='line'>        <span class="na">sequence</span>    <span class="o">=</span> <span class="s">999,777,333</span>
+</span><span class='line'><span class="s">        seq_timeout = 9</span>
+</span><span class='line'><span class="s">        command     = /sbin/ipfw -q add 00001 allow all from %IP% to me</span>
+</span><span class='line'><span class="s">        tcpflags    = syn</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[closeSSH]</span>
+</span><span class='line'>        <span class="na">sequence</span>    <span class="o">=</span> <span class="s">777,999,333</span>
+</span><span class='line'><span class="s">        seq_timeout = 9</span>
+</span><span class='line'><span class="s">        command     = /sbin/ipfw -q delete 00001</span>
+</span><span class='line'><span class="s">        tcpflags    = syn</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nada, resumiendo, que el truco está en poner la regla con el número 00001.
+Recuerdas que ipfw te permite (casi te obliga a) especificar un número para cada
+regla. Pues usaremos ese numerito diminuto para ponerla de primera.</p>
+
+<p>Los tipos ortodoxos criticarán que es una regla <em>al tetón</em>. Pienso que no vale
+la pena abrir solo el 22, si voy a pasar tanto trabajo, que se me abra la puerta
+completa.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[bind en infomed]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/03/01/bind-en-infomed/"/>
+    <updated>2017-03-01T23:13:34-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/03/01/bind-en-infomed</id>
+    <content type="html"><![CDATA[<p>Seguimos con bind&hellip;</p>
+
+<p>No hace mucho le comentaba a alguien, a raíz de una duda que tenía el colega
+Paradyx; la manera correcta de configurar un servidor bind para una red que
+cuelga de infomed.</p>
+
+<p>Le comentaba que no vale la pena usar un forward por defecto; que hacer del
+dominio &lsquo;.sld.cu&rsquo; una zona forward sería más que suficiente. Digo esto porque
+infomed no resuelve ningún dominio que valla más allá de &ldquo;.sld.cu&rdquo;, por tanto,
+no vale la pena transferirle las sepetecientas peticiones que hacen cuanta
+mierda se conecta a nuestra red (especialmente android).</p>
+
+<figure class='code'><figcaption><span>&#8220;named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">options</span> <span class="p">{</span>
+</span><span class='line'>   <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">10.1.1.1</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">view</span> <span class="n">lan</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">10.1.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;sld.cu&quot;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">201.220.222.131</span><span class="p">;</span> <span class="mf">201.220.222.132</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">forward</span> <span class="n">only</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">};</span> <span class="c1">// view lan</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como mi dominio es hcg.sld.cu (subdominio de .sld.cu) lo declaramos ARRIBA
+del dominio sld.cu. El dominio <strong>hcg.sld.cu</strong> es una zona <strong>master</strong>, sin
+embargo, el dominio <strong>sld.cu</strong> es del tipo <strong>forward</strong> y entonces ahí declaramos
+los forwarders (los dns de infomed).</p>
+
+<p>Ahora solo le reenviaremos a infomed, aquellas peticiones que sean para infomed.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[bind personal]]></title>
@@ -1791,385 +1947,6 @@ quieras hacer específica para ese servidor. Se mostrará si existe el fichero.<
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
 </span><span class='line'><span class="o">[</span> -f /etc/motd.tail <span class="o">]</span> <span class="o">&amp;&amp;</span> cat /etc/motd.tail <span class="o">||</span> <span class="nb">true</span>
 </span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[openvpn user+pass]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/11/14/openvpn-user-plus-pass/"/>
-    <updated>2016-11-14T21:41:05-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/11/14/openvpn-user-plus-pass</id>
-    <content type="html"><![CDATA[<p>Si bien, openvpn con una llave estática es algo bastante sencillo de configurar;
-tiene un grave problema: Que solo un cliente puede conectarse a la vez. En un
-escenario donde por ejemplo, queremos crear una vpn para múltiples servidores
-que deben conectarse, usar un clave estática se vuelve un problema. Una
-topología de anillo podría ayudarnos resolverlo, pero cada servidor debería ser
-cliente y servidor a la vez. Una VPN autenticada por usuario y contraseña
-resuelve el problema de la manera más simplificada posible.</p>
-
-<p>Creamos la infraestructura de certificados:</p>
-
-<figure class='code'><figcaption><span>&#8220;aprovisionando easy-rsa&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>mkdir Downloads/vpn
-</span><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span><span class="nb">cd </span>Downloads/vpn
-</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp -r /etc/easy-rsa/* ./
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Si quieres, si te da la mariconería, edita los parámetros del fichero que acabas
-de copiar, pa que pongas los parámetros bonitillos, si no, espera a que openssl
-los pregunte; a lo mejor ni los pregunta.</p>
-
-<figure class='code'><figcaption><span>&#8220;aprovisionamiento de certificados&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>easyrsa init-pki
-</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>easyrsa build-ca nopass
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note que la cadena de texto <strong>tuservidor</strong> debe ser remplazada por el nombre de
-tu actor asiático preferido o, por algún nombre de tu agrado para el servidor.</p>
-
-<figure class='code'><figcaption><span>&#8220;creando el certificado del servidor&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>easyrsa build-server-full tuservidor nopass
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora el <a href="https://es.wikipedia.org/wiki/Diffie-Hellman">Diffie Hellman</a>, MUY
-importante. Ponte cómodo que va pa largo:</p>
-
-<figure class='code'><figcaption><span>&#8220;creando el diffie hellman&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>easyrsa gen-dh
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Tiramos todo eso para /etc/openvpn en un directorio que designaremos con el
-nombre de &ldquo;servidor&rdquo; (por una cuestión de orden).</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/openvpn/&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>mkdir /etc/openvpn/servidor
-</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp pki/ca.crt /etc/openvpn/servidor
-</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp pki/dh.pem /etc/openvpn/servidor
-</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp -r pki/private/*.* /etc/openvpn/servidor/
-</span><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span>cp -r pki/issued/tuservidor.* /etc/openvpn/servidor/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ya tenemos todo listo pa armar el muñeco. Ahora vamos a crear la configuración
-del servidor. A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;servidor.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema vpn<span class="o">]</span><span class="nv">$ </span><span class="nb">cd</span> /etc/openvpn/
-</span><span class='line'><span class="o">[</span>lazaro@artema openvpn<span class="o">]</span><span class="nv">$ </span>cat servidor.conf
-</span><span class='line'><span class="c"># como y por donde escuhan</span>
-</span><span class='line'>port 1194
-</span><span class='line'>proto udp
-</span><span class='line'>dev tun
-</span><span class='line'>
-</span><span class='line'><span class="c"># los certificados</span>
-</span><span class='line'>ca /etc/openvpn/servidor/ca.crt
-</span><span class='line'>cert  /etc/openvpn/servidor/tuservidor.crt
-</span><span class='line'>key /etc/openvpn/servidor/tuservidor.key
-</span><span class='line'>
-</span><span class='line'><span class="c"># el diffie hellman</span>
-</span><span class='line'>dh /etc/openvpn/servidor/dh.pem
-</span><span class='line'>
-</span><span class='line'><span class="c"># la red que vamos a operar</span>
-</span><span class='line'>server 10.8.0.0 255.255.255.0
-</span><span class='line'>
-</span><span class='line'><span class="c"># manda un ping cada 10 segundos</span>
-</span><span class='line'><span class="c"># y tumba el tunel si a los 120 no hay respuesta</span>
-</span><span class='line'>keepalive <span class="m">10</span> 120
-</span><span class='line'>
-</span><span class='line'><span class="c"># usa la compresión lzo</span>
-</span><span class='line'>comp-lzo
-</span><span class='line'>
-</span><span class='line'><span class="c"># opera con los siguientes privilegios</span>
-</span><span class='line'><span class="c">#user nobody</span>
-</span><span class='line'><span class="c">#group nogroup</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># esto es para reforzarlo</span>
-</span><span class='line'>persist-key
-</span><span class='line'>persist-tun
-</span><span class='line'>
-</span><span class='line'><span class="c"># que tan elocuente será</span>
-</span><span class='line'>verb 3
-</span><span class='line'>
-</span><span class='line'><span class="c"># mándale estos parámetros al cliente</span>
-</span><span class='line'>push <span class="s2">&quot;redirect-gateway def1&quot;</span>
-</span><span class='line'>push <span class="s2">&quot;dhcp-option DNS 8.8.8.8&quot;</span>
-</span><span class='line'>push <span class="s2">&quot;dhcp-option DNS 8.8.4.4&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># y he aquí el truco de la autenticación</span>
-</span><span class='line'>plugin /usr/lib/openvpn/plugins/openvpn-plugin-auth-pam.so login
-</span><span class='line'>client-cert-not-required
-</span><span class='line'>username-as-common-name
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con eso tenemos el servidor pinchando. Ahora vamos a hacer un fichero <strong>.ovpn</strong>
-genérico, para dar a entender como sería la configuración de nuestro cliente.</p>
-
-<p><strong>OJO</strong> El certificado que se le dará al cliente será el <strong>ca.crt</strong></p>
-
-<p>A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;cliente.ovpn&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema openvpn<span class="o">]</span><span class="nv">$ </span>cat tuservidor.ovpn
-</span><span class='line'>client
-</span><span class='line'>dev tun
-</span><span class='line'>proto udp
-</span><span class='line'>remote 192.168.0.1 1194
-</span><span class='line'>remote-cert-tls server
-</span><span class='line'>auth-user-pass ~/autenticacion.conf
-</span><span class='line'>comp-lzo
-</span><span class='line'>&lt;ca&gt;
-</span><span class='line'>-----BEGIN CERTIFICATE-----
-</span><span class='line'>Lorem ipsum ad his scripta blandit partiendo, eum fastidii
-</span><span class='line'>accumsan euripidis in, eum liber hendrerit an. Qui ut wisi
-</span><span class='line'>vocibus suscipiantur, quo dicit ridens inciderint id. Quo mundi
-</span><span class='line'>lobortis reformidans eu, legimus senserit definiebas an eos. Eu
-</span><span class='line'>sit tincidunt incorrupte definitionem, vis mutat affert
-</span><span class='line'>percipit cu, eirmod consectetuer signiferumque eu per. In usu
-</span><span class='line'>latine equidem dolores. Quo no falli viris intellegam, ut fugit
-</span><span class='line'>veritus placerat per.  Ius id vidit volumus mandamus, vide
-</span><span class='line'>veritus democritum te nec, ei eos debet libris consulatu. No
-</span><span class='line'>mei ferri graeco dicunt, ad cum veri accommodare. Sed at malis
-</span><span class='line'>omnesque delicata, usu et iusto zzril meliore. Dicunt maiorum
-</span><span class='line'>eloquentiam cum cu, sit summo dolor essent te. Ne quodsi
-</span><span class='line'>nusquam legendos has, ea dicit voluptua eloquentiam pro, ad sit
-</span><span class='line'>quas qualisque. Eos vocibus deserunt quaestio ei.
-</span><span class='line'>-----END CERTIFICATE-----
-</span><span class='line'>&lt;/ca&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Cada cliente de OpenVPN tiene su librito&hellip; Pero ese .ovpn genérico, debe ser
-capaz de ser importado sin problema.</p>
-
-<p>Por una cuestión de orden y seguridad, yo borro la base con la que se creó todo:</p>
-
-<figure class='code'><figcaption><span>&#8220;clear area&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>rm -rf Downloads/vpn
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Por cierto, cada configuración que pongas en <strong>/etc/openvpn</strong> cuya extensión
-sea <strong>.conf</strong> se puede echar a andar con systemd.</p>
-
-<figure class='code'><figcaption><span>&#8220;systemctl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># systemctl status openvpn@servidor</span>
-</span><span class='line'>● openvpn@servidor.service - OpenVPN connection to servidor
-</span><span class='line'>   Loaded: loaded <span class="o">(</span>/usr/lib/systemd/system/openvpn@.service<span class="p">;</span> disabled<span class="p">;</span> vendor preset: disabled<span class="o">)</span>
-</span><span class='line'>   Active: inactive <span class="o">(</span>dead<span class="o">)</span>
-</span><span class='line'>     Docs: man:openvpn<span class="o">(</span>8<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[recolección DomainPOP]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/10/22/el-domain-pop/"/>
-    <updated>2016-10-22T22:44:36-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/10/22/el-domain-pop</id>
-    <content type="html"><![CDATA[<p>Esta entrada ha sido copiada de mi antiguo blog <a href="http://otherlinuxblog.blogspot.com">puheroska</a>.
-Vale aclarar que la escribí en el 2012&hellip;</p>
-
-<p>Se sabe poco sobre los orígenes de ese aborto de la naturaleza que es conocido
-por algunos como &ldquo;recolección aPOP&rdquo; o por otros como &ldquo;DomainPOP&rdquo;.</p>
-
-<p><img class="right" src="http://uranio-235.github.io/images/apartado_postal.jpg" width="200" height="300" title="" ></p>
-
-<p>Haciendo referencia al hecho de bajar todo el correo para un dominio de un pop
-remoto. Muchos seguron lo identifican con un popular, potente y hermoso servidor
-de correo, para windows llamado MDeamon (pronunciado por algunos como
-&ldquo;emodimons&rdquo; y por otro como &ldquo;emdaimons&rdquo;). Muy conocido por su simple pero
-elegante cliente web, el World Client. Entre sus <em>features</em>, podemos ver el
-almacenamiento de TODO el correo de un dominio en un mismo buzón. Esto, sumado a
-que en cuba todo el software es gratis :D lo convirtió en la herramienta
-definitiva para las redes conmutadas.</p>
-
-<p>Por otra parte, no todo se le impugna windows. Cuando aún el morro era de palo y
-los cañones tiraban taquitos; ya citmatel usaba un CuciPOP (vean que clase de
-nombre &ldquo;Cubic Circles = CuCiPOP&rdquo;) para depositar el correo de sus clientes por
-lineas conmutadas; una clara implementación de aPOP. Esto resolvió ser la manera
-mas burda pero eficiente para resolver el problema del correo en lineas
-conmutadas.</p>
-
-<p>Lo único que perturba este barato panorama, es el hecho de que si el correo
-no tiene un To: bien claro, se jode todo y te ves obligado a usar MDeamon, que
-en ese aspecto se saca todos los premios. Por su puesto, él es una de
-la principales implementaciones de este modelo.</p>
-
-<p>A menudo nos encontramos con que al bajar el correo con fetchmail, uno o varios
-correos no van a su destino, y, por el contrario, van al postmaster sin tener
-coincidencias de usuarios locales.</p>
-
-<p>Hay quien esta acostumbrado a que el postmaster este LLENO de correos y eso
-le parece normal, cuando el buen funcionamiento de un servidor, se mide por el
-postmaster vacío.</p>
-
-<p>Si un correo tiene un To: o un Cc: fetchmail lo parsea (del infintivo &ldquo;parsear&rdquo;)
-y localiza una dirección de nuestro dominio basándose en que tiene el dominio en
-la configuración. Como le dijimos &lsquo;is * here&rsquo; buscará cual nombre que este
-delante de lo que se parezca a nuestro dominio y lo entregara.</p>
-
-<p>Pero: Qué pasa si el To: o el Cc: NO tienen una dirección de nuestro dominio?</p>
-
-<p>Supongamos que el correo viene Bcc: (blink carbon copy)</p>
-
-<p>Como por ejemplo, los correos de listas de distribuciones, etc&hellip; En ese caso
-los destinos se especifican en la orden RCPTO durante la sesión SMTP. Algunos
-servidores incluyen encabezados como: &ldquo;Delivery-To&rdquo;,&ldquo;Envelope-To&rdquo; o
-&ldquo;X-Orignial-To&rdquo; En mi opinión todos están de más, porque el Received: tiene esta
-información; pero bueno, podríamos decirle a fetchmail que ademas de esos,
-parsee encabezados Received: Eso parecería una solución, el único problema es
-que no pincha :-P</p>
-
-<h4>Hasta aquí la entrada de puheroska.</h4>
-
-<p>En aquel momento consideraba eso &ldquo;un problema sin solución&rdquo;</p>
-
-<p>Cuando llegué a salud, me encontré nuevamente con los DomainPOP, pero <strong>por
-suerte</strong>, los exim de infomed hacen bien esa pincha y dejan plasmado el
-destinatario en un encabezado &ldquo;Envelope-To&rdquo;</p>
-
-<p>He aquí el fetchmailrc que tengo en el calixto:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/fetchmailrc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Fichero de configuración de fethcmail, adecuado para los MultiPOP de infomed</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">set </span>daemon 60
-</span><span class='line'><span class="nb">set </span>postmaster <span class="s2">&quot;root&quot;</span>
-</span><span class='line'><span class="nb">set </span>no bouncemail
-</span><span class='line'><span class="nb">set </span>no spambounce
-</span><span class='line'><span class="nb">set </span>logfile .fetchmail.log
-</span><span class='line'><span class="nb">set </span>no syslog
-</span><span class='line'>
-</span><span class='line'>defaults
-</span><span class='line'>    timeout 10
-</span><span class='line'>    no keep
-</span><span class='line'>    fetchall
-</span><span class='line'>    expunge 5
-</span><span class='line'>    dropstatus
-</span><span class='line'>
-</span><span class='line'>poll multipop.sld.cu port <span class="m">110</span> protocol pop3 localdomains tudominio.sld.cu
-</span><span class='line'>    envelope <span class="m">1</span> <span class="s2">&quot;Envelope-to:&quot;</span>
-</span><span class='line'>    no dns
-</span><span class='line'>    username tuusuario
-</span><span class='line'>    password tupassword
-</span><span class='line'>    to * here
-</span><span class='line'>    limitflush
-</span><span class='line'>    smtphost localhost
-</span></code></pre></td></tr></table></div></figure>
-
-
 
 ]]></content>
   </entry>

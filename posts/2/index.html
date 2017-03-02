@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="DataTables en español 20/01/2017 4:39 pm | Comments Siempre hay un cliente exquisito que le molesta la aplicación completa en
-español, a excepción &hellip;">
+  <meta name="description" content="mis crónicas con freebsd 28/01/2017 11:39 pm | Comments Si vas a leer este artículo, te aviso, que no tiene nada que ver con el blog. Me
+dispongo a &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,217 @@ español, a excepción &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/01/28/freebsd-11/">mis crónicas con freebsd</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-01-28T23:39:52-05:00'><span class='date'>28/01/2017</span> <span class='time'>11:39 pm</span></time>
+        
+           | <a href="/blog/2017/01/28/freebsd-11/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/28/freebsd-11/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Si vas a leer este artículo, te aviso, que no tiene nada que ver con el blog. Me
+dispongo a expresar mi criterio sobre FreeBSD y un tanto de como ha formado
+parte de mi vida profesional.</p>
+
+<p>   <blockquote><p>FreeBSD, tecnología arcana para algunos y arcaica para otros.</p></blockquote></p>
+
+<p>Se cuentan leyendas sobre FreeBSD, como que es el sistema operativo de los nodos
+y cosas así. Mucha gente lo tiene como un arcano o algo que probarán <em>un día de
+estos</em>. Yo pienso que no tiene nada del otro mundo. De hecho, en mi opinión,
+gentoo es más complicado que freebsd.</p>
+
+<p>Lo que si me queda claro que es un excelente sistema operativo para servidores
+proxy. Además, ipfw, su cortafuegos, es sólido como una piedra. En FreeBSD eso
+de caer de rodillas ante un ataque DoS, es simplemente utópico.</p>
+
+<p>En ambientes libres de proxy, el binomio dummynet-<a href="https://www.freebsd.org/doc/handbook/firewalls-ipfw.html">ipfw</a>
+permite un manejo del ancho de banda con una simpleza que ya quisiera <strong>tc</strong>. Un
+solo pipe puede tener valores diferentes para su ancho de banda, encolamiento y
+delay.</p>
+
+<p>Por otra parte, el sistema de
+<a href="https://www.freebsd.org/doc/handbook/jails.html">jails</a> es un batazo. Sobre
+todo en ambientes donde te ves obligado a meter la pata y no dispones de
+virtualización. Lo único equivalente a esto en linux, sería LXC, pero no es ni
+la chancleta. Los jails combinado con ZFS, permiten hacer cosas alucinantes.</p>
+
+<p>El gestor de paquetes ha mejorado muchísimo. En cuanto a resolución de
+dependencias y velocidad. Lo han optimizado bastante en mi opinión y ahora
+maneja mejor el tema de las redes lentas; sobre todo detrás de proxy.</p>
+
+<p>Cada versión nueva que sale la pruebo; y aunque había hecho mis cositas con él,
+siempre acababa dejándolo de lado por el tema del ancho de banda. Cualquier
+operación que hagas con la paquetería requiere conexión y poco ancho de banda
+provoca que la operación falle. La versión 9 en mi opinión fue un desastre.
+Especialmente por el sistema de ports que daba unos palos horribles.</p>
+
+<p>FreeBSD 10 no lo toqué, estuve más girado para OpenIndiana.</p>
+
+<p>Pero la versión 7 de OI parecía no terminar nunca. Finalmente el avión no
+despegó. El fiasco de nexenta store y la insertidumbre de oracle, golpearon
+fuertemente a la comunidad de OpenIndiana. El mundo se dio cuenta que OI tenía
+el futuro de un submarino descapotable y gran parte de la comunidad de illumos
+se mudó pa BSD. La comunidad de OpenIndiana se desmoronaba con las botas
+puestas. El agitado canal de freenode #openindiana se convirtió en un canal
+muerto. En lo personal, tras fracasar en mi afán por portar Ruby a OI, en parte
+debido a que no tengo ancho de banda para hacer operaciones en el Userland; alcé
+bandera blanca también.</p>
+
+<p>Pero como soy Linuxero! Volví a poner mis servidores en debian y comencé a mirar
+a fedora. De nuevo el ancho de vianda me golpeó; además de otros avatares de la
+vida. Terminé usando un chroot de arch, sobre la viejísima instalación de debian
+en mi laptop Pentium 3 que ya estaba más que obsoleta. Todas mis aplicaciones,
+mi /home, etc&hellip; Eran un chroot de arch dentro de un debian desnudo. Corría i3 y
+levantaba con startx luego de entrar al chroot.</p>
+
+<p>Free BSD andaba por finales de la 9 y la 10 en el horno; si mal no recuerdo&hellip;
+Yo, me dedicaba a leer noticias y continuaba suscrito a la lista de freebsd en
+español; donde hacer top-posting se paga con la pena capital.</p>
+
+<p>Mientras tanto, perdía yo mi trabajo y paradógicamente recién adquiría una nueva
+laptop. Apostar por el recién abierto &ldquo;modelo de trabajo por cuenta propia&rdquo;; me
+costó perder mi empleo y quedarme sentado un buen rato. Instalé ArchLinux en la
+laptop nueva para conservar las configuraciones de la anterior. Para este
+entonces me consideraba usuario de archlinux &ldquo;por casualidad&rdquo;. Me soñaba como un
+feliz usuario de Fedora. Consideraba ya a Debian; única y expresamente una
+herramienta para servidores. Seguía teniendo a FreeBSD en al mira, pero para
+cuando consiguiera un trabajo con un internet &ldquo;decente&rdquo; y tuviera algo de
+tiempo.</p>
+
+<p>El período más jodido de mi vida estaba aconteciendo en ese momento. No voy a
+escribir aquí mis problemas personales; pero a modo de resumen diré que la
+última enfermera que tuve como pareja me calló a tarros y la casa donde nací, la
+vendieron sin decirme nada. Al estilo país capitalista &ldquo;me quede en la calle&rdquo;.
+Con el ánimo y la autoestima en el piso; el único producto que podía ofrecer
+eran servidores con debian. A mediados del 2014, empecé en el calixto, de vuelta
+al trabajo estatal. El ancho de vianda seguía siendo un problema; también el
+tema de la cuota. FreeBSD seguía &ldquo;pospuesto pero no olvidado&rdquo;.</p>
+
+<p>A finales del 2016, me trajeron el servidor de gama media para remplazar el
+totem de servidores. Además, habían ampliado el susodicho ancho de vianda. Fue
+entonces cuando decidí, que el nuevo proxy, no podía quedarse mariado como le
+pasa al squid en linux; muchísimo menos con el micro tan poco potente del
+servidor (gama media).</p>
+
+<p>Para mi sopresa, FreeBSD andaba por la 11 (yo lo hacía por la 10 todavía) por lo
+lento que se desarrolla; el pobre. Ahora estoy muy contento con mi squid sobre
+FreeBSD 11. Que si bien también se marea, lo hace bastante poco y se recupera
+rápido.</p>
+
+<p>Por lo que veo ya no son tan retrógrados como antes; han mejorado mucho en ese
+aspecto, aunque siguen siendo una mirada al futuro desde el pasado. Mantienen la
+onda chea reflejada en su configuración; pero todo bien afinado, fresco y
+modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
+
+<p>Dejaron de ser retrógrados para convertirse en modernos pero anticuados.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/01/21/palito/">animación del palito</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-01-21T12:47:55-05:00'><span class='date'>21/01/2017</span> <span class='time'>12:47 pm</span></time>
+        
+           | <a href="/blog/2017/01/21/palito/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/21/palito/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Por si se me olvida, porque lo he olvidado varias veces. En ocasiones, queremos
+hacer una simple animación de consola, para representar trabajo de un script sin
+mostrar lo que está procesando. Este script de ejemplo, itera por cada caracter
+de la fecha y muestra la barra cambiando de posición, el clásico palito girando.</p>
+
+<figure class='code'><figcaption><span>&#8220;scope&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#!/usr/bin/env ruby</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># esta es la animación, puedes sustituirla</span>
+</span><span class='line'><span class="c1"># por lo que más te guste, solo pon la secuencia</span>
+</span><span class='line'><span class="n">animacion</span><span class="o">=[</span><span class="s1">&#39;|&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;\ &#39;</span><span class="o">.</span><span class="n">strip</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="n">d</span><span class="p">,</span><span class="n">i</span>  <span class="k">in</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">chars</span><span class="o">.</span><span class="n">each_with_index</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c1"># múeve a la siguiente frama de la animación</span>
+</span><span class='line'>   <span class="n">palito</span><span class="o">=</span><span class="p">(</span><span class="n">animacion</span><span class="o">.</span><span class="n">push</span> <span class="n">animacion</span><span class="o">.</span><span class="n">shift</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c1"># muestra el palito y has un retorno de carro</span>
+</span><span class='line'>   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">palito</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c1"># has una media</span>
+</span><span class='line'>   <span class="nb">sleep</span> <span class="mi">0</span><span class="o">.</span><span class="mi">3</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">d</span><span class="o">=</span><span class="n">d</span> <span class="c1"># nada que hacer con los datos</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En el array, el último caracter tiene un String#strip porque al escribir <strong>\&lsquo;</strong>
+el compilador suele interpretarlo como que estás escapando la comilla simple.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -334,7 +545,7 @@ ha pasado parecido.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -437,7 +648,7 @@ pronto.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -513,253 +724,7 @@ buen jquery a mano.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/12/29/xgproyect/">xgproyect</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-12-29T21:48:32-05:00'><span class='date'>29/12/2016</span> <span class='time'>9:48 pm</span></time>
-        
-           | <a href="/blog/2016/12/29/xgproyect/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/12/29/xgproyect/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Se supone que te cuente la historia de Xnova, OAgame y XGProyect pero de verdad
-que NO estoy pa eso; ya me la disparé en la wikipedia más dos alemanes que mi
-hicieron su propia versión de la historia. Pa hacerte el cuento corto, es un
-juego de exploración y conquista del universo. Suena emocionante, pero todo
-sucede en páginas web.  Cosas como &ldquo;tus naves destruyeron la flota enemiga&rdquo; el
-juego te las cuenta, tú no las vez.</p>
-
-<p>La tercera vez que me preguntaron en el calixto si &ldquo;tenía montado un xnova&rdquo;
-decidí tomar cartas del asunto. Después de mucho rodar por google, no di con el
-código fuente de xnova. El colega Leslie (alias &ldquo;Curielete&rdquo;) me comenta que
-ahora lo que se usa es XGProyect.</p>
-
-<p>La versión más reciente, es la <a href="https://github.com/XGProyect/XG-Proyect-v3.x.x/releases/download/v3.0.3/XGP3.0.3.zip">3.0.3, bájatela aquí</a></p>
-
-<p>En mi caso, dispuse de un Virtualhost en el servidor web, para la aplicación. El
-document root de este virtualhost, apuntará a <strong>/var/www/xgp</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;descargando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>wget -c https://github.com/XGProyect/XG-Proyect-v3.x.x/releases/download/v3.0.3/XGP3.0.3.zip
-</span><span class='line'>unzip XGP3.0.3.zip
-</span><span class='line'>mv xgp3.0.3/upload /var/www/xgp
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Setea los permisos como prefieras, pero al directorio de configuración, deberás
-darle permiso de escritura HASTA que culmine el proceso de instalación.</p>
-
-<figure class='code'><figcaption><span>&#8220;poniendo permisos temporales&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>chmod -R <span class="m">0777</span> application/config/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>OJO</h4>
-
-<p>Requiere mysql, así que para este ejemplo, crearemos una base de datos llamada
-<strong>&ldquo;x&rdquo;</strong></p>
-
-<p>Al abrir un navegador y dirigirnos al sitio, te redireccionará al instalador de
-manera automática. Pedirá irremediablemente los parámetros. Luego de establecer
-la conexión con la base de datos, creará el fichero de configuración. Al hacer
-click en continuar, creará la complejísima base de datos que contendrá el
-universo del juego.</p>
-
-<p><img class="center" src="/images/xg_1.png" width="500" height="600" title="" ></p>
-
-<p>Si te da un error 500, es porque tu versión de php o de mysql, no le juega. Para
-este ejemplo, se usó debian 8 (el container de docker para ser más preciso)</p>
-
-<p>Más específicamente estas:</p>
-
-<figure class='code'><figcaption><span>&#8220;versiones&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@40e0cc02bcd7:/# php -v
-</span><span class='line'>PHP 5.6.24-0+deb8u1 <span class="o">(</span>cli<span class="o">)</span> <span class="o">(</span>built: Jul <span class="m">26</span> <span class="m">2016</span> 08:17:07<span class="o">)</span>
-</span><span class='line'>Copyright <span class="o">(</span>c<span class="o">)</span> 1997-2016 The PHP Group
-</span><span class='line'>Zend Engine v2.6.0, Copyright <span class="o">(</span>c<span class="o">)</span> 1998-2016 Zend Technologies
-</span><span class='line'>    with Zend OPcache v7.0.6-dev, Copyright <span class="o">(</span>c<span class="o">)</span> 1999-2016, by Zend Technologies
-</span><span class='line'>
-</span><span class='line'>root@40e0cc02bcd7:/# mysqld -V
-</span><span class='line'>mysqld  Ver 5.5.52-0+deb8u1 <span class="k">for</span> debian-linux-gnu on x86_64 <span class="o">((</span>Debian<span class="o">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con el php de archlinux, no me pinchó, todo daba error 500</p>
-
-<p>Finalmente, nos pedirá crear el primer usuario que es además, el administrador
-del juego. Deja que veas el panel de admin, tiene más botones y menú, que la
-cabina de cualquier nave espacial.</p>
-
-<p>Una vez terminado ese proceso, nos pide borrar el directorio &ldquo;install&rdquo;.
-Renombrarlo trae horribles consecuencias, así que bórralo o cámbialo de lugar.</p>
-
-<p>Por último, le devolvemos sus permisos al directorio de configuración.</p>
-
-<figure class='code'><figcaption><span>&#8220;poniendo permisos temporales&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>chmod -R <span class="m">0444</span> application/config/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>De regreso a la ventana del juego, tendrás la landing-page y el botón entrar.</p>
-
-<p><img class="center" src="/images/xg_2.png" width="500" height="600" title="" ></p>
-
-<p>Ahí te logueas y localizas el menú de administración. Puedes llegar por
-<a href="http://tuservidor/admin.php">http://tuservidor/admin.php</a> Por ahí puede para empezar, hacer la tarea más
-elemental: Crear usuarios.</p>
-
-<p><img class="center" src="/images/xg_3.png" width="600" height="700" title="" ></p>
-
-<p>Entra cuanto antes al panel de administración y verás que te pida una
-actualización. Al pulsar el botón, te saldrán unas sentencias SQL. Quizás las
-ejecute, quizás no lo consiga. Por si acaso, tu las ejecutas en una consola SQL.
-Si tienes ese error (actualización disponible) no te dejará hacer nada hasta que
-no lo resuelvas.</p>
-
-<p>Luego llégate a &ldquo;Errores DB&rdquo; y subsánalos. Por suerte es tan simple como hacer
-click en &ldquo;Eliminar Todos&rdquo;. También en el menú &ldquo;Características del Juego&rdquo;, te
-recomiendo desactivar &ldquo;Mercader&rdquo; y &ldquo;Oficiales&rdquo;, enseguida te darás cuenta por
-qué lo digo.</p>
-
-<p><img class="right" src="/images/xg_4.png" width="600" height="700" title="" ></p>
-
-<p>Los usuarios se hacen en el menú &ldquo;Creador&rdquo; (no en &ldquo;Usuarios&rdquo;)</p>
-
-<p>Otra cosa, el panel de admin carga lento, es bastante lento pero eso es normal.</p>
-
-<p>Realmente el juego tiene su encanto. Abres la página cada una o dos horas, hace
-una que otra bobería y dejas las tarea en cola. Me resulta más entretenido que
-facebook. En el Link &ldquo;notas&rdquo; vas tomando nota de lo que tienes por hacer, cuando
-te vuelvas a loguear el lunes, solo tienes que mirarlas. Consejo, haste una
-&ldquo;fabrica de robots&rdquo; cuanto antes.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/12/27/cambiar-mac-a-un-nano/">cambiar mac a un nano</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-12-27T09:39:44-05:00'><span class='date'>27/12/2016</span> <span class='time'>9:39 am</span></time>
-        
-           | <a href="/blog/2016/12/27/cambiar-mac-a-un-nano/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/12/27/cambiar-mac-a-un-nano/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Un socio me preguntó hace poquito si yo podía cambiarle la MAC a un nano. Me
-pareció muy estrafalaria la necesidad de él, pero según me contó, en la red
-criolla que está suscrito, suelen banear los nanos cuando los usuarios se portan
-mal.</p>
-
-<p>Tras una búsqueda en internet vi unos post en un forum pero ninguno me funcionó.
-La idea es, correr un fichero al iniciar el sistema, que corra ifconfig y le
-cambie la MAC a las interfaces.</p>
-
-<p>La problemática radica, que a la interfaz &ldquo;ath0&rdquo;, no se le puede cambiar la MAC,
-ya que aún estando down, te dice dispositivo ocupado. Por esa razón, parecía no
-pinchar la solución de los post. Sin embargo, si bajas las 3 interfaces
-involucradas en la conexión, luego cambias dichas mac, <strong>sí pincha</strong>.</p>
-
-<p>Para ello crearemos el fichero <strong>/etc/persistent/rc.poststart</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/persistent/rc.poststart&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/sh</span>
-</span><span class='line'>
-</span><span class='line'>ifconfig br0 down
-</span><span class='line'>ifconfig wifi0 down
-</span><span class='line'>ifconfig ath0 down
-</span><span class='line'>
-</span><span class='line'>ifconfig wifi0 hw ether 5e:53:84:bc:a3:54
-</span><span class='line'>ifconfig ath0 hw ether 5e:53:84:bc:a3:54
-</span><span class='line'>
-</span><span class='line'>ifconfig ath0 up
-</span><span class='line'>ifconfig wifi0 up
-</span><span class='line'>ifconfig br0 up
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A ese fichero le ponemos el ejecutable, si no, no pinchará.</p>
-
-<figure class='code'><figcaption><span>&#8220;ejecutable&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>XW.v5.6.2# chmod a+rx /etc/persistent/rc.poststart
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finalmente, le decimos al firmware que modifique los cambios y que reinicie.</p>
-
-<figure class='code'><figcaption><span>&#8220;salva y reinicia&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>XW.v5.6.2# cfgmtd -w -p /etc/
-</span><span class='line'>XW.v5.6.2# reboot
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Todavía hay quien cree que las MAC son una medida segura para crear reglas de
-control de acceso&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -780,6 +745,14 @@ control de acceso&hellip;</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/01/portknocking-en-freebsd/">portknocking en freebsd</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/03/01/bind-en-infomed/">bind en infomed</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>

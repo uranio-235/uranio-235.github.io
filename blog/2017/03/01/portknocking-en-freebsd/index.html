@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>mis crónicas con freebsd - El SysAdmin del 3er Mundo</title>
+  <title>portknocking en freebsd - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="mis crónicas con freebsd 28/01/2017 11:39 pm | Comments Si vas a leer este artículo, te aviso, que no tiene nada que ver con el blog. Me
-dispongo a &hellip;">
+  <meta name="description" content="portknocking en freebsd 01/03/2017 11:53 pm | Comments La técnica port-knocking o knockd para otros, es en mi opinión, pilar de la
+seguridad en &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ dispongo a &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2017/01/28/freebsd-11/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -85,7 +85,7 @@ dispongo a &hellip;">
   
   <header>
     
-      <h1 class="entry-title">mis crónicas con freebsd</h1>
+      <h1 class="entry-title">portknocking en freebsd</h1>
     
     
       <p class="meta">
@@ -94,7 +94,7 @@ dispongo a &hellip;">
 
 
 
-<time class='entry-date' datetime='2017-01-28T23:39:52-05:00'><span class='date'>28/01/2017</span> <span class='time'>11:39 pm</span></time>
+<time class='entry-date' datetime='2017-03-01T23:53:01-05:00'><span class='date'>01/03/2017</span> <span class='time'>11:53 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -104,105 +104,61 @@ dispongo a &hellip;">
   </header>
 
 
-<div class="entry-content"><p>Si vas a leer este artículo, te aviso, que no tiene nada que ver con el blog. Me
-dispongo a expresar mi criterio sobre FreeBSD y un tanto de como ha formado
-parte de mi vida profesional.</p>
+<div class="entry-content"><p>La técnica port-knocking o knockd para otros, es en mi opinión, <strong>pilar de la
+seguridad</strong> en cualquier servidor que use SSH. Aunque es bastante versátil y
+puede ser usado hasta para reiniciar servicios sin loguearte.</p>
 
-<p>   <blockquote><p>FreeBSD, tecnología arcana para algunos y arcaica para otros.</p></blockquote></p>
+<p>Una de las cosas que empece a extrañar en FreeBSD fue knockd, pero gracias a la
+flexbilidad de ipfw, podemos usar este poderoso software. En FreeBSD el fichero
+se encuentra en <strong>/usr/local/etc/knockd.conf.sample</strong> y el paquete se llama
+<strong>knock</strong>.</p>
 
-<p>Se cuentan leyendas sobre FreeBSD, como que es el sistema operativo de los nodos
-y cosas así. Mucha gente lo tiene como un arcano o algo que probarán <em>un día de
-estos</em>. Yo pienso que no tiene nada del otro mundo. De hecho, en mi opinión,
-gentoo es más complicado que freebsd.</p>
+<p>OJO!! Muy importante especificarle la interfaz por la cual va a escuchar.</p>
 
-<p>Lo que si me queda claro que es un excelente sistema operativo para servidores
-proxy. Además, ipfw, su cortafuegos, es sólido como una piedra. En FreeBSD eso
-de caer de rodillas ante un ataque DoS, es simplemente utópico.</p>
+<figure class='code'><figcaption><span>&#8220;/usr/local/etc/knockd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="k">[options]</span>
+</span><span class='line'>        <span class="na">logfile</span> <span class="o">=</span> <span class="s">/var/log/knockd.log</span>
+</span><span class='line'><span class="s">        interface = xn0</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[openSSH]</span>
+</span><span class='line'>        <span class="na">sequence</span>    <span class="o">=</span> <span class="s">999,777,333</span>
+</span><span class='line'><span class="s">        seq_timeout = 9</span>
+</span><span class='line'><span class="s">        command     = /sbin/ipfw -q add 00001 allow all from %IP% to me</span>
+</span><span class='line'><span class="s">        tcpflags    = syn</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[closeSSH]</span>
+</span><span class='line'>        <span class="na">sequence</span>    <span class="o">=</span> <span class="s">777,999,333</span>
+</span><span class='line'><span class="s">        seq_timeout = 9</span>
+</span><span class='line'><span class="s">        command     = /sbin/ipfw -q delete 00001</span>
+</span><span class='line'><span class="s">        tcpflags    = syn</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>En ambientes libres de proxy, el binomio dummynet-<a href="https://www.freebsd.org/doc/handbook/firewalls-ipfw.html">ipfw</a>
-permite un manejo del ancho de banda con una simpleza que ya quisiera <strong>tc</strong>. Un
-solo pipe puede tener valores diferentes para su ancho de banda, encolamiento y
-delay.</p>
 
-<p>Por otra parte, el sistema de
-<a href="https://www.freebsd.org/doc/handbook/jails.html">jails</a> es un batazo. Sobre
-todo en ambientes donde te ves obligado a meter la pata y no dispones de
-virtualización. Lo único equivalente a esto en linux, sería LXC, pero no es ni
-la chancleta. Los jails combinado con ZFS, permiten hacer cosas alucinantes.</p>
+<p>Nada, resumiendo, que el truco está en poner la regla con el número 00001.
+Recuerdas que ipfw te permite (casi te obliga a) especificar un número para cada
+regla. Pues usaremos ese numerito diminuto para ponerla de primera.</p>
 
-<p>El gestor de paquetes ha mejorado muchísimo. En cuanto a resolución de
-dependencias y velocidad. Lo han optimizado bastante en mi opinión y ahora
-maneja mejor el tema de las redes lentas; sobre todo detrás de proxy.</p>
-
-<p>Cada versión nueva que sale la pruebo; y aunque había hecho mis cositas con él,
-siempre acababa dejándolo de lado por el tema del ancho de banda. Cualquier
-operación que hagas con la paquetería requiere conexión y poco ancho de banda
-provoca que la operación falle. La versión 9 en mi opinión fue un desastre.
-Especialmente por el sistema de ports que daba unos palos horribles.</p>
-
-<p>FreeBSD 10 no lo toqué, estuve más girado para OpenIndiana.</p>
-
-<p>Pero la versión 7 de OI parecía no terminar nunca. Finalmente el avión no
-despegó. El fiasco de nexenta store y la insertidumbre de oracle, golpearon
-fuertemente a la comunidad de OpenIndiana. El mundo se dio cuenta que OI tenía
-el futuro de un submarino descapotable y gran parte de la comunidad de illumos
-se mudó pa BSD. La comunidad de OpenIndiana se desmoronaba con las botas
-puestas. El agitado canal de freenode #openindiana se convirtió en un canal
-muerto. En lo personal, tras fracasar en mi afán por portar Ruby a OI, en parte
-debido a que no tengo ancho de banda para hacer operaciones en el Userland; alcé
-bandera blanca también.</p>
-
-<p>Pero como soy Linuxero! Volví a poner mis servidores en debian y comencé a mirar
-a fedora. De nuevo el ancho de vianda me golpeó; además de otros avatares de la
-vida. Terminé usando un chroot de arch, sobre la viejísima instalación de debian
-en mi laptop Pentium 3 que ya estaba más que obsoleta. Todas mis aplicaciones,
-mi /home, etc&hellip; Eran un chroot de arch dentro de un debian desnudo. Corría i3 y
-levantaba con startx luego de entrar al chroot.</p>
-
-<p>Free BSD andaba por finales de la 9 y la 10 en el horno; si mal no recuerdo&hellip;
-Yo, me dedicaba a leer noticias y continuaba suscrito a la lista de freebsd en
-español; donde hacer top-posting se paga con la pena capital.</p>
-
-<p>Mientras tanto, perdía yo mi trabajo y paradógicamente recién adquiría una nueva
-laptop. Apostar por el recién abierto &ldquo;modelo de trabajo por cuenta propia&rdquo;; me
-costó perder mi empleo y quedarme sentado un buen rato. Instalé ArchLinux en la
-laptop nueva para conservar las configuraciones de la anterior. Para este
-entonces me consideraba usuario de archlinux &ldquo;por casualidad&rdquo;. Me soñaba como un
-feliz usuario de Fedora. Consideraba ya a Debian; única y expresamente una
-herramienta para servidores. Seguía teniendo a FreeBSD en al mira, pero para
-cuando consiguiera un trabajo con un internet &ldquo;decente&rdquo; y tuviera algo de
-tiempo.</p>
-
-<p>El período más jodido de mi vida estaba aconteciendo en ese momento. No voy a
-escribir aquí mis problemas personales; pero a modo de resumen diré que la
-última enfermera que tuve como pareja me calló a tarros y la casa donde nací, la
-vendieron sin decirme nada. Al estilo país capitalista &ldquo;me quede en la calle&rdquo;.
-Con el ánimo y la autoestima en el piso; el único producto que podía ofrecer
-eran servidores con debian. A mediados del 2014, empecé en el calixto, de vuelta
-al trabajo estatal. El ancho de vianda seguía siendo un problema; también el
-tema de la cuota. FreeBSD seguía &ldquo;pospuesto pero no olvidado&rdquo;.</p>
-
-<p>A finales del 2016, me trajeron el servidor de gama media para remplazar el
-totem de servidores. Además, habían ampliado el susodicho ancho de vianda. Fue
-entonces cuando decidí, que el nuevo proxy, no podía quedarse mariado como le
-pasa al squid en linux; muchísimo menos con el micro tan poco potente del
-servidor (gama media).</p>
-
-<p>Para mi sopresa, FreeBSD andaba por la 11 (yo lo hacía por la 10 todavía) por lo
-lento que se desarrolla; el pobre. Ahora estoy muy contento con mi squid sobre
-FreeBSD 11. Que si bien también se marea, lo hace bastante poco y se recupera
-rápido.</p>
-
-<p>Por lo que veo ya no son tan retrógrados como antes; han mejorado mucho en ese
-aspecto, aunque siguen siendo una mirada al futuro desde el pasado. Mantienen la
-onda chea reflejada en su configuración; pero todo bien afinado, fresco y
-modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
-
-<p>Dejaron de ser retrógrados para convertirse en modernos pero anticuados.</p>
+<p>Los tipos ortodoxos criticarán que es una regla <em>al tetón</em>. Pienso que no vale
+la pena abrir solo el 22, si voy a pasar tanto trabajo, que se me abra la puerta
+completa.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -216,21 +172,15 @@ modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
 
 
 
-<time class='entry-date' datetime='2017-01-28T23:39:52-05:00'><span class='date'>28/01/2017</span> <span class='time'>11:39 pm</span></time>
+<time class='entry-date' datetime='2017-03-01T23:53:01-05:00'><span class='date'>01/03/2017</span> <span class='time'>11:53 pm</span></time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/bsd/'>bsd</a>
-  
-</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2017/01/28/freebsd-11/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2017/01/28/freebsd-11/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -243,10 +193,8 @@ modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2017/01/21/palito/" title="Previous Post: animación del palito">&laquo; animación del palito</a>
+        <a class="basic-alignment left" href="/blog/2017/03/01/bind-en-infomed/" title="Previous Post: bind en infomed">&laquo; bind en infomed</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2017/02/01/ipfw-simple-y-consiso/" title="Next Post: ipfw simple y conciso">ipfw simple y conciso &raquo;</a>
       
     </p>
   </footer>
@@ -708,8 +656,8 @@ modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2017/01/28/freebsd-11/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2017/01/28/freebsd-11/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd/';
         var disqus_script = 'embed.js';
       
     (function () {

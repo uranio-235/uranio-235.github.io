@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="bind personal 22/02/2017 9:05 pm | Comments Una cosa que me jode, es que linux el tema de los múltiples DNS no los maneje
-bien. Por ejemplo, estamos &hellip;">
+  <meta name="description" content="portknocking en freebsd 01/03/2017 11:53 pm | Comments La técnica port-knocking o knockd para otros, es en mi opinión, pilar de la
+seguridad en &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,212 @@ bien. Por ejemplo, estamos &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/01/portknocking-en-freebsd/">portknocking en freebsd</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-01T23:53:01-05:00'><span class='date'>01/03/2017</span> <span class='time'>11:53 pm</span></time>
+        
+           | <a href="/blog/2017/03/01/portknocking-en-freebsd/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>La técnica port-knocking o knockd para otros, es en mi opinión, <strong>pilar de la
+seguridad</strong> en cualquier servidor que use SSH. Aunque es bastante versátil y
+puede ser usado hasta para reiniciar servicios sin loguearte.</p>
+
+<p>Una de las cosas que empece a extrañar en FreeBSD fue knockd, pero gracias a la
+flexbilidad de ipfw, podemos usar este poderoso software. En FreeBSD el fichero
+se encuentra en <strong>/usr/local/etc/knockd.conf.sample</strong> y el paquete se llama
+<strong>knock</strong>.</p>
+
+<p>OJO!! Muy importante especificarle la interfaz por la cual va a escuchar.</p>
+
+<figure class='code'><figcaption><span>&#8220;/usr/local/etc/knockd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="k">[options]</span>
+</span><span class='line'>        <span class="na">logfile</span> <span class="o">=</span> <span class="s">/var/log/knockd.log</span>
+</span><span class='line'><span class="s">        interface = xn0</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[openSSH]</span>
+</span><span class='line'>        <span class="na">sequence</span>    <span class="o">=</span> <span class="s">999,777,333</span>
+</span><span class='line'><span class="s">        seq_timeout = 9</span>
+</span><span class='line'><span class="s">        command     = /sbin/ipfw -q add 00001 allow all from %IP% to me</span>
+</span><span class='line'><span class="s">        tcpflags    = syn</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[closeSSH]</span>
+</span><span class='line'>        <span class="na">sequence</span>    <span class="o">=</span> <span class="s">777,999,333</span>
+</span><span class='line'><span class="s">        seq_timeout = 9</span>
+</span><span class='line'><span class="s">        command     = /sbin/ipfw -q delete 00001</span>
+</span><span class='line'><span class="s">        tcpflags    = syn</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nada, resumiendo, que el truco está en poner la regla con el número 00001.
+Recuerdas que ipfw te permite (casi te obliga a) especificar un número para cada
+regla. Pues usaremos ese numerito diminuto para ponerla de primera.</p>
+
+<p>Los tipos ortodoxos criticarán que es una regla <em>al tetón</em>. Pienso que no vale
+la pena abrir solo el 22, si voy a pasar tanto trabajo, que se me abra la puerta
+completa.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/01/bind-en-infomed/">bind en infomed</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-01T23:13:34-05:00'><span class='date'>01/03/2017</span> <span class='time'>11:13 pm</span></time>
+        
+           | <a href="/blog/2017/03/01/bind-en-infomed/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/01/bind-en-infomed/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Seguimos con bind&hellip;</p>
+
+<p>No hace mucho le comentaba a alguien, a raíz de una duda que tenía el colega
+Paradyx; la manera correcta de configurar un servidor bind para una red que
+cuelga de infomed.</p>
+
+<p>Le comentaba que no vale la pena usar un forward por defecto; que hacer del
+dominio &lsquo;.sld.cu&rsquo; una zona forward sería más que suficiente. Digo esto porque
+infomed no resuelve ningún dominio que valla más allá de &ldquo;.sld.cu&rdquo;, por tanto,
+no vale la pena transferirle las sepetecientas peticiones que hacen cuanta
+mierda se conecta a nuestra red (especialmente android).</p>
+
+<figure class='code'><figcaption><span>&#8220;named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">options</span> <span class="p">{</span>
+</span><span class='line'>   <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">10.1.1.1</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">view</span> <span class="n">lan</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">10.1.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;sld.cu&quot;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">201.220.222.131</span><span class="p">;</span> <span class="mf">201.220.222.132</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">forward</span> <span class="n">only</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">};</span> <span class="c1">// view lan</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como mi dominio es hcg.sld.cu (subdominio de .sld.cu) lo declaramos ARRIBA
+del dominio sld.cu. El dominio <strong>hcg.sld.cu</strong> es una zona <strong>master</strong>, sin
+embargo, el dominio <strong>sld.cu</strong> es del tipo <strong>forward</strong> y entonces ahí declaramos
+los forwarders (los dns de infomed).</p>
+
+<p>Ahora solo le reenviaremos a infomed, aquellas peticiones que sean para infomed.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -272,7 +478,7 @@ poder tener internet en mi bolsillo con el salario que me gano.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -489,7 +695,7 @@ que ninguna pinche.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -775,218 +981,7 @@ intenta poner siempre los pipe arriba y el cortafuegos abajo</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/28/freebsd-11/">mis crónicas con freebsd</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-28T23:39:52-05:00'><span class='date'>28/01/2017</span> <span class='time'>11:39 pm</span></time>
-        
-           | <a href="/blog/2017/01/28/freebsd-11/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/28/freebsd-11/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Si vas a leer este artículo, te aviso, que no tiene nada que ver con el blog. Me
-dispongo a expresar mi criterio sobre FreeBSD y un tanto de como ha formado
-parte de mi vida profesional.</p>
-
-<p>   <blockquote><p>FreeBSD, tecnología arcana para algunos y arcaica para otros.</p></blockquote></p>
-
-<p>Se cuentan leyendas sobre FreeBSD, como que es el sistema operativo de los nodos
-y cosas así. Mucha gente lo tiene como un arcano o algo que probarán <em>un día de
-estos</em>. Yo pienso que no tiene nada del otro mundo. De hecho, en mi opinión,
-gentoo es más complicado que freebsd.</p>
-
-<p>Lo que si me queda claro que es un excelente sistema operativo para servidores
-proxy. Además, ipfw, su cortafuegos, es sólido como una piedra. En FreeBSD eso
-de caer de rodillas ante un ataque DoS, es simplemente utópico.</p>
-
-<p>En ambientes libres de proxy, el binomio dummynet-<a href="https://www.freebsd.org/doc/handbook/firewalls-ipfw.html">ipfw</a>
-permite un manejo del ancho de banda con una simpleza que ya quisiera <strong>tc</strong>. Un
-solo pipe puede tener valores diferentes para su ancho de banda, encolamiento y
-delay.</p>
-
-<p>Por otra parte, el sistema de
-<a href="https://www.freebsd.org/doc/handbook/jails.html">jails</a> es un batazo. Sobre
-todo en ambientes donde te ves obligado a meter la pata y no dispones de
-virtualización. Lo único equivalente a esto en linux, sería LXC, pero no es ni
-la chancleta. Los jails combinado con ZFS, permiten hacer cosas alucinantes.</p>
-
-<p>El gestor de paquetes ha mejorado muchísimo. En cuanto a resolución de
-dependencias y velocidad. Lo han optimizado bastante en mi opinión y ahora
-maneja mejor el tema de las redes lentas; sobre todo detrás de proxy.</p>
-
-<p>Cada versión nueva que sale la pruebo; y aunque había hecho mis cositas con él,
-siempre acababa dejándolo de lado por el tema del ancho de banda. Cualquier
-operación que hagas con la paquetería requiere conexión y poco ancho de banda
-provoca que la operación falle. La versión 9 en mi opinión fue un desastre.
-Especialmente por el sistema de ports que daba unos palos horribles.</p>
-
-<p>FreeBSD 10 no lo toqué, estuve más girado para OpenIndiana.</p>
-
-<p>Pero la versión 7 de OI parecía no terminar nunca. Finalmente el avión no
-despegó. El fiasco de nexenta store y la insertidumbre de oracle, golpearon
-fuertemente a la comunidad de OpenIndiana. El mundo se dio cuenta que OI tenía
-el futuro de un submarino descapotable y gran parte de la comunidad de illumos
-se mudó pa BSD. La comunidad de OpenIndiana se desmoronaba con las botas
-puestas. El agitado canal de freenode #openindiana se convirtió en un canal
-muerto. En lo personal, tras fracasar en mi afán por portar Ruby a OI, en parte
-debido a que no tengo ancho de banda para hacer operaciones en el Userland; alcé
-bandera blanca también.</p>
-
-<p>Pero como soy Linuxero! Volví a poner mis servidores en debian y comencé a mirar
-a fedora. De nuevo el ancho de vianda me golpeó; además de otros avatares de la
-vida. Terminé usando un chroot de arch, sobre la viejísima instalación de debian
-en mi laptop Pentium 3 que ya estaba más que obsoleta. Todas mis aplicaciones,
-mi /home, etc&hellip; Eran un chroot de arch dentro de un debian desnudo. Corría i3 y
-levantaba con startx luego de entrar al chroot.</p>
-
-<p>Free BSD andaba por finales de la 9 y la 10 en el horno; si mal no recuerdo&hellip;
-Yo, me dedicaba a leer noticias y continuaba suscrito a la lista de freebsd en
-español; donde hacer top-posting se paga con la pena capital.</p>
-
-<p>Mientras tanto, perdía yo mi trabajo y paradógicamente recién adquiría una nueva
-laptop. Apostar por el recién abierto &ldquo;modelo de trabajo por cuenta propia&rdquo;; me
-costó perder mi empleo y quedarme sentado un buen rato. Instalé ArchLinux en la
-laptop nueva para conservar las configuraciones de la anterior. Para este
-entonces me consideraba usuario de archlinux &ldquo;por casualidad&rdquo;. Me soñaba como un
-feliz usuario de Fedora. Consideraba ya a Debian; única y expresamente una
-herramienta para servidores. Seguía teniendo a FreeBSD en al mira, pero para
-cuando consiguiera un trabajo con un internet &ldquo;decente&rdquo; y tuviera algo de
-tiempo.</p>
-
-<p>El período más jodido de mi vida estaba aconteciendo en ese momento. No voy a
-escribir aquí mis problemas personales; pero a modo de resumen diré que la
-última enfermera que tuve como pareja me calló a tarros y la casa donde nací, la
-vendieron sin decirme nada. Al estilo país capitalista &ldquo;me quede en la calle&rdquo;.
-Con el ánimo y la autoestima en el piso; el único producto que podía ofrecer
-eran servidores con debian. A mediados del 2014, empecé en el calixto, de vuelta
-al trabajo estatal. El ancho de vianda seguía siendo un problema; también el
-tema de la cuota. FreeBSD seguía &ldquo;pospuesto pero no olvidado&rdquo;.</p>
-
-<p>A finales del 2016, me trajeron el servidor de gama media para remplazar el
-totem de servidores. Además, habían ampliado el susodicho ancho de vianda. Fue
-entonces cuando decidí, que el nuevo proxy, no podía quedarse mariado como le
-pasa al squid en linux; muchísimo menos con el micro tan poco potente del
-servidor (gama media).</p>
-
-<p>Para mi sopresa, FreeBSD andaba por la 11 (yo lo hacía por la 10 todavía) por lo
-lento que se desarrolla; el pobre. Ahora estoy muy contento con mi squid sobre
-FreeBSD 11. Que si bien también se marea, lo hace bastante poco y se recupera
-rápido.</p>
-
-<p>Por lo que veo ya no son tan retrógrados como antes; han mejorado mucho en ese
-aspecto, aunque siguen siendo una mirada al futuro desde el pasado. Mantienen la
-onda chea reflejada en su configuración; pero todo bien afinado, fresco y
-modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
-
-<p>Dejaron de ser retrógrados para convertirse en modernos pero anticuados.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/21/palito/">animación del palito</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-21T12:47:55-05:00'><span class='date'>21/01/2017</span> <span class='time'>12:47 pm</span></time>
-        
-           | <a href="/blog/2017/01/21/palito/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/21/palito/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Por si se me olvida, porque lo he olvidado varias veces. En ocasiones, queremos
-hacer una simple animación de consola, para representar trabajo de un script sin
-mostrar lo que está procesando. Este script de ejemplo, itera por cada caracter
-de la fecha y muestra la barra cambiando de posición, el clásico palito girando.</p>
-
-<figure class='code'><figcaption><span>&#8220;scope&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#!/usr/bin/env ruby</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># esta es la animación, puedes sustituirla</span>
-</span><span class='line'><span class="c1"># por lo que más te guste, solo pon la secuencia</span>
-</span><span class='line'><span class="n">animacion</span><span class="o">=[</span><span class="s1">&#39;|&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;\ &#39;</span><span class="o">.</span><span class="n">strip</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">for</span> <span class="n">d</span><span class="p">,</span><span class="n">i</span>  <span class="k">in</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">chars</span><span class="o">.</span><span class="n">each_with_index</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c1"># múeve a la siguiente frama de la animación</span>
-</span><span class='line'>   <span class="n">palito</span><span class="o">=</span><span class="p">(</span><span class="n">animacion</span><span class="o">.</span><span class="n">push</span> <span class="n">animacion</span><span class="o">.</span><span class="n">shift</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c1"># muestra el palito y has un retorno de carro</span>
-</span><span class='line'>   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">palito</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c1"># has una media</span>
-</span><span class='line'>   <span class="nb">sleep</span> <span class="mi">0</span><span class="o">.</span><span class="mi">3</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">d</span><span class="o">=</span><span class="n">d</span> <span class="c1"># nada que hacer con los datos</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En el array, el último caracter tiene un String#strip porque al escribir <strong>\&lsquo;</strong>
-el compilador suele interpretarlo como que estás escapando la comilla simple.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1005,6 +1000,14 @@ el compilador suele interpretarlo como que estás escapando la comilla simple.</
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/01/portknocking-en-freebsd/">portknocking en freebsd</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/03/01/bind-en-infomed/">bind en infomed</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
