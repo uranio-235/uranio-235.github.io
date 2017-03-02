@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-03-02T16:46:57-05:00</updated>
+  <updated>2017-03-02T18:27:17-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -166,6 +166,88 @@ embargo, el dominio <strong>sld.cu</strong> es del tipo <strong>forward</strong>
 los forwarders (los dns de infomed).</p>
 
 <p>Ahora solo le reenviaremos a infomed, aquellas peticiones que sean para infomed.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[QoS con tc o dummynet]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/03/01/qos-con-tc/"/>
+    <updated>2017-03-01T19:57:14-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/03/01/qos-con-tc</id>
+    <content type="html"><![CDATA[<p>Acá en el 5to infierno de infomed, algunos usuarios; están acostumbrados a usar
+su cliente de correo para alar el corre de infomed. Con el boom de la wifi, los
+médicos querían tener su correo de infomed. Tras hacer un forward a los smtp y
+pop de infomed, el ancho de vianda se fue a la mierda. Por tanto, surgió la
+necesidad de chapiar el tráfico que va desde/hacia infomed. Por ejemplo, el
+tráfico smtp, es saliente (subida), sin embargo, el tráfico pop es entrante
+(bajada).</p>
+
+<p>El servidor que uso como &ldquo;router&rdquo;, es un alpine linux. Su única función es DNS y
+cortafuegos. El trinomio bind, dhcp e iptables, sumado al kernel grsec;
+convierte en mi opinión a alpinelinux en la mejor opción para un router.</p>
+
+<p>Entrenado en materia. Tenemos un canal de 2 megabit (256 KB/s). Pero en HDSL, la
+subida es más triste que la bajada y además, hay más gente bajando correo que
+subiendo. Por tanto, usaremos un canal para el smtp, más estrecho que el del
+pop. En este caso, <strong>eth0</strong> será la interfaz donde está el router.</p>
+
+<figure class='code'><figcaption><span>&#8220;tc del firewall&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># reiniciamos las colas que hallan en eth0</span>
+</span><span class='line'><span class="c"># para empezar a trabajar en limpio</span>
+</span><span class='line'>tc qdisc del root dev eth0
+</span><span class='line'>tc qdisc add dev eth0 root handle 1: htb default 30
+</span><span class='line'>
+</span><span class='line'><span class="c"># un canal de 256 KB/s lo partimos en dos</span>
+</span><span class='line'><span class="c"># una fracción de 10 KB/s y otro de 20KB/s</span>
+</span><span class='line'>tc class add dev eth0 parent 1:  classid 1:1  htb rate 256kbps burst 5k
+</span><span class='line'>tc class add dev eth0 parent 1:1 classid 1:10 htb rate  20kbps burst 5k
+</span><span class='line'>tc class add dev eth0 parent 1:1 classid 1:11 htb rate  10kbps burst 5k
+</span><span class='line'>
+</span><span class='line'><span class="c"># recalcula las colas cada 10 segundos</span>
+</span><span class='line'>tc qdisc add dev eth0 parent 1:10 handle 10: sfq perturb 10
+</span><span class='line'>tc qdisc add dev eth0 parent 1:11 handle 11: sfq perturb 10
+</span><span class='line'>
+</span><span class='line'><span class="c"># lo que valla para el pop e imap, lo dejamos en el :10 con 20kbps</span>
+</span><span class='line'>tc filter add dev eth0 parent 1: protocol ip prio <span class="m">1</span> u32 match ip src 201.220.211.7 match ip sport <span class="m">110</span> 0xffff flowid 1:10
+</span><span class='line'>tc filter add dev eth0 parent 1: protocol ip prio <span class="m">1</span> u32 match ip src 201.220.211.7 match ip sport <span class="m">143</span> 0xffff flowid 1:10
+</span><span class='line'>
+</span><span class='line'><span class="c"># lo que valla por el smtp, en el :11 de 10kbps</span>
+</span><span class='line'>tc filter add dev eth0 parent 1: protocol ip prio <span class="m">1</span> u32 match ip dst 201.220.211.39 match ip dport <span class="m">25</span> 0xffff flowid 1:11
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note como en el caso de lo que venga del &ldquo;.7&rdquo;, (src) de los puertos pop e imap
+(spot) pasarán por la cola <strong>1:10</strong>. Mientras que en el &ldquo;.39&rdquo;, se usan las
+cláusulas dst y dport.</p>
+
+<p><strong>pero aquí NO terminan las aventuras de QoS</strong></p>
+
+<p>Resulta que el tráfico proveniente de las WiFi era apabullante para el servidor
+proxy. Mientras que de una IP de una máquina, entran 3 peticiones, de la IP de
+un router wifi entran 30.</p>
+
+<p>En un principio pensaba usar un delay_pool especial para estas ip, pero sería
+complicar más el esquema de delay_pool que funciona bien por usuarios.</p>
 ]]></content>
   </entry>
   
@@ -1821,133 +1903,6 @@ Redimensionar el volumen lógico <strong>lv1</strong> a su máxima capacidad.</p
 
 <p>Puedes correr <strong>lvmdiskscan -l</strong> para cerciorarte de que todo esté como esperas,
 no sea que hallas metido la delicada.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[sysinfo en el motd]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/11/20/sysinfo-en-el-motd/"/>
-    <updated>2016-11-20T17:13:27-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/11/20/sysinfo-en-el-motd</id>
-    <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/sysinfo.png" width="400" height="500" title="" ></p>
-
-<p>Desde que lo vi en unbuntu server, había querido hacer que mi servidores
-mostraran un overview en el <a href="https://en.wikipedia.org/wiki/Motd_(Unix">MOTD</a>)</p>
-
-<p>Al menos debian, tiene una manera de cambiar el MOTD dinamicamente. Para sazonar
-bien el MOTD, vamos a usar figlet, una aplicación que genera letras en ascii-art a
-partir de una palabra dada.</p>
-
-<figure class='code'><figcaption><span>&#8220;instalando todo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install figlet
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El directorio <strong>/etc/update-motd.d/</strong> ejecutará en orden alfabético (o numérico
-en nuestro caso) aquellos script cuya salida estandard, compondrán nuestro MOTD.</p>
-
-<figure class='code'><figcaption><span>&#8220;aprovisionando el update-motd.d&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir /etc/update-motd.d/
-</span><span class='line'><span class="nb">cd</span> /etc/update-motd.d/
-</span><span class='line'>touch 00-header <span class="o">&amp;&amp;</span> touch 01-sysinfo <span class="o">&amp;&amp;</span> touch 02-footer
-</span><span class='line'>chmod +x /etc/update-motd.d/*
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finalmente, nos echamos el MOTD de debian por defecto; que no deja de
-restregarnos en cara la falta de garantía.</p>
-
-<p>Además, el fichero <strong>/var/run/motd</strong> contendrá nuestro motd resultante, así que
-lo lincamos con el que borramos.</p>
-
-<figure class='code'><figcaption><span>&#8220;aprovisionando el update-motd.d&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rm /etc/motd
-</span><span class='line'>ln -s /var/run/motd /etc/motd
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Por una cuestión de organización, usaremos 3 ficheros:</p>
-
-<p><strong>00-header</strong> con lo que queremos poner primero. En este caso, el nombre y
-version de la distribución, además de un mensajito de bienvenida.</p>
-
-<figure class='code'><figcaption><span>&#8220;00-header&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'><span class="o">[</span> -r /etc/lsb-release <span class="o">]</span> <span class="o">&amp;&amp;</span> . /etc/lsb-release
-</span><span class='line'><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;$DISTRIB_DESCRIPTION&quot;</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">[</span> -x /usr/bin/lsb_release <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-</span><span class='line'>        <span class="nv">DISTRIB_DESCRIPTION</span><span class="o">=</span><span class="k">$(</span>lsb_release -s -d<span class="k">)</span>
-</span><span class='line'><span class="k">fi</span>
-</span><span class='line'>figlet <span class="k">$(</span>hostname<span class="k">)</span>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;\n&quot;</span>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Welcome to %s (%s).\n&quot;</span> <span class="s2">&quot;$DISTRIB_DESCRIPTION&quot;</span> <span class="s2">&quot;$(uname -r)&quot;</span>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;\n&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Yo instalo los sistemas en inglés, así que para mantener todo parejo, escribimos
-<em>güelcome</em> y lo hacemos con <strong>printf</strong> para procesar mejor los &ldquo;\n&rdquo; y que pinche
-sin importar la shell que se esté usando.</p>
-
-<p>El segundo fichero será <strong>01-sysinfo</strong> y contendrá la parte linda, de la memoria
-RAM en uso, el CPU, la carga y la dirección ip de la primera interfaz.</p>
-
-<figure class='code'><figcaption><span>&#8220;01-sysinfo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'><span class="nv">date</span><span class="o">=</span><span class="sb">`</span>date<span class="sb">`</span>
-</span><span class='line'><span class="nv">load</span><span class="o">=</span><span class="sb">`</span>cat /proc/loadavg <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span><span class="sb">`</span>
-</span><span class='line'><span class="nv">root_usage</span><span class="o">=</span><span class="sb">`</span>df -h / <span class="p">|</span> awk <span class="s1">&#39;/\// {print $(NF-1)}&#39;</span><span class="sb">`</span>
-</span><span class='line'><span class="nv">memory_usage</span><span class="o">=</span><span class="sb">`</span>free -m <span class="p">|</span> awk <span class="s1">&#39;/Mem:/ { total=$2 } /buffers\/cache/ { used=$3 } END { printf(&quot;%3.1f%%&quot;, used/total*100)}&#39;</span><span class="sb">`</span>
-</span><span class='line'><span class="nv">swap_usage</span><span class="o">=</span><span class="sb">`</span>free -m <span class="p">|</span> awk <span class="s1">&#39;/Swap/ { printf(&quot;%3.1f%%&quot;, &quot;exit !$2;$3/$2*100&quot;) }&#39;</span><span class="sb">`</span>
-</span><span class='line'><span class="nv">users</span><span class="o">=</span><span class="sb">`</span>users <span class="p">|</span> wc -w<span class="sb">`</span>
-</span><span class='line'><span class="nb">time</span><span class="o">=</span><span class="sb">`</span>uptime <span class="p">|</span> grep -ohe <span class="s1">&#39;up .*&#39;</span> <span class="p">|</span> sed <span class="s1">&#39;s/,/\ hours/g&#39;</span> <span class="p">|</span> awk <span class="s1">&#39;{ printf $2&quot; &quot;$3 }&#39;</span><span class="sb">`</span>
-</span><span class='line'><span class="nv">processes</span><span class="o">=</span><span class="sb">`</span>ps aux <span class="p">|</span> wc -l<span class="sb">`</span>
-</span><span class='line'><span class="nv">ip</span><span class="o">=</span><span class="sb">`</span>ip a  s dev eth0<span class="p">|</span>grep inet<span class="p">|</span>awk <span class="s1">&#39;{print $2}&#39;</span><span class="p">|</span>cut -d <span class="s1">&#39;/&#39;</span> -f 1<span class="sb">`</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;System information as of: $date\n&quot;</span>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;System load:\t%s\tIP Address:\t%s\n&quot;</span> <span class="nv">$load</span> <span class="nv">$ip</span>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Memory usage:\t%s\tSystem uptime:\t%s\n&quot;</span> <span class="nv">$memory_usage</span> <span class="s2">&quot;$time&quot;</span>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Usage on /:\t%s\tSwap usage:\t%s\n&quot;</span> <span class="nv">$root_usage</span> <span class="nv">$swap_usage</span>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Local Users:\t%s\tProcesses:\t%s\n\n&quot;</span> <span class="nv">$users</span> <span class="nv">$processes</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Por último <strong>02-footer</strong> será la parte de abajo. Contendrá cualquier cosa que
-quieras poner en el fichero <strong>/etc/motd.tail</strong> por ejemplo, una anotación que
-quieras hacer específica para ese servidor. Se mostrará si existe el fichero.</p>
-
-<figure class='code'><figcaption><span>&#8220;02-footer&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'><span class="o">[</span> -f /etc/motd.tail <span class="o">]</span> <span class="o">&amp;&amp;</span> cat /etc/motd.tail <span class="o">||</span> <span class="nb">true</span>
-</span></code></pre></td></tr></table></div></figure>
-
 ]]></content>
   </entry>
   
