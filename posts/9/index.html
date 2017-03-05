@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="servidor jabber con prosody 14/12/2015 6:22 pm | Comments Lua, es uno de los tantos lenguajes interpretados que hay. Lo curioso de este es
-que es &hellip;">
+  <meta name="description" content="los hooks de pacman 20/02/2016 3:14 am | Comments Finalmente, después de tantas plegarias, tenemos hooks en pacman. Lo cual
+nos permite, por medio &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,434 @@ que es &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/02/20/hooks-de-pacman/">los hooks de pacman</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-02-20T03:14:28-05:00'><span class='date'>20/02/2016</span> <span class='time'>3:14 am</span></time>
+        
+           | <a href="/blog/2016/02/20/hooks-de-pacman/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/02/20/hooks-de-pacman/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Finalmente, después de tantas plegarias, tenemos <strong>hooks</strong> en pacman. Lo cual
+nos permite, por medio de la poderosa API de alpm correr script antes o después
+de cada instalación.</p>
+
+<p>Desgraciadamente, hay poca documentación sobre el tema. Para colmo, la página de
+man de alpm-hooks, no dice como deben llamarse los archivos. Tuve que adivinar
+que la extensión <strong>.hook</strong> era necesaria.</p>
+
+<p>Primero que todo, vamos a especificar en <strong>/etc/pacman.conf</strong> que el directorio
+de hooks está en otro lado.</p>
+
+<figure class='code'><figcaption><span>&#8220;escope de</span><a href='/etc/pacman.conf"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">HookDir</span> <span class="o">=</span> /etc/pacman.d/hooks/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¿Por qué aquí? Muy sencillo. Quiero que al hacer una salva de mi configuración
+de pacman, los hooks también se salven. Un hook sencillo, podría correr un
+comando simple, como el del ejemplo en la página de man; sin embargo, uno
+complejo, sería mejor ponerlo en un script.</p>
+
+<p>Lo más importante: El fichero con el hook <strong>debe tener la extensión .hook</strong> Si
+no pacman se limpia el culo con él.</p>
+
+<p>Creemos uno de ejemplo, llamado /etc/pacman.d/hooks/migancho<strong>.hook</strong> y
+digámosle que ejecutará el script, sito en /etc/pacman.d/hooks/migancho.sh</p>
+
+<p>Sería así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.hook&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>Trigger<span class="o">]</span>
+</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Install
+</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Upgrade
+</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Remove
+</span><span class='line'><span class="nv">Type</span> <span class="o">=</span> Package
+</span><span class='line'><span class="nv">Target</span> <span class="o">=</span> *
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Action<span class="o">]</span>
+</span><span class='line'><span class="nv">Description</span> <span class="o">=</span> sincronizando disco
+</span><span class='line'><span class="nv">Depends</span> <span class="o">=</span> coreutils
+</span><span class='line'><span class="nv">When</span> <span class="o">=</span> PostTransaction
+</span><span class='line'><span class="nv">Exec</span> <span class="o">=</span> /etc/pacman.d/hooks/migancho.sh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ve, la cláusula <strong>Operation</strong> está repetida, con los 3 posibles momentos
+que se disparará el gancho. Podrías hacerlo en uno de ellos solamente. La
+cláusula <strong>Description</strong> se verá cuando pacman termine de instalar. En este caso
+cuando termine, ya que la cláusula <strong>When</strong> especifica <em>PreTransaction</em> o
+<em>PostTransaction</em> (antes o después de la transacción).</p>
+
+<p>Ahora creamos el script <strong>migancho.sh</strong> y le ponemos todas las aberraciones que
+queremos llevar a cabo tras una instalación, desinstalación o actualización.</p>
+
+<p>Digamos por ejemplo, en este caso uno trivial, ejecutar sync cuando termine una
+operación, lo cual evita que si falla la energía en ese momento, queden datos
+por escribirse en la cache disco (con suerte).</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>/usr/bin/sync
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Veámoslo en acción</p>
+
+<figure class='code'><figcaption><span>&#8220;el hook&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># pacman -S --noconfirm unrar</span>
+</span><span class='line'>warning: unrar-1:5.3.11-1 is up to date -- reinstalling
+</span><span class='line'>resolving dependencies...
+</span><span class='line'>looking <span class="k">for</span> conflicting packages...
+</span><span class='line'>
+</span><span class='line'>Packages <span class="o">(</span>1<span class="o">)</span> unrar-1:5.3.11-1
+</span><span class='line'>
+</span><span class='line'>Total Installed Size:  0.32 MiB
+</span><span class='line'>Net Upgrade Size:      0.00 MiB
+</span><span class='line'>
+</span><span class='line'>:: Proceed with installation? <span class="o">[</span>Y/n<span class="o">]</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking keys in keyring                                                   <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking package integrity                                                 <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> loading package files                                                      <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking <span class="k">for</span> file conflicts                                                <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking available disk space                                              <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'>:: Processing package changes...
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> reinstalling unrar                                                         <span class="o">[</span><span class="c">##############################################] 100%</span>
+</span><span class='line'>:: Running post-transaction hooks...
+</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> sincronizando disco
+</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c">#</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Véanlo como dice <em>sincronizando discos</em> en español, corriendo la operación (1/1)
+ya que hay un solo hook.</p>
+
+<p>Sencillo!!! Como todo en ArchLinux: KISS</p>
+
+<p>Podría volverse más creativo&hellip;</p>
+
+<p>Digamos por ejemplo, que yo quiero tener la lista de paquetes que tiene mi
+sistema antes y después de una instalación, para saber que se instalo y cuando.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/listpackages.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>pacman -Qe &gt; /root/<span class="k">$(</span>date +%j%H%M%S<span class="k">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Eso creará un fichero similar a /root/051153712, el nombre, es el yday (día del
+año) y con la hora, minuto y segundo. Dentro del fichero, una lista de todos los
+paquetes instalados. Muy útil si eres tester o desarrollador, o simplemente
+quieres saber que paquetes había antes o después de instalar.</p>
+
+<p>Por cierto, otra manera de saber que si instalo hoy y ayer, es esta:</p>
+
+<figure class='code'><figcaption><span>&#8220;¿cuando fue?&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ls -ltcr --time-style +%j /var/lib/pacman/local/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Devuelve el día del año en el que se instaló un paquete. Así sabes que se
+instaló hoy. Te recuerdo, que en ArchLinux, todos los días hay algo nuevo que
+instalar :D</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/02/01/arch-compartir-paquetes/">arch compartir paquetes</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-02-01T13:56:56-05:00'><span class='date'>01/02/2016</span> <span class='time'>1:56 pm</span></time>
+        
+           | <a href="/blog/2016/02/01/arch-compartir-paquetes/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/02/01/arch-compartir-paquetes/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>No desde cuando, pero por fin, un sueño echo realidad en ArchLinux. Revertir un
+paquete de su forma instalada, a su forma de paquete. Esto puede no resultar
+algo novedoso para el que tenga internet como algo cotidiano, pero para los
+cubanos de a pie, resulta una verdadera novedad.</p>
+
+<p>Digamos que mi socio necesita instalar nginx en su arch, misma arquitectura que
+el mío. Simplemente, le genero el paquete a partir de mi instalación y listo.</p>
+
+<figure class='code'><figcaption><span>&#8220;bacman en acción&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@samsung ~<span class="o">]</span><span class="c"># cd /var/cache/pacman/pkg/</span>
+</span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># bacman nginx</span>
+</span><span class='line'><span class="o">==</span>&gt; Package: nginx-1.8.1-1
+</span><span class='line'>  -&gt; Copying package files...
+</span><span class='line'>    -&gt; Generating .PKGINFO metadata...
+</span><span class='line'>    -&gt; Generating the package...
+</span><span class='line'>  <span class="o">==</span>&gt; Done.
+</span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># ls nginx*</span>
+</span><span class='line'>nginx-1.8.1-1-x86_64.pkg.tar.xz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pues <strong>bacman</strong> es la respuesta. Ahora se puede regresar un paquete a su estado;
+digamos &ldquo;pristino&rdquo;.</p>
+
+<p>¡¡OJO!! <strong>TUS</strong> ficheros de configuración, también se empaquetan.</p>
+
+<p>Usualmente solía mantener en mi caché los paquetes necesarios para llevar a cabo
+una instalación de archlinux usando mi laptop; pero con este nuevo método, la
+cosa cambia bastante. Ahora solo debo cargar con el &ldquo;.iso&rdquo;</p>
+
+<p>Mi proxima idea es reconstruir el grupo <strong>base</strong> completo dentro de la cache y
+luego con <strong>repo-add</strong> crear un mirror, capaz de llevar a cabo una instalación
+de sistema.</p>
+
+<p>De momento quiero probar este script:</p>
+
+<figure class='code'><figcaption><span>&#8220;pristine.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># cambiate al directorio de cache</span>
+</span><span class='line'><span class="nb">cd</span> /var/cache/pacman/pkg/
+</span><span class='line'>
+</span><span class='line'><span class="c"># itera por los paquetes del sistema base</span>
+</span><span class='line'><span class="k">for</span> pkg in <span class="k">$(</span>pacman -Qeg base<span class="p">|</span>awk <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span><span class="p">;</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># háblate</span>
+</span><span class='line'>   <span class="nb">echo</span> <span class="nv">$pkg</span> <span class="s1">&#39;&gt;&#39;</span> <span class="k">$(</span>pacman -Qi <span class="nv">$pkg</span><span class="p">|</span>grep Description<span class="p">|</span>cut -d : -f 2<span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># reviértelo</span>
+</span><span class='line'>   bacman <span class="nv">$pkg</span> 2&gt; /dev/null &gt; /dev/null
+</span><span class='line'>
+</span><span class='line'><span class="k">done</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># crea el repo</span>
+</span><span class='line'>rm /var/cache/pacman/pkg/custom.db.tar.gz
+</span><span class='line'>repo-add /var/cache/pacman/pkg/custom.db.tar.gz /var/cache/pacman/pkg/*.pkg.tar.xz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Tendré que probar a instalar usando mi cache como repo. Poniéndole a la máquina
+una source como esta:</p>
+
+<figure class='code'><figcaption><span>&#8220;pacman.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>mirepo<span class="o">]</span>
+</span><span class='line'><span class="nv">SigLevel</span> <span class="o">=</span> Optional TrustAll
+</span><span class='line'><span class="nv">Server</span> <span class="o">=</span> http://localhost:8080
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>Nota para los imbéciles: Cambiar <strong>localhost</strong> por la ip de la máquina que está compartiendo la caché.</em></p>
+
+<p>Y para servir tu cache como repo, puedes usar darkhttpd</p>
+
+<figure class='code'><figcaption><span>&#8220;darkhttpd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>darkhttpd /var/cache/pacman/pkg/ --chroot --port 8080
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/25/hostname-arbitrario-en-bind9/">bind9, registro arbitratio</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-01-25T20:35:37-05:00'><span class='date'>25/01/2016</span> <span class='time'>8:35 pm</span></time>
+        
+           | <a href="/blog/2016/01/25/hostname-arbitrario-en-bind9/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/01/25/hostname-arbitrario-en-bind9/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>En algunas ocasiones, nos vemos forzados a declarar registros para punteros, a
+host que nada tienen que ver con nuestro domino. Por ejemplo, queremos que el
+host time.windows.com apunte a nuestro servidor de tiempo, para que todos las
+computadoras con windows de la red, se actualicen por nuestro servidor ntp.</p>
+
+<p>Si bien esto con dnsmasq es muy sencillo, en una red donde se use un servidor
+dns decente (como bind) la cosa empieza a enredarse.</p>
+
+<p>En salud por ejemplo, los clientes de correo; requieren resolver las direcciones
+del pop y smtp. No vale la pena hacer forward para esto, mejor declarar estos
+punteros como registro arbitrario y punto.</p>
+
+<p>Para lograr esto, debemos declarar una raíz dns en nuestro named.conf, que
+responda a todo, o sea, &ldquo;.&rdquo;, a mi me quedó así.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/bind/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// la zona pa hacer lo que me de la gana</span>
+</span><span class='line'><span class="nx">zone</span> <span class="s2">&quot;.&quot;</span> <span class="p">{</span>
+</span><span class='line'>   <span class="nx">type</span> <span class="nx">master</span><span class="p">;</span>
+</span><span class='line'>   <span class="nx">file</span> <span class="s2">&quot;/etc/bind/fakeroot.zone&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Acá, el fichero <strong>fakeroot.zone</strong> tendrá los registros, donde declaramos los
+FQDN como si fueran hostnames.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/bind/fakeroot.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err">@</span>       <span class="nx">IN</span>      <span class="nx">SOA</span>     <span class="p">.</span> <span class="nx">hostmaster</span><span class="p">.</span><span class="nx">domain</span><span class="p">.</span><span class="nx">com</span><span class="p">.</span> <span class="p">(</span> <span class="mi">1</span> <span class="mi">3</span><span class="nx">h</span> <span class="mi">1</span><span class="nx">h</span> <span class="mi">1</span><span class="nx">w</span> <span class="mi">1</span><span class="nx">d</span> <span class="p">)</span>
+</span><span class='line'><span class="nx">localhost</span>             <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">127.0</span><span class="p">.</span><span class="mf">0.1</span>
+</span><span class='line'><span class="err">@</span>                     <span class="nx">IN</span>      <span class="nx">NS</span>      <span class="nx">localhost</span><span class="p">.</span>
+</span><span class='line'><span class="p">;</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">Los</span> <span class="nx">servidores</span> <span class="nx">de</span> <span class="nx">correo</span> <span class="nx">de</span> <span class="nx">infomed</span>
+</span><span class='line'><span class="nx">smtp</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">201.220</span><span class="p">.</span><span class="mf">211.39</span>
+</span><span class='line'><span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>            <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">201.220</span><span class="p">.</span><span class="mf">211.7</span>
+</span><span class='line'><span class="nx">pop3</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>
+</span><span class='line'><span class="nx">imap</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>
+</span><span class='line'><span class="p">;</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">Los</span> <span class="nx">servidores</span> <span class="nx">de</span> <span class="nx">tiempo</span> <span class="nx">m</span><span class="err">á</span><span class="nx">s</span> <span class="nx">pedidos</span>
+</span><span class='line'><span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>          <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">10.1</span><span class="p">.</span><span class="mf">1.1</span>
+</span><span class='line'><span class="o">*</span><span class="p">.</span><span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span><span class="p">.</span>       <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
+</span><span class='line'><span class="nx">time</span><span class="p">.</span><span class="nx">microsoft</span><span class="p">.</span><span class="nx">com</span>    <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
+</span><span class='line'><span class="nx">time</span><span class="p">.</span><span class="nx">windows</span><span class="p">.</span><span class="nx">com</span>      <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
+</span><span class='line'><span class="nx">time</span><span class="o">-</span><span class="nx">ios</span><span class="p">.</span><span class="nx">apple</span><span class="p">.</span><span class="nx">com</span>    <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En este caso de ejemplo, declaramos un par de host que son de salud, con una ip
+externa. Abajo, los host ntp más típicos, apuntando a nuestro servidor de
+tiempo.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -247,7 +675,7 @@ especial.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -293,7 +721,7 @@ se pone más feo todavía.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -380,401 +808,7 @@ los parámetros. A mi me quedó así</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/22/certificado-autofirmado/">certificado autofirmado</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-22T19:33:54-05:00'><span class='date'>22/11/2015</span> <span class='time'>7:33 pm</span></time>
-        
-           | <a href="/blog/2015/11/22/certificado-autofirmado/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/22/certificado-autofirmado/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Ya hemos visto en varios post, que para hacer un servicio con SSL, requerimos un
-certificado autofirmado. De ahora en lo adelante, no pienso repetir ese proceso,
-por el contrario, pondré un link a este post.</p>
-
-<p>Una vez creado tu propio certificado, no tendrás que volver a crear uno para
-cada servicio, simplemente uno para cada host. Por tanto, vamos a crear y
-almacenar nuestro certificado en <strong>/etc/ssl/private/</strong> para usarlo con todos los
-servicios.</p>
-
-<p>De facto, asumo que tienes el paquete <strong>openssl</strong> instalado.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/ssl/private&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /etc/ssl/private/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Primeros debemo generar una <a href="https://es.wikipedia.org/wiki/RSA">Clave RSA Privada</a>. La clave RSA es la que genera los
-certificados autofirmados como tal.</p>
-
-<figure class='code'><figcaption><span>&#8220;generando la RSA&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl genrsa -des3 -out privado.key 1024
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Te pide un password. Debes ver algo como esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;salida&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>.++++++
-</span><span class='line'>..............................++++++
-</span><span class='line'>e is <span class="m">65537</span> <span class="o">(</span>0x10001<span class="o">)</span>
-</span><span class='line'>Enter pass phrase <span class="k">for</span> privado.key:
-</span><span class='line'>Verifying - Enter pass phrase <span class="k">for</span> privado.key:
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ah! El password no se ve mientras los escribes&hellip;</p>
-
-<p>Bueno, ahora generamos el CSR (Certificate Signing Request). Esto se usa para
-dos cosas: El CSR, es lo que se le envía a una autoridad certificadora (CA) para
-identificarnos con ella o como es el caso para simplemente, generar certificados
-autofirmados.</p>
-
-<p>En este proceso, que ya lo hemos visto repetidamente, te preguntarán por
-aquellos datos que identifican a tu servicio de manera fideligna.</p>
-
-<p><strong>OJO</strong> El servidor que especifiques en el FQDN debe machear al hostname que se
-pida en las peticiones DNS.</p>
-
-<figure class='code'><figcaption><span>&#8220;generando el CSR&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl req -new -key privado.key -out privado.csr
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Debes ver algo como esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;salida&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Enter pass phrase <span class="k">for</span> privado.key:
-</span><span class='line'>You are about to be asked to enter information that will be incorporated
-</span><span class='line'>into your certificate request.
-</span><span class='line'>What you are about to enter is what is called a Distinguished Name or a DN.
-</span><span class='line'>There are quite a few fields but you can leave some blank
-</span><span class='line'>For some fields there will be a default value,
-</span><span class='line'>If you enter <span class="s1">&#39;.&#39;</span>, the field will be left blank.
-</span><span class='line'>-----
-</span><span class='line'>Country Name <span class="o">(</span><span class="m">2</span> letter code<span class="o">)</span> <span class="o">[</span>AU<span class="o">]</span>:CU
-</span><span class='line'>State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>Some-State<span class="o">]</span>:Havana
-</span><span class='line'>Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[]</span>:Plaza
-</span><span class='line'>Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>Internet Widgits Pty Ltd<span class="o">]</span>:
-</span><span class='line'>Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[]</span>:
-</span><span class='line'>Common Name <span class="o">(</span>e.g. server FQDN or YOUR name<span class="o">)</span> <span class="o">[]</span>:tuservidor.cu
-</span><span class='line'>Email Address <span class="o">[]</span>:
-</span><span class='line'>
-</span><span class='line'>Please enter the following <span class="s1">&#39;extra&#39;</span> attributes
-</span><span class='line'>to be sent with your certificate request
-</span><span class='line'>A challenge password <span class="o">[]</span>:
-</span><span class='line'>An optional company name <span class="o">[]</span>:Calixto Garcia
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>REPITO</strong> Donde dice: &ldquo;Common Name (eg, your name or your server&rsquo;s hostname)&rdquo;
-Debes poner el hostname por el que será llamado tu server. Por esta razón, los
-pop3 y los SMTP, suelen generar certificados aparte.</p>
-
-<p>Otra jodedera de los certificados autofirmados, es que siempre piden un password
-cuando van a ser usados. Para evitar este fenómeno, debemos hacer una burumba y
-quitarle el password.</p>
-
-<figure class='code'><figcaption><span>&#8220;quitando el password&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp privado.key privado.key.org
-</span><span class='line'>openssl rsa -in privado.key.org -out privado.key
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ya puedes borrar el fichero &ldquo;privado.key.org&rdquo; tranquilamente, pero bueno, si lo
-guardas, nadie se pondrá bravo.</p>
-
-<p>Ahora por fin vamos a generar el dichoso certificado autofirmado. Para
-generarlo, necesitaremos usar una CA, en este caso, nosotros mismos.</p>
-
-<figure class='code'><figcaption><span>&#8220;generando el certificados&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl x509 -req -days <span class="m">365</span> -in privado.csr -signkey privado.key -out privado.crt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Debes ver algo como esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;salida&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Signature ok
-</span><span class='line'><span class="nv">subject</span><span class="o">=</span>/C<span class="o">=</span>CU/ST<span class="o">=</span>Havana/L<span class="o">=</span>Plaza/O<span class="o">=</span>Internet Widgits Pty Ltd/CN<span class="o">=</span>tuservidor.cu
-</span><span class='line'>Getting Private key
-</span><span class='line'>Enter pass phrase <span class="k">for</span> privado.key:
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El parámetros <strong>-days</strong> puede saltarse si no quiere que el certificado caduque.
-Pero en ambientes muy hostiles, donde de verdad se quiere cifrado, es necesario
-que el ceritificado caduque. Uno nunca sabe que mariconá están planificando los
-hackers por ahí.</p>
-
-<p>Ahí tienes tu certificado autofirmado ;)</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-12T09:49:30-05:00'><span class='date'>12/11/2015</span> <span class='time'>9:49 am</span></time>
-        
-           | <a href="/blog/2015/11/12/rc-dot-local-en-systemd/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/12/rc-dot-local-en-systemd/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Déjame decirte, que es un gran mojón de parte de systemd; el hecho de que no
-halla una puñetera compatibilidad con el <strong>rc.local</strong>. Si buscas en google, como
-correr un comando al butear, verás que complicado se vuelve.</p>
-
-<p>Para palear este desmesurado inconveniente. Me he creado una unit del tipo
-oneshot, que cargue el /etc/rc.local</p>
-
-<p>Crea el fichero <strong>/etc/systemd/system/rclocal.service</strong> y métele esto:</p>
-
-<figure class='code'><figcaption><span>/etc/systemd/system/rclocal.service</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>Unit<span class="o">]</span>
-</span><span class='line'><span class="nv">Description</span><span class="o">=</span>El viejo /etc/rc.local
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Service<span class="o">]</span>
-</span><span class='line'><span class="nv">Type</span><span class="o">=</span>oneshot
-</span><span class='line'><span class="nv">ExecStart</span><span class="o">=</span>/bin/bash /etc/rc.local
-</span><span class='line'><span class="nv">TimeoutSec</span><span class="o">=</span>0
-</span><span class='line'><span class="nv">StandardOutput</span><span class="o">=</span>tty
-</span><span class='line'><span class="nv">RemainAfterExit</span><span class="o">=</span>yes
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Install<span class="o">]</span>
-</span><span class='line'><span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lo habilitamos:</p>
-
-<figure class='code'><figcaption><span>&#8220;systemctl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl daemon-reload
-</span><span class='line'>systemctl <span class="nb">enable </span>rclocal
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A singar por tuberías, esto es todo&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/03/las-mujeres-gordas/">las mujeres gordas</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-03T23:41:52-05:00'><span class='date'>03/11/2015</span> <span class='time'>11:41 pm</span></time>
-        
-           | <a href="/blog/2015/11/03/las-mujeres-gordas/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/03/las-mujeres-gordas/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><em>¿Como te gustan las mujeres gordas o flacas?</em></p>
-
-<p><img class="right" src="/images/gorda2.jpg" width="190" height="290" title="" ></p>
-
-<p>Esa pregunta se ha vuelto un boicot.</p>
-
-<p>Hasta los <del>cojones</del> estoy de vivir en una sociedad que desprecia a las mujeres por
-que su figura no encaja en un patrón de belleza que <strong>alguien</strong> impuso.</p>
-
-<p>Resulta que &ldquo;delgado&rdquo; es sinónimo de &ldquo;lindo&rdquo;.</p>
-
-<p>Nadie hizo una encuesta ni le preguntó a los hombres si preferían a las mujeres
-flacas o gordas, simplemente, impusieron un paradigma.</p>
-
-<p>Hay gustos para todo y eso hay que tenerlo en cuenta.</p>
-
-<p><em>&ldquo;no debemos juzgar a una mujer por su figura&rdquo;</em> <strong>FALSO</strong> Las seguiremos
-juzgando por su figura, porque tenemos ojos en la cara, pero no con paradigmas
-impuesto por una sociedad, si no con nuestro gusto.</p>
-
-<p>¿A qué hombre no le gusta una mujer con las piernas gordas, los senos
-extratalla y las nalgas grandes.</p>
-
-<p>&ldquo;hembras y con masa&rdquo;</p>
-
-<p>Ah! Casi todas las gordas tienen la cara linda, eso es casi axiomático, aunque
-toda regla tiene su acepción.</p>
-
-<h4>NO estoy aplaudiendo la obesidad.</h4>
-
-<p>Las gordas lindas son las gordas que hacen ejercicio.</p>
-
-<ul>
-<li> tiene cintura</li>
-<li> no tienen mucho abdomen</li>
-<li> no están flácidas</li>
-<li> tienen carne en vez de grasa</li>
-</ul>
-
-
-<p>Gorda con Ejercicio</p>
-
-<p>Mi hermano, a una mujer así, múerdete la lengua antes de decirle gorda, porque
-estás ante un monumento.</p>
-
-<p>Si eres mujer y te sientes pasada de peso. No hagas ejercicios para bajar de
-peso. Has ejercicios para mejorar tu figura. Mi esposa usa ajustadores talla 44
-y cuando baja de peso le empiezan a quedar grandes. Pal coppelia urgente.</p>
-
-<p>Preocúpense por estar macizas en vez de grasosas, no por bajar de peso.</p>
-
-<p>Cuando coges una gorda sentada, le aprietas un muslo y te dice &ldquo;ay! eso duele&rdquo;,
-esa es masa pura. Si no le duele, es manteca.</p>
-
-<h4>deterioro de la autoestima</h4>
-
-<p><img class="right" src="/images/gorda1.jpg" width="190" height="290" title="" ></p>
-
-<p>Este tema es muy peliagudo y repercute, tanto pa las gordas, como para los
-amantes de las curvas.</p>
-
-<p>Los hombres, en la mayoría de los casos, NO andamos diciéndole a las mujeres si
-están gordas. Pero entre ellas mismas, se dicen &ldquo;ay mija que gorda estás&rdquo; y
-todas las sandeces esas.</p>
-
-<p>Resulta que una mujer gorda, se autoconsidera fea generalmente. <strong>Por el mero
-hecho de que a ella no le gusta lo que ve en el espejo.</strong> ¿Ya te cercioraste si
-a alguien de tu trabajo y barrio le gusta?</p>
-
-<p>Quizás quiere acercarse alguien, pero postpone el plan para cuando baje un poco
-de peso (nunca). Por esa misma razón: no va a la playa, no usa sayas cortas, no
-usa la ropa tal, etc&hellip;</p>
-
-<p>Por suerte las licras han vuelto a ponerse de moda.</p>
-
-<p>Otro caso es que le decimos a la mujer &ldquo;me gusta que seas gorda&rdquo; y casi se
-ofenden: &ldquo;¿me estás diciendo gorda?&rdquo; Síiii! Te estoy diciendo gorda! ¿Qué hay de
-malo en eso?</p>
-
-<p>Muchas mujeres <em>quieren</em> bajar de peso pero no tienen la voluntad suficiente
-para lograrlo. Mientras tanto, viven flagelándose con las dietas.</p>
-
-<h4>Si fueras flaca a lo mejor él no te hubiera mirado!!!</h4>
-
-<p>El tema <a href="https://es.wikipedia.org/wiki/All_About_That_Bass">All About That Bass</a>
-de Meghan Trainor, tuvo una crítica muy disímil por esta razón. Dijeron que era
-antifeminista. Como si ser gorda fuera ir contra la feminidad. No obstante, el
-tema estuvo en la cima de Billboard Hot 100 ocho semanas (y eso es mucho decir)
-así que la gente aceptó la cancioncita.</p>
-
-<p>Y vamos a estar aquí. Soy flaco como un güin, pero pa flaco yo. Prefiero abultar
-ideas que bíceps. Yo estoy malo, malo, maaaalooo y digo: <em>las lagartijas, pa
-poder treparse en la pared, no pueden ser musculosas</em>. No me preocupa mi figura,
-porque hay mujeres que le encantan los flacos desbaratados y por lo general, son
-gordas (afortunadamente).</p>
-
-<p>Las mujeres si no están en esa bobería. Está la rubia que le encantan los negros
-y NO se esconde para decirlo, se pasea con su prieto por la calle. En cambio, el
-tipo que le gustan las gordas, le pesa reconocerlo e incluso, le da pena que la
-gente lo vean con aun gorda.</p>
-
-<p>   <blockquote><p>Los huesos son para los perros,<br/>   los hombres comen carne.</p></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -795,6 +829,18 @@ gente lo vean con aun gorda.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/03/03/nginx-y-websocket/">nginx y websocket</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/03/03/pkg-tras-un-proxy/">pkg tras un proxy</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/01/portknocking-en-freebsd/">portknocking en freebsd</a>
@@ -1182,18 +1228,6 @@ gente lo vean con aun gorda.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
 		</li>
 		
 	</ul>

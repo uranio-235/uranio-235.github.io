@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="correos del cron 20/06/2016 2:14 pm | Comments Conflictivísima tarea, lograr que el cron mande correos adecuadamente&hellip; En este
-caso, cronie, &hellip;">
+  <meta name="description" content="kiwix como servicio 31/07/2016 5:40 pm | Comments Dos pájaros de un tiro. Como crear unit de usuario y como usar kiwix como
+servicio: La idea es &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +88,399 @@ caso, cronie, &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/07/31/kiwix-como-servicio/">kiwix como servicio</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-07-31T17:40:02-04:00'><span class='date'>31/07/2016</span> <span class='time'>5:40 pm</span></time>
+        
+           | <a href="/blog/2016/07/31/kiwix-como-servicio/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/07/31/kiwix-como-servicio/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Dos pájaros de un tiro. Como crear unit de usuario y como usar kiwix como
+servicio:</p>
+
+<p>La idea es correr un kiwix en segundo plano, como mi usuario sin que el root
+lance dicha unit, ya que ésto me huele a la posibilidad de escaladas de
+permisos.</p>
+
+<p>Ante todo, vamos a crear el zoológico de systemd en el directorio de usuario.
+Si mal no recuerdo, esto fue lo que hice.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -p /home/lazaro/.config/systemd/user
+</span><span class='line'><span class="nb">cd</span>  /home/lazaro/.config/systemd/user
+</span><span class='line'>loginctl <span class="nb">enable</span>-linger <span class="nv">$USER</span>
+</span><span class='line'>systemctl --user daemon-reload
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Claro, el daemon-reload ahí no es necesario, pero para que te quede claro, que
+todas las operaciones de systemd, relacionadas con el usuario, se deben preceder
+del argumento &ndash;user</p>
+
+<p>Crea el la unit, en mi caso se llama <strong>kiwix.service</strong> pero tu la puedes nombrar
+<strong>comotedelagana.service</strong> Trata de usar minúsculas y debes terminar con la
+extensión <strong>.service</strong> A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;kiwix.service&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Unit]</span>
+</span><span class='line'><span class="na">Description</span><span class="o">=</span><span class="s">el kiwix como daemon en http://localhost:9091</span>
+</span><span class='line'><span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Service]</span>
+</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">forking</span>
+</span><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/opt/kiwix/bin/kiwix-serve --daemon --port=9091 --library /home/lazaro/.www.kiwix.org/kiwix/c2oklrcd.default/data/library/library.xml </span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Install]</span>
+</span><span class='line'><span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora si mete un <strong>daemon-reload</strong></p>
+
+<p>Por cierto, fíjate bien en la linea <strong>ExecStart</strong> que es bien larga, nota que el
+parámetro <strong>&ndash;library</strong> se le envía como argumento el <strong>.xml</strong> que se genera al
+añadir fichero zim a tu librería. O sea, una vez abierto en la aplicación
+visual. Por tanto, Si vas a hacer un servidor, mejor será que le eches un
+vistazo a <strong>library.xml</strong>; el cual contiene los metadatos que apuntan a los
+&ldquo;ficheros.zim&rdquo;</p>
+
+<p>Más o menos así luce un <strong>library.xml</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;library.xml&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;library</span> <span class="na">current=</span><span class="s">&quot;b0e8b25e-1c6e-c354-21da-ceff3607de21&quot;</span> <span class="na">version=</span><span class="s">&quot;20110515&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;3b448cdb-6b20-73ed-421f-fdef87f80167&quot;</span> <span class="na">path=</span><span class="s">&quot;/opt/kiwix/data/wikipedia_es_all.zim&quot;</span> <span class="na">last=</span><span class="s">&quot;1470535686&quot;</span> <span class="na">title=</span><span class="s">&quot;Wikipedia ESP&quot;</span> <span class="na">description=</span><span class="s">&quot;Wikipedia en Español&quot;</span> <span class="na">language=</span><span class="s">&quot;spa&quot;</span> <span class="na">creator=</span><span class="s">&quot;Wikipedia&quot;</span> <span class="na">publisher=</span><span class="s">&quot;Kiwix&quot;</span> <span class="na">favicon=</span><span class="s">&quot;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&quot;</span> <span class="na">faviconMimeType=</span><span class="s">&quot;image/png&quot;</span> <span class="na">date=</span><span class="s">&quot;2015-10-12&quot;</span> <span class="na">articleCount=</span><span class="s">&quot;1206089&quot;</span> <span class="na">mediaCount=</span><span class="s">&quot;1111559&quot;</span> <span class="na">size=</span><span class="s">&quot;12988257&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;b0e8b25e-1c6e-c354-21da-ceff3607de21&quot;</span> <span class="na">path=</span><span class="s">&quot;/opt/kiwix/data/wikipedia_en_all_nopic.zim&quot;</span> <span class="na">last=</span><span class="s">&quot;1470535759&quot;</span> <span class="na">title=</span><span class="s">&quot;Wikipedia ENG&quot;</span> <span class="na">description=</span><span class="s">&quot;Wikipedia en Inglés (sin imágenes)&quot;</span> <span class="na">language=</span><span class="s">&quot;eng&quot;</span> <span class="na">creator=</span><span class="s">&quot;Wikipedia&quot;</span> <span class="na">publisher=</span><span class="s">&quot;Kiwix&quot;</span> <span class="na">favicon=</span><span class="s">&quot;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&quot;</span> <span class="na">faviconMimeType=</span><span class="s">&quot;image/png&quot;</span> <span class="na">date=</span><span class="s">&quot;2015-05-17&quot;</span> <span class="na">articleCount=</span><span class="s">&quot;4858372&quot;</span> <span class="na">mediaCount=</span><span class="s">&quot;325904&quot;</span> <span class="na">size=</span><span class="s">&quot;16024312&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/library&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por ejemplo, a mi el valor de las etiquetas <em>title</em> y <em>description</em>, me gusta cambiarlo.</p>
+
+<p>Para que se gener ese XML, abre la aplicación <strong>una vez</strong> para que se cree la biblioteca. O sea, en abrir
+archivos, añadimos a nuestra librería, todos los .zim que queramos.</p>
+
+<p><img class="center" src="/images/kiwix-open.png" width="500"></p>
+
+<p>Llegado a este punto, se habrá creado el perfil de kiwix en nuestro $HOME y
+contendrá el importantísimo <strong>library.xml</strong>. Si ya añadiste a tu biblioteca
+todos los <strong>.zim</strong> que quieres, terminamos con el kiwix. Ciérralo.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>file .www.kiwix.org/kiwix/*.default
+</span><span class='line'>.www.kiwix.org/kiwix/c2oklrcd.default: directory
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Usamos el comando <strong>file</strong> para determinar cual fue. En mi caso se llama
+<strong>~/.www.kiwix.org/kiwix/c2oklrcd.default</strong></p>
+
+<p>Al argumento <strong>ExecStart</strong> de la unit, debes darle la ruta absoluta de la
+librería, así que nada de ~/, le pones /home/fulanito.</p>
+
+<p>Bueno, volviendo a la unit, veamos más de cerca el <strong>ExecStart</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;scope de kiwix.service&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/opt/kiwix/bin/kiwix-serve --daemon --port=9091 --library /home/lazaro/.www.kiwix.org/kiwix/c2oklrcd.default/data/library/library.xml </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La ruta el binario de <strong>kiwix-serve</strong> en modo daemon <strong>&ndash;daemon</strong> por el puerto
+9091 <strong>&ndash;port 9091</strong> y siendo la librería <strong>&ndash;library (ruta absoluta)</strong></p>
+
+<p>Salva y ejecuta un daemon-reload. Luego, lánzalo:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl --user start kiwix.service
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Abre un navegador y apunta para <a href="http://localhost:9091">http://localhost:9091</a></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/17/hibernar-en-archlinux/">hibernar en archlinux</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-07-17T23:17:17-04:00'><span class='date'>17/07/2016</span> <span class='time'>11:17 pm</span></time>
+        
+           | <a href="/blog/2016/07/17/hibernar-en-archlinux/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/07/17/hibernar-en-archlinux/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="right" src="/images/Hibernacion_by_Zetabox.jpg" width="250"></p>
+
+<p>Hablando de cosas olvidables. Siempre que instalo archlinux, se me olvida que
+hay que hacer una ceremonia para que la hibernación pinche.</p>
+
+<p>De más está que te diga que necesitarás una <strong>particion</strong> swap, con al menos el
+mismo tamaño de la RAM que tienes. No pincha con swapfiles.</p>
+
+<p>En mi caso, yo hice una swap del tamaño de la RAM, lo cual me jode a la hora de
+hibernar, ya que se demora mucho descartando los datos que hay en la swap (si
+hay) en el momento de hibernar.</p>
+
+<p>Bueno entrando en materia:</p>
+
+<p>En el GRUB, le daremos el parámetros <strong>resume</strong> y usaremos como argumento, el
+disco de donde se resume, o sea <strong>la swap</strong>. Veamos cual es el UUID de la swap:</p>
+
+<figure class='code'><figcaption><span>fstab</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cat /etc/fstab <span class="p">|</span>grep swap
+</span><span class='line'><span class="nv">UUID</span><span class="o">=</span>2b3ed70d-5746-4a94-bd07-77eacd99f03c  none swap defaults,discard<span class="o">=</span>pages <span class="m">0</span> 0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Vamos al cargador de arranque (grub en mi caso) y le decimos cual es el disco de
+donde debe tomar la imagen y resumirla. Localiza el fichero <strong>/etc/default/grub</strong>
+y en una de las primeras lineas, modifica la cláusula <strong>GRUB_CMDLINE_LINUX_DEFAULT</strong>
+inclúyele <strong>resume=UUID=LaUUiDeTuDisCoSwap</strong>. A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;la parte de arriba de</span><a href='/etc/default/grub'>&#8221;</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">GRUB_DEFAULT</span><span class="o">=</span><span class="s">0</span>
+</span><span class='line'><span class="na">GRUB_TIMEOUT</span><span class="o">=</span><span class="s">5</span>
+</span><span class='line'><span class="na">GRUB_DISTRIBUTOR</span><span class="o">=</span><span class="s">&quot;Arch&quot;</span>
+</span><span class='line'><span class="na">GRUB_CMDLINE_LINUX_DEFAULT</span><span class="o">=</span><span class="s">&quot;ipv6.disable=1 resume=UUID=2b3ed70d-5746-4a94-bd07-77eacd99f03c&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ven, ahí declaramos (EL UUID DE <strong>LA SWAP</strong>) la partición donde se almacena
+la imagen que crea el proceso de hibernación.</p>
+
+<p>Pero no todo está listo, aún initramfs no se ha dado por enterado que vamos a
+hibernar. Localiza el fichero <strong>/etc/mkinitcpio.conf</strong> y añadele el <strong>hook</strong> de
+resume, a mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;fragmento de mkinitcpio.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1">##   NOTE: If you have /usr on a separate partition, you MUST include the</span>
+</span><span class='line'><span class="c1">#    usr, fsck and shutdown hooks.</span>
+</span><span class='line'><span class="na">HOOKS</span><span class="o">=</span><span class="s">&quot;base udev resume autodetect modconf block filesystems keyboard fsck&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Generalmente debes ponerlo después de <strong>udev</strong> y antes de <strong>autodetect</strong>. No te
+olvides de regnerar el initramfs:</p>
+
+<figure class='code'><figcaption><span>initramfs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkinitcpio -p linux
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si te molesta que la swap haga su pincha de swap (como en mi caso) puede
+deshabilitar el swapiness. Crea un fichero <strong>/etc/sysctl.d/00-noswap.conf</strong>
+y ponle adentro el siguiete valor: <strong>vm.swappiness=0</strong></p>
+
+<p>Y hibernan como los osos :D</p>
+
+<p>Seguro te preguntarás como hacer que se ejecute algo al hibernar o despertar.
+Pues puedes crear una unit llamadas <strong>root-resume</strong> y <strong>root-suspend</strong>.</p>
+
+<p>Por
+ejemplo, a mi en lo personal, me interesa parar el puto networkmanager cuando
+hiberno, ya que es poco probable que cuando despierte, esté en otro lugar y
+probablemente sin red. En mi caso yo habilito el networkmanager solo cuando lo
+necesito. En este caso, asumiré que para al hibernar y enciende al despertar.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/systemd/system/root-suspend.service&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Unit]</span>
+</span><span class='line'><span class="na">Description</span><span class="o">=</span><span class="s">Local system suspend actions</span>
+</span><span class='line'><span class="na">Before</span><span class="o">=</span><span class="s">sleep.target</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Service]</span>
+</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
+</span><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/bin/systemctl stop NetworkManager</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Install]</span>
+</span><span class='line'><span class="na">WantedBy</span><span class="o">=</span><span class="s">sleep.target</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al despertar arranca:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/systemd/system/root-resume.service &#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Unit]</span>
+</span><span class='line'><span class="na">Description</span><span class="o">=</span><span class="s">Local system suspend actions</span>
+</span><span class='line'><span class="na">Before</span><span class="o">=</span><span class="s">sleep.target</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Service]</span>
+</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
+</span><span class='line'><span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/bin/systemctl start NetworkManager</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[Install]</span>
+</span><span class='line'><span class="na">WantedBy</span><span class="o">=</span><span class="s">sleep.target</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Todo lo que necesitas está en el artículo de la wiki de archlinux: <a href="https://wiki.archlinux.org/index.php/Power_management">Power Management</a></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/17/rsync-basico/">rsync básico</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-07-17T16:49:25-04:00'><span class='date'>17/07/2016</span> <span class='time'>4:49 pm</span></time>
+        
+           | <a href="/blog/2016/07/17/rsync-basico/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/07/17/rsync-basico/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Este es el tipo de cosas que uno hace cada 120 días y claro, cuando lo vas hacer
+ya se te olvidó; así que para el blog:</p>
+
+<p>Como compartir un directorio vía rsyncd. En el siguiente ejemplo, usaré mi
+directorio de Downloads, donde tengo cosas que copiar por SSH requiere mucha
+entropía y la copia se vuelve lenta, por ejemplo, los ficheros con la wikipedia
+(kiwix)</p>
+
+<p>La configuración de <strong>rsyncd</strong> radica en un lugar bastante obvio:
+<strong>/etc/rsyncd.conf</strong> a mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/rsyncd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">max connections</span> <span class="o">=</span> <span class="s">2</span>
+</span><span class='line'><span class="na">log file</span> <span class="o">=</span> <span class="s">/var/log/rsync.log</span>
+</span><span class='line'><span class="na">timeout</span> <span class="o">=</span> <span class="s">300</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[descargas]</span>
+</span><span class='line'>   <span class="na">comment</span> <span class="o">=</span> <span class="s">las cosas que descargué</span>
+</span><span class='line'><span class="s">   path = /home/lazaro/Download/</span>
+</span><span class='line'><span class="s">   read only = yes</span>
+</span><span class='line'><span class="s">   list = yes </span>
+</span><span class='line'><span class="s">   uid = lazaro</span>
+</span><span class='line'><span class="s">   gid = nobody</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahí tenemos el directorio <strong>descargas</strong> servido por rsyncd. Vamos a efectuar una
+copia:</p>
+
+<figure class='code'><figcaption><span>&#8220;rsync&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rsync --include<span class="o">=</span><span class="s1">&#39;*.gz&#39;</span> --exclude<span class="o">=</span><span class="s1">&#39;*&#39;</span>  -aPv rsync://pub@10.1.1.187/descargas/ ./
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En ese ejemplo, usamos los parámetros <strong>&ndash;include</strong> y <strong>&ndash;exclude</strong>, para copiar
+solamente los fichero <strong>.gz</strong></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2016/06/20/correos-del-cron/">correos del cron</a></h1>
     
     
@@ -157,7 +550,7 @@ configuración sería más o menos así en el fichero <strong>/etc/esmtprc</stro
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Listo! El correo <a href="&#109;&#x61;&#105;&#x6c;&#116;&#111;&#x3a;&#x72;&#x6f;&#x6f;&#116;&#64;&#x74;&#x75;&#100;&#x6f;&#x6d;&#105;&#110;&#105;&#111;&#x2e;&#99;&#x75;">&#x72;&#111;&#x6f;&#116;&#x40;&#116;&#x75;&#100;&#x6f;&#x6d;&#x69;&#x6e;&#x69;&#111;&#46;&#99;&#x75;</a> recibirá correos de <a href="&#109;&#97;&#105;&#108;&#116;&#x6f;&#x3a;&#x63;&#114;&#x6f;&#x6e;&#x40;&#116;&#117;&#100;&#111;&#109;&#x69;&#x6e;&#105;&#111;&#x2e;&#x63;&#x75;">&#99;&#114;&#x6f;&#x6e;&#x40;&#x74;&#117;&#x64;&#111;&#x6d;&#x69;&#110;&#105;&#111;&#x2e;&#99;&#117;</a> con la
+<p>Listo! El correo <a href="&#x6d;&#x61;&#105;&#108;&#116;&#111;&#58;&#x72;&#x6f;&#x6f;&#116;&#64;&#116;&#117;&#100;&#x6f;&#x6d;&#105;&#110;&#105;&#x6f;&#46;&#x63;&#x75;">&#114;&#111;&#x6f;&#x74;&#64;&#x74;&#x75;&#x64;&#111;&#x6d;&#x69;&#110;&#x69;&#x6f;&#x2e;&#99;&#117;</a> recibirá correos de <a href="&#x6d;&#97;&#105;&#x6c;&#116;&#x6f;&#x3a;&#99;&#x72;&#x6f;&#110;&#x40;&#116;&#x75;&#x64;&#x6f;&#109;&#105;&#x6e;&#x69;&#x6f;&#x2e;&#x63;&#117;">&#99;&#x72;&#x6f;&#110;&#64;&#x74;&#117;&#x64;&#x6f;&#x6d;&#105;&#110;&#105;&#x6f;&#46;&#99;&#117;</a> con la
 salida del cron&hellip;</p>
 </div>
   
@@ -712,7 +1105,7 @@ TXT será <strong>dkim=all</strong>. A mi me quedó así:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -803,374 +1196,7 @@ comando <strong>xinput &ndash;list &ndash;short</strong> a mi se me ve así:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/05/12/deshabilitar-historial-de-bash/">deshabilitar historial de bash</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-05-12T14:34:13-04:00'><span class='date'>12/05/2016</span> <span class='time'>2:34 pm</span></time>
-        
-           | <a href="/blog/2016/05/12/deshabilitar-historial-de-bash/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/05/12/deshabilitar-historial-de-bash/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Alguna vez han pensado, que en algunos servidores o estaciones, en las cual
-trabajan múltiples personas remotamente via consola; el historial de comandos
-puede llegar a ser un problema???</p>
-
-<p>Pues deshabilítalo. En el fichero <strong>/etc/environment</strong> ponle</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/environment&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>   <span class="nb">export </span><span class="nv">HISTFILE</span><span class="o">=</span>/dev/null
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>La próxima vez que etres, la función historial será deshabilitada. OJO!!! <strong>LA
-PRÓXIMA VEZ</strong> esta sesión aún salva historial&hellip; Sale y vuelve a entrar.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/04/29/reparar-archivos-de-innodb/">reparar archivos de innodb</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-04-29T23:22:33-04:00'><span class='date'>29/04/2016</span> <span class='time'>11:22 pm</span></time>
-        
-           | <a href="/blog/2016/04/29/reparar-archivos-de-innodb/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/04/29/reparar-archivos-de-innodb/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="right" src="/images/hypno.png"></p>
-
-<p>Los archivos binarios que almacenan las bases de datos de mysql (percona o
-mariadb) suelen acabar corruptos o dañados por fallos eléctricos. Al mirar el
-log, podemos ver que, a pesar de que la base de datos funciona; por un motivo u
-otro, hay miles de warning y los ficheros binarios se vuelven cada vez más
-frágiles.</p>
-
-<p>Solución, exportar TODAS las bases de datos un fichero &ldquo;.sql&rdquo;, reinstalar mysql
-e importar las bases de datos. Tenga en cuenta que también se crean los
-usuarios y sus debidos permisos. Por tanto, su usuario de root se configurará de
-manera automática.</p>
-
-<figure class='code'><figcaption><span>&#8220;mysqldump&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mysqldump --all-databases &gt; dumpeo.sql
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Desinstalar mySQL y eliminar los ficheros binarios, generalmente están en
-/var/lib/mysql Por último, instala mySQL y restaura las bases de datos.</p>
-
-<figure class='code'><figcaption><span>&#8220;mysqldump&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mysql &lt; dumpeo.sql
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
 <p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/04/01/wpa2-con-freeradius/">WPA2 con freeradius</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-04-01T13:13:59-04:00'><span class='date'>01/04/2016</span> <span class='time'>1:13 pm</span></time>
-        
-           | <a href="/blog/2016/04/01/wpa2-con-freeradius/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/04/01/wpa2-con-freeradius/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="right" src="/images/wireless_defense.png" width="190" height="290"></p>
-
-<p>Ahora con el bun de la WiFi, comienzan las necesidades básicas, como cifrado de
-red y protección de acceso. Todavía el cubano no sabe la diferencia entre
-<a href="https://es.wikipedia.org/wiki/Wired_Equivalent_Privacy">WEP</a> y
-<a href="https://es.wikipedia.org/wiki/Wi-Fi_Protected_Access">WPA</a> pero bueno, para el
-que lea esto, el tutorial va por el camino duro pero correcto.</p>
-
-<p>¿Qué haremos?</p>
-
-<p>Configurar <a href="http://w1.fi/hostapd/">hostapd</a> con <a href="http://freeradius.org/">freeradius</a> para proveer una WiFi con WPA2</p>
-
-<p>Si no sabes que cosa es <a href="http://lmgtfy.com/?q=como+funciona+WPA2">WPA2 míralo aquí</a></p>
-
-<p>Para la ocasión, usaremos ArchLinux y requeriremos los paquetes siguientes
-<strong>hostapd</strong> y <strong>freeradius</strong>. ¿No tengo que decirte como instalarlos verdad?
-Entonces, supongamos que tienes la WiFi en <strong>wlan0</strong>.</p>
-
-<p>Vamos a empezar de atrás pa alante, el AP. Como no tenemos un ap profesional muy
-de pinga, vamos a usar hostapd. A mi la configuración me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/hostapd/hostapd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">ssid</span><span class="o">=</span>APconLinux
-</span><span class='line'><span class="nv">interface</span><span class="o">=</span>wlp2s0b1
-</span><span class='line'><span class="nv">driver</span><span class="o">=</span>nl80211
-</span><span class='line'><span class="nv">ieee8021x</span><span class="o">=</span>1
-</span><span class='line'><span class="nv">hw_mode</span><span class="o">=</span>g
-</span><span class='line'><span class="nv">channel</span><span class="o">=</span>1
-</span><span class='line'><span class="nv">wpa</span><span class="o">=</span>2
-</span><span class='line'><span class="nv">wpa_key_mgmt</span><span class="o">=</span>WPA-EAP
-</span><span class='line'><span class="nv">rsn_pairwise</span><span class="o">=</span>CCMP
-</span><span class='line'><span class="nv">auth_algs</span><span class="o">=</span>1
-</span><span class='line'><span class="nv">auth_server_addr</span><span class="o">=</span>127.0.0.1
-</span><span class='line'><span class="nv">auth_server_port</span><span class="o">=</span>1812
-</span><span class='line'><span class="nv">auth_server_shared_secret</span><span class="o">=</span>mifortalezaimperial
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora localizamos el fichero donde se configura el EAP, en el caso de archlinux,
-este fichero está en <strong>/etc/raddb/mods-enabled/eap</strong> ahí localizamos una linea
-que dice <strong>default_eap_type</strong> y donde dice <strong>md5</strong> y le ponemos <strong>peap</strong>. A mi
-me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/raddb/mods-enabled/eap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>   eap <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="nv">default_eap_type</span> <span class="o">=</span> peap
-</span><span class='line'>
-</span><span class='line'>   <span class="c"># (el resto del fichero)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Esa cláusula está por la línea 27&hellip; Bueno ahora vamos a declarar los usaurios
-en el fichero <strong>users</strong> el mio está en <strong>/etc/raddb/users</strong>, ahí le pones al
-fondo el usuario y el password, a mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/raddb/users&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>  <span class="c"># (la parte de arriba del fichero)</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c"># el usaurio secretísimo</span>
-</span><span class='line'>  usuario Cleartext-Password :<span class="o">=</span> <span class="s2">&quot;secretisimo&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora declararemos la dirección IP del AP, que en este caso, sería un cliente
-radius eso está en el fichero <strong>clients.conf</strong>.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/raddb/clients.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>client 127.0.0.1 <span class="o">{</span>
-</span><span class='line'>   <span class="nv">secret</span> <span class="o">=</span> mifortalezaimperial
-</span><span class='line'>   <span class="nv">shortname</span> <span class="o">=</span> hostapd
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Le declaramos que el cliente que se conecte desde la 127.0.0.1 usando como
-secreto la cadena de texto &ldquo;mifortalezaimperial&rdquo; será hostapd.</p>
-
-<p>Bueno, vamos a empezar la conga, instrumento por instrumento. Primero el AP</p>
-
-<p><strong>hostapd /etc/hostapd/hostapd.conf</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;hostapd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Configuration file: /etc/raddb/hostapd.conf
-</span><span class='line'>Using interface wlp2s0b1 with hwaddr 4c:ed:de:df:ad:f1 and ssid <span class="s2">&quot;APconLinux&quot;</span>
-</span><span class='line'>RADIUS: socket<span class="o">[</span>PF_INET6,SOCK_DGRAM<span class="o">]</span>: Address family not supported by protocol
-</span><span class='line'>wlan0: RADIUS Authentication server 127.0.0.1:1812
-</span><span class='line'>wlan0: interface state UNINITIALIZED-&gt;ENABLED
-</span><span class='line'>wlan0: AP-ENABLED
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora el radius:</p>
-
-<p><strong>raduisd -X</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;radiusd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Listening on auth address 127.0.0.1 port <span class="m">1812</span> bound to server default
-</span><span class='line'>Listening on acct address * port <span class="m">1813</span> bound to server default
-</span><span class='line'>Listening on auth address 127.0.0.1 port <span class="m">18120</span> bound to server inner-tunnel
-</span><span class='line'>Listening on proxy address * port 38055
-</span><span class='line'>Ready to process requests
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Y el toque final, dnsmasq como DHCP</p>
-
-<figure class='code'><figcaption><span>&#8220;dnsmasq&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip a a 10.0.0.1/24 dev wlan0
-</span><span class='line'>
-</span><span class='line'><span class="c"># OJO linea larga</span>
-</span><span class='line'>dnsmasq -a 10.0.0.1 -F 10.0.0.2,10.0.0.100 -i wlan0 -K --log-dhcp  -R -d --log-queries --log-dhcp
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Te recuerdo, que si android, al conectarse a una WiFi, no recibe ip, considera
-que hubo error de autenticación&hellip;</p>
-
-<p>Al escanear verás algo como esto.</p>
-
-<p><img class="center" src="/images/wpa2-1.png"></p>
-
-<p>Note como dice que APconLinux, está asegurada con 802.1x y al intentar
-conectarte, verás algo como esto:</p>
-
-<p><img class="center" src="/images/wpa2-2.png"></p>
-
-<p>Desliza el menú ese, para que veas lo que está al fondo. Ahí es donde va la
-burumba. Donde dice <strong>identity</strong> pones el usuario, donde dice <strong>Anonymous
-Identity</strong>, LO DEJAS EN BLANCO y donde dice <strong>password</strong> pones el precio actual
-de la libra de papa.</p>
-
-<p><img class="center" src="/images/wpa2-3.png"></p>
-
-<p>Se quedará un ratico en <strong>Authenticating&hellip;</strong></p>
-
-<p>Mientras tanto, <strong>hostapd</strong> mostrará algo como esto</p>
-
-<figure class='code'><figcaption><span>&#8220;salida de hostapd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad IEEE 802.11: authenticated
-</span><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad IEEE 802.11: associated <span class="o">(</span>aid 1<span class="o">)</span>
-</span><span class='line'>wlan0: CTRL-EVENT-EAP-STARTED 78:9e:d0:f2:9e:ad
-</span><span class='line'>wlan0: CTRL-EVENT-EAP-PROPOSED-METHOD <span class="nv">vendor</span><span class="o">=</span><span class="m">0</span> <span class="nv">method</span><span class="o">=</span>1
-</span><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad WPA: pairwise key handshake completed <span class="o">(</span>RSN<span class="o">)</span>
-</span><span class='line'>wlan0: AP-STA-CONNECTED 78:9e:d0:f2:9e:ad
-</span><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad RADIUS: starting accounting session EFB68C31-00000000
-</span><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad IEEE 802.1X: authenticated - EAP <span class="nb">type</span>: <span class="m">25</span> <span class="o">(</span>PEAP<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Y radius dirá algo como esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;salida de freeradius&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">(</span>9<span class="o">)</span> eap: Sending EAP Success <span class="o">(</span>code 3<span class="o">)</span> ID <span class="m">112</span> length 4
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span> eap: Freeing handler
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span>     <span class="o">[</span>eap<span class="o">]</span> <span class="o">=</span> ok
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   <span class="o">}</span> <span class="c"># authenticate = ok</span>
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span> <span class="c"># Executing section post-auth from file /etc/raddb/sites-enabled/default</span>
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span> Sent Access-Accept Id <span class="m">9</span> from 127.0.0.1:1812 to 127.0.0.1:58792 length 0
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   MS-MPPE-Recv-Key <span class="o">=</span> 0x486910b6930c3d5beae2e5831a3d15545066fcd8964d4a396d9950f1d2142b59
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   MS-MPPE-Send-Key <span class="o">=</span> 0xcfbf7ae337d7bd5c9e747c2a6f5864746b308523d7a4fb261bc1b32a5cdafce2
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   EAP-Message <span class="o">=</span> 0x03700004
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   Message-Authenticator <span class="o">=</span> 0x00000000000000000000000000000000
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   User-Name <span class="o">=</span> <span class="s2">&quot;username&quot;</span>
-</span><span class='line'><span class="o">(</span>9<span class="o">)</span> Finished request
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>La salida de dnsmasq quizás estes aburrido de verla, nada nuevo, le dio la ip,
-etc&hellip; dnsmasq es necesario en este caso para completar la autenticación ya que
-nuestro hostapd no tiene un dhcp incluído. Más adelante, veremos que radius
-puede asignar una ip a cada usaurio e incluso se tira contra mysql, pero ahora
-mismo esto es un experimento para familiarizarnos con radius, así que con eso
-bastará.</p>
-
-<p>Pasamos a comerciales y próximamente veremos como hace con MySQL, no te prometo
-nada, solo lo haré si logro vender el producto; ya que aquí somos partidarios de
-que &ldquo;la wifi sin contraseña es más fácil&rdquo; sin pensar en riesgos&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1191,6 +1217,18 @@ que &ldquo;la wifi sin contraseña es más fácil&rdquo; sin pensar en riesgos&h
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/03/03/nginx-y-websocket/">nginx y websocket</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/03/03/pkg-tras-un-proxy/">pkg tras un proxy</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/01/portknocking-en-freebsd/">portknocking en freebsd</a>
@@ -1578,18 +1616,6 @@ que &ldquo;la wifi sin contraseña es más fácil&rdquo; sin pensar en riesgos&h
 		
 		<li class="post">
 			<a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
 		</li>
 		
 	</ul>

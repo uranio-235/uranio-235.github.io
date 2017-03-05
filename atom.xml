@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-03-02T18:27:17-05:00</updated>
+  <updated>2017-03-05T17:04:33-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -14,11 +14,259 @@
 
   
   <entry>
+    <title type="html"><![CDATA[rainloop en debian]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/03/04/rainloop-en-debian/"/>
+    <updated>2017-03-04T13:45:55-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/03/04/rainloop-en-debian</id>
+    <content type="html"><![CDATA[<p>Aún recuerdo que algunos clientes me preguntaban con mucho asombro: &ldquo;-y porque
+no roundcube&rdquo;; cuando hablábamos de webmail. Pero finalmente rainloop se ha
+puesto de moda en cuba.</p>
+
+<p>Un método bastante perezoso de instalar una LAMP <strong>en Debian</strong>, es instalar el
+paquete <strong>phpmyadmin</strong>. Esto instala y configura el servidor SQL; además de
+hacer jugar a apache2 con php y mysql, todo de un solo teclazo. Pero aveces, por
+ejemplo, al instalar RainLoop, no queremos que phpmyadmin quede instalado.  Una
+buena variante es desinstalarlo después; pero nos quedan algunos paquetes
+innecesarios instalados.</p>
+
+<p>Para lograr la armonía que buscamos, instalaremos la LAMP por partes. Primero
+apache SOLO.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">aptitude install apache2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora instalamos mysql, a través de los metapaquetes, para que se instale el
+adecuado de manera automática.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">aptitude install mysql-server mysql-client</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Llegado a este punto, debian y su magia te ayudarán a configurar el mysql,
+pidiéndote la contraseña del root. Ahora instalamos la piedra angular. El
+soporte de php+mysql de apache.</p>
+
+<figure class='code'><figcaption><span>&#8220;esta linea es larga&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">aptitude install php5 libmysqlclient-dev php5-mysql curl libcurl3 libcurl3-dev php5-curl php5-json</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora <strong>reinicia</strong> tanto apache como mysql.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">systemctl restart mysql</span>
+</span><span class='line'><span class="go">systemctl restart apache2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Crearemos un par de bases de datos necesarias para rainloop. Puedes o no crear
+un usuario para rainloop, pero si vamos a tener un servidor sql con dos bases de
+datos para una aplicación; la cual además, será la única cosa sql en el
+servidor; no vale la pena crear otro usuario. Lo dejo a tu elección.</p>
+
+<figure class='code'><figcaption><span>&#8220;creando las bases&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">create</span> <span class="k">database</span> <span class="n">rainloop</span><span class="p">;</span>
+</span><span class='line'><span class="k">create</span> <span class="k">database</span> <span class="n">contactos</span><span class="p">;</span>
+</span><span class='line'><span class="k">commit</span><span class="p">;</span>
+</span><span class='line'><span class="n">exit</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si de todas maneras quieres crear el usuario.</p>
+
+<figure class='code'><figcaption><span>&#8220;un usuario pa rainloop&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">create</span> <span class="k">user</span> <span class="n">rainloop</span><span class="o">@</span><span class="n">localhost</span> <span class="n">identified</span> <span class="k">by</span> <span class="ss">&quot;rainloop&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">grant</span> <span class="k">all</span> <span class="k">privileges</span> <span class="k">on</span> <span class="n">rainloop</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="n">rainloop</span><span class="o">@</span><span class="n">localhost</span><span class="p">;</span>
+</span><span class='line'><span class="n">flush</span> <span class="k">privileges</span><span class="p">;</span>
+</span><span class='line'><span class="n">exit</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y vamos a instalar rainloop! La manera clásica de hacerlo es usando el paquete
+&ldquo;.zip&rdquo; del sitio. Si quieres llégate allá y bájatelo. Descomprimes en un
+directorio y sigue las instrucciones; sin embargo hay otra manera de hacer.</p>
+
+<figure class='code'><figcaption><span>&#8220;alando rainloop del repositorio&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">mkdir -p /var/www/rainloop</span>
+</span><span class='line'><span class="go">cd /var/www/rainloop</span>
+</span><span class='line'><span class="go">curl -s http://repository.rainloop.net/installer.php | php</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si tienes acceso a internet de verdad. Pinchará. Si estás detrás de un proxy, te
+jodiste, hazlo a la manera ortodoxa.</p>
+
+<p>Rainloop es fulísima con los permisos. Si no los tienes claros, dará unos palos
+horribles que no tienen nada que ver con permisos aparentemente. Por ejemplo, si
+el fichero que dice la versión, no pertenece al usuario que corre el servidor
+web, te dirá que no puede encontrar el directorio &ldquo;data&rdquo;. Espectacular! Para
+evitar eso, solo los directorios tendrán el ejecutable. Además, todo pertenecerá
+al usuario www-data; que en debian es el usuario que usa el apache para correr.</p>
+
+<figure class='code'><figcaption><span>&#8220;estableciendo permisos&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>chown -R www-data:www-data .
+</span><span class='line'>find . -type d -exec chmod <span class="m">755</span> <span class="o">{}</span> <span class="se">\;</span>
+</span><span class='line'>find . -type f -exec chmod <span class="m">644</span> <span class="o">{}</span> <span class="se">\;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No te pondré como hacer el virtualhost porque eso no tengo que explicártelo (no
+te hace falta verdad?). Te recomiendo que uses SSL.</p>
+
+<p>No olvides entrar al admin panel (o al fichero de configuración) de rainloop y
+pasarle la mano. Para abrir el admin panel, usa la url <strong>/?admin</strong>. Ahí
+configura las bases de datos. Muy importante habilitar el soporte de contactos y
+especificarle la base de datos, que creo, no debe ser la misma que rainloop;
+aunque una gente me dijo que tiene ambas cosas en la misma base de datos; yo no
+le he probado.</p>
+
+<p>El usuario por defecto es <strong>admin</strong> y la contraseña es <strong>12345</strong>. De más está
+que te diga: <strong>CÁMBIALO!</strong></p>
+
+<p>Si estás de cara a internet, recuerda que rainloop viene con yahoo y gmail
+configurado como servidores por defecto. No sé si está habilitados pero
+chequéalo. Juraría que hay versiones en que venía habilitado. De todas formas,
+te interesará que tus usuarios tengan gmail/yahoo más cerca, especialmente si un
+usuario tiene múltiples identidades. Recuérdales que deben habilitar el acceso
+pop en su cuenta de gmail.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[nginx y websocket]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/03/03/nginx-y-websocket/"/>
+    <updated>2017-03-03T23:49:47-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/03/03/nginx-y-websocket</id>
+    <content type="html"><![CDATA[<p>Resulta que los websocket no pasan tan fácilmente por el proxy inverso. Llevan
+su burumba.</p>
+
+<p>Aquí por ejemplo, haremos un proxy inverso con SSL para una aplicación que
+escucha por el puerto 8888.</p>
+
+<figure class='code'><figcaption><span>&#8220;nginx&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">server</span> <span class="p">{</span>
+</span><span class='line'>   <span class="n">listen</span> <span class="mi">80</span> <span class="n">default_server</span><span class="p">;</span>
+</span><span class='line'>   <span class="k">return</span> <span class="mi">301</span> <span class="nl">https</span><span class="p">:</span><span class="c1">//$host$request_uri;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">server</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">listen</span> <span class="mi">443</span> <span class="n">ssl</span> <span class="n">default_server</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">ssl_certificate</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">nginx</span><span class="p">.</span><span class="n">crt</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">ssl_certificate_key</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">nginx</span><span class="p">.</span><span class="n">key</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">location</span> <span class="o">/</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">proxy_set_header</span>        <span class="n">Host</span> <span class="err">$</span><span class="n">host</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">proxy_set_header</span>        <span class="n">X</span><span class="o">-</span><span class="n">Real</span><span class="o">-</span><span class="n">IP</span> <span class="err">$</span><span class="n">remote_addr</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">proxy_set_header</span>        <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">For</span> <span class="err">$</span><span class="n">proxy_add_x_forwarded_for</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">proxy_set_header</span>        <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">Proto</span> <span class="err">$</span><span class="n">scheme</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">proxy_pass</span> <span class="nl">http</span><span class="p">:</span><span class="c1">//127.0.0.1:8888/;</span>
+</span><span class='line'>      <span class="n">proxy_http_version</span> <span class="mf">1.1</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">proxy_set_header</span> <span class="n">Connection</span> <span class="s">&quot;upgrade&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">proxy_set_header</span> <span class="n">Upgrade</span> <span class="err">$</span><span class="n">http_upgrade</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">proxy_redirect</span> <span class="k">default</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">proxy_read_timeout</span> <span class="mi">1800</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">client_max_body_size</span> <span class="mi">128</span><span class="n">G</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note como los encabezados Upgrade son seteados. Ese es el truco&hellip;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[pkg tras un proxy]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/03/03/pkg-tras-un-proxy/"/>
+    <updated>2017-03-03T23:00:57-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/03/03/pkg-tras-un-proxy</id>
+    <content type="html"><![CDATA[<p>En el 5to infierno de infomed con la vida detrás del proxy que ya he mencionado
+incontables veces; todo se vuelve difícil.</p>
+
+<p>Por suerte freebsd ha mejorado en materia de soporte de proxy. Si bien en
+<strong>csh</strong>, basta con usar:</p>
+
+<figure class='code'><figcaption><span>&#8220;setenv&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">setenv http_proxy http://proxy.sld.cu:3128</span>
+</span><span class='line'><span class="go">setenv https_proxy $http_proxy</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Operaciones de rutinas como <strong>pkg audit -F</strong> suelen fallar al ser ejecutadas por
+el cron. Setear el proxy de manera global es una opción; pero nunca ha sido de
+mi agrado. Por suerte, el nuevo gestor de paquetes de freebsd soporta proxy en
+su configuración.</p>
+
+<p>El fichero de configuración está en una ubicación bien extravagante. Nada menos
+que en <strong>/usr/local/etc/pkg.conf</strong>. Los comentarios hablan por si solos, vale la
+pena mirarlos; no necesitarás leer manual ni buscar en google para darte cuenta
+que:</p>
+
+<figure class='code'><figcaption><span>&#8220;/usr/local/etc/pkg.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">PKG_ENV</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>   <span class="nx">http_proxy</span><span class="o">:</span> <span class="s2">&quot;http://proxy.sld.cu:3128&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¡Establece el proxy!</p>
+
+<p>Con eso <strong>pkg audit</strong> corrido desde el cron funcionará perfectamente. Además de
+las demás operaciones que requieran bajar contenido de internet; claro está.</p>
+
+<p>OJO! Nota que al final de la declaración del proxy, lo que hay es una <strong>coma</strong>,
+NO un punto y coma. La configuración parece ser un <strong>json</strong>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[portknocking en freebsd]]></title>
     <link href="http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd/"/>
     <updated>2017-03-01T23:53:01-05:00</updated>
     <id>http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd</id>
-    <content type="html"><![CDATA[<p>La técnica port-knocking o knockd para otros, es en mi opinión, <strong>pilar de la
+    <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/alibaba.jpg" width="400" height="500" title="" ></p>
+
+<p>La técnica port-knocking o knockd para otros, es en mi opinión, <strong>pilar de la
 seguridad</strong> en cualquier servidor que use SSH. Aunque es bastante versátil y
 puede ser usado hasta para reiniciar servicios sin loguearte.</p>
 
@@ -69,6 +317,14 @@ regla. Pues usaremos ese numerito diminuto para ponerla de primera.</p>
 <p>Los tipos ortodoxos criticarán que es una regla <em>al tetón</em>. Pienso que no vale
 la pena abrir solo el 22, si voy a pasar tanto trabajo, que se me abra la puerta
 completa.</p>
+
+<p>Por cierto, junto con knock, viene un programita para hacer el knocking. Yo
+solía hacerlo con netcat pero knock est más cómodo.</p>
+
+<figure class='code'><figcaption><span>&#8220;knock&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">   knock 192.168.3.1 777 999 333</span>
+</span></code></pre></td></tr></table></div></figure>
+
 ]]></content>
   </entry>
   
@@ -165,7 +421,11 @@ del dominio sld.cu. El dominio <strong>hcg.sld.cu</strong> es una zona <strong>m
 embargo, el dominio <strong>sld.cu</strong> es del tipo <strong>forward</strong> y entonces ahí declaramos
 los forwarders (los dns de infomed).</p>
 
-<p>Ahora solo le reenviaremos a infomed, aquellas peticiones que sean para infomed.</p>
+<p>Así solo le reenviaremos a infomed, aquellas peticiones que sean para infomed.</p>
+
+<p>En mi opinión esto no es necesario. Tanto así, que la zona donde infomed hace
+forward; la tengo para los servidores. En el caso de la zona para LAN,
+simplemente declaro los servidores de correo en un fakeroot y listo.</p>
 ]]></content>
   </entry>
   
@@ -243,11 +503,35 @@ cláusulas dst y dport.</p>
 <p><strong>pero aquí NO terminan las aventuras de QoS</strong></p>
 
 <p>Resulta que el tráfico proveniente de las WiFi era apabullante para el servidor
-proxy. Mientras que de una IP de una máquina, entran 3 peticiones, de la IP de
+proxy. Mientras que de una IP de una máquina entran 3 peticiones, de la IP de
 un router wifi entran 30.</p>
 
 <p>En un principio pensaba usar un delay_pool especial para estas ip, pero sería
-complicar más el esquema de delay_pool que funciona bien por usuarios.</p>
+complicar más el esquema de delay_pool que funciona bien por usuarios. Por
+tanto, el tema de la bajada ya está cubierto. Ningún usuario puede acaparar todo
+el ancho de banda con una descarga. Sin embargo, 1&#8217;000 peticiones de basura
+(android con proxy configurado) ahogan al proxy. La medida fue, que el tráfico
+entrante de la wifi, no exceda los 200KB.</p>
+
+<p>En mi caso, los AP usan la ip 10 al 15, por tanto, haciendo un pipe de dummynet
+y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
+
+<figure class='code'><figcaption><span>&#8220;ipfw.rules&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw pipe <span class="m">1</span> config bw 200KBytes
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.10
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.11
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.12
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.13
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.14
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.15
+</span></code></pre></td></tr></table></div></figure>
+
 ]]></content>
   </entry>
   
@@ -878,15 +1162,20 @@ todo en ambientes donde te ves obligado a meter la pata y no dispones de
 virtualización. Lo único equivalente a esto en linux, sería LXC, pero no es ni
 la chancleta. Los jails combinado con ZFS, permiten hacer cosas alucinantes.</p>
 
-<p>El gestor de paquetes ha mejorado muchísimo. En cuanto a resolución de
-dependencias y velocidad. Lo han optimizado bastante en mi opinión y ahora
-maneja mejor el tema de las redes lentas; sobre todo detrás de proxy.</p>
-
 <p>Cada versión nueva que sale la pruebo; y aunque había hecho mis cositas con él,
 siempre acababa dejándolo de lado por el tema del ancho de banda. Cualquier
 operación que hagas con la paquetería requiere conexión y poco ancho de banda
 provoca que la operación falle. La versión 9 en mi opinión fue un desastre.
 Especialmente por el sistema de ports que daba unos palos horribles.</p>
+
+<p>El gestor de paquetes ha mejorado muchísimo. La resolución de dependencias y
+velocidad es espectacular. Además, han logrado una completa integración de
+gestión de paquetes en una sola herramienta. Ya no es el reguero ese de pkg_info
+por un lado y pkg_add por otro. Ahora además, soporta operaciones de limpieza
+como <em>autoremove</em> y <em>clean</em>. La herramienta <strong>portaudit</strong> al parecer fue
+<em>portada</em> a pkg también y ahora es oficial. Otras novedades relevantes son que permite crear
+respositorios y hacer operaciones en jails. Ah! y para que contarte el soporte
+de proxy. Más detalles (y una rosetta) <a href="https://wiki.freebsd.org/PkgPrimer">lo puedes ver aquí</a>.</p>
 
 <p>FreeBSD 10 no lo toqué, estuve más girado para OpenIndiana.</p>
 
@@ -1677,232 +1966,6 @@ especial para el tema.</p>
 <p>Si quieres ver más detalles y otras soluciones, llégate aquí:</p>
 
 <p><a href="http://unix.stackexchange.com/questions/93554/iptables-to-allow-incoming-ftp">http://unix.stackexchange.com/questions/93554/iptables-to-allow-incoming-ftp</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[rails en alpine]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/12/09/rails-en-alpine/"/>
-    <updated>2016-12-09T20:14:28-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/12/09/rails-en-alpine</id>
-    <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/shinkasen.jpg" width="400" height="500" title="" ></p>
-
-<p>Finalmente el boom de docker llegó a Cuba. En mi caso personal, hace rato lo uso
-para desplegar aplicaciones de Ruby on Rails y siempre me pareció que debian era
-la mejor base para hacer una imagen. Si bien, hay containers de rails, eso de
-usar en producción, con una distro hecha por un cualquiera, como que me da cosa.
-Hacer una a partir de la oficial, es más sencillo que verificar la integridad de
-una ya hecha.</p>
-
-<p>AlpineLinux para docker es un batazo, eso es in-negable. Pero instalar rails en
-alpine, resultó ser más complicado de lo que yo pensaba.</p>
-
-<figure class='code'><figcaption><span>&#8220;docker y alpine&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker pull alpine
-</span><span class='line'>docker run -ti alpine /bin/sh
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ante todo necesitamos instalar las librerías requeridas para compilar, sobre
-todo las dependencias de nokogiri. Instalaremos los paquetes: build-base,
-nodejs, tzdata, libxml2-dev,  libxslt-dev, sqlite-dev y claro, ruby</p>
-
-<p>En este caso, usaremos sqlite como ejemplo, pero a ti quizás te cuadre más con
-<strong>mariadb-dev</strong> (mysql) o <strong>postgresql-dev</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;apk add&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>apk update
-</span><span class='line'>apk add build-base nodejs tzdata libxml2-dev  libxslt-dev
-</span><span class='line'>apk add sqlite-dev mariadb-dev postgresql-dev
-</span><span class='line'>apk add ruby ruby-dev ca-certificates libffi libffi-dev
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como nokogiri es un caso tan peculiar, le diremos que compile usando las
-librerías del sistema, para ellos lo instalaremos aparte. Alpine <strong>no</strong> usa
-glibc, usa musl-libc y nokogiri NO compila, por tanto, hay que usar las
-librerías del sistema; en vez de las que provee nokogiri.</p>
-
-<figure class='code'><figcaption><span>&#8220;nokogiri&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>gem inst --no-document nokogiri -- --use-system-libraries
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con eso ya tenemos los cimientos echados. Nuestra imagen habrá crecido 200
-megas. Ahora vamos instalar rails.</p>
-
-<figure class='code'><figcaption><span>&#8220;gem&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>gem inst --no-document rails io-console
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El paso de instalar rails como gema del sistema es cuestionable para una pila de
-gente; pero ten en cuenta que es la manera de saber si rails funciona, recuerda
-que esto es un ejemplo. La primera vez me topé con que debía instalar
-<strong>io-console</strong>, ya que a pesar de ser dependencia, nadie la requería. Bueno a
-ver&hellip;</p>
-
-<figure class='code'><figcaption><span>&#8220;rails&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/ <span class="c"># rails -v</span>
-</span><span class='line'>Rails 5.0.0.1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Tengo una imagen llamada &ldquo;alpine_ruby&rdquo; en la que tengo todo lo necesario para
-instalar y No tengo la gema de rails instalada. Entonces, con cada versión de
-rails, por ejemplo, derivar de &ldquo;alpine_ruby&rdquo; la imagen alpine_rails50 , así
-cuando salga el rails 5.1 le llamaré alpine_rails51</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[squid3 bloquear user-agent]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/11/24/squid3-bloquear-user-agent/"/>
-    <updated>2016-11-24T14:36:13-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/11/24/squid3-bloquear-user-agent</id>
-    <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/noiexplore.png" width="400" height="500" title="" ></p>
-
-<p>Recién, he tenido algunos problemas con descargadores multi-hilos que se chupan
-el ancho de banda y se cagan en los delay_pools. Buscando como bloquear dichos
-descargadores, el colega Agustín Ybarra me recomienda bloquear los user_agent.</p>
-
-<p>Pero pensándolo bien, resolví unos cuantos problemas. Pues por ejemplo, google
-play service de los teléfonos android, consume muchísimo y resuelve poco, de
-forma que el que navega en un delay_pool, ve afectado su ancho de banda por
-cosas que ignora.</p>
-
-<p>Solución, bloquear los User-Agent. La idea suena bien, pero primero hay que
-loguear los user agent. Para ellos usaremos un custom_log de squid, loguearemos
-los usuarios y los user-agent. A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># loguea los user-agent</span>
-</span><span class='line'>logformat useragent  %un <span class="s2">&quot;%{User-Agent}&gt;h&quot;</span>
-</span><span class='line'>access_log daemon:/var/log/squid3/user_agent.log useragent
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora tenemos el fichero <em>user_agent.log</em>, logueando usuario y user_agent; claro
-está, podría loguear, usuario, user-agent y url, pero la linea queda muy larga.</p>
-
-<p>Una vez que hallas encontrado el user-agent que te moleste, crea una ACL
-<strong>arriba</strong> de la ACL que autorize la navegación.</p>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># por ejemplo, blqueamos zapya y se fana</span>
-</span><span class='line'>acl zapya browser ^com<span class="se">\.</span>dewmobile
-</span><span class='line'>http_access deny zapya
-</span><span class='line'>http_reply_access deny zapya
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Seguiré aquí, como <a href="https://es.wikipedia.org/wiki/The_Catcher_in_the_Rye">el pescador del centeno</a>, esperando a que vuelva a usar su descargadorcito multi-hilo de mierda&hellip; aunque seguro puede cambiarle el user-agent.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[redimensionar lvm]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/11/22/redimensionar-lvm/"/>
-    <updated>2016-11-22T21:00:22-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/11/22/redimensionar-lvm</id>
-    <content type="html"><![CDATA[<p>Este post es a método de memorando, ya que SIEMPRE se me olvida como hacerlo.</p>
-
-<p>En materia de virtualización, el sistema de plantillas nunca me ha gustado,
-<strong>porque NO SÉ quién instala esos sistemas operativos ni como.</strong></p>
-
-<p><strong>Yo prefiero</strong> por ejemplo, instalar un debian, acomodarle todo a mi manera y
-usar esa instalación para generar nuevas máquinas, con todo ya listo. Por
-ejemplo, un prototipo de firewall, las configuraciones de interfaz puesta con
-dhcp, pero una configuración estática bien comentada, etc..</p>
-
-<p>Mantengo esa máquina detenida y la arranco de vez en cuando para actualizar.
-Cuando voy a hacer una nueva, <strong>simplemente clono esa máquina</strong>.</p>
-
-<p>Prefiero llamarlo <strong>matriz</strong> que <em>plantilla</em>. El resto del tiempo, dicha máquina
-permanece detenida (apagada) evitando así desgaste, envejecimiento, generación
-de logs, etc&hellip;</p>
-
-<p>Eso en la práctica, es lo mismo que una plantilla (para los criticones y amantes
-de la moda).</p>
-
-<p>Un inconveniente que afronté al principio con esto, fue &ldquo;el tamaño asignado al
-disco duro&rdquo;. Por ejemplo, el servidor de correo que me lleva 500 gigas, mientras
-que en el sistema de monitoreo (nagios) solo se lleva 5 gigas.</p>
-
-<p>La matriz tiene un disco de 5 gigas donde se instaló todo. Sobra espacio, ya que
-borrando /usr/share/doc/ y la cache de apt, se quedo en menos de un giga. El
-problema (con Xen) viene a la hora de agrandar el disco.</p>
-
-<p>No se como proxmox maneja esa situación y sinceramente, <strong>no me interesa</strong>, ya
-que:</p>
-
-<p><strong>LVM resuelve el problema!</strong></p>
-
-<p>Si no tienes la costumbre de instalar sobre LVM, deberías hacértela&hellip; Es muy
-versátil.</p>
-
-<p>BTRfs es otra buena opción, pero su rendimiento decae mucho con el tiempo (<strong>mi
-experiencia</strong>).</p>
-
-<p>Añadir un disco al volumen lógico y aumentar su tamaño <strong>resuelve el problema</strong>.</p>
-
-<p>Claro, el sistema de archivos que instalaste, debe soportar tal operación, pero
-por suerte, ext4 lo hace perfectamente y sin tener que desmontar el sistema de
-archivos.</p>
-
-<p>El problema es que <strong>NUNCA ME ACUERDO</strong> de los comandos para redimensionar el
-volumen lógico.</p>
-
-<figure class='code'><figcaption><span>&#8220;la nota&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>pvcreate /dev/xvdb
-</span><span class='line'>vgextend lvm /dev/xvdb
-</span><span class='line'>lvm lvextend -l +100%FREE /dev/lvm/lv1
-</span><span class='line'>resize2fs -p /dev/lvm/lv1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note que mi grupo de volúmenes se llama <strong>lvm</strong> y que el volumen lógico se llama
-<strong>lv1</strong> (no soy muy creativo con nombres para lvm). O sea, el disco quedaría
-así:</p>
-
-<h4>/dev/mapper/lvm-lv1</h4>
-
-<p><strong>Nota para los retardados:</strong> <em>El dispositivo /dev/xvdb es OTRO disco que se le
-añadió a la máquina para aumentar su espacio. Tenía /dev/xvda con 5 gigas y se
-le añádió otro disco, el llamado /dev/xvdb, con más espacio. Oséase colocaste
-otro disco en la máquina virtual o simplemente conectaste otro disco duro en el
-canal sata de una máquina física</em></p>
-
-<p>Entonces, linea por linea, en cámara lenta:</p>
-
-<p>1- Convierte el disco /dev/xvdb en un volumen físico (mete el disco pal saco de
-LVM) En mi caso, el  grupo de volúmenes se llama <strong>lvm</strong>, así que:</p>
-
-<p>2- Extenderemos el grupo llamado <strong>lvm</strong> añadiendo el volumen físico
-<strong>/dev/xvdb</strong> al volumen lógico <strong>lv1</strong>.</p>
-
-<p>3- La parte que siempre se me olvida (el parámetro está raro con cojone)
-Redimensionar el volumen lógico <strong>lv1</strong> a su máxima capacidad.</p>
-
-<p>4- Por último, redimensionar el ext4 en <strong>/dev/lvm/lv1</strong> a su máxima capacidad.</p>
-
-<p>Y listo! Ya tienes tu disco del tamaño que te de la gana ;-)</p>
-
-<p>Puedes correr <strong>lvmdiskscan -l</strong> para cerciorarte de que todo esté como esperas,
-no sea que hallas metido la delicada.</p>
 ]]></content>
   </entry>
   

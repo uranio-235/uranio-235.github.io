@@ -104,7 +104,9 @@ seguridad en &hellip;">
   </header>
 
 
-<div class="entry-content"><p>La técnica port-knocking o knockd para otros, es en mi opinión, <strong>pilar de la
+<div class="entry-content"><p><img class="right" src="/images/alibaba.jpg" width="400" height="500" title="" ></p>
+
+<p>La técnica port-knocking o knockd para otros, es en mi opinión, <strong>pilar de la
 seguridad</strong> en cualquier servidor que use SSH. Aunque es bastante versátil y
 puede ser usado hasta para reiniciar servicios sin loguearte.</p>
 
@@ -155,10 +157,18 @@ regla. Pues usaremos ese numerito diminuto para ponerla de primera.</p>
 <p>Los tipos ortodoxos criticarán que es una regla <em>al tetón</em>. Pienso que no vale
 la pena abrir solo el 22, si voy a pasar tanto trabajo, que se me abra la puerta
 completa.</p>
+
+<p>Por cierto, junto con knock, viene un programita para hacer el knocking. Yo
+solía hacerlo con netcat pero knock est más cómodo.</p>
+
+<figure class='code'><figcaption><span>&#8220;knock&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">   knock 192.168.3.1 777 999 333</span>
+</span></code></pre></td></tr></table></div></figure>
+
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -174,6 +184,12 @@ completa.</p>
 
 <time class='entry-date' datetime='2017-03-01T23:53:01-05:00'><span class='date'>01/03/2017</span> <span class='time'>11:53 pm</span></time>
       
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/bsd/'>bsd</a>
+  
+</span>
 
 
     </p>
@@ -196,6 +212,8 @@ completa.</p>
         <a class="basic-alignment left" href="/blog/2017/03/01/bind-en-infomed/" title="Previous Post: bind en infomed">&laquo; bind en infomed</a>
       
       
+        <a class="basic-alignment right" href="/blog/2017/03/03/pkg-tras-un-proxy/" title="Next Post: pkg tras un proxy">pkg tras un proxy &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -215,6 +233,18 @@ completa.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/03/03/nginx-y-websocket/">nginx y websocket</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/03/03/pkg-tras-un-proxy/">pkg tras un proxy</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/01/portknocking-en-freebsd/">portknocking en freebsd</a>
@@ -602,18 +632,6 @@ completa.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
 		</li>
 		
 	</ul>

@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="portknocking en freebsd 01/03/2017 11:53 pm | Comments La técnica port-knocking o knockd para otros, es en mi opinión, pilar de la
-seguridad en &hellip;">
+  <meta name="description" content="rainloop en debian 04/03/2017 1:45 pm | Comments Aún recuerdo que algunos clientes me preguntaban con mucho asombro: &ldquo;-y porque
+no roundcube& &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +88,327 @@ seguridad en &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-04T13:45:55-05:00'><span class='date'>04/03/2017</span> <span class='time'>1:45 pm</span></time>
+        
+           | <a href="/blog/2017/03/04/rainloop-en-debian/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/04/rainloop-en-debian/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Aún recuerdo que algunos clientes me preguntaban con mucho asombro: &ldquo;-y porque
+no roundcube&rdquo;; cuando hablábamos de webmail. Pero finalmente rainloop se ha
+puesto de moda en cuba.</p>
+
+<p>Un método bastante perezoso de instalar una LAMP <strong>en Debian</strong>, es instalar el
+paquete <strong>phpmyadmin</strong>. Esto instala y configura el servidor SQL; además de
+hacer jugar a apache2 con php y mysql, todo de un solo teclazo. Pero aveces, por
+ejemplo, al instalar RainLoop, no queremos que phpmyadmin quede instalado.  Una
+buena variante es desinstalarlo después; pero nos quedan algunos paquetes
+innecesarios instalados.</p>
+
+<p>Para lograr la armonía que buscamos, instalaremos la LAMP por partes. Primero
+apache SOLO.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">aptitude install apache2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora instalamos mysql, a través de los metapaquetes, para que se instale el
+adecuado de manera automática.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">aptitude install mysql-server mysql-client</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Llegado a este punto, debian y su magia te ayudarán a configurar el mysql,
+pidiéndote la contraseña del root. Ahora instalamos la piedra angular. El
+soporte de php+mysql de apache.</p>
+
+<figure class='code'><figcaption><span>&#8220;esta linea es larga&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">aptitude install php5 libmysqlclient-dev php5-mysql curl libcurl3 libcurl3-dev php5-curl php5-json</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora <strong>reinicia</strong> tanto apache como mysql.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">systemctl restart mysql</span>
+</span><span class='line'><span class="go">systemctl restart apache2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Crearemos un par de bases de datos necesarias para rainloop. Puedes o no crear
+un usuario para rainloop, pero si vamos a tener un servidor sql con dos bases de
+datos para una aplicación; la cual además, será la única cosa sql en el
+servidor; no vale la pena crear otro usuario. Lo dejo a tu elección.</p>
+
+<figure class='code'><figcaption><span>&#8220;creando las bases&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">create</span> <span class="k">database</span> <span class="n">rainloop</span><span class="p">;</span>
+</span><span class='line'><span class="k">create</span> <span class="k">database</span> <span class="n">contactos</span><span class="p">;</span>
+</span><span class='line'><span class="k">commit</span><span class="p">;</span>
+</span><span class='line'><span class="n">exit</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si de todas maneras quieres crear el usuario.</p>
+
+<figure class='code'><figcaption><span>&#8220;un usuario pa rainloop&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">create</span> <span class="k">user</span> <span class="n">rainloop</span><span class="o">@</span><span class="n">localhost</span> <span class="n">identified</span> <span class="k">by</span> <span class="ss">&quot;rainloop&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">grant</span> <span class="k">all</span> <span class="k">privileges</span> <span class="k">on</span> <span class="n">rainloop</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="n">rainloop</span><span class="o">@</span><span class="n">localhost</span><span class="p">;</span>
+</span><span class='line'><span class="n">flush</span> <span class="k">privileges</span><span class="p">;</span>
+</span><span class='line'><span class="n">exit</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y vamos a instalar rainloop! La manera clásica de hacerlo es usando el paquete
+&ldquo;.zip&rdquo; del sitio. Si quieres llégate allá y bájatelo. Descomprimes en un
+directorio y sigue las instrucciones; sin embargo hay otra manera de hacer.</p>
+
+<figure class='code'><figcaption><span>&#8220;alando rainloop del repositorio&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">mkdir -p /var/www/rainloop</span>
+</span><span class='line'><span class="go">cd /var/www/rainloop</span>
+</span><span class='line'><span class="go">curl -s http://repository.rainloop.net/installer.php | php</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si tienes acceso a internet de verdad. Pinchará. Si estás detrás de un proxy, te
+jodiste, hazlo a la manera ortodoxa.</p>
+
+<p>Rainloop es fulísima con los permisos. Si no los tienes claros, dará unos palos
+horribles que no tienen nada que ver con permisos aparentemente. Por ejemplo, si
+el fichero que dice la versión, no pertenece al usuario que corre el servidor
+web, te dirá que no puede encontrar el directorio &ldquo;data&rdquo;. Espectacular! Para
+evitar eso, solo los directorios tendrán el ejecutable. Además, todo pertenecerá
+al usuario www-data; que en debian es el usuario que usa el apache para correr.</p>
+
+<figure class='code'><figcaption><span>&#8220;estableciendo permisos&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>chown -R www-data:www-data .
+</span><span class='line'>find . -type d -exec chmod <span class="m">755</span> <span class="o">{}</span> <span class="se">\;</span>
+</span><span class='line'>find . -type f -exec chmod <span class="m">644</span> <span class="o">{}</span> <span class="se">\;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No te pondré como hacer el virtualhost porque eso no tengo que explicártelo (no
+te hace falta verdad?). Te recomiendo que uses SSL.</p>
+
+<p>No olvides entrar al admin panel (o al fichero de configuración) de rainloop y
+pasarle la mano. Para abrir el admin panel, usa la url <strong>/?admin</strong>. Ahí
+configura las bases de datos. Muy importante habilitar el soporte de contactos y
+especificarle la base de datos, que creo, no debe ser la misma que rainloop;
+aunque una gente me dijo que tiene ambas cosas en la misma base de datos; yo no
+le he probado.</p>
+
+<p>El usuario por defecto es <strong>admin</strong> y la contraseña es <strong>12345</strong>. De más está
+que te diga: <strong>CÁMBIALO!</strong></p>
+
+<p>Si estás de cara a internet, recuerda que rainloop viene con yahoo y gmail
+configurado como servidores por defecto. No sé si está habilitados pero
+chequéalo. Juraría que hay versiones en que venía habilitado. De todas formas,
+te interesará que tus usuarios tengan gmail/yahoo más cerca, especialmente si un
+usuario tiene múltiples identidades. Recuérdales que deben habilitar el acceso
+pop en su cuenta de gmail.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/03/nginx-y-websocket/">nginx y websocket</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-03T23:49:47-05:00'><span class='date'>03/03/2017</span> <span class='time'>11:49 pm</span></time>
+        
+           | <a href="/blog/2017/03/03/nginx-y-websocket/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/03/nginx-y-websocket/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Resulta que los websocket no pasan tan fácilmente por el proxy inverso. Llevan
+su burumba.</p>
+
+<p>Aquí por ejemplo, haremos un proxy inverso con SSL para una aplicación que
+escucha por el puerto 8888.</p>
+
+<figure class='code'><figcaption><span>&#8220;nginx&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">server</span> <span class="p">{</span>
+</span><span class='line'>   <span class="n">listen</span> <span class="mi">80</span> <span class="n">default_server</span><span class="p">;</span>
+</span><span class='line'>   <span class="k">return</span> <span class="mi">301</span> <span class="nl">https</span><span class="p">:</span><span class="c1">//$host$request_uri;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">server</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">listen</span> <span class="mi">443</span> <span class="n">ssl</span> <span class="n">default_server</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">ssl_certificate</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">nginx</span><span class="p">.</span><span class="n">crt</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">ssl_certificate_key</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">nginx</span><span class="p">.</span><span class="n">key</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">location</span> <span class="o">/</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">proxy_set_header</span>        <span class="n">Host</span> <span class="err">$</span><span class="n">host</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">proxy_set_header</span>        <span class="n">X</span><span class="o">-</span><span class="n">Real</span><span class="o">-</span><span class="n">IP</span> <span class="err">$</span><span class="n">remote_addr</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">proxy_set_header</span>        <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">For</span> <span class="err">$</span><span class="n">proxy_add_x_forwarded_for</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">proxy_set_header</span>        <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">Proto</span> <span class="err">$</span><span class="n">scheme</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">proxy_pass</span> <span class="nl">http</span><span class="p">:</span><span class="c1">//127.0.0.1:8888/;</span>
+</span><span class='line'>      <span class="n">proxy_http_version</span> <span class="mf">1.1</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">proxy_set_header</span> <span class="n">Connection</span> <span class="s">&quot;upgrade&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">proxy_set_header</span> <span class="n">Upgrade</span> <span class="err">$</span><span class="n">http_upgrade</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">proxy_redirect</span> <span class="k">default</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">proxy_read_timeout</span> <span class="mi">1800</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">client_max_body_size</span> <span class="mi">128</span><span class="n">G</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note como los encabezados Upgrade son seteados. Ese es el truco&hellip;</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/03/pkg-tras-un-proxy/">pkg tras un proxy</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-03T23:00:57-05:00'><span class='date'>03/03/2017</span> <span class='time'>11:00 pm</span></time>
+        
+           | <a href="/blog/2017/03/03/pkg-tras-un-proxy/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/03/pkg-tras-un-proxy/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>En el 5to infierno de infomed con la vida detrás del proxy que ya he mencionado
+incontables veces; todo se vuelve difícil.</p>
+
+<p>Por suerte freebsd ha mejorado en materia de soporte de proxy. Si bien en
+<strong>csh</strong>, basta con usar:</p>
+
+<figure class='code'><figcaption><span>&#8220;setenv&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">setenv http_proxy http://proxy.sld.cu:3128</span>
+</span><span class='line'><span class="go">setenv https_proxy $http_proxy</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Operaciones de rutinas como <strong>pkg audit -F</strong> suelen fallar al ser ejecutadas por
+el cron. Setear el proxy de manera global es una opción; pero nunca ha sido de
+mi agrado. Por suerte, el nuevo gestor de paquetes de freebsd soporta proxy en
+su configuración.</p>
+
+<p>El fichero de configuración está en una ubicación bien extravagante. Nada menos
+que en <strong>/usr/local/etc/pkg.conf</strong>. Los comentarios hablan por si solos, vale la
+pena mirarlos; no necesitarás leer manual ni buscar en google para darte cuenta
+que:</p>
+
+<figure class='code'><figcaption><span>&#8220;/usr/local/etc/pkg.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">PKG_ENV</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>   <span class="nx">http_proxy</span><span class="o">:</span> <span class="s2">&quot;http://proxy.sld.cu:3128&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¡Establece el proxy!</p>
+
+<p>Con eso <strong>pkg audit</strong> corrido desde el cron funcionará perfectamente. Además de
+las demás operaciones que requieran bajar contenido de internet; claro está.</p>
+
+<p>OJO! Nota que al final de la declaración del proxy, lo que hay es una <strong>coma</strong>,
+NO un punto y coma. La configuración parece ser un <strong>json</strong>.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2017/03/01/portknocking-en-freebsd/">portknocking en freebsd</a></h1>
     
     
@@ -107,7 +428,9 @@ seguridad en &hellip;">
   </header>
 
 
-  <div class="entry-content"><p>La técnica port-knocking o knockd para otros, es en mi opinión, <strong>pilar de la
+  <div class="entry-content"><p><img class="right" src="/images/alibaba.jpg" width="400" height="500" title="" ></p>
+
+<p>La técnica port-knocking o knockd para otros, es en mi opinión, <strong>pilar de la
 seguridad</strong> en cualquier servidor que use SSH. Aunque es bastante versátil y
 puede ser usado hasta para reiniciar servicios sin loguearte.</p>
 
@@ -158,12 +481,20 @@ regla. Pues usaremos ese numerito diminuto para ponerla de primera.</p>
 <p>Los tipos ortodoxos criticarán que es una regla <em>al tetón</em>. Pienso que no vale
 la pena abrir solo el 22, si voy a pasar tanto trabajo, que se me abra la puerta
 completa.</p>
+
+<p>Por cierto, junto con knock, viene un programita para hacer el knocking. Yo
+solía hacerlo con netcat pero knock est más cómodo.</p>
+
+<figure class='code'><figcaption><span>&#8220;knock&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">   knock 192.168.3.1 777 999 333</span>
+</span></code></pre></td></tr></table></div></figure>
+
 </div>
   
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -279,13 +610,17 @@ del dominio sld.cu. El dominio <strong>hcg.sld.cu</strong> es una zona <strong>m
 embargo, el dominio <strong>sld.cu</strong> es del tipo <strong>forward</strong> y entonces ahí declaramos
 los forwarders (los dns de infomed).</p>
 
-<p>Ahora solo le reenviaremos a infomed, aquellas peticiones que sean para infomed.</p>
+<p>Así solo le reenviaremos a infomed, aquellas peticiones que sean para infomed.</p>
+
+<p>En mi opinión esto no es necesario. Tanto así, que la zona donde infomed hace
+forward; la tengo para los servidores. En el caso de la zona para LAN,
+simplemente declaro los servidores de correo en un fakeroot y listo.</p>
 </div>
   
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -382,427 +717,41 @@ cláusulas dst y dport.</p>
 <p><strong>pero aquí NO terminan las aventuras de QoS</strong></p>
 
 <p>Resulta que el tráfico proveniente de las WiFi era apabullante para el servidor
-proxy. Mientras que de una IP de una máquina, entran 3 peticiones, de la IP de
+proxy. Mientras que de una IP de una máquina entran 3 peticiones, de la IP de
 un router wifi entran 30.</p>
 
 <p>En un principio pensaba usar un delay_pool especial para estas ip, pero sería
-complicar más el esquema de delay_pool que funciona bien por usuarios.</p>
-</div>
-  
-  
+complicar más el esquema de delay_pool que funciona bien por usuarios. Por
+tanto, el tema de la bajada ya está cubierto. Ningún usuario puede acaparar todo
+el ancho de banda con una descarga. Sin embargo, 1&#8217;000 peticiones de basura
+(android con proxy configurado) ahogan al proxy. La medida fue, que el tráfico
+entrante de la wifi, no exceda los 200KB.</p>
 
+<p>En mi caso, los AP usan la ip 10 al 15, por tanto, haciendo un pipe de dummynet
+y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/02/22/bind-personal/">bind personal</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-02-22T21:05:26-05:00'><span class='date'>22/02/2017</span> <span class='time'>9:05 pm</span></time>
-        
-           | <a href="/blog/2017/02/22/bind-personal/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/02/22/bind-personal/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Una cosa que me jode, es que linux el tema de los múltiples DNS no los maneje
-bien. Por ejemplo, estamos en una LAN con red 192.168.1.0/24 y además,
-tenemos una conexión a internet.</p>
-
-<p>Entonces seteas dos DNS en el resolv.conf y no pincha!</p>
-
-<p>Además, si la situación es itinerante (vas a múltiples LAN) mantener la
-configuración DNS se vuelve un rollo. Aunque el networkmanager te permita
-configurarlo, volvemos a la situación anterior.</p>
-
-<p>Solución, tenemos un bin con sus debidos forwarders para cada red. En mi caso,
-el <strong>/etc/named.conf</strong> me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>&#8220;ipfw.rules&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">// vim:set ts=4 sw=4 et:</span>
-</span><span class='line'><span class="n">options</span> <span class="p">{</span>
-</span><span class='line'>        <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">recursion</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>        <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">recursion</span> <span class="n">yes</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">auth</span><span class="o">-</span><span class="n">nxdomain</span> <span class="n">no</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// la lan por su DNS local</span>
-</span><span class='line'><span class="n">zone</span> <span class="s">&quot;dominio.cu&quot;</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
-</span><span class='line'>  <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">192.168.1.3</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// lo demás por google</span>
-</span><span class='line'><span class="n">zone</span> <span class="s">&quot;.&quot;</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
-</span><span class='line'>  <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">8.8.8.8</span><span class="p">;</span> <span class="mf">8.8.4.4</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'><span class="p">};</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw pipe <span class="m">1</span> config bw 200KBytes
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.10
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.11
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.12
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.13
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.14
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.15
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>De esta manera, el dominio de la LAN (<strong>dominio.cu</strong>), será resuelto a través
-del servidor DNS 192.168.1.3; que es el de la LAN. Para eso usamos la zona
-&ldquo;dominio.cu&rdquo; del tipo forward y especificamos a 192.168.1.3 como su forward.</p>
-
-<p>El resto, o sea, la zona &ldquo;.&rdquo;, será también del tipo forward y para este ejemplo,
-usamos los dns de google como forward.</p>
-
-<p>Ahora solo te queda actualizar el <strong>/etc/resolv.conf</strong> y setear a 127.0.0.1
-como tu servidor dns</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/resolv.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp"># Generated by resolvconf</span>
-</span><span class='line'><span class="n">nameserver</span> <span class="mf">127.0.0.1</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Recuerda que cada configuración automatizada, actualiza este fichero. Te
-recomiendo que no te fajes con el fichero, si no que en cada conexión que desees
-usar tu servidor, se lo especifiques. Por ejemplo, con networkmanager, le dices
-a N conexión, que el servidor dns es manual y será <em>127.0.0.1</em>. Si usas Gnome
-(NetworkManager), te recomiendo usar la utilidad <strong>nm-connection-editor</strong>. Te
-permitirá especificar el dominio de búsqueda, cosa que no he visto como hacer
-con el administrador de conexiones de gnome.</p>
 </div>
   
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-02-05T21:24:40-05:00'><span class='date'>05/02/2017</span> <span class='time'>9:24 pm</span></time>
-        
-           | <a href="/blog/2017/02/05/a-las-puertas-del-3g/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/02/05/a-las-puertas-del-3g/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Oficialmente, han anunciado en la mesa redonda que se proveerá internet por 3G.</p>
-
-<p>La noticia me impactó bastante y supongo que todo el que se haga llamar
-&ldquo;administrador de red&rdquo; (en Cuba) se halla sentido conmovido.</p>
-
-<p>A partir de ese día no llevaremos más sobre nuestros hombros la ardua tarea de
-proveerle internet a una sociedad desconectada. La penosa tarea de explicarle a
-los usuarios porque fulano sí y tú no. Con ello, nuestra importancia actual en
-marcos laborales; se verá considerablemente reducida. Ya no seremos las
-fantásticas criaturas con acceso a internet, si no, un simple operario más (como
-somos en el mundo entero). Imagino (y espero) que los proxy pasen a ser una
-segunda prioridad. El uso de internet en las empresas, por fin, será para
-aquello que realmente fue concebido y no para proveerle facebook a cuatro vacas
-sagradas.</p>
-
-<p>La introducción de la 3G en cuba, será un cambio. Todos debemos estar preparados
-para afrontar este cambio; no solo desde el punto de vista tecnológico, si no
-también social y psicológico. Si dios quiere y todo sale a pedir de boca,
-caeremos de sopetón y recién llegados; a un mundo donde el internet, ya es algo
-cotidiano. Todos NO están preparados para esto, en especial, aquellos que tienen
-canas y teléfonos modernos.</p>
-
-<p>Si bien, las tarifas siguen siendo un misterio por resolver, este es un momento
-en que no hay lugar para el pesimismo. Nuestro país está haciendo un esfuerzo
-sin precedentes (al menos en ese aspecto) y nosotros, esperamos lo mejor. Hay
-mucho optimismo y la gente habla del tema con brillo en lo ojos. Esperamos que
-esto se materialize y no se convierta en un vaporware. Por otra parte, muchas
-personas tienen la expectativa muy alta; en especial aquellas que han viajado y
-conocen el 4g. Esto podría dar lugar a disgustos y desilusiones en aquellas
-personas que como ya dije &ldquo;tienen las expectativas muy altas&rdquo;. Yo solo espero,
-poder tener internet en mi bolsillo con el salario que me gano.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/02/05/dns-con-vistas/">dns con vistas</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-02-05T18:57:26-05:00'><span class='date'>05/02/2017</span> <span class='time'>6:57 pm</span></time>
-        
-           | <a href="/blog/2017/02/05/dns-con-vistas/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/02/05/dns-con-vistas/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Que lindo corre bind9 en alpine linux. Ahora que mis servidores están todo en el
-pool de xenserver (los reyes magos me trajeron un servidor pro) tengo un nuevo
-problema. Dentro de la red interna de xen, los servidores tienen una ip
-distinta. Por ejemplo, para todo el mundo, el alpine linux que hace de router,
-es 192.168.0.1, pero para los servidores, es 169.254.0.10</p>
-
-<p>Además, el forward para infomed, es un privilegio que solo los servidores
-tienen. Por tanto, lo más seguro, será usar una zona para la LAN y otra para la
-red interna del pool.</p>
-
-<p>Esto me recuerda las DMZ, pero no es lo mismo, porque no estoy creando cuellos
-de botella. La red interna del pool es una vif, que funciona sin emitir
-tráfico real por alguna pif.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/bind/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">// vim:set ts=4 sw=4 et:</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">options</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">v6</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;</span> <span class="mf">192.168.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>   <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c1">// los servidores hacen recursion</span>
-</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">recursion</span> <span class="p">{</span> <span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;};</span>
-</span><span class='line'>   <span class="n">recursion</span> <span class="n">yes</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">view</span> <span class="n">lan</span>  <span class="p">{</span> <span class="c1">// la red LAN</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">192.168.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;.&quot;</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;fakeroot.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">};</span> <span class="c1">// view lan</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="n">view</span> <span class="n">xen</span> <span class="p">{</span> <span class="c1">// la red interna de XenServer</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;xen&quot;</span> <span class="n">IN</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;xen.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;sld.cu&quot;</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">201.220.222.131</span><span class="p">;</span> <span class="mf">201.220.222.132</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">forward</span> <span class="n">only</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">};</span> <span class="c1">// view xen</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ven, cree el dominio &ldquo;.xen&rdquo; que solo será visible a la red interna del
-pool. La zona &ldquo;hcg.sld.cu&rdquo; también será visible para los servidores ya que estos
-tienen una pata en la LAN; a esto suele llamarse &ldquo;shared zone&rdquo; (zona
-compartida). Finalmente, la zona &ldquo;sld.cu&rdquo; (debajo de hcg) es una zona forward en
-la vista de la interfaz interna.</p>
-
-<p>El host proxy.hcg.sld.cu resolverá una ip de la lan; de esta misma manera, el
-host proxy.xen, resolverá la ip de dicho host, pero dentro de la red interna del
-pool.</p>
-
-<p><strong>¿y por qué?</strong></p>
-
-<p>Por que esta menera, solo los servidores (a través de la red del pool), harán
-forward. Por ejemplo, el servidor de correo, podrá enviar y recibir su correo
-multipop, ya que el alpine que está haciendo como router, permite forward desde
-la red del pool hacia la WAN; o sea, todos los servidores, ven a la WAN. Es
-obligaría al servidor de correo, a usar el dns de infomed para resolver
-direcciones de infomed y el servidor local para resolver las direcciones de la
-LAN, lo cual funciona de asco. Sin embargo, la vista del pool tiene una zona
-forward. Cabe destacar, que una zona forward y un fakeroot, no se por qué; hace
-que ninguna pinche.</p>
-
-<p>Sensillo y seguro.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -821,6 +770,18 @@ que ninguna pinche.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/03/03/nginx-y-websocket/">nginx y websocket</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/03/03/pkg-tras-un-proxy/">pkg tras un proxy</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/01/portknocking-en-freebsd/">portknocking en freebsd</a>
@@ -1208,18 +1169,6 @@ que ninguna pinche.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
 		</li>
 		
 	</ul>

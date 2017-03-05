@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="misterio con ethernet foxconn 14/03/2016 2:52 pm | Comments Para nadie es un secreto que foxconn, no le descarga a Linux. Hacen mil mierdas
-para &hellip;">
+  <meta name="description" content="deshabilitar historial de bash 12/05/2016 2:34 pm | Comments Alguna vez han pensado, que en algunos servidores o estaciones, en las cual
+trabajan &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,373 @@ para &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/05/12/deshabilitar-historial-de-bash/">deshabilitar historial de bash</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-05-12T14:34:13-04:00'><span class='date'>12/05/2016</span> <span class='time'>2:34 pm</span></time>
+        
+           | <a href="/blog/2016/05/12/deshabilitar-historial-de-bash/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/05/12/deshabilitar-historial-de-bash/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Alguna vez han pensado, que en algunos servidores o estaciones, en las cual
+trabajan múltiples personas remotamente via consola; el historial de comandos
+puede llegar a ser un problema???</p>
+
+<p>Pues deshabilítalo. En el fichero <strong>/etc/environment</strong> ponle</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/environment&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>   <span class="nb">export </span><span class="nv">HISTFILE</span><span class="o">=</span>/dev/null
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La próxima vez que etres, la función historial será deshabilitada. OJO!!! <strong>LA
+PRÓXIMA VEZ</strong> esta sesión aún salva historial&hellip; Sale y vuelve a entrar.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/04/29/reparar-archivos-de-innodb/">reparar archivos de innodb</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-04-29T23:22:33-04:00'><span class='date'>29/04/2016</span> <span class='time'>11:22 pm</span></time>
+        
+           | <a href="/blog/2016/04/29/reparar-archivos-de-innodb/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/04/29/reparar-archivos-de-innodb/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="right" src="/images/hypno.png"></p>
+
+<p>Los archivos binarios que almacenan las bases de datos de mysql (percona o
+mariadb) suelen acabar corruptos o dañados por fallos eléctricos. Al mirar el
+log, podemos ver que, a pesar de que la base de datos funciona; por un motivo u
+otro, hay miles de warning y los ficheros binarios se vuelven cada vez más
+frágiles.</p>
+
+<p>Solución, exportar TODAS las bases de datos un fichero &ldquo;.sql&rdquo;, reinstalar mysql
+e importar las bases de datos. Tenga en cuenta que también se crean los
+usuarios y sus debidos permisos. Por tanto, su usuario de root se configurará de
+manera automática.</p>
+
+<figure class='code'><figcaption><span>&#8220;mysqldump&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mysqldump --all-databases &gt; dumpeo.sql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Desinstalar mySQL y eliminar los ficheros binarios, generalmente están en
+/var/lib/mysql Por último, instala mySQL y restaura las bases de datos.</p>
+
+<figure class='code'><figcaption><span>&#8220;mysqldump&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mysql &lt; dumpeo.sql
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/04/01/wpa2-con-freeradius/">WPA2 con freeradius</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-04-01T13:13:59-04:00'><span class='date'>01/04/2016</span> <span class='time'>1:13 pm</span></time>
+        
+           | <a href="/blog/2016/04/01/wpa2-con-freeradius/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/04/01/wpa2-con-freeradius/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="right" src="/images/wireless_defense.png" width="190" height="290"></p>
+
+<p>Ahora con el bun de la WiFi, comienzan las necesidades básicas, como cifrado de
+red y protección de acceso. Todavía el cubano no sabe la diferencia entre
+<a href="https://es.wikipedia.org/wiki/Wired_Equivalent_Privacy">WEP</a> y
+<a href="https://es.wikipedia.org/wiki/Wi-Fi_Protected_Access">WPA</a> pero bueno, para el
+que lea esto, el tutorial va por el camino duro pero correcto.</p>
+
+<p>¿Qué haremos?</p>
+
+<p>Configurar <a href="http://w1.fi/hostapd/">hostapd</a> con <a href="http://freeradius.org/">freeradius</a> para proveer una WiFi con WPA2</p>
+
+<p>Si no sabes que cosa es <a href="http://lmgtfy.com/?q=como+funciona+WPA2">WPA2 míralo aquí</a></p>
+
+<p>Para la ocasión, usaremos ArchLinux y requeriremos los paquetes siguientes
+<strong>hostapd</strong> y <strong>freeradius</strong>. ¿No tengo que decirte como instalarlos verdad?
+Entonces, supongamos que tienes la WiFi en <strong>wlan0</strong>.</p>
+
+<p>Vamos a empezar de atrás pa alante, el AP. Como no tenemos un ap profesional muy
+de pinga, vamos a usar hostapd. A mi la configuración me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/hostapd/hostapd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">ssid</span><span class="o">=</span>APconLinux
+</span><span class='line'><span class="nv">interface</span><span class="o">=</span>wlp2s0b1
+</span><span class='line'><span class="nv">driver</span><span class="o">=</span>nl80211
+</span><span class='line'><span class="nv">ieee8021x</span><span class="o">=</span>1
+</span><span class='line'><span class="nv">hw_mode</span><span class="o">=</span>g
+</span><span class='line'><span class="nv">channel</span><span class="o">=</span>1
+</span><span class='line'><span class="nv">wpa</span><span class="o">=</span>2
+</span><span class='line'><span class="nv">wpa_key_mgmt</span><span class="o">=</span>WPA-EAP
+</span><span class='line'><span class="nv">rsn_pairwise</span><span class="o">=</span>CCMP
+</span><span class='line'><span class="nv">auth_algs</span><span class="o">=</span>1
+</span><span class='line'><span class="nv">auth_server_addr</span><span class="o">=</span>127.0.0.1
+</span><span class='line'><span class="nv">auth_server_port</span><span class="o">=</span>1812
+</span><span class='line'><span class="nv">auth_server_shared_secret</span><span class="o">=</span>mifortalezaimperial
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora localizamos el fichero donde se configura el EAP, en el caso de archlinux,
+este fichero está en <strong>/etc/raddb/mods-enabled/eap</strong> ahí localizamos una linea
+que dice <strong>default_eap_type</strong> y donde dice <strong>md5</strong> y le ponemos <strong>peap</strong>. A mi
+me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/raddb/mods-enabled/eap&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>   eap <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="nv">default_eap_type</span> <span class="o">=</span> peap
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># (el resto del fichero)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Esa cláusula está por la línea 27&hellip; Bueno ahora vamos a declarar los usaurios
+en el fichero <strong>users</strong> el mio está en <strong>/etc/raddb/users</strong>, ahí le pones al
+fondo el usuario y el password, a mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/raddb/users&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>  <span class="c"># (la parte de arriba del fichero)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c"># el usaurio secretísimo</span>
+</span><span class='line'>  usuario Cleartext-Password :<span class="o">=</span> <span class="s2">&quot;secretisimo&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora declararemos la dirección IP del AP, que en este caso, sería un cliente
+radius eso está en el fichero <strong>clients.conf</strong>.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/raddb/clients.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>client 127.0.0.1 <span class="o">{</span>
+</span><span class='line'>   <span class="nv">secret</span> <span class="o">=</span> mifortalezaimperial
+</span><span class='line'>   <span class="nv">shortname</span> <span class="o">=</span> hostapd
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Le declaramos que el cliente que se conecte desde la 127.0.0.1 usando como
+secreto la cadena de texto &ldquo;mifortalezaimperial&rdquo; será hostapd.</p>
+
+<p>Bueno, vamos a empezar la conga, instrumento por instrumento. Primero el AP</p>
+
+<p><strong>hostapd /etc/hostapd/hostapd.conf</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;hostapd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Configuration file: /etc/raddb/hostapd.conf
+</span><span class='line'>Using interface wlp2s0b1 with hwaddr 4c:ed:de:df:ad:f1 and ssid <span class="s2">&quot;APconLinux&quot;</span>
+</span><span class='line'>RADIUS: socket<span class="o">[</span>PF_INET6,SOCK_DGRAM<span class="o">]</span>: Address family not supported by protocol
+</span><span class='line'>wlan0: RADIUS Authentication server 127.0.0.1:1812
+</span><span class='line'>wlan0: interface state UNINITIALIZED-&gt;ENABLED
+</span><span class='line'>wlan0: AP-ENABLED
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora el radius:</p>
+
+<p><strong>raduisd -X</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;radiusd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Listening on auth address 127.0.0.1 port <span class="m">1812</span> bound to server default
+</span><span class='line'>Listening on acct address * port <span class="m">1813</span> bound to server default
+</span><span class='line'>Listening on auth address 127.0.0.1 port <span class="m">18120</span> bound to server inner-tunnel
+</span><span class='line'>Listening on proxy address * port 38055
+</span><span class='line'>Ready to process requests
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y el toque final, dnsmasq como DHCP</p>
+
+<figure class='code'><figcaption><span>&#8220;dnsmasq&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip a a 10.0.0.1/24 dev wlan0
+</span><span class='line'>
+</span><span class='line'><span class="c"># OJO linea larga</span>
+</span><span class='line'>dnsmasq -a 10.0.0.1 -F 10.0.0.2,10.0.0.100 -i wlan0 -K --log-dhcp  -R -d --log-queries --log-dhcp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Te recuerdo, que si android, al conectarse a una WiFi, no recibe ip, considera
+que hubo error de autenticación&hellip;</p>
+
+<p>Al escanear verás algo como esto.</p>
+
+<p><img class="center" src="/images/wpa2-1.png"></p>
+
+<p>Note como dice que APconLinux, está asegurada con 802.1x y al intentar
+conectarte, verás algo como esto:</p>
+
+<p><img class="center" src="/images/wpa2-2.png"></p>
+
+<p>Desliza el menú ese, para que veas lo que está al fondo. Ahí es donde va la
+burumba. Donde dice <strong>identity</strong> pones el usuario, donde dice <strong>Anonymous
+Identity</strong>, LO DEJAS EN BLANCO y donde dice <strong>password</strong> pones el precio actual
+de la libra de papa.</p>
+
+<p><img class="center" src="/images/wpa2-3.png"></p>
+
+<p>Se quedará un ratico en <strong>Authenticating&hellip;</strong></p>
+
+<p>Mientras tanto, <strong>hostapd</strong> mostrará algo como esto</p>
+
+<figure class='code'><figcaption><span>&#8220;salida de hostapd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad IEEE 802.11: authenticated
+</span><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad IEEE 802.11: associated <span class="o">(</span>aid 1<span class="o">)</span>
+</span><span class='line'>wlan0: CTRL-EVENT-EAP-STARTED 78:9e:d0:f2:9e:ad
+</span><span class='line'>wlan0: CTRL-EVENT-EAP-PROPOSED-METHOD <span class="nv">vendor</span><span class="o">=</span><span class="m">0</span> <span class="nv">method</span><span class="o">=</span>1
+</span><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad WPA: pairwise key handshake completed <span class="o">(</span>RSN<span class="o">)</span>
+</span><span class='line'>wlan0: AP-STA-CONNECTED 78:9e:d0:f2:9e:ad
+</span><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad RADIUS: starting accounting session EFB68C31-00000000
+</span><span class='line'>wlan0: STA 78:9e:d0:f2:9e:ad IEEE 802.1X: authenticated - EAP <span class="nb">type</span>: <span class="m">25</span> <span class="o">(</span>PEAP<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y radius dirá algo como esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;salida de freeradius&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">(</span>9<span class="o">)</span> eap: Sending EAP Success <span class="o">(</span>code 3<span class="o">)</span> ID <span class="m">112</span> length 4
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span> eap: Freeing handler
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span>     <span class="o">[</span>eap<span class="o">]</span> <span class="o">=</span> ok
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   <span class="o">}</span> <span class="c"># authenticate = ok</span>
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span> <span class="c"># Executing section post-auth from file /etc/raddb/sites-enabled/default</span>
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span> Sent Access-Accept Id <span class="m">9</span> from 127.0.0.1:1812 to 127.0.0.1:58792 length 0
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   MS-MPPE-Recv-Key <span class="o">=</span> 0x486910b6930c3d5beae2e5831a3d15545066fcd8964d4a396d9950f1d2142b59
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   MS-MPPE-Send-Key <span class="o">=</span> 0xcfbf7ae337d7bd5c9e747c2a6f5864746b308523d7a4fb261bc1b32a5cdafce2
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   EAP-Message <span class="o">=</span> 0x03700004
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   Message-Authenticator <span class="o">=</span> 0x00000000000000000000000000000000
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span>   User-Name <span class="o">=</span> <span class="s2">&quot;username&quot;</span>
+</span><span class='line'><span class="o">(</span>9<span class="o">)</span> Finished request
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La salida de dnsmasq quizás estes aburrido de verla, nada nuevo, le dio la ip,
+etc&hellip; dnsmasq es necesario en este caso para completar la autenticación ya que
+nuestro hostapd no tiene un dhcp incluído. Más adelante, veremos que radius
+puede asignar una ip a cada usaurio e incluso se tira contra mysql, pero ahora
+mismo esto es un experimento para familiarizarnos con radius, así que con eso
+bastará.</p>
+
+<p>Pasamos a comerciales y próximamente veremos como hace con MySQL, no te prometo
+nada, solo lo haré si logro vender el producto; ya que aquí somos partidarios de
+que &ldquo;la wifi sin contraseña es más fácil&rdquo; sin pensar en riesgos&hellip;</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -188,7 +555,7 @@ default, los demás script necesarios para cargar dichos rubies.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -242,435 +609,6 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/02/20/hooks-de-pacman/">los hooks de pacman</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-02-20T03:14:28-05:00'><span class='date'>20/02/2016</span> <span class='time'>3:14 am</span></time>
-        
-           | <a href="/blog/2016/02/20/hooks-de-pacman/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/02/20/hooks-de-pacman/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Finalmente, después de tantas plegarias, tenemos <strong>hooks</strong> en pacman. Lo cual
-nos permite, por medio de la poderosa API de alpm correr script antes o después
-de cada instalación.</p>
-
-<p>Desgraciadamente, hay poca documentación sobre el tema. Para colmo, la página de
-man de alpm-hooks, no dice como deben llamarse los archivos. Tuve que adivinar
-que la extensión <strong>.hook</strong> era necesaria.</p>
-
-<p>Primero que todo, vamos a especificar en <strong>/etc/pacman.conf</strong> que el directorio
-de hooks está en otro lado.</p>
-
-<figure class='code'><figcaption><span>&#8220;escope de</span><a href='/etc/pacman.conf"'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">HookDir</span> <span class="o">=</span> /etc/pacman.d/hooks/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>¿Por qué aquí? Muy sencillo. Quiero que al hacer una salva de mi configuración
-de pacman, los hooks también se salven. Un hook sencillo, podría correr un
-comando simple, como el del ejemplo en la página de man; sin embargo, uno
-complejo, sería mejor ponerlo en un script.</p>
-
-<p>Lo más importante: El fichero con el hook <strong>debe tener la extensión .hook</strong> Si
-no pacman se limpia el culo con él.</p>
-
-<p>Creemos uno de ejemplo, llamado /etc/pacman.d/hooks/migancho<strong>.hook</strong> y
-digámosle que ejecutará el script, sito en /etc/pacman.d/hooks/migancho.sh</p>
-
-<p>Sería así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.hook&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>Trigger<span class="o">]</span>
-</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Install
-</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Upgrade
-</span><span class='line'><span class="nv">Operation</span> <span class="o">=</span> Remove
-</span><span class='line'><span class="nv">Type</span> <span class="o">=</span> Package
-</span><span class='line'><span class="nv">Target</span> <span class="o">=</span> *
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Action<span class="o">]</span>
-</span><span class='line'><span class="nv">Description</span> <span class="o">=</span> sincronizando disco
-</span><span class='line'><span class="nv">Depends</span> <span class="o">=</span> coreutils
-</span><span class='line'><span class="nv">When</span> <span class="o">=</span> PostTransaction
-</span><span class='line'><span class="nv">Exec</span> <span class="o">=</span> /etc/pacman.d/hooks/migancho.sh
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ve, la cláusula <strong>Operation</strong> está repetida, con los 3 posibles momentos
-que se disparará el gancho. Podrías hacerlo en uno de ellos solamente. La
-cláusula <strong>Description</strong> se verá cuando pacman termine de instalar. En este caso
-cuando termine, ya que la cláusula <strong>When</strong> especifica <em>PreTransaction</em> o
-<em>PostTransaction</em> (antes o después de la transacción).</p>
-
-<p>Ahora creamos el script <strong>migancho.sh</strong> y le ponemos todas las aberraciones que
-queremos llevar a cabo tras una instalación, desinstalación o actualización.</p>
-
-<p>Digamos por ejemplo, en este caso uno trivial, ejecutar sync cuando termine una
-operación, lo cual evita que si falla la energía en ese momento, queden datos
-por escribirse en la cache disco (con suerte).</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/migancho.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>/usr/bin/sync
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Veámoslo en acción</p>
-
-<figure class='code'><figcaption><span>&#8220;el hook&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c"># pacman -S --noconfirm unrar</span>
-</span><span class='line'>warning: unrar-1:5.3.11-1 is up to date -- reinstalling
-</span><span class='line'>resolving dependencies...
-</span><span class='line'>looking <span class="k">for</span> conflicting packages...
-</span><span class='line'>
-</span><span class='line'>Packages <span class="o">(</span>1<span class="o">)</span> unrar-1:5.3.11-1
-</span><span class='line'>
-</span><span class='line'>Total Installed Size:  0.32 MiB
-</span><span class='line'>Net Upgrade Size:      0.00 MiB
-</span><span class='line'>
-</span><span class='line'>:: Proceed with installation? <span class="o">[</span>Y/n<span class="o">]</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking keys in keyring                                                   <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking package integrity                                                 <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> loading package files                                                      <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking <span class="k">for</span> file conflicts                                                <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> checking available disk space                                              <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'>:: Processing package changes...
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> reinstalling unrar                                                         <span class="o">[</span><span class="c">##############################################] 100%</span>
-</span><span class='line'>:: Running post-transaction hooks...
-</span><span class='line'><span class="o">(</span>1/1<span class="o">)</span> sincronizando disco
-</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span><span class="c">#</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Véanlo como dice <em>sincronizando discos</em> en español, corriendo la operación (1/1)
-ya que hay un solo hook.</p>
-
-<p>Sencillo!!! Como todo en ArchLinux: KISS</p>
-
-<p>Podría volverse más creativo&hellip;</p>
-
-<p>Digamos por ejemplo, que yo quiero tener la lista de paquetes que tiene mi
-sistema antes y después de una instalación, para saber que se instalo y cuando.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/pacman.d/hooks/listpackages.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>pacman -Qe &gt; /root/<span class="k">$(</span>date +%j%H%M%S<span class="k">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Eso creará un fichero similar a /root/051153712, el nombre, es el yday (día del
-año) y con la hora, minuto y segundo. Dentro del fichero, una lista de todos los
-paquetes instalados. Muy útil si eres tester o desarrollador, o simplemente
-quieres saber que paquetes había antes o después de instalar.</p>
-
-<p>Por cierto, otra manera de saber que si instalo hoy y ayer, es esta:</p>
-
-<figure class='code'><figcaption><span>&#8220;¿cuando fue?&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ls -ltcr --time-style +%j /var/lib/pacman/local/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Devuelve el día del año en el que se instaló un paquete. Así sabes que se
-instaló hoy. Te recuerdo, que en ArchLinux, todos los días hay algo nuevo que
-instalar :D</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/02/01/arch-compartir-paquetes/">arch compartir paquetes</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-02-01T13:56:56-05:00'><span class='date'>01/02/2016</span> <span class='time'>1:56 pm</span></time>
-        
-           | <a href="/blog/2016/02/01/arch-compartir-paquetes/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/02/01/arch-compartir-paquetes/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>No desde cuando, pero por fin, un sueño echo realidad en ArchLinux. Revertir un
-paquete de su forma instalada, a su forma de paquete. Esto puede no resultar
-algo novedoso para el que tenga internet como algo cotidiano, pero para los
-cubanos de a pie, resulta una verdadera novedad.</p>
-
-<p>Digamos que mi socio necesita instalar nginx en su arch, misma arquitectura que
-el mío. Simplemente, le genero el paquete a partir de mi instalación y listo.</p>
-
-<figure class='code'><figcaption><span>&#8220;bacman en acción&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@samsung ~<span class="o">]</span><span class="c"># cd /var/cache/pacman/pkg/</span>
-</span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># bacman nginx</span>
-</span><span class='line'><span class="o">==</span>&gt; Package: nginx-1.8.1-1
-</span><span class='line'>  -&gt; Copying package files...
-</span><span class='line'>    -&gt; Generating .PKGINFO metadata...
-</span><span class='line'>    -&gt; Generating the package...
-</span><span class='line'>  <span class="o">==</span>&gt; Done.
-</span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># ls nginx*</span>
-</span><span class='line'>nginx-1.8.1-1-x86_64.pkg.tar.xz
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Pues <strong>bacman</strong> es la respuesta. Ahora se puede regresar un paquete a su estado;
-digamos &ldquo;pristino&rdquo;.</p>
-
-<p>¡¡OJO!! <strong>TUS</strong> ficheros de configuración, también se empaquetan.</p>
-
-<p>Usualmente solía mantener en mi caché los paquetes necesarios para llevar a cabo
-una instalación de archlinux usando mi laptop; pero con este nuevo método, la
-cosa cambia bastante. Ahora solo debo cargar con el &ldquo;.iso&rdquo;</p>
-
-<p>Mi proxima idea es reconstruir el grupo <strong>base</strong> completo dentro de la cache y
-luego con <strong>repo-add</strong> crear un mirror, capaz de llevar a cabo una instalación
-de sistema.</p>
-
-<p>De momento quiero probar este script:</p>
-
-<figure class='code'><figcaption><span>&#8220;pristine.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># cambiate al directorio de cache</span>
-</span><span class='line'><span class="nb">cd</span> /var/cache/pacman/pkg/
-</span><span class='line'>
-</span><span class='line'><span class="c"># itera por los paquetes del sistema base</span>
-</span><span class='line'><span class="k">for</span> pkg in <span class="k">$(</span>pacman -Qeg base<span class="p">|</span>awk <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span><span class="p">;</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c"># háblate</span>
-</span><span class='line'>   <span class="nb">echo</span> <span class="nv">$pkg</span> <span class="s1">&#39;&gt;&#39;</span> <span class="k">$(</span>pacman -Qi <span class="nv">$pkg</span><span class="p">|</span>grep Description<span class="p">|</span>cut -d : -f 2<span class="k">)</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c"># reviértelo</span>
-</span><span class='line'>   bacman <span class="nv">$pkg</span> 2&gt; /dev/null &gt; /dev/null
-</span><span class='line'>
-</span><span class='line'><span class="k">done</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># crea el repo</span>
-</span><span class='line'>rm /var/cache/pacman/pkg/custom.db.tar.gz
-</span><span class='line'>repo-add /var/cache/pacman/pkg/custom.db.tar.gz /var/cache/pacman/pkg/*.pkg.tar.xz
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Tendré que probar a instalar usando mi cache como repo. Poniéndole a la máquina
-una source como esta:</p>
-
-<figure class='code'><figcaption><span>&#8220;pacman.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>mirepo<span class="o">]</span>
-</span><span class='line'><span class="nv">SigLevel</span> <span class="o">=</span> Optional TrustAll
-</span><span class='line'><span class="nv">Server</span> <span class="o">=</span> http://localhost:8080
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><em>Nota para los imbéciles: Cambiar <strong>localhost</strong> por la ip de la máquina que está compartiendo la caché.</em></p>
-
-<p>Y para servir tu cache como repo, puedes usar darkhttpd</p>
-
-<figure class='code'><figcaption><span>&#8220;darkhttpd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>darkhttpd /var/cache/pacman/pkg/ --chroot --port 8080
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/01/25/hostname-arbitrario-en-bind9/">bind9, registro arbitratio</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-01-25T20:35:37-05:00'><span class='date'>25/01/2016</span> <span class='time'>8:35 pm</span></time>
-        
-           | <a href="/blog/2016/01/25/hostname-arbitrario-en-bind9/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/01/25/hostname-arbitrario-en-bind9/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Para este tipo de cosas, usualmente recomiendo
-<a href="https://wiki.archlinux.org/index.php/dnsmasq">dnsmasq</a> pero aveces, no nos
-queda más remiendo que usar bind9, por N motivos.</p>
-
-<p>En algunas ocasiones, nos vemos forzados a declarar registros para punteros, a
-host que nada tienen que ver con nuestro domino. Por ejemplo, queremos que el
-host time.windows.com apunte a nuestro servidor de tiempo, para que todos las
-computadoras con windows de la red, se actualicen por nuestro servidor ntp.</p>
-
-<p>En salud, aveces es mejor declarar localmente los punteros a los servidores de
-correo de salud, que hacer otro forward y además, tener que especificarle un
-segundo servidor DNS a nuestros usuarios.</p>
-
-<p>Para lograr esto, debemos declarar una raíz dns en nuestro named.conf, que
-responda a todo, o sea, &ldquo;.&rdquo;, a mi me quedó así.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/bind/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// la zona pa hacer lo que me de la gana</span>
-</span><span class='line'><span class="nx">zone</span> <span class="s2">&quot;.&quot;</span> <span class="p">{</span>
-</span><span class='line'>   <span class="nx">type</span> <span class="nx">master</span><span class="p">;</span>
-</span><span class='line'>   <span class="nx">file</span> <span class="s2">&quot;/etc/bind/fakeroot.zone&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Acá, el fichero <strong>fakeroot.zone</strong> tendrá los registros, donde declaramos los
-FQDN como si fueran hostnames.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/bind/fakeroot.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err">@</span>       <span class="nx">IN</span>      <span class="nx">SOA</span>     <span class="p">.</span> <span class="nx">hostmaster</span><span class="p">.</span><span class="nx">domain</span><span class="p">.</span><span class="nx">com</span><span class="p">.</span> <span class="p">(</span> <span class="mi">1</span> <span class="mi">3</span><span class="nx">h</span> <span class="mi">1</span><span class="nx">h</span> <span class="mi">1</span><span class="nx">w</span> <span class="mi">1</span><span class="nx">d</span> <span class="p">)</span>
-</span><span class='line'><span class="nx">localhost</span>             <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">127.0</span><span class="p">.</span><span class="mf">0.1</span>
-</span><span class='line'><span class="err">@</span>                     <span class="nx">IN</span>      <span class="nx">NS</span>      <span class="nx">localhost</span><span class="p">.</span>
-</span><span class='line'><span class="p">;</span>
-</span><span class='line'><span class="p">;</span> <span class="nx">Los</span> <span class="nx">servidores</span> <span class="nx">de</span> <span class="nx">correo</span> <span class="nx">de</span> <span class="nx">infomed</span>
-</span><span class='line'><span class="nx">smtp</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">201.220</span><span class="p">.</span><span class="mf">211.39</span>
-</span><span class='line'><span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>            <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">201.220</span><span class="p">.</span><span class="mf">211.7</span>
-</span><span class='line'><span class="nx">pop3</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>
-</span><span class='line'><span class="nx">imap</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>
-</span><span class='line'><span class="p">;</span>
-</span><span class='line'><span class="p">;</span> <span class="nx">Los</span> <span class="nx">servidores</span> <span class="nx">de</span> <span class="nx">tiempo</span> <span class="nx">m</span><span class="err">á</span><span class="nx">s</span> <span class="nx">pedidos</span>
-</span><span class='line'><span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>          <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">10.1</span><span class="p">.</span><span class="mf">1.1</span>
-</span><span class='line'><span class="o">*</span><span class="p">.</span><span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span><span class="p">.</span>       <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
-</span><span class='line'><span class="nx">time</span><span class="p">.</span><span class="nx">microsoft</span><span class="p">.</span><span class="nx">com</span>    <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
-</span><span class='line'><span class="nx">time</span><span class="p">.</span><span class="nx">windows</span><span class="p">.</span><span class="nx">com</span>      <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
-</span><span class='line'><span class="nx">time</span><span class="o">-</span><span class="nx">ios</span><span class="p">.</span><span class="nx">apple</span><span class="p">.</span><span class="nx">com</span>    <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En este caso de ejemplo, declaramos un par de host que son de salud, con una ip
-externa. Abajo, los host ntp más típicos, apuntando a nuestro servidor de
-tiempo.</p>
-</div>
-  
-  
-
-
 <p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
@@ -692,6 +630,18 @@ tiempo.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/03/03/nginx-y-websocket/">nginx y websocket</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/03/03/pkg-tras-un-proxy/">pkg tras un proxy</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/01/portknocking-en-freebsd/">portknocking en freebsd</a>
@@ -1079,18 +1029,6 @@ tiempo.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
 		</li>
 		
 	</ul>

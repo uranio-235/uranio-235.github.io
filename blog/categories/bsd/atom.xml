@@ -4,7 +4,7 @@
   <title><![CDATA[Category: bsd | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/bsd/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-03-02T18:27:17-05:00</updated>
+  <updated>2017-03-05T17:04:33-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,57 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[portknocking en freebsd]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd/"/>
+    <updated>2017-03-01T23:53:01-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd</id>
+    <content type="html"><![CDATA[<p><img class="right" src="/images/alibaba.jpg" width="400" height="500" title="" ></p>
+
+<p>La técnica port-knocking o knockd para otros, es en mi opinión, <strong>pilar de la
+seguridad</strong> en cualquier servidor que use SSH. Aunque es bastante versátil y
+puede ser usado hasta para reiniciar servicios sin loguearte.</p>
+
+<p>Una de las cosas que empece a extrañar en FreeBSD fue knockd, pero gracias a la
+flexbilidad de ipfw, podemos usar este poderoso software. En FreeBSD el fichero
+se encuentra en <strong>/usr/local/etc/knockd.conf.sample</strong> y el paquete se llama
+<strong>knock</strong>.</p>
+
+<p>OJO!! Muy importante especificarle la interfaz por la cual va a escuchar.</p>
+
+<pre><code class="ini "/usr/local/etc/knockd.conf"">[options]
+        logfile = /var/log/knockd.log
+        interface = xn0
+
+[openSSH]
+        sequence    = 999,777,333
+        seq_timeout = 9
+        command     = /sbin/ipfw -q add 00001 allow all from %IP% to me
+        tcpflags    = syn
+
+[closeSSH]
+        sequence    = 777,999,333
+        seq_timeout = 9
+        command     = /sbin/ipfw -q delete 00001
+        tcpflags    = syn
+</code></pre>
+
+<p>Nada, resumiendo, que el truco está en poner la regla con el número 00001.
+Recuerdas que ipfw te permite (casi te obliga a) especificar un número para cada
+regla. Pues usaremos ese numerito diminuto para ponerla de primera.</p>
+
+<p>Los tipos ortodoxos criticarán que es una regla <em>al tetón</em>. Pienso que no vale
+la pena abrir solo el 22, si voy a pasar tanto trabajo, que se me abra la puerta
+completa.</p>
+
+<p>Por cierto, junto con knock, viene un programita para hacer el knocking. Yo
+solía hacerlo con netcat pero knock est más cómodo.</p>
+
+<pre><code class="console "knock"">   knock 192.168.3.1 777 999 333
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[mis crónicas con freebsd]]></title>
@@ -44,15 +95,20 @@ todo en ambientes donde te ves obligado a meter la pata y no dispones de
 virtualización. Lo único equivalente a esto en linux, sería LXC, pero no es ni
 la chancleta. Los jails combinado con ZFS, permiten hacer cosas alucinantes.</p>
 
-<p>El gestor de paquetes ha mejorado muchísimo. En cuanto a resolución de
-dependencias y velocidad. Lo han optimizado bastante en mi opinión y ahora
-maneja mejor el tema de las redes lentas; sobre todo detrás de proxy.</p>
-
 <p>Cada versión nueva que sale la pruebo; y aunque había hecho mis cositas con él,
 siempre acababa dejándolo de lado por el tema del ancho de banda. Cualquier
 operación que hagas con la paquetería requiere conexión y poco ancho de banda
 provoca que la operación falle. La versión 9 en mi opinión fue un desastre.
 Especialmente por el sistema de ports que daba unos palos horribles.</p>
+
+<p>El gestor de paquetes ha mejorado muchísimo. La resolución de dependencias y
+velocidad es espectacular. Además, han logrado una completa integración de
+gestión de paquetes en una sola herramienta. Ya no es el reguero ese de pkg_info
+por un lado y pkg_add por otro. Ahora además, soporta operaciones de limpieza
+como <em>autoremove</em> y <em>clean</em>. La herramienta <strong>portaudit</strong> al parecer fue
+<em>portada</em> a pkg también y ahora es oficial. Otras novedades relevantes son que permite crear
+respositorios y hacer operaciones en jails. Ah! y para que contarte el soporte
+de proxy. Más detalles (y una rosetta) <a href="https://wiki.freebsd.org/PkgPrimer">lo puedes ver aquí</a>.</p>
 
 <p>FreeBSD 10 no lo toqué, estuve más girado para OpenIndiana.</p>
 

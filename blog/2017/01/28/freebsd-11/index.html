@@ -130,15 +130,20 @@ todo en ambientes donde te ves obligado a meter la pata y no dispones de
 virtualización. Lo único equivalente a esto en linux, sería LXC, pero no es ni
 la chancleta. Los jails combinado con ZFS, permiten hacer cosas alucinantes.</p>
 
-<p>El gestor de paquetes ha mejorado muchísimo. En cuanto a resolución de
-dependencias y velocidad. Lo han optimizado bastante en mi opinión y ahora
-maneja mejor el tema de las redes lentas; sobre todo detrás de proxy.</p>
-
 <p>Cada versión nueva que sale la pruebo; y aunque había hecho mis cositas con él,
 siempre acababa dejándolo de lado por el tema del ancho de banda. Cualquier
 operación que hagas con la paquetería requiere conexión y poco ancho de banda
 provoca que la operación falle. La versión 9 en mi opinión fue un desastre.
 Especialmente por el sistema de ports que daba unos palos horribles.</p>
+
+<p>El gestor de paquetes ha mejorado muchísimo. La resolución de dependencias y
+velocidad es espectacular. Además, han logrado una completa integración de
+gestión de paquetes en una sola herramienta. Ya no es el reguero ese de pkg_info
+por un lado y pkg_add por otro. Ahora además, soporta operaciones de limpieza
+como <em>autoremove</em> y <em>clean</em>. La herramienta <strong>portaudit</strong> al parecer fue
+<em>portada</em> a pkg también y ahora es oficial. Otras novedades relevantes son que permite crear
+respositorios y hacer operaciones en jails. Ah! y para que contarte el soporte
+de proxy. Más detalles (y una rosetta) <a href="https://wiki.freebsd.org/PkgPrimer">lo puedes ver aquí</a>.</p>
 
 <p>FreeBSD 10 no lo toqué, estuve más girado para OpenIndiana.</p>
 
@@ -202,7 +207,7 @@ modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -267,6 +272,18 @@ modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/03/03/nginx-y-websocket/">nginx y websocket</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/03/03/pkg-tras-un-proxy/">pkg tras un proxy</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/01/portknocking-en-freebsd/">portknocking en freebsd</a>
@@ -654,18 +671,6 @@ modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
 		</li>
 		
 	</ul>

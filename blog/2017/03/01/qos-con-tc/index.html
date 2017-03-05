@@ -173,15 +173,39 @@ cláusulas dst y dport.</p>
 <p><strong>pero aquí NO terminan las aventuras de QoS</strong></p>
 
 <p>Resulta que el tráfico proveniente de las WiFi era apabullante para el servidor
-proxy. Mientras que de una IP de una máquina, entran 3 peticiones, de la IP de
+proxy. Mientras que de una IP de una máquina entran 3 peticiones, de la IP de
 un router wifi entran 30.</p>
 
 <p>En un principio pensaba usar un delay_pool especial para estas ip, pero sería
-complicar más el esquema de delay_pool que funciona bien por usuarios.</p>
+complicar más el esquema de delay_pool que funciona bien por usuarios. Por
+tanto, el tema de la bajada ya está cubierto. Ningún usuario puede acaparar todo
+el ancho de banda con una descarga. Sin embargo, 1&#8217;000 peticiones de basura
+(android con proxy configurado) ahogan al proxy. La medida fue, que el tráfico
+entrante de la wifi, no exceda los 200KB.</p>
+
+<p>En mi caso, los AP usan la ip 10 al 15, por tanto, haciendo un pipe de dummynet
+y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
+
+<figure class='code'><figcaption><span>&#8220;ipfw.rules&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw pipe <span class="m">1</span> config bw 200KBytes
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.10
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.11
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.12
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.13
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.14
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.15
+</span></code></pre></td></tr></table></div></figure>
+
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -240,6 +264,18 @@ complicar más el esquema de delay_pool que funciona bien por usuarios.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/03/03/nginx-y-websocket/">nginx y websocket</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/03/03/pkg-tras-un-proxy/">pkg tras un proxy</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/01/portknocking-en-freebsd/">portknocking en freebsd</a>
@@ -627,18 +663,6 @@ complicar más el esquema de delay_pool que funciona bien por usuarios.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
 		</li>
 		
 	</ul>
