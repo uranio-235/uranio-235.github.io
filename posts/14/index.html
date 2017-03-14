@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="transando a ext4 03/06/2015 11:08 pm | Comments Una de mis grandes testarudeces (profesionales) siempre ha sido la negativa a
-usar ext4. &hellip;">
+  <meta name="description" content="pacman bajo el microscopio 01/06/2015 9:13 pm | Comments En este post, me propongo mostrarle algunas de las bondades de pacman. Cualquier
+que &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,75 +82,6 @@ usar ext4. &hellip;">
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-03T23:08:27-04:00'><span class='date'>03/06/2015</span> <span class='time'>11:08 pm</span></time>
-        
-           | <a href="/blog/2015/06/03/transando-a-ext4/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/06/03/transando-a-ext4/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Una de mis grandes testarudeces (profesionales) siempre ha sido la negativa a
-usar ext4. Acostumbrado a los discos IDE, siempre me pareció que el journal
-escribía demasiado en el disco. Además, solía verse ext4dev y eso me sonaba a
-que se usaría mi sistema como ratón de laboratorio.</p>
-
-<p>Tanta fue mi fobia, que hoy en día aún uso discos montados en ext2. Por ejemplo,
-mi laptop estaba montada en ext2 hasta ahora mismo; también la partición /home
-del servidor LTSP.</p>
-
-<p>Un fallo eléctrico reciente, me demostró que el journal es un mal necesario. En
-discos de tanta escritura, como es el caso del /home de los clientes ligeros, la
-integridad de los datos es definitivamente una clave para el sistema. Además,
-todo el que usó ext4dev no se quejó nunca.</p>
-
-<figure class='code'><figcaption><span>&#8220;tune2fs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>tune2fs -O extents,uninit_bg,dir_index /dev/sda2
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con eso, le pones a tu ext2 todas las gangarreas del 4. A este punto, reza
-porque no se valla luz! Hay que dar otro paso y es pasar un fsck.</p>
-
-<figure class='code'><figcaption><span>&#8220;tune2fs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>tune2fs -c <span class="m">0</span> /dev/sda <span class="o">&amp;&amp;</span> reboot
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Marca el disco para chequear y reinicia. Cuando levante, verás que da unos palos
-raros ahí pero tú tranquilo.</p>
-
-<p>Las memorias si las dejo con ext2. Pues no necesitan un journal escribiendo
-tanto y acortando su vida útil.</p>
-
-<p>Lo próximo que instale, lo haré con BtrFS que está <em>más mejoL en todavía</em>. Dice
-tener un soporte especial para discos SSD con lo cual me imagino que para las
-memorias flash sea más óptimo.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
   
   
     <article>
@@ -523,7 +454,7 @@ todas salen de un supuesto firefox.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -630,7 +561,7 @@ pa la casa.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1015,7 +946,7 @@ ser alcanzado por otra máquina.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1068,6 +999,184 @@ otras muchas cosas que no imaginamos.</p>
 <h4>Se acabó la autenticación pa afuera</h4>
 
 <p>   <blockquote><p>Te das cuenta que NO todo se resuelve con violencia,<br/>   cuando se te pusa un mosquito en los testículos.</p></blockquote></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/19/delay-pools-de-squid/">delay pools de squid</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-19T12:03:48-05:00'><span class='date'>19/02/2015</span> <span class='time'>12:03 pm</span></time>
+        
+           | <a href="/blog/2015/02/19/delay-pools-de-squid/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/19/delay-pools-de-squid/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Los delay pool de squid, son una herramienta que permite determinar cuanto ancho
+de vianda le corresponde a ciertas conexiones. A mi en lo personal su uso me
+disgusta bastante; por el mero hecho de que pone a squid leeeeento. Cuando los
+delay pools están pinchando, las peticiones se demoran más al ser respondidas y
+el proto cache manager empieza a hacer cosas raras.</p>
+
+<p>En fin, cierra el chat, apriétate el cinto y abre las entendederas que esto es
+complicado&hellip;</p>
+
+<p>Supón que tienes 128Kbit y queremos repartir el ancho de vianda de manera
+&ldquo;equitativa&rdquo;</p>
+
+<p>El ancho de vianda se vende en KBit pero squid entiende de K Bytes.</p>
+
+<figure class='code'><figcaption><span>&#8216;conversion de Kbit/s a KBytes/s&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">irb(main):611:0&gt; 128/8</span>
+</span><span class='line'><span class="go">=&gt; 16</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>O sea, que tú canal llega a los 16 Kylo Bytes por segundos&hellip;</p>
+
+<p>Nuestro discriminante sistema de castas, tendrá 2 clases</p>
+
+<p>&ldquo;lo dioses&rdquo; y &ldquo;los mortales&rdquo;</p>
+
+<p>Los dioses cuentan con el 60% del ancho de vianda disponible, mientras que los
+mortales solo cuentan con el 20%.</p>
+
+<p>OJO: No des a nadie el 100%, ya que podría acaparar todo el canal y dejar a todo
+el mundo sin navegación.</p>
+
+<p>Los delay pool de clase 2, son los que reparten &ldquo;ancho de banda por cabeza&rdquo;
+Osease, &ldquo;esto es lo que le toca a esa persona&rdquo;. Los parámetros de los delay pool
+de la clase dos son sucesivamente: ancho de banda y ráfaga</p>
+
+<p>El ancho de banda, no puede ser una cosa rígida, porque los datos no
+se transmiten de manera rígida. Aveces se requiere mucho ancho de banda
+durante 2 milisegundos para establecer una conexión SSL.</p>
+
+<p>Ahí es donde viene a jugar la ráfaga. Osea: &ldquo;cuanto ancho de banda
+máximo tendrá durante los picos&rdquo;</p>
+
+<p>Digamos que el delay pool será un 20% del canal</p>
+
+<figure class='code'><figcaption><span>&#8220;el 20%&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">irb(main):612:0&gt; 16*20/100*1024</span>
+</span><span class='line'><span class="go">=&gt; 3072</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A la ráfaga le das un Kylo más</p>
+
+<figure class='code'><figcaption><span>&#8220;un kylo más&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">irb(main):613:0&gt; 3072+1024</span>
+</span><span class='line'><span class="go">=&gt; 4096</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El delay_pool te viene quedando así:</p>
+
+<figure class='code'><figcaption><span>&#8220;delay_pool #1&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>delay_parameters <span class="m">1</span> 3072/3072 4096/4096
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora creamos un delay_pool que tiene el 80% del ancho de banda</p>
+
+<figure class='code'><figcaption><span>&#8220;el 80%&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">irb(main):614:0&gt; 16*80/100*1024</span>
+</span><span class='line'><span class="go">=&gt; 12288</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Sea entonces el delay_pool 2 así:</p>
+
+<figure class='code'><figcaption><span>&#8220;delay_pool #2&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='squidconf'><span class='line'><span class="k">delay_parameters</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">12288</span>/12288<span class="w"> </span><span class="m">13312</span>/13312<span class="w"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al final el squid.con</p>
+
+<figure class='code'><figcaption><span>&#8216;squid.conf&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='squidconf'><span class='line'><span class="c"># tendremos 2 delai puls</span><span class="w"></span>
+</span><span class='line'><span class="k">delay_pools</span><span class="w"> </span><span class="m">2</span><span class="w"></span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ambos de la clase 2</span><span class="w"></span>
+</span><span class='line'><span class="k">delay_class</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">2</span><span class="w"></span>
+</span><span class='line'><span class="k">delay_class</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">2</span><span class="w"></span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># los mortales van al 20%</span><span class="w"></span>
+</span><span class='line'><span class="k">delay_parameters</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">3072</span>/3072<span class="w"> </span><span class="m">4096</span>/4096<span class="w"></span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># y los dioses van al 80%</span><span class="w"></span>
+</span><span class='line'><span class="k">delay_parameters</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">12288</span>/12288<span class="w"> </span><span class="m">13312</span>/13312<span class="w"></span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># los dioses, aquellos cuyo nombre de usuario machee esta lista</span><span class="w"></span>
+</span><span class='line'><span class="k">acl</span><span class="w"> </span>dioses<span class="w"> </span><span class="k">proxy_auth</span><span class="w"> </span>tuusuario<span class="w"> </span>eljefe<span class="w"> </span>eldirector<span class="w"> </span>lajevita<span class="w"> </span>lasecretaria<span class="w"></span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># en el 1 metemos a los dioses</span><span class="w"></span>
+</span><span class='line'><span class="k">delay_access</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="no">allow</span><span class="w"> </span>dioses<span class="w"></span>
+</span><span class='line'><span class="k">delay_access</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="no">deny</span><span class="w"> </span><span class="no">all</span><span class="w"> </span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># el resto, pal 2</span><span class="w"></span>
+</span><span class='line'><span class="k">delay_access</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="no">allow</span><span class="w"> </span><span class="no">all</span><span class="w"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ah otra cosa! MUY IMPORTANTE</p>
+
+<h4>NADIE debe quedar fuera de delay pool una vez que creas el primero.</h4>
+
+<p>Si quieres TÚ (el informático que es tremendo decarao) quires navegar más rápido
+que nadie, create un delay pool con el 100% del ancho de banda, pero no te
+quedes fuera de ningún delaypool.</p>
+
+<p>Desde ese momento empezarás a acaparar todo el canal al punto de que NO se podrá
+navegar. A ese punto te buscarás un lío, no reserves para ti solo más del 80%
+del canal y navega con cordura.</p>
 </div>
   
   
@@ -1400,10 +1509,6 @@ otras muchas cosas que no imaginamos.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/06/12/systemd-automount/">systemd automount</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/06/07/openvpn-en-arch/">OpenVPN en Arch</a>
 		</li>
 		
@@ -1493,6 +1598,10 @@ otras muchas cosas que no imaginamos.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
 		</li>
 		
 	</ul>

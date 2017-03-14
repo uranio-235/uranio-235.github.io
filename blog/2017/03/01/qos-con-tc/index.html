@@ -10,7 +10,7 @@
 
   
   <meta name="description" content="QoS con tc o dummynet 01/03/2017 7:57 pm | Comments Acá en el 5to infierno de infomed, algunos usuarios; están acostumbrados a usar
-su cliente de &hellip;">
+un &ldquo;MUA& &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -105,19 +105,19 @@ su cliente de &hellip;">
 
 
 <div class="entry-content"><p>Acá en el 5to infierno de infomed, algunos usuarios; están acostumbrados a usar
-su cliente de correo para alar el corre de infomed. Con el boom de la wifi, los
-médicos querían tener su correo de infomed. Tras hacer un forward a los smtp y
-pop de infomed, el ancho de vianda se fue a la mierda. Por tanto, surgió la
-necesidad de chapiar el tráfico que va desde/hacia infomed. Por ejemplo, el
-tráfico smtp, es saliente (subida), sin embargo, el tráfico pop es entrante
-(bajada).</p>
+un &ldquo;MUA&rdquo; (léase &ldquo;cliente de correo&rdquo;)  para alar el correo de infomed. Con el
+boom de la wifi, los médicos querían tener su correo de infomed en el puñetero
+cliente de correo de android/ios. Tras hacer un forward a los smtp y pop de
+infomed, el ancho de vianda se fue a la mierda. Por tanto, surgió la necesidad
+de chapiar el tráfico que va desde/hacia infomed. Por ejemplo, el tráfico smtp,
+es saliente (subida), sin embargo, el tráfico pop es entrante (bajada).</p>
 
-<p>El servidor que uso como &ldquo;router&rdquo;, es un alpine linux. Su única función es DNS y
-cortafuegos. El trinomio bind, dhcp e iptables, sumado al kernel grsec;
-convierte en mi opinión a alpinelinux en la mejor opción para un router.</p>
+<p>El servidor que uso como &ldquo;router&rdquo;, es un alpine linux. El trinomio bind, dhcp e
+iptables, sumado al kernel grsec; convierte en mi opinión a alpinelinux en la
+mejor opción para un router.</p>
 
-<p>Entrenado en materia. Tenemos un canal de 2 megabit (256 KB/s). Pero en HDSL, la
-subida es más triste que la bajada y además, hay más gente bajando correo que
+<p>Entrando en materia. Tenemos un canal de 2 megabit (256 KB/s). Pero en HDSL, la
+subida es más triste que la bajada; y además, hay más gente bajando correo que
 subiendo. Por tanto, usaremos un canal para el smtp, más estrecho que el del
 pop. En este caso, <strong>eth0</strong> será la interfaz donde está el router.</p>
 
@@ -138,10 +138,6 @@ pop. En este caso, <strong>eth0</strong> será la interfaz donde está el router
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># reiniciamos las colas que hallan en eth0</span>
 </span><span class='line'><span class="c"># para empezar a trabajar en limpio</span>
 </span><span class='line'>tc qdisc del root dev eth0
@@ -152,10 +148,6 @@ pop. En este caso, <strong>eth0</strong> será la interfaz donde está el router
 </span><span class='line'>tc class add dev eth0 parent 1:  classid 1:1  htb rate 256kbps burst 5k
 </span><span class='line'>tc class add dev eth0 parent 1:1 classid 1:10 htb rate  20kbps burst 5k
 </span><span class='line'>tc class add dev eth0 parent 1:1 classid 1:11 htb rate  10kbps burst 5k
-</span><span class='line'>
-</span><span class='line'><span class="c"># recalcula las colas cada 10 segundos</span>
-</span><span class='line'>tc qdisc add dev eth0 parent 1:10 handle 10: sfq perturb 10
-</span><span class='line'>tc qdisc add dev eth0 parent 1:11 handle 11: sfq perturb 10
 </span><span class='line'>
 </span><span class='line'><span class="c"># lo que valla para el pop e imap, lo dejamos en el :10 con 20kbps</span>
 </span><span class='line'>tc filter add dev eth0 parent 1: protocol ip prio <span class="m">1</span> u32 match ip src 201.220.211.7 match ip sport <span class="m">110</span> 0xffff flowid 1:10
@@ -194,18 +186,18 @@ y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw pipe <span class="m">1</span> config bw 200KBytes
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.10
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.11
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.12
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.13
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.14
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from me to 10.1.1.15
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.10 to me
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.11 to me
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.12 to me
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.13 to me
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.14 to me
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.15 to me
 </span></code></pre></td></tr></table></div></figure>
 
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -570,10 +562,6 @@ y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/06/12/systemd-automount/">systemd automount</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/06/07/openvpn-en-arch/">OpenVPN en Arch</a>
 		</li>
 		
@@ -663,6 +651,10 @@ y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
 		
 		<li class="post">
 			<a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
 		</li>
 		
 	</ul>

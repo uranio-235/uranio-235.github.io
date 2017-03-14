@@ -111,7 +111,7 @@ puesto de moda en cuba.</p>
 <p>Un método bastante perezoso de instalar una LAMP <strong>en Debian</strong>, es instalar el
 paquete <strong>phpmyadmin</strong>. Esto instala y configura el servidor SQL; además de
 hacer jugar a apache2 con php y mysql, todo de un solo teclazo. Pero aveces, por
-ejemplo, al instalar RainLoop, no queremos que phpmyadmin quede instalado.  Una
+ejemplo, al instalar RainLoop, no queremos que phpmyadmin quede instalado. Una
 buena variante es desinstalarlo después; pero nos quedan algunos paquetes
 innecesarios instalados.</p>
 
@@ -119,7 +119,7 @@ innecesarios instalados.</p>
 apache SOLO.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">aptitude install apache2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> aptitude install apache2</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -127,7 +127,7 @@ apache SOLO.</p>
 adecuado de manera automática.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">aptitude install mysql-server mysql-client</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> aptitude install mysql-server mysql-client</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -135,8 +135,15 @@ adecuado de manera automática.</p>
 pidiéndote la contraseña del root. Ahora instalamos la piedra angular. El
 soporte de php+mysql de apache.</p>
 
-<figure class='code'><figcaption><span>&#8220;esta linea es larga&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">aptitude install php5 libmysqlclient-dev php5-mysql curl libcurl3 libcurl3-dev php5-curl php5-json</span>
+<figure class='code'><figcaption><span>&#8220;soporte de mysql&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> aptitude install php5 libmysqlclient-dev php5-mysql</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Instalamos el resto de la paquetería necesaria para rainloop.</p>
+
+<figure class='code'><figcaption><span>&#8220;paquetería de rainloop&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> aptitude install curl libcurl3 libcurl3-dev php5-curl php5-json</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -144,8 +151,8 @@ soporte de php+mysql de apache.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">systemctl restart mysql</span>
-</span><span class='line'><span class="go">systemctl restart apache2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> systemctl restart mysql</span>
+</span><span class='line'><span class="go"> systemctl restart apache2</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -180,7 +187,7 @@ servidor; no vale la pena crear otro usuario. Lo dejo a tu elección.</p>
 
 <p>Y vamos a instalar rainloop! La manera clásica de hacerlo es usando el paquete
 &ldquo;.zip&rdquo; del sitio. Si quieres llégate allá y bájatelo. Descomprimes en un
-directorio y sigue las instrucciones; sin embargo hay otra manera de hacer.</p>
+directorio y sigue las instrucciones; sin embargo hay otra manera.</p>
 
 <figure class='code'><figcaption><span>&#8220;alando rainloop del repositorio&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -199,7 +206,8 @@ horribles que no tienen nada que ver con permisos aparentemente. Por ejemplo, si
 el fichero que dice la versión, no pertenece al usuario que corre el servidor
 web, te dirá que no puede encontrar el directorio &ldquo;data&rdquo;. Espectacular! Para
 evitar eso, solo los directorios tendrán el ejecutable. Además, todo pertenecerá
-al usuario www-data; que en debian es el usuario que usa el apache para correr.</p>
+al usuario <strong>www-data</strong>; que en debian es el usuario que usa el apache para
+correr.</p>
 
 <figure class='code'><figcaption><span>&#8220;estableciendo permisos&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -232,7 +240,7 @@ pop en su cuenta de gmail.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -595,10 +603,6 @@ pop en su cuenta de gmail.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/06/12/systemd-automount/">systemd automount</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/06/07/openvpn-en-arch/">OpenVPN en Arch</a>
 		</li>
 		
@@ -688,6 +692,10 @@ pop en su cuenta de gmail.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
 		</li>
 		
 	</ul>
