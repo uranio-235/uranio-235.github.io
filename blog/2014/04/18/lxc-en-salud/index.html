@@ -202,18 +202,9 @@ desenclavas (detach) la consola del container (que sigue corriendo).</p>
 
 <p>Bello verdad?! Linux es un sistema multitareas y multiusuario.</p>
 
-<p>Haremos un snapshot de <strong>debian</strong>, esto dará lugar a <strong>snap0</strong>. O sea primer,
-snapshot del container &ldquo;debian&rdquo;, lo podrás ver en <em>/var/lib/lxc/debian/snaps</em>.
-Ah! Para hacer un snapshot, <strong>paramos</strong> el container primero.</p>
-
-<figure class='code'><figcaption><span>&#8220;lxc-snapshot&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[root@leviatan ~]# lxc-stop -n debian </span>
-</span><span class='line'><span class="go">[root@leviatan ~]# lxc-snapshot -n debian </span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>y lo restauramos con el nombre del nuevo container</p>
+<p>Empezar a aprovisionarnos es tan simple como copiar el contenedor. O sea el
+contenedor <strong>debian</strong> lo usaremos como plantilla para crear los contenedores
+mail, web y ftp.</p>
 
 <figure class='code'><figcaption><span>&#8220;lxc-snapshot&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -224,9 +215,9 @@ Ah! Para hacer un snapshot, <strong>paramos</strong> el container primero.</p>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[root@leviatan ~]# lxc-snapshot -n debian -r snap0 -N mail</span>
-</span><span class='line'><span class="go">[root@leviatan ~]# lxc-snapshot -n debian -r snap0 -N web</span>
-</span><span class='line'><span class="go">[root@leviatan ~]# lxc-snapshot -n debian -r snap0 -N ftp</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[root@leviatan ~]# lxc-copy -n debian -N mail</span>
+</span><span class='line'><span class="go">[root@leviatan ~]# lxc-copy -n debian -N web</span>
+</span><span class='line'><span class="go">[root@leviatan ~]# lxc-copy -n debian -N ftp</span>
 </span><span class='line'><span class="go">[root@leviatan ~]# lxc-ls -f</span>
 </span><span class='line'><span class="go">NAME   STATE   AUTOSTART GROUPS IPV4 IPV6</span>
 </span><span class='line'><span class="go">debian STOPPED 0         -      -    -</span>
@@ -236,15 +227,12 @@ Ah! Para hacer un snapshot, <strong>paramos</strong> el container primero.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Ya tenemos las tres máquinas. Por lo tanto, NO vale la pena conservar el
-snapshot ni la máquina base (¿o sí?). Yo opté por borrar ambos.</p>
-
-<figure class='code'><figcaption><span>&#8220;limpiando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[root@leviatan ~]# lxc-snapshot -n debian -d snap0</span>
-</span><span class='line'><span class="go">[root@leviatan ~]# lxc-destroy -n debian</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Ya tenemos las tres máquinas. Ahora es tu desición si conservas o no el
+contenedor primario. A ese primer contenedor, que en este caso se llama &ldquo;debian&rdquo;
+yo lo llamo <em>matriz</em>. La matriz la mantengo actualizada y afinada. En algún
+momento podría necesitar hacer máquinas nuevas. Además, si te decides a hacer
+algún servidor desde cero; conservando las configuraciones, simplemente haces
+una nueva copia de la matriz (actualizada).</p>
 
 <p>No vale pena tener ssh corriendo en los contenedores. Simplemente le haces ssh
 al servidor y attach al contenedor. Esto lo hace incluso hasta más seguro.</p>
@@ -254,6 +242,26 @@ ahora. Arrancar el container y enclavar la consola.</p>
 
 <p>¿Notaste que puse a iptables como paquete opcional? Pues el iptables del
 hypervisor, o sea, del arch de afuera, controla todo el tráfico.</p>
+
+<p>Otra cosa buena que puedes hacer es lincar todas las cache de apt de los debian.
+Por ejemplo, el directorio de la matriz sería:</p>
+
+<p>/var/lib/lxc/debian/rootfs/var/cache/apt/archives</p>
+
+<p>Mientras que el de &ldquo;mail&rdquo; sería</p>
+
+<p>/var/lib/lxc/mail/rootfs/var/cache/apt/archives</p>
+
+<p>Simplemente montas con bind el archive de debian en el de mail. El fstab
+quedaría así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/fstab&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> /el/debian/archives  /el/mail/archives  none  <span class="nb">bind</span>,nofail <span class="m">0</span>  0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nota para imbéciles: La ruta es muy larga, por eso usé ese aforismo. En el fstab
+debes poner ambas rutas como se ven arriba &ldquo;/var/lib/lxc/rootfs/fulanito&rdquo;</p>
 
 <p>Como no usamos red en bridge, todos los container tiran por la misma ip. En el
 servido web, se usa el puerto 80 y 443, en el de correo el 25 y 110; <strong>pero
@@ -293,7 +301,7 @@ de debian.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -309,6 +317,12 @@ de debian.</p>
 
 <time class='entry-date' datetime='2014-04-18T21:14:10-04:00'><span class='date'>18/04/2014</span> <span class='time'>9:14 pm</span></time>
       
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/destacado/'>destacado</a>
+  
+</span>
 
 
     </p>
@@ -352,6 +366,10 @@ de debian.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/">nueva VM siempre es PV</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a>
@@ -622,10 +640,6 @@ de debian.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/09/01/squid-transparente/">squid transparente</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/08/28/compute-remote-uptime/">compute remote uptime</a>
 		</li>
 		
@@ -655,10 +669,6 @@ de debian.</p>
 		
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/06/07/openvpn-en-arch/">OpenVPN en Arch</a>
 		</li>
 		
 		<li class="post">
@@ -698,10 +708,6 @@ de debian.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2014/12/02/welcome-aboard/">welcome aboard</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a>
 		</li>
 		
@@ -715,10 +721,6 @@ de debian.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/08/25/mas-de-ocs/">más de OCS</a>
 		</li>
 		
 		<li class="post">
@@ -751,6 +753,18 @@ de debian.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
 		</li>
 		
 	</ul>

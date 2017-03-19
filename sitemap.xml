@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://uranio-235.github.io/blog/2017/03/17/nueva-vm-siempre-es-pv/</loc>
+<lastmod>2017-03-17T20:46:32-04:00</lastmod>
+</url>
+<url>
 <loc>http://uranio-235.github.io/blog/2017/03/04/rainloop-en-debian/</loc>
 <lastmod>2017-03-04T13:45:55-05:00</lastmod>
 </url>
@@ -269,10 +273,6 @@
 <lastmod>2015-09-07T20:32:57-04:00</lastmod>
 </url>
 <url>
-<loc>http://uranio-235.github.io/blog/2015/09/01/squid-transparente/</loc>
-<lastmod>2015-09-01T14:23:00-04:00</lastmod>
-</url>
-<url>
 <loc>http://uranio-235.github.io/blog/2015/08/28/compute-remote-uptime/</loc>
 <lastmod>2015-08-28T12:21:58-04:00</lastmod>
 </url>
@@ -303,10 +303,6 @@
 <url>
 <loc>http://uranio-235.github.io/blog/2015/06/21/se-dice-dios-no-ala/</loc>
 <lastmod>2015-06-21T22:27:03-04:00</lastmod>
-</url>
-<url>
-<loc>http://uranio-235.github.io/blog/2015/06/07/openvpn-en-arch/</loc>
-<lastmod>2015-06-07T18:18:17-04:00</lastmod>
 </url>
 <url>
 <loc>http://uranio-235.github.io/blog/2015/06/03/transando-a-ext4/</loc>
@@ -345,10 +341,6 @@
 <lastmod>2015-02-06T17:13:50-05:00</lastmod>
 </url>
 <url>
-<loc>http://uranio-235.github.io/blog/2014/12/02/welcome-aboard/</loc>
-<lastmod>2014-12-02T09:12:44-05:00</lastmod>
-</url>
-<url>
 <loc>http://uranio-235.github.io/blog/2014/10/28/proxy-automatico/</loc>
 <lastmod>2014-10-28T22:37:20-04:00</lastmod>
 </url>
@@ -363,10 +355,6 @@
 <url>
 <loc>http://uranio-235.github.io/blog/2014/08/25/el-server-de-correo/</loc>
 <lastmod>2014-08-25T20:19:27-04:00</lastmod>
-</url>
-<url>
-<loc>http://uranio-235.github.io/blog/2014/08/25/mas-de-ocs/</loc>
-<lastmod>2014-08-25T10:01:09-04:00</lastmod>
 </url>
 <url>
 <loc>http://uranio-235.github.io/blog/2014/08/15/subdesarrollo/</loc>

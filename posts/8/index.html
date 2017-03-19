@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="deshabilitar historial de bash 12/05/2016 2:34 pm | Comments Alguna vez han pensado, que en algunos servidores o estaciones, en las cual
-trabajan &hellip;">
+  <meta name="description" content="desacelerar mouse 06/06/2016 11:41 pm | Comments El reducido espacio de trabajo que tengo en la casa para colocar la laptop; me
+hace sentir como si &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +88,97 @@ trabajan &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/06/06/desacelerar-mouse/">desacelerar mouse</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-06-06T23:41:44-04:00'><span class='date'>06/06/2016</span> <span class='time'>11:41 pm</span></time>
+        
+           | <a href="/blog/2016/06/06/desacelerar-mouse/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/06/06/desacelerar-mouse/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>El reducido espacio de trabajo que tengo en la casa para colocar la laptop; me
+hace sentir como si viviera en el apartamento más pequeño de Tokio. Tanto así,
+que no tengo ni donde desplazar el mouse y los cables me la ponen aún más
+difícil. Comprar una casa más grande no es una opción; sin embargo, reducir el
+mouse es más viable. Se me ocurrió adquirir un mouse inalámbrico, ya que son
+pequeñitos.</p>
+
+<p>Pero un mouse pequeño liviano, resulta que se desplaza mucho más rápido, que mi
+antiguo <em>General Electric Pixart Inc. Optical Mouse</em>. Lo que más me molesta es;
+no solo lo rápido que se desplaza, si no el <em>picor</em> que tiene en la aceleración.</p>
+
+<p>La solución: Desacelerar el mouse</p>
+
+<figure class='code'><figcaption><span>&#8220;slowmouse.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Constant Deceleration&quot;</span> 0.5
+</span><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Velocity Scaling&quot;</span> 1
+</span><span class='line'>xinput --set-prop <span class="m">10</span> <span class="s2">&quot;Device Accel Profile&quot;</span> -1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso, el mouse pequeñito, se desplaza tal como lo hace el grande. Ya que el
+grande, es más pesado y por ende, se desplaza un tín mas lento.</p>
+
+<p><strong>¡¡¡Tardé bastante en quedar complacido probando números!!!</strong></p>
+
+<p>Por cierto, el <strong>10</strong> es la id del dispositivo. Puedes verlo corriendo el
+comando <strong>xinput &ndash;list &ndash;short</strong> a mi se me ve así:</p>
+
+<figure class='code'><figcaption><span>&#8220;xinput &#8211;list &#8211;short&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lazaro@samsung ~&gt; xinput --list --short
+</span><span class='line'>⎡ Virtual core pointer                      <span class="nv">id</span><span class="o">=</span>2 <span class="o">[</span>master pointer  <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>⎜   ↳ Virtual core XTEST pointer                  <span class="nv">id</span><span class="o">=</span>4 <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
+</span><span class='line'>⎜   ↳ PixArt USB Optical Mouse                    <span class="nv">id</span><span class="o">=</span>10    <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
+</span><span class='line'>⎜   ↳ ETPS/2 Elantech Touchpad                    <span class="nv">id</span><span class="o">=</span>12    <span class="o">[</span>slave  pointer  <span class="o">(</span>2<span class="o">)]</span>
+</span><span class='line'>⎣ Virtual core keyboard                     <span class="nv">id</span><span class="o">=</span>3 <span class="o">[</span>master keyboard <span class="o">(</span>2<span class="o">)]</span>
+</span><span class='line'>    ↳ Virtual core XTEST keyboard               <span class="nv">id</span><span class="o">=</span>5 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>    ↳ Power Button                              <span class="nv">id</span><span class="o">=</span>6 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>    ↳ Video Bus                                 <span class="nv">id</span><span class="o">=</span>7 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>    ↳ Power Button                              <span class="nv">id</span><span class="o">=</span>8 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>    ↳ Sleep Button                              <span class="nv">id</span><span class="o">=</span>9 <span class="o">[</span>slave  keyboard <span class="o">(</span>3<span class="o">)]</span>
+</span><span class='line'>    ↳ AT Translated Set <span class="m">2</span> keyboard
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ve, el <em>PixArt USB Optical Mouse</em> dice que <strong>id=10</strong></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2016/05/12/deshabilitar-historial-de-bash/">deshabilitar historial de bash</a></h1>
     
     
@@ -125,7 +216,7 @@ PRÓXIMA VEZ</strong> esta sesión aún salva historial&hellip; Sale y vuelve a 
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -183,7 +274,7 @@ manera automática.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -446,7 +537,7 @@ que &ldquo;la wifi sin contraseña es más fácil&rdquo; sin pensar en riesgos&h
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -493,7 +584,7 @@ timeout.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -555,61 +646,7 @@ default, los demás script necesarios para cargar dichos rubies.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/02/22/data-confirm-en-un-boton/">data confirm en un boton</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-02-22T14:20:33-05:00'><span class='date'>22/02/2016</span> <span class='time'>2:20 pm</span></time>
-        
-           | <a href="/blog/2016/02/22/data-confirm-en-un-boton/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/02/22/data-confirm-en-un-boton/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Usualmente, tenemos un botón en un formulario y nos gustaría que al pulsar este,
-nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
-
-<figure class='code'><figcaption><span>&#8221;_navbar.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='rhtml'><span class='line'>  <span class="cp">&lt;%=</span> <span class="n">form_tag</span> <span class="n">manager_email_path</span><span class="p">,</span><span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;navbar-form navbar-left&#39;</span><span class="p">,</span><span class="ss">role</span><span class="p">:</span> <span class="s1">&#39;search&#39;</span><span class="p">,</span><span class="nb">method</span><span class="p">:</span> <span class="ss">:post</span> <span class="k">do</span> <span class="cp">%&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;form-group&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">name=</span><span class="s">&quot;email&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">class=</span><span class="s">&quot;form-control&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;fulanito@infomed.sld.cu&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>     <span class="cp">&lt;%=</span> <span class="n">button_tag</span><span class="p">(</span><span class="ss">:class</span> <span class="o">=&gt;</span> <span class="s2">&quot;btn btn-default&quot;</span><span class="p">,</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span><span class="ss">:confirm</span> <span class="o">=&gt;</span> <span class="s1">&#39;Seguro?&#39;</span><span class="p">}</span> <span class="p">)</span> <span class="k">do</span> <span class="cp">%&gt;</span>
-</span><span class='line'>        Enviar
-</span><span class='line'>     <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
-</span><span class='line'>  <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -630,6 +667,10 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/">nueva VM siempre es PV</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a>
@@ -900,10 +941,6 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/09/01/squid-transparente/">squid transparente</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/08/28/compute-remote-uptime/">compute remote uptime</a>
 		</li>
 		
@@ -933,10 +970,6 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
 		
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/06/07/openvpn-en-arch/">OpenVPN en Arch</a>
 		</li>
 		
 		<li class="post">
@@ -976,10 +1009,6 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2014/12/02/welcome-aboard/">welcome aboard</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a>
 		</li>
 		
@@ -993,10 +1022,6 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
 		
 		<li class="post">
 			<a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/08/25/mas-de-ocs/">más de OCS</a>
 		</li>
 		
 		<li class="post">
@@ -1029,6 +1054,18 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
 		
 		<li class="post">
 			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
 		</li>
 		
 	</ul>

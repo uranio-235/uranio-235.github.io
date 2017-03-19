@@ -9,8 +9,7 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="rainloop en debian 04/03/2017 1:45 pm | Comments Aún recuerdo que algunos clientes me preguntaban con mucho asombro: &ldquo;-y porque
-no roundcube& &hellip;">
+  <meta name="description" content="nueva VM siempre es PV 17/03/2017 8:46 pm | Comments Cuando usamos XenOrchestra, aveces sucede que teniendo un XenServer con &ldquo;muchas&rdquo; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +81,59 @@ no roundcube& &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/">nueva VM siempre es PV</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-17T20:46:32-04:00'><span class='date'>17/03/2017</span> <span class='time'>8:46 pm</span></time>
+        
+           | <a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/17/nueva-vm-siempre-es-pv/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Cuando usamos XenOrchestra, aveces sucede que teniendo un XenServer con &ldquo;muchas&rdquo;
+máquinas virtuales, al crear una nueva; se crea como Paravirtualizada (PV) y no
+como Virutalización por Hardware (HVM). Nos damos cuenta porque arrancar la
+máquina buteando de una unidad óptica es casi imposible.</p>
+
+<p>Algunos creen que es porque XenServer impone un límite. Esto no es cierto, ya
+que XenServer es completamente gratuito hoy en día. Simplemente, asume que el
+servidor está muy cargado y que una PV es más ligera. En mi experiencia creo que
+XenOrchestra es el que hace eso; no xenserver como tal.</p>
+
+<p>Cuando esto pase, simplemente tomas la máquina y le dices que se pase a HVM. Lo
+haremos seteando un parámetros que involucre HVM.</p>
+
+<figure class='code'><figcaption><span>&#8220;xe&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> xe vm-param-set <span class="nv">uuid</span><span class="o">=</span>uuid-de-la-maquina HVM-boot-policy<span class="o">=</span><span class="s2">&quot;BIOS order&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al setearle que el orden de buteo será el que diga el bios y listo. La máquina
+pasa a ser HVM.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -245,7 +297,7 @@ pop en su cuenta de gmail.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -336,7 +388,7 @@ escucha por el puerto 8888.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -408,7 +460,7 @@ NO un punto y coma. La configuración parece ser un <strong>json</strong>.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -464,21 +516,21 @@ se encuentra en <strong>/usr/local/etc/knockd.conf.sample</strong> y el paquete 
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="k">[options]</span>
-</span><span class='line'>        <span class="na">logfile</span> <span class="o">=</span> <span class="s">/var/log/knockd.log</span>
-</span><span class='line'><span class="s">        interface = xn0</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="k">[options]</span>
+</span><span class='line'>         <span class="na">logfile</span> <span class="o">=</span> <span class="s">/var/log/knockd.log</span>
+</span><span class='line'><span class="s">         interface = xn0</span>
 </span><span class='line'>
-</span><span class='line'><span class="k">[openSSH]</span>
-</span><span class='line'>        <span class="na">sequence</span>    <span class="o">=</span> <span class="s">999,777,333</span>
-</span><span class='line'><span class="s">        seq_timeout = 9</span>
-</span><span class='line'><span class="s">        command     = /sbin/ipfw -q add 00001 allow all from %IP% to me</span>
-</span><span class='line'><span class="s">        tcpflags    = syn</span>
+</span><span class='line'> <span class="k">[openSSH]</span>
+</span><span class='line'>         <span class="na">sequence</span>    <span class="o">=</span> <span class="s">111,222,333</span>
+</span><span class='line'><span class="s">         seq_timeout = 9</span>
+</span><span class='line'><span class="s">         command     = /sbin/ipfw -q add 00001 allow all from %IP% to me</span>
+</span><span class='line'><span class="s">         tcpflags    = syn</span>
 </span><span class='line'>
-</span><span class='line'><span class="k">[closeSSH]</span>
-</span><span class='line'>        <span class="na">sequence</span>    <span class="o">=</span> <span class="s">777,999,333</span>
-</span><span class='line'><span class="s">        seq_timeout = 9</span>
-</span><span class='line'><span class="s">        command     = /sbin/ipfw -q delete 00001</span>
-</span><span class='line'><span class="s">        tcpflags    = syn</span>
+</span><span class='line'> <span class="k">[closeSSH]</span>
+</span><span class='line'>         <span class="na">sequence</span>    <span class="o">=</span> <span class="s">222,111,333</span>
+</span><span class='line'><span class="s">         seq_timeout = 9</span>
+</span><span class='line'><span class="s">         command     = /sbin/ipfw -q delete 00001</span>
+</span><span class='line'><span class="s">         tcpflags    = syn</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -487,22 +539,60 @@ Recuerdas que ipfw te permite (casi te obliga a) especificar un número para cad
 regla. Pues usaremos ese numerito diminuto para ponerla de primera.</p>
 
 <p>Los tipos ortodoxos criticarán que es una regla <em>al tetón</em>. Pienso que no vale
-la pena abrir solo el 22, si voy a pasar tanto trabajo, que se me abra la puerta
+la pena abrir solo el 22; si voy a pasar tanto trabajo, que se me abra la puerta
 completa.</p>
 
 <p>Por cierto, junto con knock, viene un programita para hacer el knocking. Yo
-solía hacerlo con netcat pero knock est más cómodo.</p>
+solía hacerlo con netcat pero knock es más cómodo.</p>
 
 <figure class='code'><figcaption><span>&#8220;knock&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">   knock 192.168.3.1 777 999 333</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">   knock 192.168.3.1 111,222,333</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p>En mi <strong>.bashrc</strong>, tengo esta función declarada.</p>
+
+<figure class='code'><figcaption><span>&#8220;.bashrc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> abrete_cesamo<span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    knock  <span class="nv">$1</span> <span class="m">111</span> <span class="m">222</span> 333
+</span><span class='line'>    ssh root@<span class="nv">$1</span>
+</span><span class='line'>    knock  <span class="nv">$1</span> <span class="m">222</span> <span class="m">111</span> 333
+</span><span class='line'> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No tengo que decirte que la combinación de puertos está de acorde al ejemplo de
+la entrada y que debes cambiarla por la que tu establezcas. Así de esa manera,
+hacerle SSH a un servidor es ejecutar <strong>abrete_cesamo ip.del.servidor</strong> Luego al
+terminar la sesión ssh, se ejecuta la secuencia de cerrado.</p>
+
+<p>Y hablando de implementaciones raras de knockd!</p>
+
+<p>En alpine linux, iptables está en <strong>/sbin</strong>, no en /usr/sbin. Sin
+embargo, el fichero de configuración tiene puesto que está en /usr/sbin/, lo
+cual, repito; no es correcto.</p>
+
+<p>Además, tanto en debian como alpine. No importa que pongas en la configuración
+porque interfaz escuchará. Siempre lo hará por eth0. Para cambiar esta
+situación; debes:</p>
+
+<p>En <strong>alpine</strong> linux, configurar la interfaz en el fichero <strong>/etc/conf.d/knockd</strong></p>
+
+<p>En <strong>debian</strong>, configurar la interfaz (y poner un 1) en <strong>/etc/default/knockd</strong></p>
+
+<p>Recuerda que en linux, el comando de iptables, viene con &ldquo;-A INPUT&rdquo;. Si tienes
+un firewall corriendo, obviamente que no pincha; por tanto, ponlo con &ldquo;-I
+INPUT&rdquo;.</p>
 </div>
   
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -628,130 +718,7 @@ simplemente declaro los servidores de correo en un fakeroot y listo.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/03/01/qos-con-tc/">QoS con tc o dummynet</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-03-01T19:57:14-05:00'><span class='date'>01/03/2017</span> <span class='time'>7:57 pm</span></time>
-        
-           | <a href="/blog/2017/03/01/qos-con-tc/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/01/qos-con-tc/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Acá en el 5to infierno de infomed, algunos usuarios; están acostumbrados a usar
-un &ldquo;MUA&rdquo; (léase &ldquo;cliente de correo&rdquo;)  para alar el correo de infomed. Con el
-boom de la wifi, los médicos querían tener su correo de infomed en el puñetero
-cliente de correo de android/ios. Tras hacer un forward a los smtp y pop de
-infomed, el ancho de vianda se fue a la mierda. Por tanto, surgió la necesidad
-de chapiar el tráfico que va desde/hacia infomed. Por ejemplo, el tráfico smtp,
-es saliente (subida), sin embargo, el tráfico pop es entrante (bajada).</p>
-
-<p>El servidor que uso como &ldquo;router&rdquo;, es un alpine linux. El trinomio bind, dhcp e
-iptables, sumado al kernel grsec; convierte en mi opinión a alpinelinux en la
-mejor opción para un router.</p>
-
-<p>Entrando en materia. Tenemos un canal de 2 megabit (256 KB/s). Pero en HDSL, la
-subida es más triste que la bajada; y además, hay más gente bajando correo que
-subiendo. Por tanto, usaremos un canal para el smtp, más estrecho que el del
-pop. En este caso, <strong>eth0</strong> será la interfaz donde está el router.</p>
-
-<figure class='code'><figcaption><span>&#8220;tc del firewall&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># reiniciamos las colas que hallan en eth0</span>
-</span><span class='line'><span class="c"># para empezar a trabajar en limpio</span>
-</span><span class='line'>tc qdisc del root dev eth0
-</span><span class='line'>tc qdisc add dev eth0 root handle 1: htb default 30
-</span><span class='line'>
-</span><span class='line'><span class="c"># un canal de 256 KB/s lo partimos en dos</span>
-</span><span class='line'><span class="c"># una fracción de 10 KB/s y otro de 20KB/s</span>
-</span><span class='line'>tc class add dev eth0 parent 1:  classid 1:1  htb rate 256kbps burst 5k
-</span><span class='line'>tc class add dev eth0 parent 1:1 classid 1:10 htb rate  20kbps burst 5k
-</span><span class='line'>tc class add dev eth0 parent 1:1 classid 1:11 htb rate  10kbps burst 5k
-</span><span class='line'>
-</span><span class='line'><span class="c"># lo que valla para el pop e imap, lo dejamos en el :10 con 20kbps</span>
-</span><span class='line'>tc filter add dev eth0 parent 1: protocol ip prio <span class="m">1</span> u32 match ip src 201.220.211.7 match ip sport <span class="m">110</span> 0xffff flowid 1:10
-</span><span class='line'>tc filter add dev eth0 parent 1: protocol ip prio <span class="m">1</span> u32 match ip src 201.220.211.7 match ip sport <span class="m">143</span> 0xffff flowid 1:10
-</span><span class='line'>
-</span><span class='line'><span class="c"># lo que valla por el smtp, en el :11 de 10kbps</span>
-</span><span class='line'>tc filter add dev eth0 parent 1: protocol ip prio <span class="m">1</span> u32 match ip dst 201.220.211.39 match ip dport <span class="m">25</span> 0xffff flowid 1:11
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note como en el caso de lo que venga del &ldquo;.7&rdquo;, (src) de los puertos pop e imap
-(spot) pasarán por la cola <strong>1:10</strong>. Mientras que en el &ldquo;.39&rdquo;, se usan las
-cláusulas dst y dport.</p>
-
-<p><strong>pero aquí NO terminan las aventuras de QoS</strong></p>
-
-<p>Resulta que el tráfico proveniente de las WiFi era apabullante para el servidor
-proxy. Mientras que de una IP de una máquina entran 3 peticiones, de la IP de
-un router wifi entran 30.</p>
-
-<p>En un principio pensaba usar un delay_pool especial para estas ip, pero sería
-complicar más el esquema de delay_pool que funciona bien por usuarios. Por
-tanto, el tema de la bajada ya está cubierto. Ningún usuario puede acaparar todo
-el ancho de banda con una descarga. Sin embargo, 1&#8217;000 peticiones de basura
-(android con proxy configurado) ahogan al proxy. La medida fue, que el tráfico
-entrante de la wifi, no exceda los 200KB.</p>
-
-<p>En mi caso, los AP usan la ip 10 al 15, por tanto, haciendo un pipe de dummynet
-y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
-
-<figure class='code'><figcaption><span>&#8220;ipfw.rules&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw pipe <span class="m">1</span> config bw 200KBytes
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.10 to me
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.11 to me
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.12 to me
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.13 to me
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.14 to me
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.15 to me
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -770,6 +737,10 @@ y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/">nueva VM siempre es PV</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a>
@@ -1040,10 +1011,6 @@ y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/09/01/squid-transparente/">squid transparente</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/08/28/compute-remote-uptime/">compute remote uptime</a>
 		</li>
 		
@@ -1073,10 +1040,6 @@ y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
 		
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/06/07/openvpn-en-arch/">OpenVPN en Arch</a>
 		</li>
 		
 		<li class="post">
@@ -1116,10 +1079,6 @@ y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2014/12/02/welcome-aboard/">welcome aboard</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a>
 		</li>
 		
@@ -1133,10 +1092,6 @@ y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
 		
 		<li class="post">
 			<a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/08/25/mas-de-ocs/">más de OCS</a>
 		</li>
 		
 		<li class="post">
@@ -1169,6 +1124,18 @@ y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
 		
 		<li class="post">
 			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
 		</li>
 		
 	</ul>

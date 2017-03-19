@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>más de OCS - El SysAdmin del 3er Mundo</title>
+  <title>nueva VM siempre es PV - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="más de OCS 25/08/2014 10:01 am | Comments Con este script, se toman los datos de /opt/samba/ocs y se inyectan en la base
-de datos central de manera &hellip;">
+  <meta name="description" content="nueva VM siempre es PV 17/03/2017 8:46 pm | Comments Cuando usamos XenOrchestra, aveces sucede que teniendo un XenServer con &ldquo;muchas&rdquo; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@ de datos central de manera &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2014/08/25/mas-de-ocs/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2017/03/17/nueva-vm-siempre-es-pv/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -85,7 +84,7 @@ de datos central de manera &hellip;">
   
   <header>
     
-      <h1 class="entry-title">más de OCS</h1>
+      <h1 class="entry-title">nueva VM siempre es PV</h1>
     
     
       <p class="meta">
@@ -94,7 +93,7 @@ de datos central de manera &hellip;">
 
 
 
-<time class='entry-date' datetime='2014-08-25T10:01:09-04:00'><span class='date'>25/08/2014</span> <span class='time'>10:01 am</span></time>
+<time class='entry-date' datetime='2017-03-17T20:46:32-04:00'><span class='date'>17/03/2017</span> <span class='time'>8:46 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -104,37 +103,30 @@ de datos central de manera &hellip;">
   </header>
 
 
-<div class="entry-content"><p>Con este script, se toman los datos de /opt/samba/ocs y se inyectan en la base
-de datos central de manera automatizada.</p>
+<div class="entry-content"><p>Cuando usamos XenOrchestra, aveces sucede que teniendo un XenServer con &ldquo;muchas&rdquo;
+máquinas virtuales, al crear una nueva; se crea como Paravirtualizada (PV) y no
+como Virutalización por Hardware (HVM). Nos damos cuenta porque arrancar la
+máquina buteando de una unidad óptica es casi imposible.</p>
 
-<figure class='code'><figcaption><span>&#8220;/usr/local/bin/ocs.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># posicionate en el directorio</span>
-</span><span class='line'>mkdir -p /opt/samba/ocs
-</span><span class='line'><span class="nb">cd</span> /opt/samba/ocs
-</span><span class='line'>
-</span><span class='line'><span class="c"># itera en los ficheros .ocs y cárgalos</span>
-</span><span class='line'><span class="k">for</span> ocs in /opt/samba/ocs/*.ocs<span class="p">;</span> <span class="k">do</span>
-</span><span class='line'>   <span class="nb">echo</span> <span class="k">$(</span><span class="nb">echo</span> <span class="nv">$ocs</span><span class="p">|</span>cut -d / -f 5<span class="k">)</span>
-</span><span class='line'>   ocsinventory-injector.pl -r -f <span class="s2">&quot;$ocs&quot;</span>
-</span><span class='line'><span class="k">done</span>
+<p>Algunos creen que es porque XenServer impone un límite. Esto no es cierto, ya
+que XenServer es completamente gratuito hoy en día. Simplemente, asume que el
+servidor está muy cargado y que una PV es más ligera. En mi experiencia creo que
+XenOrchestra es el que hace eso; no xenserver como tal.</p>
+
+<p>Cuando esto pase, simplemente tomas la máquina y le dices que se pase a HVM. Lo
+haremos seteando un parámetros que involucre HVM.</p>
+
+<figure class='code'><figcaption><span>&#8220;xe&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> xe vm-param-set <span class="nv">uuid</span><span class="o">=</span>uuid-de-la-maquina HVM-boot-policy<span class="o">=</span><span class="s2">&quot;BIOS order&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p>Al setearle que el orden de buteo será el que diga el bios y listo. La máquina
+pasa a ser HVM.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -148,7 +140,7 @@ de datos central de manera automatizada.</p>
 
 
 
-<time class='entry-date' datetime='2014-08-25T10:01:09-04:00'><span class='date'>25/08/2014</span> <span class='time'>10:01 am</span></time>
+<time class='entry-date' datetime='2017-03-17T20:46:32-04:00'><span class='date'>17/03/2017</span> <span class='time'>8:46 pm</span></time>
       
 
 
@@ -156,7 +148,7 @@ de datos central de manera automatizada.</p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2014/08/25/mas-de-ocs/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2014/08/25/mas-de-ocs/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2017/03/17/nueva-vm-siempre-es-pv/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2017/03/17/nueva-vm-siempre-es-pv/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -169,10 +161,8 @@ de datos central de manera automatizada.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/08/15/subdesarrollo/" title="Previous Post: subdesarrollo">&laquo; subdesarrollo</a>
+        <a class="basic-alignment left" href="/blog/2017/03/04/rainloop-en-debian/" title="Previous Post: rainloop en debian">&laquo; rainloop en debian</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/08/25/el-server-de-correo/" title="Next Post: el servidor de correo">el servidor de correo &raquo;</a>
       
     </p>
   </footer>
@@ -193,6 +183,10 @@ de datos central de manera automatizada.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/">nueva VM siempre es PV</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a>
@@ -463,10 +457,6 @@ de datos central de manera automatizada.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/09/01/squid-transparente/">squid transparente</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/08/28/compute-remote-uptime/">compute remote uptime</a>
 		</li>
 		
@@ -496,10 +486,6 @@ de datos central de manera automatizada.</p>
 		
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/06/07/openvpn-en-arch/">OpenVPN en Arch</a>
 		</li>
 		
 		<li class="post">
@@ -539,10 +525,6 @@ de datos central de manera automatizada.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2014/12/02/welcome-aboard/">welcome aboard</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a>
 		</li>
 		
@@ -556,10 +538,6 @@ de datos central de manera automatizada.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/08/25/mas-de-ocs/">más de OCS</a>
 		</li>
 		
 		<li class="post">
@@ -592,6 +570,18 @@ de datos central de manera automatizada.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
 		</li>
 		
 	</ul>
@@ -634,8 +624,8 @@ de datos central de manera automatizada.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2014/08/25/mas-de-ocs/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2014/08/25/mas-de-ocs/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2017/03/17/nueva-vm-siempre-es-pv/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2017/03/17/nueva-vm-siempre-es-pv/';
         var disqus_script = 'embed.js';
       
     (function () {

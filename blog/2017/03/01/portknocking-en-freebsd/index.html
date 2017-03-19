@@ -132,21 +132,21 @@ se encuentra en <strong>/usr/local/etc/knockd.conf.sample</strong> y el paquete 
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="k">[options]</span>
-</span><span class='line'>        <span class="na">logfile</span> <span class="o">=</span> <span class="s">/var/log/knockd.log</span>
-</span><span class='line'><span class="s">        interface = xn0</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="k">[options]</span>
+</span><span class='line'>         <span class="na">logfile</span> <span class="o">=</span> <span class="s">/var/log/knockd.log</span>
+</span><span class='line'><span class="s">         interface = xn0</span>
 </span><span class='line'>
-</span><span class='line'><span class="k">[openSSH]</span>
-</span><span class='line'>        <span class="na">sequence</span>    <span class="o">=</span> <span class="s">999,777,333</span>
-</span><span class='line'><span class="s">        seq_timeout = 9</span>
-</span><span class='line'><span class="s">        command     = /sbin/ipfw -q add 00001 allow all from %IP% to me</span>
-</span><span class='line'><span class="s">        tcpflags    = syn</span>
+</span><span class='line'> <span class="k">[openSSH]</span>
+</span><span class='line'>         <span class="na">sequence</span>    <span class="o">=</span> <span class="s">111,222,333</span>
+</span><span class='line'><span class="s">         seq_timeout = 9</span>
+</span><span class='line'><span class="s">         command     = /sbin/ipfw -q add 00001 allow all from %IP% to me</span>
+</span><span class='line'><span class="s">         tcpflags    = syn</span>
 </span><span class='line'>
-</span><span class='line'><span class="k">[closeSSH]</span>
-</span><span class='line'>        <span class="na">sequence</span>    <span class="o">=</span> <span class="s">777,999,333</span>
-</span><span class='line'><span class="s">        seq_timeout = 9</span>
-</span><span class='line'><span class="s">        command     = /sbin/ipfw -q delete 00001</span>
-</span><span class='line'><span class="s">        tcpflags    = syn</span>
+</span><span class='line'> <span class="k">[closeSSH]</span>
+</span><span class='line'>         <span class="na">sequence</span>    <span class="o">=</span> <span class="s">222,111,333</span>
+</span><span class='line'><span class="s">         seq_timeout = 9</span>
+</span><span class='line'><span class="s">         command     = /sbin/ipfw -q delete 00001</span>
+</span><span class='line'><span class="s">         tcpflags    = syn</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -155,20 +155,58 @@ Recuerdas que ipfw te permite (casi te obliga a) especificar un número para cad
 regla. Pues usaremos ese numerito diminuto para ponerla de primera.</p>
 
 <p>Los tipos ortodoxos criticarán que es una regla <em>al tetón</em>. Pienso que no vale
-la pena abrir solo el 22, si voy a pasar tanto trabajo, que se me abra la puerta
+la pena abrir solo el 22; si voy a pasar tanto trabajo, que se me abra la puerta
 completa.</p>
 
 <p>Por cierto, junto con knock, viene un programita para hacer el knocking. Yo
-solía hacerlo con netcat pero knock est más cómodo.</p>
+solía hacerlo con netcat pero knock es más cómodo.</p>
 
 <figure class='code'><figcaption><span>&#8220;knock&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">   knock 192.168.3.1 777 999 333</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">   knock 192.168.3.1 111,222,333</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p>En mi <strong>.bashrc</strong>, tengo esta función declarada.</p>
+
+<figure class='code'><figcaption><span>&#8220;.bashrc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> abrete_cesamo<span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    knock  <span class="nv">$1</span> <span class="m">111</span> <span class="m">222</span> 333
+</span><span class='line'>    ssh root@<span class="nv">$1</span>
+</span><span class='line'>    knock  <span class="nv">$1</span> <span class="m">222</span> <span class="m">111</span> 333
+</span><span class='line'> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No tengo que decirte que la combinación de puertos está de acorde al ejemplo de
+la entrada y que debes cambiarla por la que tu establezcas. Así de esa manera,
+hacerle SSH a un servidor es ejecutar <strong>abrete_cesamo ip.del.servidor</strong> Luego al
+terminar la sesión ssh, se ejecuta la secuencia de cerrado.</p>
+
+<p>Y hablando de implementaciones raras de knockd!</p>
+
+<p>En alpine linux, iptables está en <strong>/sbin</strong>, no en /usr/sbin. Sin
+embargo, el fichero de configuración tiene puesto que está en /usr/sbin/, lo
+cual, repito; no es correcto.</p>
+
+<p>Además, tanto en debian como alpine. No importa que pongas en la configuración
+porque interfaz escuchará. Siempre lo hará por eth0. Para cambiar esta
+situación; debes:</p>
+
+<p>En <strong>alpine</strong> linux, configurar la interfaz en el fichero <strong>/etc/conf.d/knockd</strong></p>
+
+<p>En <strong>debian</strong>, configurar la interfaz (y poner un 1) en <strong>/etc/default/knockd</strong></p>
+
+<p>Recuerda que en linux, el comando de iptables, viene con &ldquo;-A INPUT&rdquo;. Si tienes
+un firewall corriendo, obviamente que no pincha; por tanto, ponlo con &ldquo;-I
+INPUT&rdquo;.</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -187,7 +225,7 @@ solía hacerlo con netcat pero knock est más cómodo.</p>
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/bsd/'>bsd</a>
+    <a class='category' href='/blog/categories/bsd/'>bsd</a>, <a class='category' href='/blog/categories/destacado/'>destacado</a>
   
 </span>
 
@@ -233,6 +271,10 @@ solía hacerlo con netcat pero knock est más cómodo.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/">nueva VM siempre es PV</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a>
@@ -503,10 +545,6 @@ solía hacerlo con netcat pero knock est más cómodo.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/09/01/squid-transparente/">squid transparente</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/08/28/compute-remote-uptime/">compute remote uptime</a>
 		</li>
 		
@@ -536,10 +574,6 @@ solía hacerlo con netcat pero knock est más cómodo.</p>
 		
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/06/07/openvpn-en-arch/">OpenVPN en Arch</a>
 		</li>
 		
 		<li class="post">
@@ -579,10 +613,6 @@ solía hacerlo con netcat pero knock est más cómodo.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2014/12/02/welcome-aboard/">welcome aboard</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a>
 		</li>
 		
@@ -596,10 +626,6 @@ solía hacerlo con netcat pero knock est más cómodo.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/08/25/mas-de-ocs/">más de OCS</a>
 		</li>
 		
 		<li class="post">
@@ -632,6 +658,18 @@ solía hacerlo con netcat pero knock est más cómodo.</p>
 		
 		<li class="post">
 			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
 		</li>
 		
 	</ul>

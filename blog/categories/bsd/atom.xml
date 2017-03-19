@@ -4,7 +4,7 @@
   <title><![CDATA[Category: bsd | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/bsd/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-03-14T09:32:46-04:00</updated>
+  <updated>2017-03-18T00:35:45-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -31,21 +31,21 @@ se encuentra en <strong>/usr/local/etc/knockd.conf.sample</strong> y el paquete 
 
 <p>OJO!! Muy importante especificarle la interfaz por la cual va a escuchar.</p>
 
-<pre><code class="ini "/usr/local/etc/knockd.conf"">[options]
-        logfile = /var/log/knockd.log
-        interface = xn0
+<pre><code class="ini "/usr/local/etc/knockd.conf""> [options]
+         logfile = /var/log/knockd.log
+         interface = xn0
 
-[openSSH]
-        sequence    = 999,777,333
-        seq_timeout = 9
-        command     = /sbin/ipfw -q add 00001 allow all from %IP% to me
-        tcpflags    = syn
+ [openSSH]
+         sequence    = 111,222,333
+         seq_timeout = 9
+         command     = /sbin/ipfw -q add 00001 allow all from %IP% to me
+         tcpflags    = syn
 
-[closeSSH]
-        sequence    = 777,999,333
-        seq_timeout = 9
-        command     = /sbin/ipfw -q delete 00001
-        tcpflags    = syn
+ [closeSSH]
+         sequence    = 222,111,333
+         seq_timeout = 9
+         command     = /sbin/ipfw -q delete 00001
+         tcpflags    = syn
 </code></pre>
 
 <p>Nada, resumiendo, que el truco está en poner la regla con el número 00001.
@@ -53,14 +53,46 @@ Recuerdas que ipfw te permite (casi te obliga a) especificar un número para cad
 regla. Pues usaremos ese numerito diminuto para ponerla de primera.</p>
 
 <p>Los tipos ortodoxos criticarán que es una regla <em>al tetón</em>. Pienso que no vale
-la pena abrir solo el 22, si voy a pasar tanto trabajo, que se me abra la puerta
+la pena abrir solo el 22; si voy a pasar tanto trabajo, que se me abra la puerta
 completa.</p>
 
 <p>Por cierto, junto con knock, viene un programita para hacer el knocking. Yo
-solía hacerlo con netcat pero knock est más cómodo.</p>
+solía hacerlo con netcat pero knock es más cómodo.</p>
 
-<pre><code class="console "knock"">   knock 192.168.3.1 777 999 333
+<pre><code class="console "knock"">   knock 192.168.3.1 111,222,333
 </code></pre>
+
+<p>En mi <strong>.bashrc</strong>, tengo esta función declarada.</p>
+
+<pre><code class="bash ".bashrc""> abrete_cesamo() {
+    knock  $1 111 222 333
+    ssh root@$1
+    knock  $1 222 111 333
+ }
+</code></pre>
+
+<p>No tengo que decirte que la combinación de puertos está de acorde al ejemplo de
+la entrada y que debes cambiarla por la que tu establezcas. Así de esa manera,
+hacerle SSH a un servidor es ejecutar <strong>abrete_cesamo ip.del.servidor</strong> Luego al
+terminar la sesión ssh, se ejecuta la secuencia de cerrado.</p>
+
+<p>Y hablando de implementaciones raras de knockd!</p>
+
+<p>En alpine linux, iptables está en <strong>/sbin</strong>, no en /usr/sbin. Sin
+embargo, el fichero de configuración tiene puesto que está en /usr/sbin/, lo
+cual, repito; no es correcto.</p>
+
+<p>Además, tanto en debian como alpine. No importa que pongas en la configuración
+porque interfaz escuchará. Siempre lo hará por eth0. Para cambiar esta
+situación; debes:</p>
+
+<p>En <strong>alpine</strong> linux, configurar la interfaz en el fichero <strong>/etc/conf.d/knockd</strong></p>
+
+<p>En <strong>debian</strong>, configurar la interfaz (y poner un 1) en <strong>/etc/default/knockd</strong></p>
+
+<p>Recuerda que en linux, el comando de iptables, viene con &ldquo;-A INPUT&rdquo;. Si tienes
+un firewall corriendo, obviamente que no pincha; por tanto, ponlo con &ldquo;-I
+INPUT&rdquo;.</p>
 ]]></content>
   </entry>
   

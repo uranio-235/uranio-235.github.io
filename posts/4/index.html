@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="phpmyadmin múltiples servidores 19/12/2016 2:50 pm | Comments Cuando tienes que manejar múltiples servidores SQL, no da la talla tener un
-phpmyadmin &hellip;">
+  <meta name="description" content="cambiar mac a un nano 27/12/2016 9:39 am | Comments Un socio me preguntó hace poquito si yo podía cambiarle la MAC a un nano. Me
+pareció muy &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,100 @@ phpmyadmin &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/12/27/cambiar-mac-a-un-nano/">cambiar mac a un nano</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-27T09:39:44-05:00'><span class='date'>27/12/2016</span> <span class='time'>9:39 am</span></time>
+        
+           | <a href="/blog/2016/12/27/cambiar-mac-a-un-nano/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/12/27/cambiar-mac-a-un-nano/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Un socio me preguntó hace poquito si yo podía cambiarle la MAC a un nano. Me
+pareció muy estrafalaria la necesidad de él, pero según me contó, en la red
+criolla que está suscrito, suelen banear los nanos cuando los usuarios se portan
+mal.</p>
+
+<p>Tras una búsqueda en internet vi unos post en un forum pero ninguno me funcionó.
+La idea es, correr un fichero al iniciar el sistema, que corra ifconfig y le
+cambie la MAC a las interfaces.</p>
+
+<p>La problemática radica, que a la interfaz &ldquo;ath0&rdquo;, no se le puede cambiar la MAC,
+ya que aún estando down, te dice dispositivo ocupado. Por esa razón, parecía no
+pinchar la solución de los post. Sin embargo, si bajas las 3 interfaces
+involucradas en la conexión, luego cambias dichas mac, <strong>sí pincha</strong>.</p>
+
+<p>Para ello crearemos el fichero <strong>/etc/persistent/rc.poststart</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/persistent/rc.poststart&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/sh</span>
+</span><span class='line'>
+</span><span class='line'>ifconfig br0 down
+</span><span class='line'>ifconfig wifi0 down
+</span><span class='line'>ifconfig ath0 down
+</span><span class='line'>
+</span><span class='line'>ifconfig wifi0 hw ether 5e:53:84:bc:a3:54
+</span><span class='line'>ifconfig ath0 hw ether 5e:53:84:bc:a3:54
+</span><span class='line'>
+</span><span class='line'>ifconfig ath0 up
+</span><span class='line'>ifconfig wifi0 up
+</span><span class='line'>ifconfig br0 up
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A ese fichero le ponemos el ejecutable, si no, no pinchará.</p>
+
+<figure class='code'><figcaption><span>&#8220;ejecutable&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>XW.v5.6.2# chmod a+rx /etc/persistent/rc.poststart
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finalmente, le decimos al firmware que modifique los cambios y que reinicie.</p>
+
+<figure class='code'><figcaption><span>&#8220;salva y reinicia&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>XW.v5.6.2# cfgmtd -w -p /etc/
+</span><span class='line'>XW.v5.6.2# reboot
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Todavía hay quien cree que las MAC son una medida segura para crear reglas de
+control de acceso&hellip;</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -224,7 +318,7 @@ quieres acceder.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -271,7 +365,7 @@ especial para el tema.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -376,7 +470,7 @@ cuando salga el rails 5.1 le llamaré alpine_rails51</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -451,7 +545,7 @@ está, podría loguear, usuario, user-agent y url, pero la linea queda muy larga
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -572,159 +666,7 @@ no sea que hallas metido la delicada.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/11/20/sysinfo-en-el-motd/">sysinfo en el motd</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-11-20T17:13:27-05:00'><span class='date'>20/11/2016</span> <span class='time'>5:13 pm</span></time>
-        
-           | <a href="/blog/2016/11/20/sysinfo-en-el-motd/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/11/20/sysinfo-en-el-motd/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="right" src="/images/sysinfo.png" width="400" height="500" title="" ></p>
-
-<p>Desde que lo vi en unbuntu server, había querido hacer que mi servidores
-mostraran un overview en el <a href="https://en.wikipedia.org/wiki/Motd_(Unix">MOTD</a>)</p>
-
-<p>Al menos debian, tiene una manera de cambiar el MOTD dinamicamente. Para sazonar
-bien el MOTD, vamos a usar figlet, una aplicación que genera letras en ascii-art a
-partir de una palabra dada.</p>
-
-<figure class='code'><figcaption><span>&#8220;instalando todo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install figlet
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El directorio <strong>/etc/update-motd.d/</strong> ejecutará en orden alfabético (o numérico
-en nuestro caso) aquellos script cuya salida estandard, compondrán nuestro MOTD.</p>
-
-<figure class='code'><figcaption><span>&#8220;aprovisionando el update-motd.d&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir /etc/update-motd.d/
-</span><span class='line'><span class="nb">cd</span> /etc/update-motd.d/
-</span><span class='line'>touch 00-header <span class="o">&amp;&amp;</span> touch 01-sysinfo <span class="o">&amp;&amp;</span> touch 02-footer
-</span><span class='line'>chmod +x /etc/update-motd.d/*
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finalmente, nos echamos el MOTD de debian por defecto; que no deja de
-restregarnos en cara la falta de garantía.</p>
-
-<p>Además, el fichero <strong>/var/run/motd</strong> contendrá nuestro motd resultante, así que
-lo lincamos con el que borramos.</p>
-
-<figure class='code'><figcaption><span>&#8220;aprovisionando el update-motd.d&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rm /etc/motd
-</span><span class='line'>ln -s /var/run/motd /etc/motd
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Por una cuestión de organización, usaremos 3 ficheros:</p>
-
-<p><strong>00-header</strong> con lo que queremos poner primero. En este caso, el nombre y
-version de la distribución, además de un mensajito de bienvenida.</p>
-
-<figure class='code'><figcaption><span>&#8220;00-header&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'><span class="o">[</span> -r /etc/lsb-release <span class="o">]</span> <span class="o">&amp;&amp;</span> . /etc/lsb-release
-</span><span class='line'><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;$DISTRIB_DESCRIPTION&quot;</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">[</span> -x /usr/bin/lsb_release <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-</span><span class='line'>        <span class="nv">DISTRIB_DESCRIPTION</span><span class="o">=</span><span class="k">$(</span>lsb_release -s -d<span class="k">)</span>
-</span><span class='line'><span class="k">fi</span>
-</span><span class='line'>figlet <span class="k">$(</span>hostname<span class="k">)</span>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;\n&quot;</span>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Welcome to %s (%s).\n&quot;</span> <span class="s2">&quot;$DISTRIB_DESCRIPTION&quot;</span> <span class="s2">&quot;$(uname -r)&quot;</span>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;\n&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Yo instalo los sistemas en inglés, así que para mantener todo parejo, escribimos
-<em>güelcome</em> y lo hacemos con <strong>printf</strong> para procesar mejor los &ldquo;\n&rdquo; y que pinche
-sin importar la shell que se esté usando.</p>
-
-<p>El segundo fichero será <strong>01-sysinfo</strong> y contendrá la parte linda, de la memoria
-RAM en uso, el CPU, la carga y la dirección ip de la primera interfaz.</p>
-
-<figure class='code'><figcaption><span>&#8220;01-sysinfo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'><span class="nv">date</span><span class="o">=</span><span class="sb">`</span>date<span class="sb">`</span>
-</span><span class='line'><span class="nv">load</span><span class="o">=</span><span class="sb">`</span>cat /proc/loadavg <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span><span class="sb">`</span>
-</span><span class='line'><span class="nv">root_usage</span><span class="o">=</span><span class="sb">`</span>df -h / <span class="p">|</span> awk <span class="s1">&#39;/\// {print $(NF-1)}&#39;</span><span class="sb">`</span>
-</span><span class='line'><span class="nv">memory_usage</span><span class="o">=</span><span class="sb">`</span>free -m <span class="p">|</span> awk <span class="s1">&#39;/Mem:/ { total=$2 } /buffers\/cache/ { used=$3 } END { printf(&quot;%3.1f%%&quot;, used/total*100)}&#39;</span><span class="sb">`</span>
-</span><span class='line'><span class="nv">swap_usage</span><span class="o">=</span><span class="sb">`</span>free -m <span class="p">|</span> awk <span class="s1">&#39;/Swap/ { printf(&quot;%3.1f%%&quot;, &quot;exit !$2;$3/$2*100&quot;) }&#39;</span><span class="sb">`</span>
-</span><span class='line'><span class="nv">users</span><span class="o">=</span><span class="sb">`</span>users <span class="p">|</span> wc -w<span class="sb">`</span>
-</span><span class='line'><span class="nb">time</span><span class="o">=</span><span class="sb">`</span>uptime <span class="p">|</span> grep -ohe <span class="s1">&#39;up .*&#39;</span> <span class="p">|</span> sed <span class="s1">&#39;s/,/\ hours/g&#39;</span> <span class="p">|</span> awk <span class="s1">&#39;{ printf $2&quot; &quot;$3 }&#39;</span><span class="sb">`</span>
-</span><span class='line'><span class="nv">processes</span><span class="o">=</span><span class="sb">`</span>ps aux <span class="p">|</span> wc -l<span class="sb">`</span>
-</span><span class='line'><span class="nv">ip</span><span class="o">=</span><span class="sb">`</span>ip a  s dev eth0<span class="p">|</span>grep inet<span class="p">|</span>awk <span class="s1">&#39;{print $2}&#39;</span><span class="p">|</span>cut -d <span class="s1">&#39;/&#39;</span> -f 1<span class="sb">`</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;System information as of: $date\n&quot;</span>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;System load:\t%s\tIP Address:\t%s\n&quot;</span> <span class="nv">$load</span> <span class="nv">$ip</span>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Memory usage:\t%s\tSystem uptime:\t%s\n&quot;</span> <span class="nv">$memory_usage</span> <span class="s2">&quot;$time&quot;</span>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Usage on /:\t%s\tSwap usage:\t%s\n&quot;</span> <span class="nv">$root_usage</span> <span class="nv">$swap_usage</span>
-</span><span class='line'><span class="nb">printf</span> <span class="s2">&quot;Local Users:\t%s\tProcesses:\t%s\n\n&quot;</span> <span class="nv">$users</span> <span class="nv">$processes</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Por último <strong>02-footer</strong> será la parte de abajo. Contendrá cualquier cosa que
-quieras poner en el fichero <strong>/etc/motd.tail</strong> por ejemplo, una anotación que
-quieras hacer específica para ese servidor. Se mostrará si existe el fichero.</p>
-
-<figure class='code'><figcaption><span>&#8220;02-footer&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'><span class="o">[</span> -f /etc/motd.tail <span class="o">]</span> <span class="o">&amp;&amp;</span> cat /etc/motd.tail <span class="o">||</span> <span class="nb">true</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -745,6 +687,10 @@ quieras hacer específica para ese servidor. Se mostrará si existe el fichero.<
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/">nueva VM siempre es PV</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a>
@@ -1015,10 +961,6 @@ quieras hacer específica para ese servidor. Se mostrará si existe el fichero.<
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/09/01/squid-transparente/">squid transparente</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/08/28/compute-remote-uptime/">compute remote uptime</a>
 		</li>
 		
@@ -1048,10 +990,6 @@ quieras hacer específica para ese servidor. Se mostrará si existe el fichero.<
 		
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/06/07/openvpn-en-arch/">OpenVPN en Arch</a>
 		</li>
 		
 		<li class="post">
@@ -1091,10 +1029,6 @@ quieras hacer específica para ese servidor. Se mostrará si existe el fichero.<
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2014/12/02/welcome-aboard/">welcome aboard</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a>
 		</li>
 		
@@ -1108,10 +1042,6 @@ quieras hacer específica para ese servidor. Se mostrará si existe el fichero.<
 		
 		<li class="post">
 			<a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2014/08/25/mas-de-ocs/">más de OCS</a>
 		</li>
 		
 		<li class="post">
@@ -1144,6 +1074,18 @@ quieras hacer específica para ese servidor. Se mostrará si existe el fichero.<
 		
 		<li class="post">
 			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
 		</li>
 		
 	</ul>

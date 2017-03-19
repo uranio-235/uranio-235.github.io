@@ -4,7 +4,7 @@
   <title><![CDATA[Category: destacado | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/destacado/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-03-14T09:32:46-04:00</updated>
+  <updated>2017-03-18T00:35:45-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,89 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[portknocking en freebsd]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd/"/>
+    <updated>2017-03-01T23:53:01-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd</id>
+    <content type="html"><![CDATA[<p><img class="right" src="/images/alibaba.jpg" width="400" height="500" title="" ></p>
+
+<p>La técnica port-knocking o knockd para otros, es en mi opinión, <strong>pilar de la
+seguridad</strong> en cualquier servidor que use SSH. Aunque es bastante versátil y
+puede ser usado hasta para reiniciar servicios sin loguearte.</p>
+
+<p>Una de las cosas que empece a extrañar en FreeBSD fue knockd, pero gracias a la
+flexbilidad de ipfw, podemos usar este poderoso software. En FreeBSD el fichero
+se encuentra en <strong>/usr/local/etc/knockd.conf.sample</strong> y el paquete se llama
+<strong>knock</strong>.</p>
+
+<p>OJO!! Muy importante especificarle la interfaz por la cual va a escuchar.</p>
+
+<pre><code class="ini "/usr/local/etc/knockd.conf""> [options]
+         logfile = /var/log/knockd.log
+         interface = xn0
+
+ [openSSH]
+         sequence    = 111,222,333
+         seq_timeout = 9
+         command     = /sbin/ipfw -q add 00001 allow all from %IP% to me
+         tcpflags    = syn
+
+ [closeSSH]
+         sequence    = 222,111,333
+         seq_timeout = 9
+         command     = /sbin/ipfw -q delete 00001
+         tcpflags    = syn
+</code></pre>
+
+<p>Nada, resumiendo, que el truco está en poner la regla con el número 00001.
+Recuerdas que ipfw te permite (casi te obliga a) especificar un número para cada
+regla. Pues usaremos ese numerito diminuto para ponerla de primera.</p>
+
+<p>Los tipos ortodoxos criticarán que es una regla <em>al tetón</em>. Pienso que no vale
+la pena abrir solo el 22; si voy a pasar tanto trabajo, que se me abra la puerta
+completa.</p>
+
+<p>Por cierto, junto con knock, viene un programita para hacer el knocking. Yo
+solía hacerlo con netcat pero knock es más cómodo.</p>
+
+<pre><code class="console "knock"">   knock 192.168.3.1 111,222,333
+</code></pre>
+
+<p>En mi <strong>.bashrc</strong>, tengo esta función declarada.</p>
+
+<pre><code class="bash ".bashrc""> abrete_cesamo() {
+    knock  $1 111 222 333
+    ssh root@$1
+    knock  $1 222 111 333
+ }
+</code></pre>
+
+<p>No tengo que decirte que la combinación de puertos está de acorde al ejemplo de
+la entrada y que debes cambiarla por la que tu establezcas. Así de esa manera,
+hacerle SSH a un servidor es ejecutar <strong>abrete_cesamo ip.del.servidor</strong> Luego al
+terminar la sesión ssh, se ejecuta la secuencia de cerrado.</p>
+
+<p>Y hablando de implementaciones raras de knockd!</p>
+
+<p>En alpine linux, iptables está en <strong>/sbin</strong>, no en /usr/sbin. Sin
+embargo, el fichero de configuración tiene puesto que está en /usr/sbin/, lo
+cual, repito; no es correcto.</p>
+
+<p>Además, tanto en debian como alpine. No importa que pongas en la configuración
+porque interfaz escuchará. Siempre lo hará por eth0. Para cambiar esta
+situación; debes:</p>
+
+<p>En <strong>alpine</strong> linux, configurar la interfaz en el fichero <strong>/etc/conf.d/knockd</strong></p>
+
+<p>En <strong>debian</strong>, configurar la interfaz (y poner un 1) en <strong>/etc/default/knockd</strong></p>
+
+<p>Recuerda que en linux, el comando de iptables, viene con &ldquo;-A INPUT&rdquo;. Si tienes
+un firewall corriendo, obviamente que no pincha; por tanto, ponlo con &ldquo;-I
+INPUT&rdquo;.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ipfw simple y conciso]]></title>
@@ -767,187 +850,6 @@ TXT será <strong>dkim=all</strong>. A mi me quedó así:</p>
 <p>Con eso, tus correos no caerán más en la bandeja SPAM de gmail.</p>
 
 <p>Otra cosa importante, asegúrate de tener el reverse lookup de tu MX bien puesto.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[tls y ssl en postfix]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/11/03/tls-y-ssl-en-postfix/"/>
-    <updated>2015-11-03T21:13:44-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/11/03/tls-y-ssl-en-postfix</id>
-    <content type="html"><![CDATA[<p>Acá en salud, ahora <em>se están cayendo de la mata</em> y dándose cuenta de los
-peligroso que son las conexiones planas.</p>
-
-<p>Aún no logro hacerle entender a la gente, la diferencia entre un certificado
-autofirmado y un certificado emitido por una <a href="https://es.wikipedia.org/wiki/Autoridad_de_certificaci%C3%B3n">autoridad de certificación</a>
-; pero que más les vamos a pedir, si el certificado de nauta es autofirmado.</p>
-
-<p>De momento con darle la muela del candadito y las letricas verdes en el
-navegador, van cogiendo algo.</p>
-
-<p>Pero volviendo al tema <strong>postfix con SSL</strong>. Vamos a crear un certificado
-autofirmado, por tanto, regla de oro:</p>
-
-<h4>el hostname que provees en el certificado, debe ser machear al del servicio</h4>
-
-<p>En letra de molde. Si proveemos un certificado autofirmado, para conectarnos a
-<strong>smtp.hcg.sld.cu</strong> no puedes decir en el cliente de correo, que el servidor
-smtp es <strong>192.168.0.1</strong> porque no será válido.</p>
-
-<p>Aún cuando el certificado no sea válido, déjame recodarte que debemos ir
-haciéndole cultura de seguridad informática, si no&hellip; bueno&hellip; no me voy a meter
-en un lío diciendo las barbaridades que se logran suplantando identidades.</p>
-
-<p>Bueno entremos en materia. Lo Primero que haremos será generar la clave privada
-para el servidor.</p>
-
-<p>Donde dice <strong>smtp.tudominio.cu</strong> tu pondrás el hostname de que apunta para tu
-servidor smtp. Si eres un desastre y no tiene DNS. Pon la IP de tu servidor de
-correo.</p>
-
-<h4>REPITO</h4>
-
-<p>Donde dice <strong>FQDN or YOUR name</strong> debe decir la dirección del servidor SMTP. La
-dirección tal cual la pones en los clientes.</p>
-
-<p>Cuando lo hagas, te pedirá un password.</p>
-
-<pre><code class="bash "generando clave privada del servidor"">openssl genrsa -des3 -out smtp.tudominio.cu.key 2048
-</code></pre>
-
-<p>Ahora creamos el certificado. Te pedirá hasta la talla de calzoncillos que usas.
-<strong>NO respondas a lo locoi</strong>, recuerda el <strong>FQDN</strong>. Te acuerdas del password
-que pusiste?</p>
-
-<pre><code class="bash "creando el certificado"">openssl req -new -key smtp.tudominio.cu.key -out smtp.tudominio.cu.csr
-</code></pre>
-
-<p>Debes ver algo como esto:</p>
-
-<pre><code class="bash "ceremonia de creación de certificado"">Enter pass phrase for smtp.tudominio.cu.key:
-You are about to be asked to enter information that will be incorporated
-into your certificate request.
-What you are about to enter is what is called a Distinguished Name or a DN.
-There are quite a few fields but you can leave some blank
-For some fields there will be a default value,
-If you enter '.', the field will be left blank.
------
-Country Name (2 letter code) [AU]:CU
-State or Province Name (full name) [Some-State]:Havana
-Locality Name (eg, city) []:Plaza
-Organization Name (eg, company) [Internet Widgits Pty Ltd]:Calixto
-Organizational Unit Name (eg, section) []:Informatica
-Common Name (e.g. server FQDN or YOUR name) []:smtp.tudominio.cu
-Email Address []:ssl@tudominio.cu
-</code></pre>
-
-<p>Bites verdad? Bueno, ya hicimos lo más importante, pero no hemos terminado.
-Vamos a firmar el certificado con la la llave emisora.</p>
-
-<pre><code class="bash "cri-cra firmando el certificado"">openssl x509 -req -days 365 -in smtp.tudominio.cu.csr -signkey smtp.tudominio.cu.key -out smtp.tudominio.cu.crt
-</code></pre>
-
-<p>Ahora vamos a dar un paso <strong>cuestionable</strong>.</p>
-
-<p>Cada vez que un servicio con con un certificado SSL valla a ser iniciado.
-Debería pedir un password, para así asegurar que el legítimo operador de
-servicio ha sido quien le dio la arrancada. Pero poner un password cada vez que
-arranca postfix, no es ninguna gracia. Por tanto, quitamos el password.
-Obviamente, te lo pedirá una última vez.</p>
-
-<pre><code class="bash "quitando el password"">openssl rsa -in smtp.tudominio.cu.key -out smtp.tudominio.cu.key.sinpassword
-mv smtp.tudominio.cu.key.sinpassword smtp.tudominio.cu.key
-</code></pre>
-
-<p>Emitimos una autoridad de raíz (de pacotilla)</p>
-
-<pre><code class="bash "la CA del chiste" ">openssl req -new -x509 -extensions v3_ca -keyout cakey.pem -out cacert.pem -days 3650
-# aqui te pedirá la misma rutina, ojo con lo que pones en el campo FQDN or YOUR name
-</code></pre>
-
-<p>Bueno, con el disi y con el mulo, ya tenemos una CA loca, que la podemos reusar
-para otros servicios, por tanto, tratemosla como tal.</p>
-
-<pre><code class="bash "los puntos sobre las ies" ">chmod 600 smtp.tudominio.cu.key
-chmod 600 cakey.pem
-mv smtp.tudominio.cu.key /etc/ssl/private/
-mv smtp.tudominio.cu.crt /etc/ssl/certs/
-mv cakey.pem /etc/ssl/private/
-mv cacert.pem /etc/ssl/certs/
-</code></pre>
-
-<p>Ahora viene el turno de postfix. Haremos dos cosas</p>
-
-<ul>
-<li>habilitar el tranporte ssl/tls por el puerto 465</li>
-<li>habilitar las funciones ssl</li>
-</ul>
-
-
-<p>Ve al <strong>master.cf</strong> y busca la cadena de texto <strong>smtps</strong> debes ver algo como
-esto:</p>
-
-<pre><code class="bash "parte del master.cf ANTES"">smtp      inet  n       -       -       -       -       smtpd
-#smtp      inet  n       -       -       -       1       postscreen
-#smtpd     pass  -       -       -       -       -       smtpd
-#dnsblog   unix  -       -       -       -       0       dnsblog
-#tlsproxy  unix  -       -       -       -       0       tlsproxy
-#submission inet n       -       -       -       -       smtpd
-#  -o syslog_name=postfix/submission
-#  -o smtpd_tls_security_level=encrypt
-#  -o smtpd_sasl_auth_enable=yes
-#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject
-#  -o milter_macro_daemon_name=ORIGINATING
-#smtps     inet  n       -       -       -       -       smtpd
-#  -o syslog_name=postfix/smtps
-#  -o smtpd_tls_wrappermode=yes
-#  -o smtpd_sasl_auth_enable=yes
-#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject
-#  -o milter_macro_daemon_name=ORIGINATING
-#628       inet  n       -       -       -       -       qmqpd
-pickup    fifo  n       -       -       60      1       pickup
-cleanup   unix  n       -       -       -       0       cleanup
-</code></pre>
-
-<p>Descomentamos todo lo que tenga que ver con <strong>smtps</strong> debe quedarte más o menos
-así:</p>
-
-<pre><code class="sh "parte del master.cf DESPUES"">smtp      inet  n       -       -       -       -       smtpd
-#smtp      inet  n       -       -       -       1       postscreen
-#smtpd     pass  -       -       -       -       -       smtpd
-#dnsblog   unix  -       -       -       -       0       dnsblog
-#tlsproxy  unix  -       -       -       -       0       tlsproxy
-#submission inet n       -       -       -       -       smtpd
-#  -o syslog_name=postfix/submission
-#  -o smtpd_tls_security_level=encrypt
-#  -o smtpd_sasl_auth_enable=yes
-#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject
-#  -o milter_macro_daemon_name=ORIGINATING
-smtps     inet  n       -       -       -       -       smtpd
-  -o syslog_name=postfix/smtps
-  -o smtpd_tls_wrappermode=yes
-  -o smtpd_sasl_auth_enable=yes
-  -o smtpd_client_restrictions=permit_sasl_authenticated,reject
-  -o milter_macro_daemon_name=ORIGINATING
-#628       inet  n       -       -       -       -       qmqpd
-pickup    fifo  n       -       -       60      1       pickup
-cleanup   unix  n       -       -       -       0       cleanup
-</code></pre>
-
-<p>Ahora trabajemos con el <strong>main.cf</strong>, habilitamos las funciones que tengan que
-ver con SSL, declarando esto:</p>
-
-<pre><code class="bash "tope del main.cf"">smtpd_use_tls = yes
-smtpd_tls_auth_only = no
-smtpd_tls_key_file = /etc/ssl/private/smtp.tudominio.cu.key
-smtpd_tls_cert_file = /etc/ssl/certs/smtp.tudominio.cu.crt
-smtpd_tls_CAfile = /etc/ssl/certs/cacert.pem
-tls_random_source = dev:/dev/urandom
-</code></pre>
-
-<p>No olvides correr <strong>postfix reload</strong></p>
-
-<p>   <blockquote><p>Te voy a coser el culo con un alambre finito.<br/>   No te quedará bonito, pero te quedará seguro.</p><footer><strong>Décima popular</strong></footer></blockquote></p>
 ]]></content>
   </entry>
   
