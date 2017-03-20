@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-03-18T00:35:45-04:00</updated>
+  <updated>2017-03-20T15:16:49-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -26,7 +26,8 @@ máquina buteando de una unidad óptica es casi imposible.</p>
 <p>Algunos creen que es porque XenServer impone un límite. Esto no es cierto, ya
 que XenServer es completamente gratuito hoy en día. Simplemente, asume que el
 servidor está muy cargado y que una PV es más ligera. En mi experiencia creo que
-XenOrchestra es el que hace eso; no xenserver como tal.</p>
+XenOrchestra es el que hace eso; no xenserver como tal. También influye la
+plantilla que utilices para crear una nueva VM.</p>
 
 <p>Cuando esto pase, simplemente tomas la máquina y le dices que se pase a HVM. Lo
 haremos seteando un parámetros que involucre HVM.</p>
