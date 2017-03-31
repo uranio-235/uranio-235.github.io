@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="data confirm en un boton 22/02/2016 2:20 pm | Comments Usualmente, tenemos un botón en un formulario y nos gustaría que al pulsar este,
-nos &hellip;">
+  <meta name="description" content="cargar rvm 07/03/2016 9:25 pm | Comments De siempre, desplegar Ruby con RVM, ha sido un método
+catalogado de &ldquo;burdo&rdquo; o &ldquo;sucio& &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +88,68 @@ nos &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/03/07/cargar-rvm/">cargar rvm</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-03-07T21:25:44-05:00'><span class='date'>07/03/2016</span> <span class='time'>9:25 pm</span></time>
+        
+           | <a href="/blog/2016/03/07/cargar-rvm/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/03/07/cargar-rvm/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>De siempre, desplegar Ruby con <a href="https://rvm.io/">RVM</a>, ha sido un método
+catalogado de &ldquo;burdo&rdquo; o &ldquo;sucio&rdquo; aunque sin dudas, es el más rápido.</p>
+
+<p>Un problema que se enfrenta con RVM, es a la hora de integrarlo a entornos que
+no carguen el bashrc modificado por el instalador. Por ejemplo, un script de
+arrancada con el sistema o un script del cron.</p>
+
+<p>He aquí un ejemplo, de un escript.sh que levanta una aplicación de ruby on
+rails, luego de haber cargado el entorno de RVM.</p>
+
+<figure class='code'><figcaption><span>&#8220;startapp.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="nb">cd</span> /opt/aplicacion
+</span><span class='line'><span class="nb">source</span> /usr/local/rvm/environments/default
+</span><span class='line'>unicorn -l 0:8080 -D
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como vemos, el fichero en <strong>environments</strong> carga todas las variables de entorno
+requerida y de facto; <strong>unicorn</strong> pasa a ser un ejecutable, ya que <strong>$PATH</strong>
+ahora contiene también la ruta bin/ donde se instalaron las gemas&hellip;</p>
+
+<p>Problema <em>resolvido</em>&hellip;</p>
+
+<p>Note en caso de tener varios rubies instalados, en environments, tendrás junto a
+default, los demás script necesarios para cargar dichos rubies.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2016/02/22/data-confirm-en-un-boton/">data confirm en un boton</a></h1>
     
     
@@ -133,7 +195,7 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -459,7 +521,7 @@ una source como esta:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -561,7 +623,7 @@ tiempo.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -729,53 +791,7 @@ especial.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/29/mc-demora-en-abrir/">mc demora en abrir</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-29T19:37:00-05:00'><span class='date'>29/11/2015</span> <span class='time'>7:37 pm</span></time>
-        
-           | <a href="/blog/2015/11/29/mc-demora-en-abrir/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/29/mc-demora-en-abrir/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Esta es una nota bien rápida pa que no se me olvide&hellip;</p>
-
-<p>Alguna vez han notado que los midnight commander con soporte para operaciones de
-red (especialmente samba) y al arrancarlo, se mete tremendo rato levantando?
-Pues esta es la razón por la cual debian <em>bota el sofá</em>.</p>
-
-<p><img class="right" src="/images/mc.png" title="" ></p>
-
-<p>Resulta que buscar el propio hostname de la máquina, se mete tremendo rato
-haciendo un reverse lookup. Cuando tiene declaro un servidor dns inalcanzable,
-se pone más feo todavía.</p>
-
-<p>Solución. Pon tu propio hostname en <strong>/etc/hosts</strong> junto a localhost</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -796,6 +812,10 @@ se pone más feo todavía.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/29/jugar-teeworlds-en-lan/">jugar teeworlds en LAN</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/">nueva VM siempre es PV</a>

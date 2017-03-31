@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-03-20T15:16:49-04:00</updated>
+  <updated>2017-03-31T10:23:11-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,113 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[jugar teeworlds en LAN]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/03/29/jugar-teeworlds-en-lan/"/>
+    <updated>2017-03-29T00:00:16-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/03/29/jugar-teeworlds-en-lan</id>
+    <content type="html"><![CDATA[<p>Un otorrino me ha dejado sorprendido cuando me pidió que le instalara ArchLinux
+en su laptop (las todos tenemos de los médicos). La primera vez le instalé
+fedora, pero lo quitó y volvió pidiéndome que le instalara arch. El doctor
+Bershard, me cuenta las epopeyas de los usuarios de linux en la red de la
+habana.</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/teeworlds.png"></p>
+
+<p>Durante el proceso de &ldquo;que te instalo&rdquo; me mencionó &ldquo;el tiwol&rdquo; como un juego muy
+importante. No me imaginé que sería tan fascinante. Similar al minimilitia de
+android. Me di cuenta que crear un server, es lanzar un comando y dejarlo
+funcionando. La gente se conecta y desconecta del servidor cuando quiera. Se
+pueden jugar partidas de equipo, pero la más caliente es el &ldquo;death match&rdquo;. Entra
+mata un rato y sale cuando te aburras.</p>
+
+<p>En el calixto el jueguito causó furor (está para windows y se conecta
+perfectamente). A cada rato entro y me encuentro 3 o 4 con nombres cada vez más
+creativos matándose a tiros y dando brincos.</p>
+
+<p>Según la documentación, al correr <strong>teeworlds_srv -f fichero.cfg</strong> cargará ese
+fichero. Muy útil para crear múltiples modos de juego. Al lanzar el comando
+<strong>teeworlds_srv</strong> noté que dice:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[58db3577][storage]: using standard paths</span>
+</span><span class='line'><span class="go">[58db3577][storage]: added path &#39;$USERDIR&#39; (&#39;/home/lazaro/.teeworlds&#39;)</span>
+</span><span class='line'><span class="go">[58db3577][storage]: added path &#39;$DATADIR&#39; (&#39;/usr/share/teeworlds/data&#39;)</span>
+</span><span class='line'><span class="go">[58db3577][storage]: added path &#39;$CURRENTDIR&#39; (&#39;/home/lazaro/.teeworlds&#39;)</span>
+</span><span class='line'><span class="go">[58db3577][console]: failed to open &#39;autoexec.cfg&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Así que al crear el fichero <strong>/home/lazaro/.teeworlds/autoexec.cfg</strong> resultó que
+se cargaba solo. Pero&hellip; ¿qué metemos ahí?</p>
+
+<figure class='code'><figcaption><span>&#8220;autoexec.cfg&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># teeworld_srv -f este_fichero.cfg</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Los mapas y la secuencia de mapas</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># ls /usr/share/teeworlds/data/maps/</span>
+</span><span class='line'><span class="err">sv_map</span> <span class="err">dm7</span>
+</span><span class='line'><span class="err">sv_maprotation</span> <span class="err">dm7</span> <span class="err">dm6</span> <span class="err">dm2</span> <span class="err">dm9</span> <span class="err">md8</span> <span class="err">dm1</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># como se ve el servidor</span>
+</span><span class='line'><span class="err">sv_name</span> <span class="err">Masacre</span> <span class="err">en</span> <span class="err">el</span> <span class="err">Calixto</span>
+</span><span class='line'><span class="err">sv_motd</span> <span class="err">&quot;las</span> <span class="err">teclas</span> <span class="err">son</span> <span class="err">«a»,</span> <span class="err">«d»</span> <span class="err">y</span> <span class="err">Espacio&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># que tipo de juego jugamos</span>
+</span><span class='line'><span class="err">sv_gametype</span> <span class="err">dm</span>
+</span><span class='line'><span class="err">sv_scorelimit</span> <span class="err">30</span>
+</span><span class='line'><span class="err">sv_timelimit</span> <span class="err">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># configuración del servidor</span>
+</span><span class='line'><span class="err">bindaddr</span> <span class="err">0.0.0.0</span>
+</span><span class='line'><span class="err">sv_register</span> <span class="err">to</span> <span class="err">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># permite usar la consola remota</span>
+</span><span class='line'><span class="err">sv_rcon_password</span> <span class="err">secretisimo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Dice: Jugaremos una ronda de 30 puntos, sin límite de tiempo, que empieza por el
+mapa &ldquo;dm7&rdquo;.</p>
+
+<p>El comando <em>sv_maprotation</em> recibe como argumento la lista de mapas. Cada vez
+que termine una ronda, se cambiará el mapa.</p>
+
+<p>Más información en el sitio de teeworlds <a href="https://www.teeworlds.com/?page=docs&amp;wiki=server_setup_2">www.teeworlds.com</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[nueva VM siempre es PV]]></title>
@@ -1050,7 +1157,10 @@ es el localhost. La interfaz xn0 es la WAN y xn1 es la LAN.</p>
 <span class='line-number'>25</span>
 <span class='line-number'>26</span>
 <span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="c"># permite todo por el localhost</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="c"># lo permitimos todo pa afuera</span>
+</span><span class='line'> ipfw -q add allow all from any to any out keep-state
+</span><span class='line'>
+</span><span class='line'> <span class="c"># permite todo por el localhost</span>
 </span><span class='line'> ipfw -q add allow all from any to any via lo0
 </span><span class='line'>
 </span><span class='line'> <span class="c"># las conexiones que ya estén iniciadas, pásalas</span>
@@ -1074,9 +1184,6 @@ es el localhost. La interfaz xn0 es la WAN y xn1 es la LAN.</p>
 </span><span class='line'> <span class="c"># esta regla casi nunca es necesaria, ya que</span>
 </span><span class='line'> <span class="c"># suele ser implícita, o sea, drop por defecto</span>
 </span><span class='line'> ipfw -q add drop all from any to any
-</span><span class='line'>
-</span><span class='line'> <span class="c"># finalmente, PA AFUERA, permitimos todo</span>
-</span><span class='line'> ipfw -q add allow all from any to any out
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -1891,126 +1998,6 @@ involucradas en la conexión, luego cambias dichas mac, <strong>sí pincha</stro
 
 <p>Todavía hay quien cree que las MAC son una medida segura para crear reglas de
 control de acceso&hellip;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[phpmyadmin múltiples servidores]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/12/19/phpmyadmin-multiples-servidores/"/>
-    <updated>2016-12-19T14:50:26-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/12/19/phpmyadmin-multiples-servidores</id>
-    <content type="html"><![CDATA[<p>Cuando tienes que manejar múltiples servidores SQL, no da la talla tener un
-phpmyadmin por cada servidor. Opté por tener un phpmyadmin instalado en mi
-laptop.</p>
-
-<p>Una manera muy sencilla de hacer la pincha, es mapear con SSH el puerto de mysql
-y conectar a todo el mundo como si fuera localhost.</p>
-
-<figure class='code'><figcaption><span>&#8220;ssh y mysql&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ssh root@192.168.0.9 -L 3306:127.0.0.1:3306 -N
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Pero en algunos casos, no hay SSH, el servidor no escucha por TCP, etc&hellip; En tal
-caso, podrías permitir que el root se administre remotamente.</p>
-
-<p>Para lograrlo hay que decirle a mysql que escuche por la dirección ip además de
-por el socket local. En infraestructuras grandes, por lo general, ya está hecho.
-Localiza en <strong>/etc/mysql/my.cnf</strong> el parámetro llamado <strong>bind-address</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/mysql/my.cnf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># Instead of skip-networking the default is now to listen only on</span>
-</span><span class='line'><span class="c"># localhost which is more compatible and is not less secure.</span>
-</span><span class='line'><span class="nb">bind</span>-address      <span class="o">=</span> 0.0.0.0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>y reinicia el mysql, claro está&hellip;</p>
-
-<p>Ahora hacemos una consulta SQL, en la cual le daremos al usuario root, el
-permiso para conectarse de una ip dada. Por ejemplo, la computadora del sysadmin
-está en 192.168.0.222</p>
-
-<figure class='code'><figcaption><span>&#8220;grant root&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">ON</span> <span class="o">*</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="n">root</span><span class="o">@</span><span class="s1">&#39;192.168.0.222&#39;</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">&#39;tupassword&#39;</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora viene el truco mágico en la configuración de phpmyadmin. El fichero de
-configuración de phpmyadmin, en el caso de arch, está en
-/etc/webapps/phpmyadmin/config.inc.php en otras distros, no sé, pero siempre se
-llama <strong>config.inc.php</strong></p>
-
-<p>En ese fichero, localiza la cadena de texto &ldquo;First Server&rdquo;, debes ver algo como
-esto pero con muchos comentarios:</p>
-
-<figure class='code'><figcaption><span>&#8220;config.inc.php&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$i</span><span class="o">++</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;auth_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;cookie&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;connect_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tcp&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;compress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;AllowNoPassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Solo tienes que añadirle otra <strong>$i++;</strong> y poner los parámetros en el array $cfg</p>
-
-<figure class='code'><figcaption><span>&#8220;ejemplo de múltiples servidores&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$i</span><span class="o">++</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;auth_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;cookie&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;connect_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tcp&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;compress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;AllowNoPassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$i</span><span class="o">++</span><span class="p">;</span> <span class="c1">// otro servidor</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;verbose&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;otro servidor&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;192.168.1.9&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;connect_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tcp&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;compress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;AllowNoPassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$i</span><span class="o">++</span><span class="p">;</span> <span class="c1">// el leviatand de los mares</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;verbose&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;otro servidor mas&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;192.168.2.9&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;connect_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tcp&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;compress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$cfg</span><span class="p">[</span><span class="s1">&#39;Servers&#39;</span><span class="p">][</span><span class="nv">$i</span><span class="p">][</span><span class="s1">&#39;AllowNoPassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Cuantos servidores quieras añadirle&hellip; Cuando vallas a loguearte en el
-phpmyadmin verás debajo de la caja de login, un select, con el servidor que
-quieres acceder.</p>
 ]]></content>
   </entry>
   

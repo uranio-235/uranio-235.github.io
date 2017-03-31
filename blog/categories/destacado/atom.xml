@@ -4,7 +4,7 @@
   <title><![CDATA[Category: destacado | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/destacado/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-03-20T15:16:49-04:00</updated>
+  <updated>2017-03-31T10:23:11-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -171,7 +171,10 @@ entrante (in) por la interfaz (via) xn0</p>
 <p>Veamos pues un <strong>ipfw.rules</strong> bien básico. La interfaz <strong>lo0</strong> (lo con un cero)
 es el localhost. La interfaz xn0 es la WAN y xn1 es la LAN.</p>
 
-<pre><code class="bash "ipfw.rules""> # permite todo por el localhost
+<pre><code class="bash "ipfw.rules""> # lo permitimos todo pa afuera
+ ipfw -q add allow all from any to any out keep-state
+
+ # permite todo por el localhost
  ipfw -q add allow all from any to any via lo0
 
  # las conexiones que ya estén iniciadas, pásalas
@@ -195,9 +198,6 @@ es el localhost. La interfaz xn0 es la WAN y xn1 es la LAN.</p>
  # esta regla casi nunca es necesaria, ya que
  # suele ser implícita, o sea, drop por defecto
  ipfw -q add drop all from any to any
-
- # finalmente, PA AFUERA, permitimos todo
- ipfw -q add allow all from any to any out
 </code></pre>
 
 <p>Veamos algunas características de este cortafuegos&hellip;</p>

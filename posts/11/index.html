@@ -9,8 +9,9 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="systemd-timesyncd 18/10/2015 1:19 pm | Comments Mantener un reloj sincronizado y en hora, siempre ha sido un dilema. Algunas
-personas no reconocen &hellip;">
+  <meta name="description" content="compartir la wifi 20/10/2015 11:36 pm | Comments Cada vez que paso por
+23, me cuentro mil y una
+red cuyo ESSID tiene el sufijo Conectify delante. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +83,216 @@ personas no reconocen &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/20/compartir-la-wifi/">compartir la wifi</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-10-20T23:36:19-04:00'><span class='date'>20/10/2015</span> <span class='time'>11:36 pm</span></time>
+        
+           | <a href="/blog/2015/10/20/compartir-la-wifi/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/20/compartir-la-wifi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="right" src="/images/23_gente.jpg" width="300" height="500" title="" ></p>
+
+<p>Cada vez que paso por
+<a href="http://www.ecured.cu/index.php/Calle_23_%28Vedado%29">23</a>, me cuentro mil y una
+red cuyo ESSID tiene el sufijo <strong>Conectify</strong> delante. Insultado por semejante
+derroche de windows, le comentaba a un colega, que daba tristeza no ver un
+linuxero ahí conectado.</p>
+
+<p>El socio me dijo: -en linux no se puede compartir la wifi</p>
+
+<p>PA DARLE POR LA CARA!</p>
+
+<p>Dos paquetes nada más que hacen falta: <strong>iw</strong>, <strong>hostapd</strong></p>
+
+<p>La idea es:</p>
+
+<ul>
+<li>crear una interfaz wifi como estacion</li>
+<li>crear una interfaz wifi como AP</li>
+<li>crear un interfaz bridge (puente)</li>
+<li>declarar que la interfaz de salida del puente, es la estación</li>
+<li>echar a andar el AP por software</li>
+</ul>
+
+
+<h3>¿SE ENTENDIÓ?</h3>
+
+<p>Si tienes el puñetero NetworkManager corriendo, este es un buen momento para
+pararlo.</p>
+
+<p>La interfaz que usualmente vez como <strong>wlan0</strong> es en realidad <strong>phy0</strong>. ¿Quieres
+verlo? Corre esto:</p>
+
+<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw dev wlan0 del
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¿Te fijaste que<strong> wlan0</strong> desapareció? No te preocupes, puedes volver a crearla.
+Así:</p>
+
+<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw phy phy0 interface add estacion0 <span class="nb">type </span>station
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como mismo hicimos una estación, podemos hacer un AP.</p>
+
+<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw phy phy0 interface add hotspot0 <span class="nb">type </span>__ap
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora creamos la interfaz de puente y le asignamos a <strong>wlan0</strong> como extremo de
+salida.</p>
+
+<figure class='code'><figcaption><span>br0</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip link add name br0 <span class="nb">type </span>bridge
+</span><span class='line'>iw dev estacion0 <span class="nb">set </span>4addr on
+</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 promisc on
+</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 up
+</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 master br0
+</span><span class='line'>ip link <span class="nb">set </span>up dev br0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En letra de molde:</p>
+
+<ul>
+<li>crea un bridge llamado br0</li>
+<li>dile que lleva ipv4 (requerido, no se por qué)</li>
+<li>pon la interfaz en modo promiscuo</li>
+<li>levanta el enlace de estaicon0</li>
+<li>coloca a estacion0 como interfaz de salida del túnel</li>
+<li>levanta el bridge</li>
+</ul>
+
+
+<p>Ahora viene lo más importante, el AP. El fichero <strong>/etc/hostapd/hostapd.conf</strong>
+contendrá la configuración de nuestros AP. A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>/etc/hostapd/hostapd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># el nombre de tu wifi</span>
+</span><span class='line'><span class="nv">ssid</span><span class="o">=</span>Linux
+</span><span class='line'>
+</span><span class='line'><span class="c"># la contraseña de tu wifi</span>
+</span><span class='line'><span class="nv">wpa_passphrase</span><span class="o">=</span>secretisisimo
+</span><span class='line'>
+</span><span class='line'><span class="c"># la interfaz de red que hará de AP</span>
+</span><span class='line'><span class="nv">interface</span><span class="o">=</span>hostspot0
+</span><span class='line'>
+</span><span class='line'><span class="c"># el puente al que se acoplará</span>
+</span><span class='line'><span class="nv">bridge</span><span class="o">=</span>br0
+</span><span class='line'>
+</span><span class='line'><span class="c"># el canal, lo puede seleccionar manual</span>
+</span><span class='line'><span class="c"># pero un valor de 0, hará el survey.</span>
+</span><span class='line'><span class="c"># Mejor que el ap lo seleccione, así</span>
+</span><span class='line'><span class="c"># no chocas con ningún canal de etecsa en 23</span>
+</span><span class='line'><span class="c"># y aprovechemos ahora que podemos hacer lo</span>
+</span><span class='line'><span class="c"># que nos de la gana con el espectro radioeléctrico</span>
+</span><span class='line'><span class="nv">channel</span><span class="o">=</span>0
+</span><span class='line'>
+</span><span class='line'><span class="c"># no toques más nada de aquí pa abajo</span>
+</span><span class='line'><span class="nv">auth_algs</span><span class="o">=</span>3
+</span><span class='line'><span class="nv">driver</span><span class="o">=</span>nl80211
+</span><span class='line'><span class="nv">hw_mode</span><span class="o">=</span>g
+</span><span class='line'><span class="nv">logger_stdout</span><span class="o">=</span>-1
+</span><span class='line'><span class="nv">logger_stdout_level</span><span class="o">=</span>2
+</span><span class='line'><span class="nv">max_num_sta</span><span class="o">=</span>5
+</span><span class='line'><span class="nv">rsn_pairwise</span><span class="o">=</span>CCMP
+</span><span class='line'><span class="nv">wpa</span><span class="o">=</span>2
+</span><span class='line'><span class="nv">wpa_key_mgmt</span><span class="o">=</span>WPA-PSK
+</span><span class='line'><span class="nv">wpa_pairwise</span><span class="o">=</span>TKIP CCMP
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y arráncalo:</p>
+
+<figure class='code'><figcaption><span>systemctl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl start hostapd
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Desde entonces, lo que se conecte a tu wifi con ESSID &ldquo;Linux&rdquo; en este caso, irá
+a dar a la red que tengas conectada en tu Wifi. En este caso la red de br0, cuyo
+otro extremo sería la wifi de etecsa.</p>
+
+<p>Lo mismo puede hacer cambiando el extremo del tunel. Por ejemplo, con eth0
+saldría hacia una red cableada. Una manera de meter una WiFi en una red.</p>
+
+<h4>Además</h4>
+
+<p>De esta misma forma, si tuvieras dos tarjetas wifi, pones una como AP y le pones
+la otra como extremo del puente.</p>
+
+<h4>OJO</h4>
+
+<p>Otra cosa, si tienes corriendo el <strong>NetworkManager</strong> no podrás echar a andar
+<strong>hostapd</strong>. Páralo, arranca hostapd y vuelve a hechar a andar el
+NetworkManager.</p>
+
+<p>   <blockquote><p>La técnica es la técnica y sin técnica, no hay técnica.</p><footer><strong>Teófilo Stevenson</strong> <cite><a href='https://es.wikipedia.org/wiki/Te%C3%B3filo_Stevenson'>Boxeador Cubano</a></cite></footer></blockquote></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -193,7 +404,7 @@ hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.or
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -550,7 +761,7 @@ crudo. Podrías también tirarlo pa un fichero así:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -733,7 +944,7 @@ con ambos. Veamos que trae rails 5 con esto, porque la mejora urge&hellip;</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -951,221 +1162,7 @@ porque servidor bootear.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/10/plymouth-boot-screen/">plymouth boot screen</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-09-10T18:28:48-04:00'><span class='date'>10/09/2015</span> <span class='time'>6:28 pm</span></time>
-        
-           | <a href="/blog/2015/09/10/plymouth-boot-screen/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/09/10/plymouth-boot-screen/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Sigo con mi plan de &ldquo;civilizarme&rdquo;, me he propuesto dejar de parecer un friki en
-materia de software. He cambiado i3 por MATE (en la máquina personal) e incluso
-tengo un tema en el grub. Intenté cambiar Atom por Vim, evolution por mutt y
-double-cmd por mc; pero por gusto, acabé virando pa atrá.</p>
-
-<p>Una de las cosas que antes solía molestarme en las distros duras como debian,
-era el hecho de que no tuvieran una pantalla bien bonita mientras buteaban.
-Ubuntu por ejemplo, te pone las bolitas.</p>
-
-<p>Archlinux es particularmente rápido buteando, pero aún tenía conmigo mismo la
-deuda del bootscren pendiente.</p>
-
-<p>Resulta que ya splashy no se usa, ahora la talla es un software con nombre de
-almendrón: <strong>Plymouth</strong></p>
-
-<p>Plymouth, es una proyecto de fedora, para proveer una pantalla de buteo a nivel
-de framebuffer. Hoy en día casi todas las distros butean con el framebuffer en
-la máxima resolución posible, así que me imagino que Plymouth sea algo bastante
-simple.</p>
-
-<p>En el repo de arch no está incluido pero como todo, está disponible en AUR. La
-rutina ya la conoces. Selecciona el que dice plymouth pelao.</p>
-
-<figure class='code'><figcaption><span>&#8220;yaourt&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>yaourt plymouth
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora vamos a cambiar unos parámetros en el generador de imágenes de inicio.
-Localiza el fichero <strong>/etc/mkinitcpio.conf</strong> y ahí vamos a cambiar unas
-cosillas.</p>
-
-<p>Primero necesitaremos poner el <strong>HOOK</strong> para plymouth. La documentación advierte
-que debe ser después de <strong>base</strong> y de <strong>udev</strong>, así que mejor <strong>ponlo de
-último</strong>. Por tanto, dentro de las comillas colocarás <strong>plymouth</strong> como un
-objeto más de dicha lista; como el último.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/mkinitcpio.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">HOOKS</span><span class="o">=</span><span class="s2">&quot;base udev fulanito menganito el_ultimo plymouth&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>Nota para los imbéciles:</strong> <em>Si copias y pegas el código anterior, el sistema no te arrancará más.</em></p>
-
-<p>Necesitaremos el módulo apropiado para pinchar el framebufer. En mi caso,
-desgraciadamente, uso nvidia, así que me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/mkinitcpio.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">MODULES</span><span class="o">=</span><span class="s2">&quot;nouveau&quot;</span>
-</span><span class='line'><span class="c">#MODULES=&quot;i915&quot;</span>
-</span><span class='line'><span class="c">#MODULES=&quot;radeon&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Fíjate que los demás quedaron a modo de comentario. Te aclaro que <strong>i915</strong> es
-para las tarjetas de video Intel.</p>
-
-<p>Si usas el blob oficial de nvidia, te jodiste. Ni sigas leyendo.</p>
-
-<p>Ahora tenemos que decirle al grub, que incluya el parámetro <strong>splash</strong> en la
-linea de buteo. Eso lo hacemos editando el fichero <strong>/etc/default/grub</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/default/grub&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">GRUB_CMDLINE_LINUX_DEFAULT</span><span class="o">=</span><span class="s2">&quot;quiet splash&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Yo en lo personal suelo quitarle &ldquo;quiet&rdquo; porque me gusta ver lo que hace el
-sistema mientras butea. Aunque ya no da tiempo. Como te dije, los sistemas
-modernos butean MUY rápido. Es más el tiempo en que carga init o el display
-manager, que el de buteo como tal.</p>
-
-<p>Más adelante veremos que hacer para que la pantalla se vea más tiempo, por ahora
-terminemos de configurar. Tanto el grub como initramfs, tienen que reflejar los
-cambios</p>
-
-<figure class='code'><figcaption><span>&#8220;reflejando cambios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>grub-mkconfig -o /boot/grub/grub.cfg
-</span><span class='line'>mkinitcpio -p linux
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Si usas linux-lts, corre:</p>
-
-<figure class='code'><figcaption><span>&#8220;reflejando cambios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkinitcpio -p linux-lts
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Algo que suele molestar, es que el display manager te caiga en la cara de
-pronto. Arch suele manejar bien ese tema, pero por si acaso, nos aseguramos de
-habilitar la unit para cada display manager.</p>
-
-<p>En mi caso yo uso slim y corrí:</p>
-
-<figure class='code'><figcaption><span>&#8220;enable&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl <span class="nb">enable </span>slim-plymouth.service
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Puede que el tuyo sea:</p>
-
-<ul>
-<li>gdm-plymouth.service</li>
-<li>kdm-plymouth.service</li>
-<li>lxdm-plymouth.service</li>
-</ul>
-
-
-<p>Con eso ya debe estar listo para pinchar pero vamos a darle unos toquesitos
-finales.</p>
-
-<p>El fichero <strong>/etc/plymouth/plymouthd.conf</strong> contiene los parámetros de
-configuración del mismo. El mío luce así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/plymouth/plymouthd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/plymouth/plymouthd.conf
-</span><span class='line'><span class="c"># Distribution defaults. Changes to this file will get overwritten during</span>
-</span><span class='line'><span class="c"># upgrades.</span>
-</span><span class='line'><span class="o">[</span>Daemon<span class="o">]</span>
-</span><span class='line'><span class="nv">Theme</span><span class="o">=</span>tribar
-</span><span class='line'><span class="nv">ShowDelay</span><span class="o">=</span>2
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El parámetro <strong>ShowDelay</strong>, define que tiempo se mostrará la pantalla. Como ya
-te dije, arch a mi me butea en segundos. Si pones 5 ahí, la pantalla de buteo se
-mostrará cinco segundos. Dos buteando y otros tres pa que tu la mires mostrando
-su animación.</p>
-
-<p>Yo cuando terminé de verla correr la primera vez; desinstalé plymouth. No me
-interesa tener 2 segundos adicionales de media por el mero hecho de que sea más
-bonito.</p>
-
-<p>El otro parámetro, <strong>Theme</strong>, setea el tema que usarás. Para ver que temas
-tienes en el menú, corre:</p>
-
-<figure class='code'><figcaption><span>&#8220;plymouth-set-default-theme&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>plymouth-set-default-theme -l
-</span><span class='line'>details
-</span><span class='line'>fade-in
-</span><span class='line'>glow
-</span><span class='line'>script
-</span><span class='line'>solar
-</span><span class='line'>spinfinity
-</span><span class='line'>spinner
-</span><span class='line'>text
-</span><span class='line'>tribar
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A mi me gustó &ldquo;tribar&rdquo; y el que viene por defecto también está lindo, pero es
-una copia al carbón de MacOS.</p>
-
-<h4>OJO!</h4>
-
-<p>Cada vez que cambies un parámetro ahí, debes correr &ldquo;mkinitcpio -p&rdquo;</p>
-
-<p>Ah! Una cosita, si en algún momento quieres ver lo que está haciendo el kernel
-por detrás de plymouth, presiona &ldquo;home&rdquo; mientras butea.</p>
-
-<p>Eso es todo. ¡Reinicia!</p>
-
-<p>   <blockquote><p>Si no te queda bueno, al menos que te quede lindo.</p><footer><strong>Bill Gates</strong></footer></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1186,6 +1183,10 @@ por detrás de plymouth, presiona &ldquo;home&rdquo; mientras butea.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/29/jugar-teeworlds-en-lan/">jugar teeworlds en LAN</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/">nueva VM siempre es PV</a>

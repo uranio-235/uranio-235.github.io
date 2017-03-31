@@ -212,7 +212,10 @@ es el localhost. La interfaz xn0 es la WAN y xn1 es la LAN.</p>
 <span class='line-number'>25</span>
 <span class='line-number'>26</span>
 <span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="c"># permite todo por el localhost</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="c"># lo permitimos todo pa afuera</span>
+</span><span class='line'> ipfw -q add allow all from any to any out keep-state
+</span><span class='line'>
+</span><span class='line'> <span class="c"># permite todo por el localhost</span>
 </span><span class='line'> ipfw -q add allow all from any to any via lo0
 </span><span class='line'>
 </span><span class='line'> <span class="c"># las conexiones que ya estén iniciadas, pásalas</span>
@@ -236,9 +239,6 @@ es el localhost. La interfaz xn0 es la WAN y xn1 es la LAN.</p>
 </span><span class='line'> <span class="c"># esta regla casi nunca es necesaria, ya que</span>
 </span><span class='line'> <span class="c"># suele ser implícita, o sea, drop por defecto</span>
 </span><span class='line'> ipfw -q add drop all from any to any
-</span><span class='line'>
-</span><span class='line'> <span class="c"># finalmente, PA AFUERA, permitimos todo</span>
-</span><span class='line'> ipfw -q add allow all from any to any out
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -360,7 +360,7 @@ intenta poner siempre los pipe arriba y el cortafuegos abajo</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -425,6 +425,10 @@ intenta poner siempre los pipe arriba y el cortafuegos abajo</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/29/jugar-teeworlds-en-lan/">jugar teeworlds en LAN</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/">nueva VM siempre es PV</a>

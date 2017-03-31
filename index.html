@@ -9,7 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="nueva VM siempre es PV 17/03/2017 8:46 pm | Comments Cuando usamos XenOrchestra, aveces sucede que teniendo un XenServer con &ldquo;muchas&rdquo; &hellip;">
+  <meta name="description" content="jugar teeworlds en LAN 29/03/2017 12:00 am | Comments Un otorrino me ha dejado sorprendido cuando me pidió que le instalara ArchLinux
+en su laptop ( &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -87,6 +88,138 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2017/03/29/jugar-teeworlds-en-lan/">jugar teeworlds en LAN</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-29T00:00:16-04:00'><span class='date'>29/03/2017</span> <span class='time'>12:00 am</span></time>
+        
+           | <a href="/blog/2017/03/29/jugar-teeworlds-en-lan/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/29/jugar-teeworlds-en-lan/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Un otorrino me ha dejado sorprendido cuando me pidió que le instalara ArchLinux
+en su laptop (las todos tenemos de los médicos). La primera vez le instalé
+fedora, pero lo quitó y volvió pidiéndome que le instalara arch. El doctor
+Bershard, me cuenta las epopeyas de los usuarios de linux en la red de la
+habana.</p>
+
+<p><img class="center" src="/images/teeworlds.png"></p>
+
+<p>Durante el proceso de &ldquo;que te instalo&rdquo; me mencionó &ldquo;el tiwol&rdquo; como un juego muy
+importante. No me imaginé que sería tan fascinante. Similar al minimilitia de
+android. Me di cuenta que crear un server, es lanzar un comando y dejarlo
+funcionando. La gente se conecta y desconecta del servidor cuando quiera. Se
+pueden jugar partidas de equipo, pero la más caliente es el &ldquo;death match&rdquo;. Entra
+mata un rato y sale cuando te aburras.</p>
+
+<p>En el calixto el jueguito causó furor (está para windows y se conecta
+perfectamente). A cada rato entro y me encuentro 3 o 4 con nombres cada vez más
+creativos matándose a tiros y dando brincos.</p>
+
+<p>Según la documentación, al correr <strong>teeworlds_srv -f fichero.cfg</strong> cargará ese
+fichero. Muy útil para crear múltiples modos de juego. Al lanzar el comando
+<strong>teeworlds_srv</strong> noté que dice:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[58db3577][storage]: using standard paths</span>
+</span><span class='line'><span class="go">[58db3577][storage]: added path &#39;$USERDIR&#39; (&#39;/home/lazaro/.teeworlds&#39;)</span>
+</span><span class='line'><span class="go">[58db3577][storage]: added path &#39;$DATADIR&#39; (&#39;/usr/share/teeworlds/data&#39;)</span>
+</span><span class='line'><span class="go">[58db3577][storage]: added path &#39;$CURRENTDIR&#39; (&#39;/home/lazaro/.teeworlds&#39;)</span>
+</span><span class='line'><span class="go">[58db3577][console]: failed to open &#39;autoexec.cfg&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Así que al crear el fichero <strong>/home/lazaro/.teeworlds/autoexec.cfg</strong> resultó que
+se cargaba solo. Pero&hellip; ¿qué metemos ahí?</p>
+
+<figure class='code'><figcaption><span>&#8220;autoexec.cfg&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># teeworld_srv -f este_fichero.cfg</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Los mapas y la secuencia de mapas</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># ls /usr/share/teeworlds/data/maps/</span>
+</span><span class='line'><span class="err">sv_map</span> <span class="err">dm7</span>
+</span><span class='line'><span class="err">sv_maprotation</span> <span class="err">dm7</span> <span class="err">dm6</span> <span class="err">dm2</span> <span class="err">dm9</span> <span class="err">md8</span> <span class="err">dm1</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># como se ve el servidor</span>
+</span><span class='line'><span class="err">sv_name</span> <span class="err">Masacre</span> <span class="err">en</span> <span class="err">el</span> <span class="err">Calixto</span>
+</span><span class='line'><span class="err">sv_motd</span> <span class="err">&quot;las</span> <span class="err">teclas</span> <span class="err">son</span> <span class="err">«a»,</span> <span class="err">«d»</span> <span class="err">y</span> <span class="err">Espacio&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># que tipo de juego jugamos</span>
+</span><span class='line'><span class="err">sv_gametype</span> <span class="err">dm</span>
+</span><span class='line'><span class="err">sv_scorelimit</span> <span class="err">30</span>
+</span><span class='line'><span class="err">sv_timelimit</span> <span class="err">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># configuración del servidor</span>
+</span><span class='line'><span class="err">bindaddr</span> <span class="err">0.0.0.0</span>
+</span><span class='line'><span class="err">sv_register</span> <span class="err">to</span> <span class="err">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># permite usar la consola remota</span>
+</span><span class='line'><span class="err">sv_rcon_password</span> <span class="err">secretisimo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Dice: Jugaremos una ronda de 30 puntos, sin límite de tiempo, que empieza por el
+mapa &ldquo;dm7&rdquo;.</p>
+
+<p>El comando <em>sv_maprotation</em> recibe como argumento la lista de mapas. Cada vez
+que termine una ronda, se cambiará el mapa.</p>
+
+<p>Más información en el sitio de teeworlds <a href="https://www.teeworlds.com/?page=docs&amp;wiki=server_setup_2">www.teeworlds.com</a></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/">nueva VM siempre es PV</a></h1>
     
     
@@ -132,7 +265,7 @@ pasa a ser HVM.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -298,7 +431,7 @@ pop en su cuenta de gmail.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -389,7 +522,7 @@ escucha por el puerto 8888.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -461,7 +594,7 @@ NO un punto y coma. La configuración parece ser un <strong>json</strong>.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -593,133 +726,7 @@ INPUT&rdquo;.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/03/01/bind-en-infomed/">bind en infomed</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-03-01T23:13:34-05:00'><span class='date'>01/03/2017</span> <span class='time'>11:13 pm</span></time>
-        
-           | <a href="/blog/2017/03/01/bind-en-infomed/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/01/bind-en-infomed/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Seguimos con bind&hellip;</p>
-
-<p>No hace mucho le comentaba a alguien, a raíz de una duda que tenía el colega
-Paradyx; la manera correcta de configurar un servidor bind para una red que
-cuelga de infomed.</p>
-
-<p>Le comentaba que no vale la pena usar un forward por defecto; que hacer del
-dominio &lsquo;.sld.cu&rsquo; una zona forward sería más que suficiente. Digo esto porque
-infomed no resuelve ningún dominio que valla más allá de &ldquo;.sld.cu&rdquo;, por tanto,
-no vale la pena transferirle las sepetecientas peticiones que hacen cuanta
-mierda se conecta a nuestra red (especialmente android).</p>
-
-<figure class='code'><figcaption><span>&#8220;named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">options</span> <span class="p">{</span>
-</span><span class='line'>   <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">10.1.1.1</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>   <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="n">view</span> <span class="n">lan</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">10.1.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;sld.cu&quot;</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">201.220.222.131</span><span class="p">;</span> <span class="mf">201.220.222.132</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">forward</span> <span class="n">only</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">};</span> <span class="c1">// view lan</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como mi dominio es hcg.sld.cu (subdominio de .sld.cu) lo declaramos ARRIBA
-del dominio sld.cu. El dominio <strong>hcg.sld.cu</strong> es una zona <strong>master</strong>, sin
-embargo, el dominio <strong>sld.cu</strong> es del tipo <strong>forward</strong> y entonces ahí declaramos
-los forwarders (los dns de infomed).</p>
-
-<p>Así solo le reenviaremos a infomed, aquellas peticiones que sean para infomed.</p>
-
-<p>En mi opinión esto no es necesario. Tanto así, que la zona donde infomed hace
-forward; la tengo para los servidores. En el caso de la zona para LAN,
-simplemente declaro los servidores de correo en un fakeroot y listo.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -738,6 +745,10 @@ simplemente declaro los servidores de correo en un fakeroot y listo.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/03/29/jugar-teeworlds-en-lan/">jugar teeworlds en LAN</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/">nueva VM siempre es PV</a>
