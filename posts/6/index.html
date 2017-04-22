@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="cortafuegos ipv6 sencillo 22/10/2016 2:56 am | Comments En entradas anteriores mencionábamos la necesidad urgente de un cortafuegos para
-ipv6. Aquí &hellip;">
+  <meta name="description" content="túnel 6in4 22/10/2016 3:18 am | Comments Típico: Quiero darle cumplimiento a la resolución 185/2016, pero mi proveedor
+no me ha dado una ipv6 ¿ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,133 @@ ipv6. Aquí &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/10/22/tunel-6in4/">túnel 6in4</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-10-22T03:18:11-04:00'><span class='date'>22/10/2016</span> <span class='time'>3:18 am</span></time>
+        
+           | <a href="/blog/2016/10/22/tunel-6in4/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/10/22/tunel-6in4/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Típico: Quiero darle cumplimiento a la resolución 185/2016, pero mi proveedor
+no me ha dado una ipv6</p>
+
+<p>¿Tienes una ipv4 pública? Felicidades, puedes jugar con ipv6</p>
+
+<p>Existe una tecnología transisional poco recomendada que se conoce como <a href="https://es.wikipedia.org/wiki/6to4?">6in4</a>,
+consiste en levantar un túnel especial que te permite hacerte con un rango ipv6
+pa jugar y comer mierda, porque no es ipv6 puro. Supuestamente internet debe
+tener servididores que hagan relay hacia ipv6 real pero hoy en día son cada vez
+menos.</p>
+
+<p>y ahora un mensaje:</p>
+
+<p>Si bien <em>Hurricane Electric</em> provee <a href="http://tunnelbroker.net/">túneles</a>, siendo
+esto una solución PERFECTA; hay que tener en cuenta que: No se con que cuchara
+etecsa se coma eso.</p>
+
+<p>Pero volviendo al tema:</p>
+
+<p>Las grandes redes dual-stack como google y facebook, tiene sus 6in4 bien
+afinaditos, así que a través de un 6in4 puedes perfectamente llegar a ellos.
+En otros tiempo, esta solución me pinchó finísimo pero recientemente no la he
+probado.</p>
+
+<p>Digamos que tu ip pública es <strong>220.110.12.190</strong> Calculamos la ipv6 que te toca:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>   ipv6calc --quiet --action conv6to4 220.110.12.190
+</span><span class='line'>2002:dc6e:cbe::
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Digamos que devolvió el prefijo <strong>2002:dc6e:cbe::</strong> Ese será nuestro prefijo, para
+meter cuantas direcciones querramos.</p>
+
+<figure class='code'><figcaption><span>&#8220;creando el túnel&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip tunnel add tun6to4 mode sit ttl <span class="m">255</span> remote any <span class="nb">local </span>10.0.0.1
+</span><span class='line'>ip link <span class="nb">set </span>tun6to4 up
+</span><span class='line'>ip -6 addr add 2002:dc6e:cbe::1/16 dev tun6to4
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Una vez levantada la interfaze, levantamos una puerta de enlace que saque todas
+las direcciones ipv6 del túnel que traduce las ipv4:</p>
+
+<figure class='code'><figcaption><span>&#8220;ruta&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -6 route add 2000::/3 via ::192.88.99.1 dev tun6to4 metric 1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nota que la dirección ::192.88.99.1 es así de palo, es una ruta especial que da
+lugar al túnel 6in4.</p>
+
+<p>Ahora, asignamos la primera dirección ipv6 a la interfaz pública (eth0):</p>
+
+<figure class='code'><figcaption><span>&#8220;ip a&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -6 addr add 2002:dc6e:cbe::cafe/64 dev eth0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A la interfaz de la LAN (eth1) le asignamos una ip también, pero le decimos que
+::cafe es la puerta de enlace predeterminada. En su momento, el servidor con
+debian me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/network/interfaces&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># la asignamos a la publica una ipv6</span>
+</span><span class='line'>iface eth0 inet6 static
+</span><span class='line'>        address 2002:a00:1::cafe
+</span><span class='line'>        netmask 64
+</span><span class='line'>
+</span><span class='line'><span class="c"># y la interfaz de la LAN se asignamos otra</span>
+</span><span class='line'><span class="c"># pero ::cafe será la puerta de enlace</span>
+</span><span class='line'>iface eth1 inet6 static
+</span><span class='line'>        address 2002:a00:1:21c:c0ff:feb2:91c2
+</span><span class='line'>        netmask 64
+</span><span class='line'>        gateway 2002:a00:1::cafe
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En la entrada anterior vimos como usar el forward y como habilitarlo.
+Recuerdas?</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -206,7 +333,7 @@ ipv6. Aquí les va uno hipotético y sencillo:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -443,7 +570,7 @@ ambas direcciones (4 y 6), la configuración de dichos stack, decidirá cual usa
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -520,7 +647,7 @@ ES VISIBLE EN INTERNET</strong> y si no tienen cortafuegos pinguísimo <strong>a
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -626,7 +753,7 @@ Solución PERFECTA.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -733,165 +860,7 @@ pulseaudio al directorio de usuario:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/09/16/dispatcher-script/">dispatcher script</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-09-16T10:53:51-04:00'><span class='date'>16/09/2016</span> <span class='time'>10:53 am</span></time>
-        
-           | <a href="/blog/2016/09/16/dispatcher-script/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/09/16/dispatcher-script/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>El network-manager, el sistema de 2 clicasos para configurar la interfaz de red.
-Resulta que cuando levanta la red, no se por qué, telepathy-salut se queda
-mariado y el chat &ldquo;gente cerca&rdquo; no ve a los usuarios. Al reiniciar avahi se le
-quita el mareo. Entonces la talla sería que el avahi se reiniciara solo.</p>
-
-<p>Resulta que NetworkManger, tiene los llamados dispatcher. Puedes ver
-<a href="https://developer.gnome.org/NetworkManager/stable/NetworkManager.html">la documentación aquí</a></p>
-
-<p>Los scripts que radique en <strong>/etc/NetworkManager/dispatcher.d/</strong> se ejecutarán
-sí y solo si, pertenecen al root con permisos 755.</p>
-
-<p>Los script reciben como primer argumento, la interfaz y como segundo la acción.
-Las acciones pueden ser up, down, conectivity-change, hostname y en fin, vease
-<strong>man NetworkManager</strong> para más detalles.</p>
-
-<p>Mi script quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/NetworkManager/dispatcher.d/migancho.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># la interfaz involucrada</span>
-</span><span class='line'><span class="nv">INTERFAZ</span><span class="o">=</span><span class="nv">$1</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># la acción involucrada</span>
-</span><span class='line'><span class="nv">ACCION</span><span class="o">=</span><span class="nv">$2</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># una función para loguear</span>
-</span><span class='line'><span class="k">function</span> loguear<span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>   logger <span class="k">$(</span>basename <span class="nv">$0</span><span class="k">)</span> <span class="nv">$@</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># un logueo simple, pa saber lo que hay</span>
-</span><span class='line'>loguear <span class="s2">&quot;acción «$ACCION» en la interfaz «$INTERFAZ»&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># según la acción</span>
-</span><span class='line'><span class="k">case</span> <span class="s2">&quot;$ACCION&quot;</span> in
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>   up<span class="o">)</span> <span class="c"># una interfaz que se levanto</span>
-</span><span class='line'>
-</span><span class='line'>      loguear <span class="s1">&#39;tumbando telepathy y compañía&#39;</span>
-</span><span class='line'>      pkill -9 empathy
-</span><span class='line'>      pkill -9 telepathy
-</span><span class='line'>
-</span><span class='line'>      loguear <span class="s1">&#39;reiniciando avahi&#39;</span>
-</span><span class='line'>      systemctl restart avahi-daemon
-</span><span class='line'>
-</span><span class='line'>      loguear <span class="s1">&#39;ajustando la hora&#39;</span>
-</span><span class='line'>      systemctl start systemd-timesyncd
-</span><span class='line'>
-</span><span class='line'>   <span class="p">;;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>   down<span class="o">)</span> <span class="c"># al tumbar una conexión</span>
-</span><span class='line'>
-</span><span class='line'>     loguear <span class="s1">&#39;para el clientico ntp de systemd&#39;</span>
-</span><span class='line'>     systemctl stop systemd-timesyncd
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>   <span class="p">;;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>   *<span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'>      loguear <span class="s1">&#39;sin accion&#39;</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="p">;;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">esac</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con <strong>journalctl -f</strong> puedes ver como loguea, en este caso el argumento $0 es el
-nombre del script. En fin puedes hacer muchísimas cosas creativas. Con ver en el
-man de NetworkManager las acciones; podrás subsanar muchas necesidades.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -912,6 +881,10 @@ man de NetworkManager las acciones; podrás subsanar muchas necesidades.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/04/08/xen-y-virt-manager/">xen y virt-manager</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/29/jugar-teeworlds-en-lan/">jugar teeworlds en LAN</a>

@@ -9,9 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="compartir la wifi 20/10/2015 11:36 pm | Comments Cada vez que paso por
-23, me cuentro mil y una
-red cuyo ESSID tiene el sufijo Conectify delante. &hellip;">
+  <meta name="description" content="tls y ssl en postfix 03/11/2015 9:13 pm | Comments Acá en salud, ahora se están cayendo de la mata y dándose cuenta de los
+peligroso que son las &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +82,296 @@ red cuyo ESSID tiene el sufijo Conectify delante. &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/03/tls-y-ssl-en-postfix/">tls y ssl en postfix</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-03T21:13:44-05:00'><span class='date'>03/11/2015</span> <span class='time'>9:13 pm</span></time>
+        
+           | <a href="/blog/2015/11/03/tls-y-ssl-en-postfix/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/03/tls-y-ssl-en-postfix/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Acá en salud, ahora <em>se están cayendo de la mata</em> y dándose cuenta de los
+peligroso que son las conexiones planas.</p>
+
+<p>Aún no logro hacerle entender a la gente, la diferencia entre un certificado
+autofirmado y un certificado emitido por una <a href="https://es.wikipedia.org/wiki/Autoridad_de_certificaci%C3%B3n">autoridad de certificación</a>
+; pero que más les vamos a pedir, si el certificado de nauta es autofirmado.</p>
+
+<p>De momento con darle la muela del candadito y las letricas verdes en el
+navegador, van cogiendo algo.</p>
+
+<p>Pero volviendo al tema <strong>postfix con SSL</strong>. Vamos a crear un certificado
+autofirmado, por tanto, regla de oro:</p>
+
+<h4>el hostname que provees en el certificado, debe ser machear al del servicio</h4>
+
+<p>En letra de molde. Si proveemos un certificado autofirmado, para conectarnos a
+<strong>smtp.hcg.sld.cu</strong> no puedes decir en el cliente de correo, que el servidor
+smtp es <strong>192.168.0.1</strong> porque no será válido.</p>
+
+<p>Aún cuando el certificado no sea válido, déjame recodarte que debemos ir
+haciéndole cultura de seguridad informática, si no&hellip; bueno&hellip; no me voy a meter
+en un lío diciendo las barbaridades que se logran suplantando identidades.</p>
+
+<p>Bueno entremos en materia. Lo Primero que haremos será generar la clave privada
+para el servidor.</p>
+
+<p>Donde dice <strong>smtp.tudominio.cu</strong> tu pondrás el hostname de que apunta para tu
+servidor smtp. Si eres un desastre y no tiene DNS. Pon la IP de tu servidor de
+correo.</p>
+
+<h4>REPITO</h4>
+
+<p>Donde dice <strong>FQDN or YOUR name</strong> debe decir la dirección del servidor SMTP. La
+dirección tal cual la pones en los clientes.</p>
+
+<p>Cuando lo hagas, te pedirá un password.</p>
+
+<figure class='code'><figcaption><span>&#8220;generando clave privada del servidor&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl genrsa -des3 -out smtp.tudominio.cu.key 2048
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora creamos el certificado. Te pedirá hasta la talla de calzoncillos que usas.
+<strong>NO respondas a lo locoi</strong>, recuerda el <strong>FQDN</strong>. Te acuerdas del password
+que pusiste?</p>
+
+<figure class='code'><figcaption><span>&#8220;creando el certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl req -new -key smtp.tudominio.cu.key -out smtp.tudominio.cu.csr
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Debes ver algo como esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;ceremonia de creación de certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Enter pass phrase <span class="k">for</span> smtp.tudominio.cu.key:
+</span><span class='line'>You are about to be asked to enter information that will be incorporated
+</span><span class='line'>into your certificate request.
+</span><span class='line'>What you are about to enter is what is called a Distinguished Name or a DN.
+</span><span class='line'>There are quite a few fields but you can leave some blank
+</span><span class='line'>For some fields there will be a default value,
+</span><span class='line'>If you enter <span class="s1">&#39;.&#39;</span>, the field will be left blank.
+</span><span class='line'>-----
+</span><span class='line'>Country Name <span class="o">(</span><span class="m">2</span> letter code<span class="o">)</span> <span class="o">[</span>AU<span class="o">]</span>:CU
+</span><span class='line'>State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>Some-State<span class="o">]</span>:Havana
+</span><span class='line'>Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[]</span>:Plaza
+</span><span class='line'>Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>Internet Widgits Pty Ltd<span class="o">]</span>:Calixto
+</span><span class='line'>Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[]</span>:Informatica
+</span><span class='line'>Common Name <span class="o">(</span>e.g. server FQDN or YOUR name<span class="o">)</span> <span class="o">[]</span>:smtp.tudominio.cu
+</span><span class='line'>Email Address <span class="o">[]</span>:ssl@tudominio.cu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Bites verdad? Bueno, ya hicimos lo más importante, pero no hemos terminado.
+Vamos a firmar el certificado con la la llave emisora.</p>
+
+<figure class='code'><figcaption><span>&#8220;cri-cra firmando el certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl x509 -req -days <span class="m">365</span> -in smtp.tudominio.cu.csr -signkey smtp.tudominio.cu.key -out smtp.tudominio.cu.crt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora vamos a dar un paso <strong>cuestionable</strong>.</p>
+
+<p>Cada vez que un servicio con con un certificado SSL valla a ser iniciado.
+Debería pedir un password, para así asegurar que el legítimo operador de
+servicio ha sido quien le dio la arrancada. Pero poner un password cada vez que
+arranca postfix, no es ninguna gracia. Por tanto, quitamos el password.
+Obviamente, te lo pedirá una última vez.</p>
+
+<figure class='code'><figcaption><span>&#8220;quitando el password&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl rsa -in smtp.tudominio.cu.key -out smtp.tudominio.cu.key.sinpassword
+</span><span class='line'>mv smtp.tudominio.cu.key.sinpassword smtp.tudominio.cu.key
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Emitimos una autoridad de raíz (de pacotilla)</p>
+
+<figure class='code'><figcaption><span>&#8220;la CA del chiste&#8221; </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl req -new -x509 -extensions v3_ca -keyout cakey.pem -out cacert.pem -days 3650
+</span><span class='line'><span class="c"># aqui te pedirá la misma rutina, ojo con lo que pones en el campo FQDN or YOUR name</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Bueno, con el disi y con el mulo, ya tenemos una CA loca, que la podemos reusar
+para otros servicios, por tanto, tratemosla como tal.</p>
+
+<figure class='code'><figcaption><span>&#8220;los puntos sobre las ies&#8221; </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>chmod <span class="m">600</span> smtp.tudominio.cu.key
+</span><span class='line'>chmod <span class="m">600</span> cakey.pem
+</span><span class='line'>mv smtp.tudominio.cu.key /etc/ssl/private/
+</span><span class='line'>mv smtp.tudominio.cu.crt /etc/ssl/certs/
+</span><span class='line'>mv cakey.pem /etc/ssl/private/
+</span><span class='line'>mv cacert.pem /etc/ssl/certs/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora viene el turno de postfix. Haremos dos cosas</p>
+
+<ul>
+<li>habilitar el tranporte ssl/tls por el puerto 465</li>
+<li>habilitar las funciones ssl</li>
+</ul>
+
+
+<p>Ve al <strong>master.cf</strong> y busca la cadena de texto <strong>smtps</strong> debes ver algo como
+esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;parte del master.cf ANTES&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>smtp      inet  n       -       -       -       -       smtpd
+</span><span class='line'><span class="c">#smtp      inet  n       -       -       -       1       postscreen</span>
+</span><span class='line'><span class="c">#smtpd     pass  -       -       -       -       -       smtpd</span>
+</span><span class='line'><span class="c">#dnsblog   unix  -       -       -       -       0       dnsblog</span>
+</span><span class='line'><span class="c">#tlsproxy  unix  -       -       -       -       0       tlsproxy</span>
+</span><span class='line'><span class="c">#submission inet n       -       -       -       -       smtpd</span>
+</span><span class='line'><span class="c">#  -o syslog_name=postfix/submission</span>
+</span><span class='line'><span class="c">#  -o smtpd_tls_security_level=encrypt</span>
+</span><span class='line'><span class="c">#  -o smtpd_sasl_auth_enable=yes</span>
+</span><span class='line'><span class="c">#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject</span>
+</span><span class='line'><span class="c">#  -o milter_macro_daemon_name=ORIGINATING</span>
+</span><span class='line'><span class="c">#smtps     inet  n       -       -       -       -       smtpd</span>
+</span><span class='line'><span class="c">#  -o syslog_name=postfix/smtps</span>
+</span><span class='line'><span class="c">#  -o smtpd_tls_wrappermode=yes</span>
+</span><span class='line'><span class="c">#  -o smtpd_sasl_auth_enable=yes</span>
+</span><span class='line'><span class="c">#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject</span>
+</span><span class='line'><span class="c">#  -o milter_macro_daemon_name=ORIGINATING</span>
+</span><span class='line'><span class="c">#628       inet  n       -       -       -       -       qmqpd</span>
+</span><span class='line'>pickup    fifo  n       -       -       <span class="m">60</span>      <span class="m">1</span>       pickup
+</span><span class='line'>cleanup   unix  n       -       -       -       <span class="m">0</span>       cleanup
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Descomentamos todo lo que tenga que ver con <strong>smtps</strong> debe quedarte más o menos
+así:</p>
+
+<figure class='code'><figcaption><span>&#8220;parte del master.cf DESPUES&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>smtp      inet  n       -       -       -       -       smtpd
+</span><span class='line'><span class="c">#smtp      inet  n       -       -       -       1       postscreen</span>
+</span><span class='line'><span class="c">#smtpd     pass  -       -       -       -       -       smtpd</span>
+</span><span class='line'><span class="c">#dnsblog   unix  -       -       -       -       0       dnsblog</span>
+</span><span class='line'><span class="c">#tlsproxy  unix  -       -       -       -       0       tlsproxy</span>
+</span><span class='line'><span class="c">#submission inet n       -       -       -       -       smtpd</span>
+</span><span class='line'><span class="c">#  -o syslog_name=postfix/submission</span>
+</span><span class='line'><span class="c">#  -o smtpd_tls_security_level=encrypt</span>
+</span><span class='line'><span class="c">#  -o smtpd_sasl_auth_enable=yes</span>
+</span><span class='line'><span class="c">#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject</span>
+</span><span class='line'><span class="c">#  -o milter_macro_daemon_name=ORIGINATING</span>
+</span><span class='line'>smtps     inet  n       -       -       -       -       smtpd
+</span><span class='line'>  -o <span class="nv">syslog_name</span><span class="o">=</span>postfix/smtps
+</span><span class='line'>  -o <span class="nv">smtpd_tls_wrappermode</span><span class="o">=</span>yes
+</span><span class='line'>  -o <span class="nv">smtpd_sasl_auth_enable</span><span class="o">=</span>yes
+</span><span class='line'>  -o <span class="nv">smtpd_client_restrictions</span><span class="o">=</span>permit_sasl_authenticated,reject
+</span><span class='line'>  -o <span class="nv">milter_macro_daemon_name</span><span class="o">=</span>ORIGINATING
+</span><span class='line'><span class="c">#628       inet  n       -       -       -       -       qmqpd</span>
+</span><span class='line'>pickup    fifo  n       -       -       <span class="m">60</span>      <span class="m">1</span>       pickup
+</span><span class='line'>cleanup   unix  n       -       -       -       <span class="m">0</span>       cleanup
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora trabajemos con el <strong>main.cf</strong>, habilitamos las funciones que tengan que
+ver con SSL, declarando esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;tope del main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">smtpd_use_tls</span> <span class="o">=</span> yes
+</span><span class='line'><span class="nv">smtpd_tls_auth_only</span> <span class="o">=</span> no
+</span><span class='line'><span class="nv">smtpd_tls_key_file</span> <span class="o">=</span> /etc/ssl/private/smtp.tudominio.cu.key
+</span><span class='line'><span class="nv">smtpd_tls_cert_file</span> <span class="o">=</span> /etc/ssl/certs/smtp.tudominio.cu.crt
+</span><span class='line'><span class="nv">smtpd_tls_CAfile</span> <span class="o">=</span> /etc/ssl/certs/cacert.pem
+</span><span class='line'><span class="nv">tls_random_source</span> <span class="o">=</span> dev:/dev/urandom
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No olvides correr <strong>postfix reload</strong></p>
+
+<p>   <blockquote><p>Te voy a coser el culo con un alambre finito.<br/>   No te quedará bonito, pero te quedará seguro.</p><footer><strong>Décima popular</strong></footer></blockquote></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -290,7 +579,7 @@ NetworkManager.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -404,7 +693,7 @@ hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.or
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -564,7 +853,7 @@ como lo estoy haciendo yo ahora.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -761,7 +1050,7 @@ crudo. Podrías también tirarlo pa un fichero así:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -944,225 +1233,7 @@ con ambos. Veamos que trae rails 5 con esto, porque la mejora urge&hellip;</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/17/dhcp-por-grupos/">dhcp por grupos</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-09-17T17:42:04-04:00'><span class='date'>17/09/2015</span> <span class='time'>5:42 pm</span></time>
-        
-           | <a href="/blog/2015/09/17/dhcp-por-grupos/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/09/17/dhcp-por-grupos/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>La fiebre LTSP sigue subiendo en el Calixto. La solución definitiva para toda
-máquina que butee por la red, sin importar su cantidad de RAM o micro&hellip;</p>
-
-<p>Pero cuando hay más de un servidor con DHCP en la misma red, se forma el rollo.</p>
-
-<h4>isc-dhcp no se puede bloquear con iptables</h4>
-
-<p>Si tienes alguna duda de la afirmación anterior, has la tarea y busca en google.
-De nada vale ponerle un cortafuegos a cada servidor porque <strong>isc</strong> usa &ldquo;raw
-packets&rdquo; y se caga en lo que diga iptables. Por suerte de afuera pa dentro eso
-no se aplica. No obstante, ojo si pones un isc con múltiples interfaces, no sea
-que acabes dándole DHCP al ruter.</p>
-
-<p>En un ambiente como este, no queda otra que hacer un DHCP central con múltiples
-parámetros, de forma que los clientes ligeros se agrupen por MAC address y se
-seleccione el servidor adecuado a la hora de butear.</p>
-
-<p>El fichero de configuración es <strong>/etc/dhcp/dhcpd.conf</strong> y bajo la declaración de
-la subnet puedes poner una cláusula <strong>group</strong> para dar parámetros diferentes.</p>
-
-<p>La sintaxis es sencilla:</p>
-
-<figure class='code'><figcaption><span>&#8220;ejemplo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>subnet <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>   parametros de la red
-</span><span class='line'>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>group <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>   parametros del grupo
-</span><span class='line'>
-</span><span class='line'>   host nombre <span class="o">{</span>
-</span><span class='line'>      parametros del host
-</span><span class='line'>   <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Tomemos el caso de dos servidores LTSP en la red, el 10.1.1.6 y el 10.1.1.3, a
-mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/dhcp/dhcpd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># vim:filetype=config</span>
-</span><span class='line'>authoritative<span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># la red</span>
-</span><span class='line'>subnet 10.1.1.0 netmask 255.255.255.0 <span class="o">{</span>
-</span><span class='line'>    range 10.1.1.100 10.1.1.254<span class="p">;</span>
-</span><span class='line'>    option domain-name <span class="s2">&quot;hcg.sld.cu&quot;</span><span class="p">;</span>
-</span><span class='line'>    option domain-name-servers 10.1.1.1<span class="p">;</span>
-</span><span class='line'>    option broadcast-address 10.1.1.255<span class="p">;</span>
-</span><span class='line'>    option subnet-mask 255.255.255.0<span class="p">;</span>
-</span><span class='line'><span class="o">}</span> <span class="c"># subnet</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="c"># ganker y su pandilla, la gente de archivos médicos</span>
-</span><span class='line'>group <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c"># clientes ligeros con linux y ltsp</span>
-</span><span class='line'>    option root-path <span class="s2">&quot;/opt/ltsp/i386&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">if</span> substring<span class="o">(</span> option vendor-class-identifier, 0, <span class="m">9</span> <span class="o">)</span> <span class="o">=</span> <span class="s2">&quot;PXEClient&quot;</span> <span class="o">{</span>
-</span><span class='line'>        filename <span class="s2">&quot;/ltsp/i386/pxelinux.0&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>        filename <span class="s2">&quot;/ltsp/i386/nbi.img&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c"># buteen por ganker</span>
-</span><span class='line'>   next-server 10.1.1.3<span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c"># los clientes</span>
-</span><span class='line'>   host clganker1 <span class="o">{</span> hardware ethernet 00:1E:90:E1:B4:0A<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>   host clganker2 <span class="o">{</span> hardware ethernet 00:1E:90:E2:6E:1A<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>   host clganker3 <span class="o">{</span> hardware ethernet 00:1E:90:E2:75:B6<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>   host clganker4 <span class="o">{</span> hardware ethernet 00:1E:90:F5:E8:A5<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>   host clganker5 <span class="o">{</span> hardware ethernet 00:1E:90:F5:E9:88<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">}</span> <span class="c"># ganker</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="c"># atenea y su flotilla, el servidor de la biblioteca</span>
-</span><span class='line'>group <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c"># clientes ligeros con linux y ltsp</span>
-</span><span class='line'>    option root-path <span class="s2">&quot;/opt/ltsp/i386&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">if</span> substring<span class="o">(</span> option vendor-class-identifier, 0, <span class="m">9</span> <span class="o">)</span> <span class="o">=</span> <span class="s2">&quot;PXEClient&quot;</span> <span class="o">{</span>
-</span><span class='line'>        filename <span class="s2">&quot;/ltsp/i386/pxelinux.0&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>        filename <span class="s2">&quot;/ltsp/i386/nbi.img&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c"># buteen por el servidor de la bibliteoca</span>
-</span><span class='line'>   next-server 10.1.1.6<span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c"># los clientes</span>
-</span><span class='line'>   host biblioteca1 <span class="o">{</span> hardware ethernet 00:1E:90:E1:B4:0A<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>   host biblioteca2 <span class="o">{</span> hardware ethernet 00:1E:90:E2:6E:1A<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>   host biblioteca3 <span class="o">{</span> hardware ethernet 00:1E:90:E2:75:B6<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>   host biblioteca4 <span class="o">{</span> hardware ethernet 00:1E:90:F5:E8:A5<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>   host biblioteca5 <span class="o">{</span> hardware ethernet 00:1E:90:F5:E9:88<span class="p">;</span> <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">}</span> <span class="c"># ganker</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>¿Qué hicimos? Sencillo, declaramos un grupo con distintos parámetros, aunque en
-este caso solo <strong>next-server</strong> es verdaderamente distinto. En ambos casos se
-engatilla el mismo <strong>file-name</strong> y <strong>root-path</strong> ya que ambos servidores hay lo
-mismo.  Pero quizás en su red usted tiene otro servidor bootp o PXE y no querrá
-que las opciones de LTSP sean la misma.</p>
-
-<p>Finalmente el parámetro <strong>next-server</strong> difiere y es que es este el que le da
-porque servidor bootear.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1183,6 +1254,10 @@ porque servidor bootear.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/04/08/xen-y-virt-manager/">xen y virt-manager</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/03/29/jugar-teeworlds-en-lan/">jugar teeworlds en LAN</a>
