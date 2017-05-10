@@ -139,7 +139,7 @@ y YO.</p>
 <p>Las VM y su RAM:</p>
 
 <ul>
-<li>debian como servidor de correo (postfix y dovecot, sin webmail) - 1G</li>
+<li>debian como servidor de correo (postfix y dovecot, sin webmail) - 512M</li>
 <li>alpine como ruter (dns, dhcp y firewall) - 512M</li>
 <li>FreeBSD como proxy (squid) - 1G</li>
 </ul>
@@ -225,6 +225,8 @@ Nada que contar; el clásico Dom0.</p>
 <span class='line-number'>34</span>
 <span class='line-number'>35</span>
 <span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
 </pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> # arriba todo el mundo</span>
 </span><span class='line'><span class="go"> auto lo eth0 eth1 br0 br1 br2</span>
 </span><span class='line'>
@@ -239,20 +241,22 @@ Nada que contar; el clásico Dom0.</p>
 </span><span class='line'><span class="go"> # puente de la interfaz onboard (WAN)</span>
 </span><span class='line'><span class="go"> iface br0 inet static</span>
 </span><span class='line'><span class="go">    bridge_ports eth0</span>
-</span><span class='line'><span class="go">    address 10.1.1.236</span>
-</span><span class='line'><span class="go">    netmask 255.255.255.0</span>
 </span><span class='line'><span class="go">    bridge_stp off</span>
 </span><span class='line'><span class="go">    bridge_waitport 0</span>
 </span><span class='line'><span class="go">    bridge_fd 0</span>
 </span><span class='line'>
 </span><span class='line'><span class="go"> # puente de la interfaz PCI (LAN)</span>
+</span><span class='line'><span class="go"> # y la ip del hypervisor para hacer SSH</span>
 </span><span class='line'><span class="go"> iface br1 inet manual</span>
+</span><span class='line'><span class="go">    address 192.168.99.10</span>
+</span><span class='line'><span class="go">    netmask 255.255.255.0</span>
 </span><span class='line'><span class="go">    bridge_ports eth1</span>
 </span><span class='line'><span class="go">    bridge_stp off</span>
 </span><span class='line'><span class="go">    bridge_waitport 0</span>
 </span><span class='line'><span class="go">    bridge_fd 0</span>
 </span><span class='line'>
 </span><span class='line'><span class="go"> # una interfaz de red local de las VM</span>
+</span><span class='line'><span class="go"> # note que el puente apunta a la interfaz none</span>
 </span><span class='line'><span class="go"> iface br2 inet static</span>
 </span><span class='line'><span class="go">    bridge_ports eth0</span>
 </span><span class='line'><span class="go">    address 169.254.0.1</span>
@@ -340,7 +344,7 @@ lo que yo mismo hago que en lo que hacen otros.</p>
 <figure class='code'><figcaption><span>&#8220;mkdir&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> ssh root@192.168.99.10 mkdir /opt/isos/</span>
-</span><span class='line'><span class="go"> scp ~/Downloads/ISO/*.iso root@192.168.99.19:/opt/isos/</span>
+</span><span class='line'><span class="go"> scp ~/Downloads/ISO/*.iso root@192.168.99.10:/opt/isos/</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -405,7 +409,7 @@ virt-manager).</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -537,7 +541,7 @@ que termine una ronda, se cambiará el mapa.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -591,7 +595,7 @@ pasa a ser HVM.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -757,7 +761,7 @@ pop en su cuenta de gmail.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -848,7 +852,7 @@ escucha por el puerto 8888.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -876,7 +880,7 @@ escucha por el puerto 8888.</p>
   </header>
 
 
-  <div class="entry-content"><p>En el 5to infierno de infomed con la vida detrás del proxy que ya he mencionado
+  <div class="entry-content"><p>En el 5to infierno de infomed, con la vida detrás del proxy que ya he mencionado
 incontables veces; todo se vuelve difícil.</p>
 
 <p>Por suerte freebsd ha mejorado en materia de soporte de proxy. Si bien en
@@ -920,7 +924,7 @@ NO un punto y coma. La configuración parece ser un <strong>json</strong>.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -978,10 +982,6 @@ NO un punto y coma. La configuración parece ser un <strong>json</strong>.</p>
 		
 		<li class="post">
 			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a>
 		</li>
 		
 		<li class="post">

@@ -9,7 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="postfix entrando en el baile 09/06/2014 3:19 pm | Comments En el episodio anterior, vimos como dovecot se sumaba al esquema mysql. Faltaría &hellip;">
+  <meta name="description" content="dovecot entra en el baile 09/06/2014 8:56 am | Comments Otra escupía que me cae en la frente. Desde que conozco linux, estoy oyendo
+hablar de &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,105 +82,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/09/postfix-entrando-en-el-baile/">postfix entrando en el baile</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-06-09T15:19:03-04:00'><span class='date'>09/06/2014</span> <span class='time'>3:19 pm</span></time>
-        
-           | <a href="/blog/2014/06/09/postfix-entrando-en-el-baile/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/06/09/postfix-entrando-en-el-baile/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>En el episodio anterior, vimos como dovecot se sumaba al esquema mysql. Faltaría
-solamente postfix, para tener entonces un &ldquo;completo servidor MySQL&rdquo;</p>
-
-<p>Cabe reconocer que el futuro de MySQL es incierto, pero meintras PostGres sea la
-gran basura que es, que conmigo ni cuenten.</p>
-
-<p>Normalmente postfix, entrega a través de procmail, pero ahora, nuestro dovecot
-con sus flamantes características, tendrá una manera más compleja de entregar.
-Por tanto, debemos usar el LDA (Local Deliver Agent) de Dovecot como el MDA por
-defecto de postfix.</p>
-
-<p>Al fichero <em>/etc/postfix/main.cf</em> le agregamos en el fondo un nuevo transport.</p>
-
-<figure class='code'><figcaption><span>/etc/postfix/master.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">dovecot</span> <span class="err">unix</span> <span class="err">-</span> <span class="err">n</span> <span class="err">n</span> <span class="err">-</span> <span class="err">-</span> <span class="err">pipe</span>
-</span><span class='line'>  <span class="na">flags</span><span class="o">=</span><span class="s">DRhu user=vmail:vmail argv=/usr/lib/dovecot/deliver -f ${sender} -d ${user}@${domain} -m ${extension}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Además de lo usual, al main.cf le declaramos que su nuevo transporte es  un tal
-&ldquo;dovecot&rdquo; y le agregaremos unas cuantas gangarreas extras que ya explicaré.</p>
-
-<figure class='code'><figcaption><span>/etc/postfix/main.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="c1"># el resto de tu confuiguracion arriba</span>
-</span><span class='line'><span class="na">virtual_transport</span><span class="o">=</span><span class="s">dovecot</span>
-</span><span class='line'><span class="na">mailbox_command</span> <span class="o">=</span> <span class="s">/usr/lib/dovecot/deliver</span>
-</span><span class='line'><span class="na">mydestination</span> <span class="o">=</span> <span class="s">localhost, blackjack</span>
-</span><span class='line'><span class="na">virtual_mailbox_domains</span> <span class="o">=</span> <span class="s">hcg.sld.cu</span>
-</span><span class='line'><span class="na">virtual_mailbox_maps</span> <span class="o">=</span> <span class="s">$virtual_mailbox_domains</span>
-</span><span class='line'><span class="na">virtual_alias_maps</span> <span class="o">=</span> <span class="s">hash:/etc/aliases</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ol>
-<li>Un comentario a prueba de imbéciles.</li>
-<li>Declaramos el nuevo transporte para el dominio virtual.</li>
-<li>Declaramos además, que se use el LDA de dovecot.</li>
-<li>Declaramos que solo localhost y blackjack son destinos locales.</li>
-<li>El dominio virtual será &ldquo;hcg.sld.cu&rdquo;.</li>
-<li>Y lo mapeamos igual.</li>
-<li>Por último, lo alias se quedan en el fichero tradicional.</li>
-</ol>
-
-
-<p>Ahora si creamos un usaurio llamado &ldquo;usuario&rdquo; en la base de datos;
-usuario@localhost no será válido porque solo existe en el domino virtual.</p>
-
-<p>Además, le agregamos que los alisas, son un hash en /etc/alisas, al estilo
-antiguo. No vamos a cargar la base de datos con los alisases. Sobre todo
-teniendo en cuenta lo pocos que son. De esta forma, cuando por ejemplo, se manda
-un correo a root que es una alias de lazaro, postfix preguntara quien es lazaro
-y responderá un usaurio del dominio virtual. Genial eh?</p>
-
-<p>Tanto los alisas como los dominios virtuales, podrían ser tablas de MySQL, pero
-como mi aplicación no maneja eso, lo haces al estilo tradicional. En caso de que
-más adelante desarrollase algún esquema tipo proveedor de servicios; otro gallo
-cantaría.</p>
-
-<p>No olvidemos &ldquo;postfix reload&rdquo;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
   
   
     <article>
@@ -336,7 +238,7 @@ agarro y es que las Bases de datos, NO son sistemas de archivos.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -621,7 +523,7 @@ servidor para ver que pasa.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -848,7 +750,7 @@ de debian.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1002,7 +904,7 @@ tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1060,10 +962,6 @@ tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
 		
 		<li class="post">
 			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2017/02/05/a-las-puertas-del-3g/">a las puertas del 3g</a>
 		</li>
 		
 		<li class="post">
