@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="password de windows 16/08/2016 12:13 am | Comments Resulta que en el puesto de mando, uno de los tantos que se sientan ahí; le
-cambió el password a &hellip;">
+  <meta name="description" content="audífonos blutú 22/09/2016 5:39 pm | Comments Más por embullo que por necesidad, me he comprado uno de esos audífonos
+Bluetooth que se usan ahora. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +88,271 @@ cambió el password a &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/09/22/audifonos-blutu/">audífonos blutú</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-22T17:39:04-04:00'><span class='date'>22/09/2016</span> <span class='time'>5:39 pm</span></time>
+        
+           | <a href="/blog/2016/09/22/audifonos-blutu/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/09/22/audifonos-blutu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="left" src="/images/audifonos_blutu.png" width="400"></p>
+
+<p>Más por embullo que por necesidad, me he comprado uno de esos audífonos
+Bluetooth que se usan ahora. Estoy pasando un trabajo tremendo para adaptarme a
+tener la morronga esa en el cuello. Como si fuera poco, archlinux no me perdonó
+y me hizo de las suyas.</p>
+
+<p>Al conectarlos se escuchaban horrible y se desaparecía el bluetooth.</p>
+
+<p>Según me dijeron en el #archlinux de freenode. Se debe a que los audífonos se
+conecta como micrófonos/audífonos y no como audífonos solamente. Para ellos
+había que cambiarlos al modo A2DP.</p>
+
+<p>El comando <strong>pacmd set-card-profile 2 a2dp_sink</strong> resuelve el problema. Pero
+tener que correr el comando cada vez que los conecte, no me parece; no me da tan
+fuerte todavía&hellip;</p>
+
+<p>El gestor de audio de gnome supuestamente cambia el modo. Pero resulta que el
+puto <strong>pulse-audio</strong>, si arranca con GDM, forma una cagazón con los permisos ahí
+y no cambia de modo.</p>
+
+<p>Para evitar eso, creas un fichero llamado
+<strong>/var/lib/gdm/.config/pulse/client.conf</strong> donde le declaras que no arrancará
+pulse-audio con gnome:</p>
+
+<figure class='code'><figcaption><span>&#8220;/var/lib/gdm/.config/pulse/client.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">autospawn</span> <span class="o">=</span> no
+</span><span class='line'>daemon-binary <span class="o">=</span> /bin/true
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero eso no lo es todo. Si pulseaudio arranca con socket, se joden los
+audifonitos. Supuestamente creando una configuración, se deshabilita el socket,
+pero no pincha. Hay que deshabilitarlo con systemd. Ejecuta esto <strong>como root</strong>:</p>
+
+<figure class='code'><figcaption><span>&#8220;sin socket plis&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span> mkdir -p /var/lib/gdm/.config/systemd/user
+</span><span class='line'><span class="o">[</span>root@artema ~<span class="o">]</span> ln -s /dev/null /var/lib/gdm/.config/systemd/user/pulseaudio.socket
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Reinicia y al conectar los audífonos; y, al hacerle click al dipositivo, debe
+darte una opción que conduce a la configuración de audio. Ahí mismo cambias el
+modo y seleccionas el dispositivo de salida de audio por defecto.</p>
+
+<p>Otra cuestión es que pulseaudio use los audífonos como salida de audio por
+defecto al conectarlos. Finalmente decidí pasar mis configuraciones de
+pulseaudio al directorio de usuario:</p>
+
+<figure class='code'><figcaption><span>&#8220;pulseudio en el home&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir ~/.config/pulse/
+</span><span class='line'>cp -ruv /etc/pulse/ ~/.config/pulse/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Localiza el fichero <strong>~/.config/pulse/default.pa</strong> y al final añadele esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;default.pa&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema pulse<span class="o">]</span><span class="nv">$ </span>tail -4 ~/.config/pulse/default.pa
+</span><span class='line'>
+</span><span class='line'><span class="c"># file:///usr/share/doc/arch-wiki/html/en/PulseAudio/Troubleshooting.html#Bluetooth</span>
+</span><span class='line'><span class="c"># automatically switch to newly-connected devices</span>
+</span><span class='line'>load-module module-switch-on-connect
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/09/16/dispatcher-script/">dispatcher script</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-16T10:53:51-04:00'><span class='date'>16/09/2016</span> <span class='time'>10:53 am</span></time>
+        
+           | <a href="/blog/2016/09/16/dispatcher-script/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/09/16/dispatcher-script/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>El network-manager, el sistema de 2 clicasos para configurar la interfaz de red.
+Resulta que cuando levanta la red, no se por qué, telepathy-salut se queda
+mariado y el chat &ldquo;gente cerca&rdquo; no ve a los usuarios. Al reiniciar avahi se le
+quita el mareo. Entonces la talla sería que el avahi se reiniciara solo.</p>
+
+<p>Resulta que NetworkManger, tiene los llamados dispatcher. Puedes ver
+<a href="https://developer.gnome.org/NetworkManager/stable/NetworkManager.html">la documentación aquí</a></p>
+
+<p>Los scripts que radique en <strong>/etc/NetworkManager/dispatcher.d/</strong> se ejecutarán
+sí y solo si, pertenecen al root con permisos 755.</p>
+
+<p>Los script reciben como primer argumento, la interfaz y como segundo la acción.
+Las acciones pueden ser up, down, conectivity-change, hostname y en fin, vease
+<strong>man NetworkManager</strong> para más detalles.</p>
+
+<p>Mi script quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/NetworkManager/dispatcher.d/migancho.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># la interfaz involucrada</span>
+</span><span class='line'><span class="nv">INTERFAZ</span><span class="o">=</span><span class="nv">$1</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># la acción involucrada</span>
+</span><span class='line'><span class="nv">ACCION</span><span class="o">=</span><span class="nv">$2</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># una función para loguear</span>
+</span><span class='line'><span class="k">function</span> loguear<span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>   logger <span class="k">$(</span>basename <span class="nv">$0</span><span class="k">)</span> <span class="nv">$@</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># un logueo simple, pa saber lo que hay</span>
+</span><span class='line'>loguear <span class="s2">&quot;acción «$ACCION» en la interfaz «$INTERFAZ»&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># según la acción</span>
+</span><span class='line'><span class="k">case</span> <span class="s2">&quot;$ACCION&quot;</span> in
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>   up<span class="o">)</span> <span class="c"># una interfaz que se levanto</span>
+</span><span class='line'>
+</span><span class='line'>      loguear <span class="s1">&#39;tumbando telepathy y compañía&#39;</span>
+</span><span class='line'>      pkill -9 empathy
+</span><span class='line'>      pkill -9 telepathy
+</span><span class='line'>
+</span><span class='line'>      loguear <span class="s1">&#39;reiniciando avahi&#39;</span>
+</span><span class='line'>      systemctl restart avahi-daemon
+</span><span class='line'>
+</span><span class='line'>      loguear <span class="s1">&#39;ajustando la hora&#39;</span>
+</span><span class='line'>      systemctl start systemd-timesyncd
+</span><span class='line'>
+</span><span class='line'>   <span class="p">;;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>   down<span class="o">)</span> <span class="c"># al tumbar una conexión</span>
+</span><span class='line'>
+</span><span class='line'>     loguear <span class="s1">&#39;para el clientico ntp de systemd&#39;</span>
+</span><span class='line'>     systemctl stop systemd-timesyncd
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>   <span class="p">;;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>   *<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>      loguear <span class="s1">&#39;sin accion&#39;</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="p">;;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">esac</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con <strong>journalctl -f</strong> puedes ver como loguea, en este caso el argumento $0 es el
+nombre del script. En fin puedes hacer muchísimas cosas creativas. Con ver en el
+man de NetworkManager las acciones; podrás subsanar muchas necesidades.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2016/08/16/password-de-windows/">password de windows</a></h1>
     
     
@@ -151,7 +416,7 @@ es bastante simple.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -160,7 +425,7 @@ es bastante simple.</p>
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en xen</a></h1>
+      <h1 class="entry-title"><a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en XenServer</a></h1>
     
     
       <p class="meta">
@@ -224,7 +489,7 @@ Podrás usarlo como unidad óptica de las máquinas virtuales.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -375,7 +640,7 @@ librería, así que nada de ~/, le pones /home/fulanito.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -538,171 +803,7 @@ necesito. En este caso, asumiré que para al hibernar y enciende al despertar.</
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/07/17/rsync-basico/">rsync básico</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-07-17T16:49:25-04:00'><span class='date'>17/07/2016</span> <span class='time'>4:49 pm</span></time>
-        
-           | <a href="/blog/2016/07/17/rsync-basico/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/07/17/rsync-basico/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Este es el tipo de cosas que uno hace cada 120 días y claro, cuando lo vas hacer
-ya se te olvidó; así que para el blog:</p>
-
-<p>Como compartir un directorio vía rsyncd. En el siguiente ejemplo, usaré mi
-directorio de Downloads, donde tengo cosas que copiar por SSH requiere mucha
-entropía y la copia se vuelve lenta, por ejemplo, los ficheros con la wikipedia
-(kiwix)</p>
-
-<p>La configuración de <strong>rsyncd</strong> radica en un lugar bastante obvio:
-<strong>/etc/rsyncd.conf</strong> a mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/rsyncd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="na">max connections</span> <span class="o">=</span> <span class="s">2</span>
-</span><span class='line'><span class="na">log file</span> <span class="o">=</span> <span class="s">/var/log/rsync.log</span>
-</span><span class='line'><span class="na">timeout</span> <span class="o">=</span> <span class="s">300</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">[descargas]</span>
-</span><span class='line'>   <span class="na">comment</span> <span class="o">=</span> <span class="s">las cosas que descargué</span>
-</span><span class='line'><span class="s">   path = /home/lazaro/Download/</span>
-</span><span class='line'><span class="s">   read only = yes</span>
-</span><span class='line'><span class="s">   list = yes </span>
-</span><span class='line'><span class="s">   uid = lazaro</span>
-</span><span class='line'><span class="s">   gid = nobody</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahí tenemos el directorio <strong>descargas</strong> servido por rsyncd. Vamos a efectuar una
-copia:</p>
-
-<figure class='code'><figcaption><span>&#8220;rsync&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rsync --include<span class="o">=</span><span class="s1">&#39;*.gz&#39;</span> --exclude<span class="o">=</span><span class="s1">&#39;*&#39;</span>  -aPv rsync://pub@10.1.1.187/descargas/ ./
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En ese ejemplo, usamos los parámetros <strong>&ndash;include</strong> y <strong>&ndash;exclude</strong>, para copiar
-solamente los fichero <strong>.gz</strong></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/20/correos-del-cron/">correos del cron</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-06-20T14:14:06-04:00'><span class='date'>20/06/2016</span> <span class='time'>2:14 pm</span></time>
-        
-           | <a href="/blog/2016/06/20/correos-del-cron/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/06/20/correos-del-cron/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Conflictivísima tarea, lograr que el cron mande correos adecuadamente&hellip; En este
-caso, cronie, da la solución al problema. Aunque me imagino que dicha
-configuración sea estándar para el cron.</p>
-
-<p>Así es la cosa, declaramos <strong>MAILTO</strong> y <strong>MAILFROM</strong> como unas variables en el
-fichero crontab.</p>
-
-<figure class='code'><figcaption><span>crontab</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="c1"># DO NOT EDIT THIS FILE - edit the master and reinstall.</span>
-</span><span class='line'><span class="c1"># (/tmp/crontab.f36hiB/crontab installed on Tue May  5 08:48:38 2015)</span>
-</span><span class='line'><span class="c1"># (Cron version -- $Id: crontab.c,v 2.13 1994/01/17 03:20:37 vixie Exp $)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># añadimos las variables</span>
-</span><span class='line'><span class="na">MAILTO</span><span class="o">=</span><span class="s">root@tudominio.cu</span>
-</span><span class='line'><span class="na">MAILFROM</span><span class="o">=</span><span class="s">cron@tudominio.cu</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># m h  dom mon dow   command</span>
-</span><span class='line'><span class="err">00</span> <span class="err">00</span> <span class="err">*</span> <span class="err">*</span> <span class="err">*</span> <span class="err">/bin/bash</span> <span class="err">/home/fulanito/script.sh</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora faltaría un MTA. Pues la solución más sensilla es <strong>esmtp</strong> y su
-configuración sería más o menos así en el fichero <strong>/etc/esmtprc</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/esmtprc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="err">identity</span> <span class="err">micuenta</span>
-</span><span class='line'>   <span class="err">hostname</span> <span class="err">smtp.tudominio.cu</span>
-</span><span class='line'>   <span class="err">username</span> <span class="err">&quot;cron&quot;</span>
-</span><span class='line'>   <span class="err">password</span> <span class="err">&quot;pinpanpun&quot;</span>
-</span><span class='line'>   <span class="err">starttls</span> <span class="err">enabled</span>
-</span><span class='line'>   <span class="err">default</span>
-</span><span class='line'><span class="err">mda</span> <span class="err">&quot;/usr/bin/procmail</span> <span class="err">-d</span> <span class="err">%T&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Listo! El correo <a href="&#109;&#97;&#x69;&#x6c;&#x74;&#111;&#58;&#114;&#x6f;&#111;&#x74;&#64;&#x74;&#117;&#x64;&#111;&#x6d;&#105;&#x6e;&#105;&#111;&#46;&#x63;&#x75;">&#x72;&#111;&#x6f;&#116;&#64;&#116;&#x75;&#x64;&#111;&#109;&#105;&#110;&#x69;&#x6f;&#46;&#99;&#x75;</a> recibirá correos de <a href="&#x6d;&#97;&#x69;&#108;&#x74;&#x6f;&#x3a;&#x63;&#114;&#x6f;&#x6e;&#x40;&#x74;&#x75;&#100;&#x6f;&#109;&#x69;&#x6e;&#x69;&#111;&#46;&#x63;&#117;">&#x63;&#x72;&#x6f;&#110;&#64;&#x74;&#x75;&#x64;&#x6f;&#109;&#x69;&#110;&#x69;&#x6f;&#46;&#99;&#117;</a> con la
-salida del cron&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -723,6 +824,14 @@ salida del cron&hellip;</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/05/13/instalar-node-rapido/">instalar node rápido</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/05/10/ssl-ca-local/">autoridad certificadora</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/04/08/xen-y-virt-manager/">xen y virt-manager</a>
@@ -873,7 +982,7 @@ salida del cron&hellip;</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en xen</a>
+			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en XenServer</a>
 		</li>
 		
 		<li class="post">
@@ -949,10 +1058,6 @@ salida del cron&hellip;</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/11/22/certificado-autofirmado/">certificado autofirmado</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a>
 		</li>
 		
@@ -978,10 +1083,6 @@ salida del cron&hellip;</p>
 		
 		<li class="post">
 			<a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/10/05/assets-por-controlador/">assets por controlador</a>
 		</li>
 		
 		<li class="post">
@@ -1021,19 +1122,11 @@ salida del cron&hellip;</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/07/05/asset-pipeline-en-production/">asset pipeline en production</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a>
 		</li>
 		
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a>
 		</li>
 		
 		<li class="post">

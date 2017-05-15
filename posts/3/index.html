@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="mis crónicas con freebsd 28/01/2017 11:39 pm | Comments Si vas a leer este artículo, te aviso, que no tiene nada que ver con el blog. Me
-dispongo a &hellip;">
+  <meta name="description" content="dns con vistas 05/02/2017 6:57 pm | Comments Que lindo corre bind9 en alpine linux. Ahora que mis servidores están todo en el
+pool de xenserver (los &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,509 @@ dispongo a &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/02/05/dns-con-vistas/">dns con vistas</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-02-05T18:57:26-05:00'><span class='date'>05/02/2017</span> <span class='time'>6:57 pm</span></time>
+        
+           | <a href="/blog/2017/02/05/dns-con-vistas/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/02/05/dns-con-vistas/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Que lindo corre bind9 en alpine linux. Ahora que mis servidores están todo en el
+pool de xenserver (los reyes magos me trajeron un servidor pro) tengo un nuevo
+problema. Dentro de la red interna de xen, los servidores tienen una ip
+distinta. Por ejemplo, para todo el mundo, el alpine linux que hace de router,
+es 192.168.0.1, pero para los servidores, es 169.254.0.10</p>
+
+<p>Además, el forward para infomed, es un privilegio que solo los servidores
+tienen. Por tanto, lo más seguro, será usar una zona para la LAN y otra para la
+red interna del pool.</p>
+
+<p>Esto me recuerda las DMZ, pero no es lo mismo, porque no estoy creando cuellos
+de botella. La red interna del pool es una vif, que funciona sin emitir
+tráfico real por alguna pif.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/bind/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">// vim:set ts=4 sw=4 et:</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">options</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">v6</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;</span> <span class="mf">192.168.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c1">// los servidores hacen recursion</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">recursion</span> <span class="p">{</span> <span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;};</span>
+</span><span class='line'>   <span class="n">recursion</span> <span class="n">yes</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">view</span> <span class="n">lan</span>  <span class="p">{</span> <span class="c1">// la red LAN</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">192.168.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;.&quot;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;fakeroot.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">};</span> <span class="c1">// view lan</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">view</span> <span class="n">xen</span> <span class="p">{</span> <span class="c1">// la red interna de XenServer</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;xen&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;xen.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;sld.cu&quot;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">201.220.222.131</span><span class="p">;</span> <span class="mf">201.220.222.132</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">forward</span> <span class="n">only</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">};</span> <span class="c1">// view xen</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ven, cree el dominio &ldquo;.xen&rdquo; que solo será visible a la red interna del
+pool. La zona &ldquo;hcg.sld.cu&rdquo; también será visible para los servidores ya que estos
+tienen una pata en la LAN; a esto suele llamarse &ldquo;shared zone&rdquo; (zona
+compartida). Finalmente, la zona &ldquo;sld.cu&rdquo; (debajo de hcg) es una zona forward en
+la vista de la interfaz interna.</p>
+
+<p>El host proxy.hcg.sld.cu resolverá una ip de la lan; de esta misma manera, el
+host proxy.xen, resolverá la ip de dicho host, pero dentro de la red interna del
+pool.</p>
+
+<p><strong>¿y por qué?</strong></p>
+
+<p>Por que esta menera, solo los servidores (a través de la red del pool), harán
+forward. Por ejemplo, el servidor de correo, podrá enviar y recibir su correo
+multipop, ya que el alpine que está haciendo como router, permite forward desde
+la red del pool hacia la WAN; o sea, todos los servidores, ven a la WAN. Es
+obligaría al servidor de correo, a usar el dns de infomed para resolver
+direcciones de infomed y el servidor local para resolver las direcciones de la
+LAN, lo cual funciona de asco. Sin embargo, la vista del pool tiene una zona
+forward. Cabe destacar, que una zona forward y un fakeroot, no se por qué; hace
+que ninguna pinche.</p>
+
+<p>Sensillo y seguro.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/02/01/ipfw-simple-y-consiso/">ipfw simple y conciso</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-02-01T23:15:47-05:00'><span class='date'>01/02/2017</span> <span class='time'>11:15 pm</span></time>
+        
+           | <a href="/blog/2017/02/01/ipfw-simple-y-consiso/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/02/01/ipfw-simple-y-consiso/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Las instrucciones para hacer un cortafuegos realmente <strong>SIMPLE</strong> y la vez
+funcional (statefull firewall) con ipfw; sensillamente <em>&ldquo;no existen&rdquo;</em>, al menos
+No de manera oficial. El cortafuegos ejemplificado en el handbook es bastante
+ortodoxo y no muestra la flexibilidad de ipfw.</p>
+
+<p>Para empezar, el módulo debe ser cargado en el kernel, así que inicializaremos
+ipfw como si fuera un demonio más del sistema. Esto quiere decir que lo
+añadiremos al <strong>/etc/rc.conf</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/rc.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="nv">firewall_enable</span><span class="o">=</span><span class="s2">&quot;YES&quot;</span>
+</span><span class='line'> <span class="nv">firewall_type</span><span class="o">=</span><span class="s2">&quot;/usr/local/etc/ipfw.rules&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Te recomiendo reiniciar ahora; para que todo se cargue correctamente.</p>
+
+<p>La <a href="https://www.freebsd.org/doc/handbook/firewalls-ipfw.html">documentación oficial</a> aclara que
+los firewall pueden ser (además) del tipo: open, client, simple, closed o
+UNKNOWN. Sin embargo, <strong>en mi opinión</strong> estas configuraciones prefabricadas, no
+son suficiente para un servidor (por ejemplo proxy).</p>
+
+<p>Para mantener la armonía chea y anticuada de freebsd; colocamos el cortafuegos
+en el etc/ que está bajo /usr/local/. Ten en cuenta que casi todas las
+aplicaciones que instales, tendrán su /etc ahí.</p>
+
+<p>Reiniciar ipfw no es tan jamón como un usuario de iptables haría. Hacer un flush
+de las reglas, significa quedarse trancado y perder la conexión por ssh. Para
+reiniciar el cortafuegos, deberás tener un script que haga flush y además,
+reiniciar el servicio. Este scriptsito me lo hice para la faena de toquetear el
+cortafuegos</p>
+
+<figure class='code'><figcaption><span>&#8220;/usr/local/bin/reiniciar_ipfw.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="c">#!/bin/csh</span>
+</span><span class='line'> service ipfw stop
+</span><span class='line'> ipfw -q flush
+</span><span class='line'> service ipfw start
+</span><span class='line'> ipfw show
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>La documentación oficial (y otras muchas) indican que cada regla se cree
+enumerada y que bebes mantener esta numeración manualmente. Sin embargo, esto no
+es estrictamente necesario. Cada regla incrementará el número de manera
+implícita.</p>
+
+<p>La mecánica de ipfw es más sencilla que cualquier firewall de linux en mi
+opinión.</p>
+
+<p><strong>ipfw add accion argumento</strong></p>
+
+<p>Si ya conoces <strong>ufw</strong>, te darás cuenta de que es una copia bastante mala de
+ipfw, sobre todo; teniendo cuenta que ipfw es un firewall en sí, mientras que
+ufw, es un stack que genera instrucciones de iptables.</p>
+
+<p>Algo de lo que linux se ha alejado mucho es el teorema de KISS, pero en BSD, que
+es unix ortodoxo, mantiene la simpleza como pilar. De esta manera, una acción
+allow, en su forma más simple, es casi lenguaje natural.</p>
+
+<p><strong>ipfw add allow all from 10.99 to me</strong></p>
+
+<p>O sea, permite todo lo que venga de 10.0.0.1 para mi. Pero podemos hacer algo
+más discriminatorio.</p>
+
+<p><strong>ipfw add allow tcp from 10.0.0.99 to 10.0.0.1 dst-port 22 in via xn0</strong></p>
+
+<p>Permite el tráfico tcp de 10.99 para 10.1 que valla para el puerto 22 en sentido
+entrante (in) por la interfaz (via) xn0</p>
+
+<p>¿Te la llevaste? Jamón de pollo! ¿Verdad?</p>
+
+<p>Veamos pues un <strong>ipfw.rules</strong> bien básico. La interfaz <strong>lo0</strong> (lo con un cero)
+es el localhost. La interfaz xn0 es la WAN y xn1 es la LAN.</p>
+
+<figure class='code'><figcaption><span>&#8220;ipfw.rules&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="c"># lo permitimos todo pa afuera</span>
+</span><span class='line'> ipfw -q add allow all from any to any out keep-state
+</span><span class='line'>
+</span><span class='line'> <span class="c"># permite todo por el localhost</span>
+</span><span class='line'> ipfw -q add allow all from any to any via lo0
+</span><span class='line'>
+</span><span class='line'> <span class="c"># las conexiones que ya estén iniciadas, pásalas</span>
+</span><span class='line'> <span class="c"># compara eso con el de iptables</span>
+</span><span class='line'> ipfw -q add allow tcp from any to any established
+</span><span class='line'>
+</span><span class='line'> <span class="c"># permite que te hagan ping desde la LAN </span>
+</span><span class='line'> <span class="c"># pero no mucho icmp para que no hagan flood</span>
+</span><span class='line'> ipfw pipe <span class="m">1</span> config bw 30KBytes
+</span><span class='line'> ipfw -q add pipe <span class="m">1</span> icmp from 192.168.1.0/24 to me in via xn1
+</span><span class='line'> ipfw -q add allow  icmp from 192.168.1.0/24 to me in via xn1
+</span><span class='line'>
+</span><span class='line'> <span class="c"># permite que accedan al proxy desde la LAN</span>
+</span><span class='line'> ipfw -q add allow tcp from 192.168.1.0/24 to me <span class="m">3128</span> via xn1
+</span><span class='line'>
+</span><span class='line'> <span class="c"># permite el servidor web pero solo deade la WAN</span>
+</span><span class='line'> <span class="c"># en este caso &quot;me&quot; será la ip de la WAN</span>
+</span><span class='line'> ipfw -q add allow tcp from any to me dst-port <span class="m">80</span> via xn0
+</span><span class='line'>
+</span><span class='line'> <span class="c"># descarta el resto de los paquetes ENTRANTES</span>
+</span><span class='line'> <span class="c"># esta regla casi nunca es necesaria, ya que</span>
+</span><span class='line'> <span class="c"># suele ser implícita, o sea, drop por defecto</span>
+</span><span class='line'> ipfw -q add drop all from any to any
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Veamos algunas características de este cortafuegos&hellip;</p>
+
+<p>Como ven, no arranca haciendo flush como los de iptables. De hecho, hacer flush
+como primera linea puede causarte problemas muy serios. Por otro parte,
+reiniciar el cortafuegos sin hacer flush, provoca que se dupliquen las reglas.</p>
+
+<p>La salida, por definición, está bloqueada. La última regla; autoriza la salida
+del tráfico. ¿Por qué la última? ¿Por qué no al principio? Pues por si hacemos
+un pipe de salida. Aveces regular el ancho de banda de salida, es más útil que
+regular el de entrada. Por ejemplo, si queremos moderar la cantidad de tráfico
+que un servidor web exporta. Más adelante veremos dummynet y los pipe.</p>
+
+<p>En iptables, hacemos DROP cuando queremos desechar paquetes. En ipfw usamos
+<strong>deny</strong>, aunque también puedes usar <strong>drop</strong> que es sinónimo de deny. El
+cortafuego lo sustituirá por deny. Lo puedes ver al usar: ipfw show</p>
+
+<p>Note que &ldquo;<strong>from me</strong>&rdquo; para ipfw, significa un paquete que provenga de cualquiera de
+las ip que tiene configurada el servidor. En este caso, la interfaz xn0 debe
+tener alguna de la red 192.168.1.0/24 así que <strong>me</strong> será dicha ip.</p>
+
+<p>Una característica de ipfw <strong>bien peligrosa</strong> es que tiene muchas cosas
+<strong>implícitas</strong>. Como lo de la numeración. Cuando digo implícita me refrito a que
+si no las pones, ipfw las asume. Fíjate bien como se maneja el tema de los
+puertos en la siguientes reglas.</p>
+
+<figure class='code'><figcaption><span>&#8220;ipfw dst-port&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="c"># permite que accedan al proxy desde la LAN</span>
+</span><span class='line'> ipfw -q add allow tcp from 192.168.1.0/24 to me <span class="m">3128</span> via xn1
+</span><span class='line'>
+</span><span class='line'> <span class="c"># permite el servidor web pero solo deade la WAN</span>
+</span><span class='line'> <span class="c"># en este caso &quot;me&quot; será la ip de la WAN</span>
+</span><span class='line'> ipfw -q add allow tcp from any to me dst-port <span class="m">80</span> via xn0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En la primera regla, declaramos &ldquo;<strong>me 3128</strong>&rdquo;, esto significa &ldquo;para mi ip por el
+puerto 3128&rdquo;. Realmente ipfw lo reescribe (puedes verlo con &ldquo;show&rdquo;) y pondrá la
+cláusula <strong>dst-port</strong> al igual que la siguiente linea, detrás de <strong>me</strong> viene la
+cláusula <strong>dst-port</strong> seguida por el puerto. Pero si no la pones, se asume como
+implícita. En poca palabras:</p>
+
+<p>&ldquo;to me 3128&rdquo; y &ldquo;to me dst-port 3128&rdquo; es exactamente lo mismo.</p>
+
+<p>Otro tema que le retraquetea el mango; es la gestión del ancho de vianda. Porque
+tc de iproute (en linux) es un asco. Pero si conocemos ipfw, sabremos que maneja
+el ancho de vianda de una menera muy peculiar; usando un módulo llamado
+dummynet. No esperes ver la palabra &ldquo;dummynet&rdquo; escrita en el cortafuegos. En
+fin; analiza este ejemplo:</p>
+
+<figure class='code'><figcaption><span>&#8220;ipfw y dummynet&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> ipfw add pipe <span class="m">1</span> ip from me to 192.168.1.0/24 out via xn0
+</span><span class='line'> ipfw pipe <span class="m">1</span> config bw 128KBytes
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Se crea el pipe número 1, con un ancho de banda de 128 KyloBytes. En la regla de
+arriba, se dijo que todo el tráfico de la interfaz xn0, proveniente de el
+servidor hacia la red 192.168.1.0/24 y en sentido saliente; será a 128K. O sea,
+modificamos el ancho de banda <strong>que sale</strong> del servidor, lo cual es bastante
+útil para un servidor web o ftp.</p>
+
+<p>En el caso de un servidor proxy, no vale la pena modificar el ancho de banda de
+<strong>salida</strong>, ya que las páginas son enviadas al cliente una vez bajadas y si ya
+nos hicimos el arakiri de bajarla: ¿Pa que demorarlas más? Para un servidor
+proxy usamos una regla bidireccional. O sea, creamos el pipe 1 y el pipe 2 con
+igual o diferente ancho de banda y aplicamos una regla pa afuera y otra pa
+adentro.</p>
+
+<p>Tenga en cuenta que el las conexiones HDSL tiene más ancho de vianda pa abajo
+que pa arriba. Osea, que salida a la WAN (el router) debe ser más estrecha que
+salida a la LAN.</p>
+
+<p>En un servidor de correo sí sería útil regular la entrada, ya que hay gente que
+manda elefantes por el puerto 25. Sobre todo en redes conmutadas o muy lentas.
+También sería útil moderar la entrada en un servidor que involucre subida de
+ficheros, por ejemplo, una nube, un servidor de carpetas compartidas.</p>
+
+<p>Ah! por cierto:</p>
+
+<p>Si crearas un pipe y le dijeras que 3 ip, lo usan, el ancho de vianda sería
+compartido para esas 3 ip. O sea</p>
+
+<figure class='code'><figcaption><span>&#8220;ipfw y dummynet&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> ipfw add pipe <span class="m">1</span> ip from me to 192.168.1.10/24 out via xn0
+</span><span class='line'> ipfw add pipe <span class="m">1</span> ip from me to 192.168.1.11/24 out via xn0
+</span><span class='line'> ipfw add pipe <span class="m">1</span> ip from me to 192.168.1.12/24 out via xn0
+</span><span class='line'> ipfw pipe <span class="m">1</span> config bw 128KBytes
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En este caso, 10, 11 y 12, tienen un total de 128KB/s, si 10 acapara todo el
+ancho de banda (los 128) entonces 11 y 12 tendrán unos bellos timeout como
+respuesta. Piensa en todo lo que puedes hacer con eso.</p>
+
+<p><strong>OJO CON EL ÓRDEN!!!</strong></p>
+
+<p>Esa regla machea <strong>la salida</strong>. Si la colocaras <strong>debajo</strong> de la regla que
+permite todo hacia afuera, simplemente, <strong>no pinchará</strong> porque <strong>no machea</strong>.
+Coge por la regla de salida y nunca va al pipe. Como diría los yumas &ldquo;rule of
+thumbs&rdquo;</p>
+
+<p><strong>Las reglas que envían el tráfico al pipe, debes ponerlas arriba de la regla
+&ldquo;destino final&rdquo; del paquete.</strong></p>
+
+<p>De esta manera el paquete va al pipe y luego regresa al cortafuegos. O sea,
+intenta poner siempre los pipe arriba y el cortafuegos abajo</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -212,7 +715,7 @@ modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -295,7 +798,7 @@ el compilador suele interpretarlo como que estás escapando la comilla simple.</
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -550,186 +1053,7 @@ ha pasado parecido.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/09/flasheando-modem-al-s4/">flasheando modem al S4</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-09T19:00:58-05:00'><span class='date'>09/01/2017</span> <span class='time'>7:00 pm</span></time>
-        
-           | <a href="/blog/2017/01/09/flasheando-modem-al-s4/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/09/flasheando-modem-al-s4/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Es un mojón de los Samsung, tener el módem (banda base) como una partición y
-(por ende un firmware) aparte del sistema. Por este motivo, cuando flasheas
-cyanogen (léase &ldquo;cualquier ROM&rdquo;) una y otra vez; o cuando el teléfono se apaga
-abruptamente&hellip; Diiiicen que se corrompe el módem.</p>
-
-<p>Entonces, de buenas a primeras, el teléfono te dice &ldquo;tarjeta SIM expulsada,
-Reinicie&rdquo;. Aveces al reiniciar no se soluciona el problema. Yo he estado hasta 3
-días sin teléfono. Quitarle la batería un rato y volverla a poner, suele ser una
-solución, pero aveces, hasta 7 veces al día; he tenido que lidiar con el
-errorsito de los cojones.</p>
-
-<p><img class="right" src="/images/acercade_baseband.png" width="200" height="300" title="" ></p>
-
-<p>La única solución paliativa que he visto, es, de vez en vez, al menos una cada
-dos mes; flahsear el módem.</p>
-
-<p>El cómo dar con el módem te lo dejo de tarea. Lo siento, no soy la base de datos
-de bandas bases de samsung. La mía la <strong>busqué en google</strong> escribiendo el texto:</p>
-
-<p>&ldquo;modem SGH-M919&rdquo;</p>
-
-<p>Oséase, pidiendo el módem para mi modelo del teléfono, que al parecer, la
-<strong>M919UVUFNH7</strong>, es la última disponible para mi canchanfleta.</p>
-
-<p>El proceso de flasheo, la primera vez, requiere que nos hagamos con el
-fichero PIT del teléfono.</p>
-
-<p>Reinicia el teléfono en modo descarga. Si no sabes cómo hacerlo, googlea, cada
-samsung tiene su forma. El mío (S4 T-Mobile) es Power+VolDown+Home. Luego, en el
-modo descarga; una vez que (presiones VolUp) para inicializar la conexión,
-pasamos a Heimdall.</p>
-
-<p>Nota para los imbéciles: Conecte el teléfono a la computadora mediante un cable
-USB <strong>en buen estado</strong>.</p>
-
-<p><img class="right" src="/images/pitfile.png" width="600" height="700" title="" ></p>
-
-<p>En Heimdall, vamos a la pestaña <strong>Utilities</strong>. Presiona botón
-<em>Detect</em><sup>1</sup>, cuando te coja el teléfono, presiona <em>Save As</em><sup>2</sup>
-y te dará un nombre de fichero para salvar, por ejemplo, <strong>fulanito.pit</strong>.
-Finalmente presiona <em>Download</em><sup>3</sup> y te creará el fichero.</p>
-
-<p>Decirte quiero que este ficherito es muy famoso, ya que es algo así como tu
-tabla de particiones.</p>
-
-<p>Una vez que tienes el fichero en tu poder, Heimdall, será capaz de saber <em>a
-ciegas</em> donde están las particiones de tu teléfono sin tener que preguntárselo
-una y otra vez, así que guardalo en un directorio donde pongas todas las
-gangarreas de tu teléfono. Por cierto, terminamos con el teléfono; aunque diga
-&ldquo;do not turn off&rdquo; cágate en la noticia y reinicia (quita la batería).</p>
-
-<p>Ahora viene tiempo de google, muuuuucho google, para dar con tu módem.</p>
-
-<p>Digamos que finalmente diste con el módem de tu samsung. Seguro tiene un nombre
-muy genérico, casi siempre se llaman <strong>modem.bin</strong>. Procede con el mismo
-preludio del ritual (modo descarga y abre heimdall)</p>
-
-<p><img class="left" src="/images/flasheo_modem.png" width="600" height="700" title="" ></p>
-
-<p>Ahí ve para la pestaña que dice <strong>Flash</strong>. Click en <em>Browse</em><sup>1</sup> y
-localiza tu pitfile. Click en <em>Add</em><sup>2</sup> y luego en el <em>select</em> del campo
-<em>partition name</em><sup>3</sup> selecciona la partición <strong>MDM</strong>. Finalmente, le
-buscamos el fichero modem.bin haciendo click en Browse<sup>4</sup>.</p>
-
-<p>¿No tengo que decirte que pulses <strong>Start</strong>, verdad?</p>
-
-<p>Si todo salió bien, se reiniciará y tendrás tu módem recién flasheado. Pero no
-cantes victoria. Si tu modem se deterioró, fue que ALGO lo deterioró y ese algo,
-lo joderá de nuevo, así que, mantén las herramientas a manos; las necesitarás
-pronto.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/02/rails-assets/">rails-assets</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-02T18:55:02-05:00'><span class='date'>02/01/2017</span> <span class='time'>6:55 pm</span></time>
-        
-           | <a href="/blog/2017/01/02/rails-assets/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/02/rails-assets/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Gemas como twitter-bootstrap-rails, hacen que el trabajo con CSS complejas
-supuestamente se haga &ldquo;al click&rdquo;. Pero cuando deseas ir un poco más allá, por
-ejemplo, si quieres DataTables, notarás que tienes dos opciones, la primera,
-usar una gema desfasada (si hay, que casi siempre la hay, aunque buena para
-nada).</p>
-
-<p>Sin embargo, parece que algún cerebrito, hizo un sitio en el cual la fuente
-oficial de las assets (quizás a través de npm) se convierten de manera
-automatizada en una gema de rails.</p>
-
-<p>De esta manera, al poner en el Gemfile de tu aplicación esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;Gemfile&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span>  <span class="s1">&#39;https://rails-assets.org&#39;</span> <span class="k">do</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-underscore&#39;</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-DataTables&#39;</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-bootstrap&#39;</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-jquery-ui&#39;</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-stringjs&#39;</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-iCheck&#39;</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-jquery&#39;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Instalarás dichas js/css en tu aplicación.</p>
-
-<p>En el <a href="https://rails-assets.org">sito web de rails-assets</a> explica con unos
-diff, que debes poner en el application.js y aaplication.css para incluir cada
-una de las assets. Casi siempre es algo genérico al nombre, lo puedes intuir.</p>
-
-<p>De todas maneras, el fracasado proyecto de crear un jquery unobstructive;
-condujo a que jquery fuera expulsada del core de rails. Así que al parecer la
-tendencia de rails 5 en adelante, será usar las js aparte. Más vale tener un
-buen jquery a mano.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -750,6 +1074,14 @@ buen jquery a mano.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/05/13/instalar-node-rapido/">instalar node rápido</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/05/10/ssl-ca-local/">autoridad certificadora</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/04/08/xen-y-virt-manager/">xen y virt-manager</a>
@@ -900,7 +1232,7 @@ buen jquery a mano.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en xen</a>
+			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en XenServer</a>
 		</li>
 		
 		<li class="post">
@@ -976,10 +1308,6 @@ buen jquery a mano.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/11/22/certificado-autofirmado/">certificado autofirmado</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a>
 		</li>
 		
@@ -1005,10 +1333,6 @@ buen jquery a mano.</p>
 		
 		<li class="post">
 			<a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/10/05/assets-por-controlador/">assets por controlador</a>
 		</li>
 		
 		<li class="post">
@@ -1048,19 +1372,11 @@ buen jquery a mano.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/07/05/asset-pipeline-en-production/">asset pipeline en production</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a>
 		</li>
 		
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a>
 		</li>
 		
 		<li class="post">

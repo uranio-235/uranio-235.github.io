@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-05-10T16:11:08-04:00</updated>
+  <updated>2017-05-15T15:09:55-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,351 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[instalar node rápido]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/05/13/instalar-node-rapido/"/>
+    <updated>2017-05-13T17:13:53-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/05/13/instalar-node-rapido</id>
+    <content type="html"><![CDATA[<p>Desde que surgió node, estaba deseando que hubiera una herramienta como RVM para
+instalar nodejs. Resulta que la hay!!! Al igual que RVM, requiere cURL. Por
+cierto, se llama <strong>n</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> curl -o /usr/local/bin/n https://raw.githubusercontent.com/visionmedia/n/master/bin/n</span>
+</span><span class='line'><span class="go"> chmod +x /usr/local/bin/n</span>
+</span><span class='line'><span class="go"> n lts</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Instala hasta npm!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[autoridad certificadora]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/05/10/ssl-ca-local/"/>
+    <updated>2017-05-10T19:39:19-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/05/10/ssl-ca-local</id>
+    <content type="html"><![CDATA[<p>Es un gran mojón tener que generar un certificado para cada servicio. Y aquí, en
+el 5to infierno de infomed usar cualquier proveedor de CA gratis (como let&rsquo;s
+encrypt) es por gusto.</p>
+
+<p>En estos caso, no queda otro remiendo que usar un CA firmado localmente. La idea
+es.</p>
+
+<p>Generamos un par de claves que harán la función de &ldquo;autoridad certificadora&rdquo;</p>
+
+<ul>
+<li> crear un Clave Privada (.key) y mantenerla bien escondida</li>
+<li> crear la Clave Pública del anterior (.pem) y la distribuimos</li>
+</ul>
+
+
+<p>Una vez que tengamos nuestra autoridad certificadora. Empezamos a generar
+certificados y lo firmamos con esta.</p>
+
+<ul>
+<li> generamos una clave privada (el .key para este certificado)</li>
+<li> hacer una solicitud de certificado (.csr) al .key anterior</li>
+<li> generamos el dichoso certificado</li>
+<li> firmamos el certificado usando el .key de la CA</li>
+</ul>
+
+
+<p>Usaremos al tan legalmente controversial OpenSSL para esta tarea.</p>
+
+<p>La clave (.key) del CA, debe crearse en una máquina desconectada de la red y
+preferiblemente sepultada a 3 metros bajo tierra. Si esto le parece demasiado
+paranoico, entonces mantenga el &ldquo;.key&rdquo; en el servidor más aislado de la red.
+Preferiblemente, aquel que parezca menos importante y lejos de internet. En mi
+caso, yo uso mi laptop personal para tareas administrativas y es ahí donde tengo
+todas las claves privadas.</p>
+
+<p>Supón que lo hagas en un servidor determinado. Creamos entonces en el home del
+root, un espacio adecuado para esto.</p>
+
+<figure class='code'><figcaption><span>&#8220;creando el directorio&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> mkdir -m700 CA</span>
+</span><span class='line'><span class="go"> cd CA</span>
+</span><span class='line'><span class="go"> unmask 077</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Creamos la super-secretísima clave privada, que hará la función de CA:</p>
+
+<p><strong>openssl genrsa -out rootCA.key 2048</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;creando el .key en la máquina secreta&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> [lazaro@artema CA]$ openssl genrsa -out rootCA.key 2048</span>
+</span><span class='line'><span class="go"> Generating RSA private key, 2048 bit long modulus</span>
+</span><span class='line'><span class="go"> ..............................+++</span>
+</span><span class='line'><span class="go"> .......................................................+++</span>
+</span><span class='line'><span class="go"> e is 65537 (0x010001)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya tenemos la piedra angular de nuestro CA; pero así no sirve. Esa es la clave
+primaria, o sea, la que tiene la facultad de descifrar y derivar nuevos
+certificados. No nos conviene que nuestros &ldquo;usuarios finales&rdquo;, o lo servidores,
+usen esta clave. Necesitamos crear una &ldquo;clave pública&rdquo;, esta clave pública se
+deriva de la privada, pero solo tiene la facultad de cifrar, así la puede tener
+cualquiera y mandarnos datos cifrados. Sin embargo, <strong>NO</strong> se puede usar la clave
+pública para DEScifrar. Al menos no; usando tecnología civil.</p>
+
+<p>Nota para los imbéciles: El <strong>rootCA.key</strong> no se le puede dar a nadie.</p>
+
+<p><strong>openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 3650 -out rootCA.pem</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;creando la clave pública&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> [lazaro@artema CA]$  openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 3650 -out rootCA.pem</span>
+</span><span class='line'><span class="go"> You are about to be asked to enter information that will be incorporated</span>
+</span><span class='line'><span class="go"> into your certificate request.</span>
+</span><span class='line'><span class="go"> What you are about to enter is what is called a Distinguished Name or a DN.</span>
+</span><span class='line'><span class="go"> There are quite a few fields but you can leave some blank</span>
+</span><span class='line'><span class="go"> For some fields there will be a default value,</span>
+</span><span class='line'><span class="go"> If you enter &#39;.&#39;, the field will be left blank.</span>
+</span><span class='line'><span class="go"> -----</span>
+</span><span class='line'><span class="go"> Country Name (2 letter code) [AU]:CU</span>
+</span><span class='line'><span class="go"> State or Province Name (full name) [Some-State]:Havana</span>
+</span><span class='line'><span class="go"> Locality Name (eg, city) []:Plaza</span>
+</span><span class='line'><span class="go"> Organization Name (eg, company) [Internet Widgits Pty Ltd]:Calixto Garcia</span>
+</span><span class='line'><span class="go"> Organizational Unit Name (eg, section) []:Calixto Garcia</span>
+</span><span class='line'><span class="go"> Common Name (e.g. server FQDN or YOUR name) []:Hospital Calixto Garcia</span>
+</span><span class='line'><span class="go"> Email Address []:ssl@hcg.sld.cu</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya tenemos la clave pública (el &ldquo;.pem&rdquo;). Este fichero será distribuido a
+nuestros clientes para que puedan hacer dos cosas: Cosa 1, cifrar los datos, sin
+poder descifrarlos. Cosa 2, identificar a la autoridad certificadora.</p>
+
+<figure class='code'><figcaption><span>&#8220;la clave privada y publica de nuestra CA&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> [lazaro@artema CA]$ ls</span>
+</span><span class='line'><span class="go"> rootCA.key  rootCA.pem</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nota para los imbéciles: El <strong>rootCA.pem</strong> se instalará en los clientes,
+navegadores, teléfonos, etc&hellip;</p>
+
+<p>Note además, que hemos dado a nuestra clave pública, 10 años antes de su
+caducidad (-days 3650). Quizás quieras darle un solo.</p>
+
+<p><img class="left" src="http://uranio-235.github.io/images/Enigma.jpg" title="&#34;Enigma, un disposotivo criptográfico de cuando no existía SSL.&#34;" alt="&#34;Enigma, un disposotivo criptográfico de cuando no existía SSL.&#34;"></p>
+
+<p>Ya puedes hacer público el &ldquo;.pem&rdquo; para que todo el que sepa que hacer con este,
+se lo instale. Por ejemplo, si tienes una intranet local, podrías dejarla con
+http plano y brindar información (así como la descarga) sobre el dicha clave.
+Puedes crear una página de HTML plano explicando porque SSL y como instalarlo
+en los navegadores. Ahí dices además, que se debe iniciar la conexión usando el
+prefijo &ldquo;https&rdquo;. Podrías poner esa página como el destino de redirección
+para todos los virtualhsot que usen &ldquo;http&rdquo; y así hacer conciencia a los
+usuarios. Por ejemplo, en servidores con información sensible (como los
+webmails), solo debe ser alcanzado usando ssl.</p>
+
+<p>Pero <strong>sin extremismos</strong>. Una intranet que brinda información pública, no tiene
+que ser obligado por SSL (a menos que sea un wordpress con login).</p>
+
+<p>Por cierto, Firefox tiene su propio almacén de certificados. Dirígete a
+Configuraciones, Avanzada, Certificados.</p>
+
+<p><img class="right" src="http://uranio-235.github.io/images/localCA1.png" title="&#34;localizando el almacén de certificados&#34;" alt="&#34;localizando el almacén de certificados&#34;"></p>
+
+<p>Una vez ahí, ve a donde dice <strong>Autoridades</strong> (no a tus certificados) y procede a
+importar el certificado.</p>
+
+<p><img class="right" src="http://uranio-235.github.io/images/localCA2.png" title="&#34;importando el certificado a firefox&#34;" alt="&#34;importando el certificado a firefox&#34;"></p>
+
+<p>En android también es tremenda balasera instalar el &ldquo;.pem&rdquo; y no dejará de
+meterme miedo diciendo que &ldquo;un tercero podría estar manipulando tu información&rdquo;.
+Lo cual no deja de ser cierto, poner un SSLbumper a squid bataría para hacer
+horrores.</p>
+
+<p><img class="right" src="http://uranio-235.github.io/images/localCA3.png" width="300" height="400" title="&#34;instalando el .pem en android&#34;" alt="&#34;instalando el .pem en android&#34;"></p>
+
+<p>Llégate a la configuración de seguridad y verás una opción que dice &ldquo;instalar
+certificados desde la tarjetaSD&rdquo; o &ldquo;desde el almacenamiento&rdquo;.</p>
+
+<p>En algunos android 4, si te pide una clave y no sabes cual es, debes configurar
+el acceso al teléfono mediante clave. O sea, quita el patrón, pon una clave y
+prueba importar el &ldquo;.pem&rdquo;. Al pedir la clave pones la que estableciste para
+entrar. Una vez importado el certificado, vuelves a poner el mecanismo de
+seguridad que deses (patrón, ninguno, etc&hellip;)</p>
+
+<h3>de vuelta al servidor secreto</h3>
+
+<p>Pasemos ahora a crear uno (o varios) certificados para nuestros servidores.
+Para empezar, crearemos el certificado del servidor de correo, pero no del
+smtp, si no del webmail.</p>
+
+<p><strong>MUY IMPORTANTE</strong> en los certificados, el CN (Common Name) no puede ser el que
+te de la gana a tí. Si por ejemplo tu servidor de correo está en
+webmail.dominio.cu, ese ha de ser su CN</p>
+
+<p>Nota para los imbéciles: Creas un certificado para cada servicio y su CN será el
+mismo nombre del virtualhost.</p>
+
+<p>Creamos una clave privada para este servidor (para que pueda cifrar, te requiero
+que es bilateral y simétrico).</p>
+
+<p><strong>openssl genrsa -out webmail.key 2048</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;la clave privada del webmail&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> [lazaro@artema CA]$ openssl genrsa -out webmail.key 2048</span>
+</span><span class='line'><span class="go"> Generating RSA private key, 2048 bit long modulus</span>
+</span><span class='line'><span class="go"> .+++</span>
+</span><span class='line'><span class="go"> ......................................................................................+++</span>
+</span><span class='line'><span class="go"> e is 65537 (0x010001)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Le pedimos a esta clave que genera un certificado (certificate request).</p>
+
+<p><strong>openssl req -new -key webmail.key -out webmail.csr</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;solicitud de certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> [lazaro@artema CA]$ openssl req -new -key webmail.key -out webmail.csr</span>
+</span><span class='line'><span class="go"> You are about to be asked to enter information that will be incorporated</span>
+</span><span class='line'><span class="go"> into your certificate request.</span>
+</span><span class='line'><span class="go"> What you are about to enter is what is called a Distinguished Name or a DN.</span>
+</span><span class='line'><span class="go"> There are quite a few fields but you can leave some blank</span>
+</span><span class='line'><span class="go"> For some fields there will be a default value,</span>
+</span><span class='line'><span class="go"> If you enter &#39;.&#39;, the field will be left blank.</span>
+</span><span class='line'><span class="go"> -----</span>
+</span><span class='line'><span class="go"> Country Name (2 letter code) [AU]:CU</span>
+</span><span class='line'><span class="go"> State or Province Name (full name) [Some-State]:Havana</span>
+</span><span class='line'><span class="go"> Locality Name (eg, city) []:Plaza</span>
+</span><span class='line'><span class="go"> Organization Name (eg, company) [Internet Widgits Pty Ltd]:Calixto Garcia</span>
+</span><span class='line'><span class="go"> Organizational Unit Name (eg, section) []:Calixto Garcia</span>
+</span><span class='line'><span class="go"> Common Name (e.g. server FQDN or YOUR name) []:webmail.hcg.sld.cu</span>
+</span><span class='line'><span class="go"> Email Address []:ssl@hcg.sld.cu</span>
+</span><span class='line'><span class="go"> </span>
+</span><span class='line'><span class="go"> Please enter the following &#39;extra&#39; attributes</span>
+</span><span class='line'><span class="go"> to be sent with your certificate request</span>
+</span><span class='line'><span class="go"> A challenge password []:</span>
+</span><span class='line'><span class="go"> An optional company name []:</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya tenemos las dos máquinas enigmas listas, pero no están sincronizadas y por
+ende, los cifrados producidos producidos por estos dos ficheros, serán
+simétricos pero no bilaterales. Alguien debe decirle que son padre e hijo.</p>
+
+<p>Eso lo haremos, firmando con nuestro CA, el certificado generado.</p>
+
+<p><strong>openssl x509 -req -in webmail.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out webmail.crt -days 3650 -sha256</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;firmando el certificado con la CA&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[lazaro@artema CA]$ openssl x509 -req -in webmail.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out webmail.crt -days 3650 -sha256</span>
+</span><span class='line'><span class="go">Signature ok</span>
+</span><span class='line'><span class="go">subject=C = CU, ST = Havana, L = Plaza, O = Calixto Garcia, OU = Calixto Garcia, CN = webmail.hcg.sld.cu, emailAddress = ssl@hcg.sld.cu</span>
+</span><span class='line'><span class="go">Getting CA Private Key</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note como hacemos uso de las claves pública y privada del CA. Por tanto, si un
+atacante adquiere los certificados del webmail y los colocase en otro sitio,
+este no machea el CN webmail.hcg.sld.cu y desata una advertencia en el navegador
+de nuestros usuarios. Además, no podrá firmar el certificado para modificarlo e
+incluir su CN.</p>
+
+<figure class='code'><figcaption><span>&#8220;los certificados del webmail&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[lazaro@artema CA]$ ls</span>
+</span><span class='line'><span class="go">rootCA.key  rootCA.pem  rootCA.srl  webmail.crt  webmail.csr  webmail.key</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Bueno, todo listo, hagamos un paquete con todo lo necesario para que nuestro
+servidor de correo se lo configure en el webmail. Para postfix y para dovecot,
+debemos hacer otro que machee smtp.hcg.sld.cu y pop3.hcg.sld.cu sucesivamete.</p>
+
+<p><strong>REPITO!</strong> el rootCA<strong>.key</strong> <strong>NO</strong> puede hacerse público. Así que le daremos
+una copia del rootCA<strong>.pem</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;empaquetando la entrega&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> [lazaro@artema CA]$ mkdir webmail</span>
+</span><span class='line'><span class="go"> [lazaro@artema CA]$ mv webmail.* webmail/</span>
+</span><span class='line'><span class="go"> [lazaro@artema CA]$ cp rootCA.pem webmail/</span>
+</span><span class='line'><span class="go"> [lazaro@artema CA]$ tar cvfz webmail.tar.gz webmail/</span>
+</span><span class='line'><span class="go"> webmail/</span>
+</span><span class='line'><span class="go"> webmail/webmail.crt</span>
+</span><span class='line'><span class="go"> webmail/webmail.csr</span>
+</span><span class='line'><span class="go"> webmail/webmail.key</span>
+</span><span class='line'><span class="go"> webmail/rootCA.pem</span>
+</span><span class='line'><span class="go"> [lazaro@artema CA]$ scp webmail.tar.gz root@webmail.hcg.sld.cu:/root/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Instálale esos certificado a tu
+<a href="http://lmgtfy.com/?q=apache+ssl+howto">apache</a>/<a href="http://lmgtfy.com/?q=nginx+ssl+howto">nginx</a>
+y todo el que tenga el <strong>rootCA.pem</strong> instalado en su dispositivo; verá a
+&ldquo;Calixto Garcia&rdquo; como una legítima autoridad certificadora al abrir el webmail.</p>
+
+<p>Lo que si no me queda claro es como se le instala el &ldquo;.pem&rdquo; a Windows. ¿Sugerencias?</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/localCA4.png" width="200" height="300" title="&#34;autoridad certificadora, o al menos, eso dicen&#34;" alt="&#34;autoridad certificadora, o al menos, eso dicen&#34;"></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[xen y virt-manager]]></title>
@@ -2069,202 +2414,6 @@ una de las assets. Casi siempre es algo genérico al nombre, lo puedes intuir.</
 condujo a que jquery fuera expulsada del core de rails. Así que al parecer la
 tendencia de rails 5 en adelante, será usar las js aparte. Más vale tener un
 buen jquery a mano.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[xgproyect]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/12/29/xgproyect/"/>
-    <updated>2016-12-29T21:48:32-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/12/29/xgproyect</id>
-    <content type="html"><![CDATA[<p>Se supone que te cuente la historia de Xnova, OAgame y XGProyect pero de verdad
-que NO estoy pa eso; ya me la disparé en la wikipedia más dos alemanes que mi
-hicieron su propia versión de la historia. Pa hacerte el cuento corto, es un
-juego de exploración y conquista del universo. Suena emocionante, pero todo
-sucede en páginas web.  Cosas como &ldquo;tus naves destruyeron la flota enemiga&rdquo; el
-juego te las cuenta, tú no las vez.</p>
-
-<p>La tercera vez que me preguntaron en el calixto si &ldquo;tenía montado un xnova&rdquo;
-decidí tomar cartas del asunto. Después de mucho rodar por google, no di con el
-código fuente de xnova. El colega Leslie (alias &ldquo;Curielete&rdquo;) me comenta que
-ahora lo que se usa es XGProyect.</p>
-
-<p>La versión más reciente, es la <a href="https://github.com/XGProyect/XG-Proyect-v3.x.x/releases/download/v3.0.3/XGP3.0.3.zip">3.0.3, bájatela aquí</a></p>
-
-<p>En mi caso, dispuse de un Virtualhost en el servidor web, para la aplicación. El
-document root de este virtualhost, apuntará a <strong>/var/www/xgp</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;descargando&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>wget -c https://github.com/XGProyect/XG-Proyect-v3.x.x/releases/download/v3.0.3/XGP3.0.3.zip
-</span><span class='line'>unzip XGP3.0.3.zip
-</span><span class='line'>mv xgp3.0.3/upload /var/www/xgp
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Setea los permisos como prefieras, pero al directorio de configuración, deberás
-darle permiso de escritura HASTA que culmine el proceso de instalación.</p>
-
-<figure class='code'><figcaption><span>&#8220;poniendo permisos temporales&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>chmod -R <span class="m">0777</span> application/config/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>OJO</h4>
-
-<p>Requiere mysql, así que para este ejemplo, crearemos una base de datos llamada
-<strong>&ldquo;x&rdquo;</strong></p>
-
-<p>Al abrir un navegador y dirigirnos al sitio, te redireccionará al instalador de
-manera automática. Pedirá irremediablemente los parámetros. Luego de establecer
-la conexión con la base de datos, creará el fichero de configuración. Al hacer
-click en continuar, creará la complejísima base de datos que contendrá el
-universo del juego.</p>
-
-<p><img class="center" src="http://uranio-235.github.io/images/xg_1.png" width="500" height="600" title="" ></p>
-
-<p>Si te da un error 500, es porque tu versión de php o de mysql, no le juega. Para
-este ejemplo, se usó debian 8 (el container de docker para ser más preciso)</p>
-
-<p>Más específicamente estas:</p>
-
-<figure class='code'><figcaption><span>&#8220;versiones&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@40e0cc02bcd7:/# php -v
-</span><span class='line'>PHP 5.6.24-0+deb8u1 <span class="o">(</span>cli<span class="o">)</span> <span class="o">(</span>built: Jul <span class="m">26</span> <span class="m">2016</span> 08:17:07<span class="o">)</span>
-</span><span class='line'>Copyright <span class="o">(</span>c<span class="o">)</span> 1997-2016 The PHP Group
-</span><span class='line'>Zend Engine v2.6.0, Copyright <span class="o">(</span>c<span class="o">)</span> 1998-2016 Zend Technologies
-</span><span class='line'>    with Zend OPcache v7.0.6-dev, Copyright <span class="o">(</span>c<span class="o">)</span> 1999-2016, by Zend Technologies
-</span><span class='line'>
-</span><span class='line'>root@40e0cc02bcd7:/# mysqld -V
-</span><span class='line'>mysqld  Ver 5.5.52-0+deb8u1 <span class="k">for</span> debian-linux-gnu on x86_64 <span class="o">((</span>Debian<span class="o">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con el php de archlinux, no me pinchó, todo daba error 500</p>
-
-<p>Finalmente, nos pedirá crear el primer usuario que es además, el administrador
-del juego. Deja que veas el panel de admin, tiene más botones y menú, que <a href="https://commons.wikimedia.org/wiki/Lockheed%20U-2">la
-cabina de un U2</a></p>
-
-<p>Una vez terminado ese proceso, nos pide borrar el directorio &ldquo;install&rdquo;.
-Renombrarlo trae horribles consecuencias, así que bórralo o cámbialo de lugar.</p>
-
-<p>Por último, le devolvemos sus permisos al directorio de configuración.</p>
-
-<figure class='code'><figcaption><span>&#8220;poniendo permisos temporales&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>chmod -R <span class="m">0444</span> application/config/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>De regreso a la ventana del juego, tendrás la landing-page y el botón entrar.</p>
-
-<p><img class="center" src="http://uranio-235.github.io/images/xg_2.png" width="500" height="600" title="" ></p>
-
-<p>Ahí te logueas y localizas el menú de administración. Puedes llegar por
-<a href="http://tuservidor/admin.php">http://tuservidor/admin.php</a> Por ahí puede para empezar, hacer la tarea más
-elemental: Crear usuarios.</p>
-
-<p><img class="center" src="http://uranio-235.github.io/images/xg_3.png" width="600" height="700" title="" ></p>
-
-<p>Entra cuanto antes al panel de administración y verás que te pida una
-actualización. Al pulsar el botón, te saldrán unas sentencias SQL. Quizás las
-ejecute, quizás no lo consiga. Por si acaso, tu las ejecutas en una consola SQL.
-Si tienes ese error (actualización disponible) no te dejará hacer nada hasta que
-no lo resuelvas.</p>
-
-<p>Luego llégate a &ldquo;Errores DB&rdquo; y subsánalos. Por suerte es tan simple como hacer
-click en &ldquo;Eliminar Todos&rdquo;. También en el menú &ldquo;Características del Juego&rdquo;, te
-recomiendo desactivar &ldquo;Mercader&rdquo; y &ldquo;Oficiales&rdquo;, enseguida te darás cuenta por
-qué lo digo.</p>
-
-<p><img class="right" src="http://uranio-235.github.io/images/xg_4.png" width="600" height="700" title="" ></p>
-
-<p>Los usuarios se hacen en el menú &ldquo;Creador&rdquo; (no en &ldquo;Usuarios&rdquo;)</p>
-
-<p>Otra cosa, el panel de admin carga lento, es bastante lento pero eso es normal.</p>
-
-<p>Realmente el juego tiene su encanto. Abres la página cada una o dos horas, hace
-una que otra bobería y dejas las tarea en cola. Me resulta más entretenido que
-facebook. En el Link &ldquo;notas&rdquo; vas tomando nota de lo que tienes por hacer, cuando
-te vuelvas a loguear el lunes, solo tienes que mirarlas. Consejo, haste una
-&ldquo;fabrica de robots&rdquo; cuanto antes.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[cambiar mac a un nano]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/12/27/cambiar-mac-a-un-nano/"/>
-    <updated>2016-12-27T09:39:44-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/12/27/cambiar-mac-a-un-nano</id>
-    <content type="html"><![CDATA[<p>Un socio me preguntó hace poquito si yo podía cambiarle la MAC a un nano. Me
-pareció muy estrafalaria la necesidad de él, pero según me contó, en la red
-criolla que está suscrito, suelen banear los nanos cuando los usuarios se portan
-mal.</p>
-
-<p>Tras una búsqueda en internet vi unos post en un forum pero ninguno me funcionó.
-La idea es, correr un fichero al iniciar el sistema, que corra ifconfig y le
-cambie la MAC a las interfaces.</p>
-
-<p>La problemática radica, que a la interfaz &ldquo;ath0&rdquo;, no se le puede cambiar la MAC,
-ya que aún estando down, te dice dispositivo ocupado. Por esa razón, parecía no
-pinchar la solución de los post. Sin embargo, si bajas las 3 interfaces
-involucradas en la conexión, luego cambias dichas mac, <strong>sí pincha</strong>.</p>
-
-<p>Para ello crearemos el fichero <strong>/etc/persistent/rc.poststart</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/persistent/rc.poststart&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/sh</span>
-</span><span class='line'>
-</span><span class='line'>ifconfig br0 down
-</span><span class='line'>ifconfig wifi0 down
-</span><span class='line'>ifconfig ath0 down
-</span><span class='line'>
-</span><span class='line'>ifconfig wifi0 hw ether 5e:53:84:bc:a3:54
-</span><span class='line'>ifconfig ath0 hw ether 5e:53:84:bc:a3:54
-</span><span class='line'>
-</span><span class='line'>ifconfig ath0 up
-</span><span class='line'>ifconfig wifi0 up
-</span><span class='line'>ifconfig br0 up
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A ese fichero le ponemos el ejecutable, si no, no pinchará.</p>
-
-<figure class='code'><figcaption><span>&#8220;ejecutable&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>XW.v5.6.2# chmod a+rx /etc/persistent/rc.poststart
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finalmente, le decimos al firmware que modifique los cambios y que reinicie.</p>
-
-<figure class='code'><figcaption><span>&#8220;salva y reinicia&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>XW.v5.6.2# cfgmtd -w -p /etc/
-</span><span class='line'>XW.v5.6.2# reboot
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Todavía hay quien cree que las MAC son una medida segura para crear reglas de
-control de acceso&hellip;</p>
 ]]></content>
   </entry>
   

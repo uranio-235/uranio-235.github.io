@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>asset pipeline en production - El SysAdmin del 3er Mundo</title>
+  <title>instalar node rápido - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="asset pipeline en production 05/07/2015 8:57 pm | Comments La más resipingante característica de Ruby on Rails, amada por unos y odiada por
-otros; &hellip;">
+  <meta name="description" content="instalar node rápido 13/05/2017 5:13 pm | Comments Desde que surgió node, estaba deseando que hubiera una herramienta como RVM para
+instalar nodejs &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ otros; &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/07/05/asset-pipeline-en-production/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2017/05/13/instalar-node-rapido/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -85,7 +85,7 @@ otros; &hellip;">
   
   <header>
     
-      <h1 class="entry-title">asset pipeline en production</h1>
+      <h1 class="entry-title">instalar node rápido</h1>
     
     
       <p class="meta">
@@ -94,7 +94,7 @@ otros; &hellip;">
 
 
 
-<time class='entry-date' datetime='2015-07-05T20:57:49-04:00'><span class='date'>05/07/2015</span> <span class='time'>8:57 pm</span></time>
+<time class='entry-date' datetime='2017-05-13T17:13:53-04:00'><span class='date'>13/05/2017</span> <span class='time'>5:13 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -104,53 +104,24 @@ otros; &hellip;">
   </header>
 
 
-<div class="entry-content"><p>La más resipingante característica de Ruby on Rails, amada por unos y odiada por
-otros; me refrito a las: &ldquo;asset pipeline&rdquo;</p>
+<div class="entry-content"><p>Desde que surgió node, estaba deseando que hubiera una herramienta como RVM para
+instalar nodejs. Resulta que la hay!!! Al igual que RVM, requiere cURL. Por
+cierto, se llama <strong>n</strong></p>
 
-<p>Resulta que no se si les ha pasado, pero al correr &ldquo;unicorn&rdquo; en el entorno
-<strong>production</strong>, las CSS y las JS desaparecen.</p>
-
-<p>Eso supuestamente está bien, sobre todo si tuvieras un nginx sirviendo el
-contenido estático. Lo que no acabo de entender, es como se supone que los
-js.erb o los coffe-script lleguen compilados al directorio de nginx con el que
-sirves las assets.</p>
-
-<p>Sumado a eso, los que como yo, usen la gema del bootstrap, sin la asset
-pipeline eres <em>ao por regla</em>.</p>
-
-<p>Pa no hacerte el cuento largo, localiza estos parámetros en el fichero de
-producción, situado en <strong>config/environments/production.rb</strong> y cambia los
-parámetros siguientes</p>
-
-<figure class='code'><figcaption><span>&#8220;config/environments/production.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="c1"># Disable serving static files from the `/public` folder by default since</span>
-</span><span class='line'>  <span class="c1"># Apache or NGINX already handles this.</span>
-</span><span class='line'>  <span class="c1">#</span>
-</span><span class='line'>  <span class="c1"># Ponemos esto en true, pa que sirva los ficheros estáticos</span>
-</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">serve_static_files</span> <span class="o">=</span> <span class="kp">true</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># Do not fallback to assets pipeline if a precompiled asset is missed.</span>
-</span><span class='line'>  <span class="c1">#</span>
-</span><span class='line'>  <span class="c1"># Esto va true también, para que se use el asset pipeline</span>
-</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">compile</span> <span class="o">=</span> <span class="kp">true</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> curl -o /usr/local/bin/n https://raw.githubusercontent.com/visionmedia/n/master/bin/n</span>
+</span><span class='line'><span class="go"> chmod +x /usr/local/bin/n</span>
+</span><span class='line'><span class="go"> n lts</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Con eso debes ver todo cargado y al célebre Turbolinks generando sus trifulcados
-enlaces a las assets.</p>
+<p>Instala hasta npm!</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
   <footer>
     <p class="meta">
@@ -164,21 +135,15 @@ enlaces a las assets.</p>
 
 
 
-<time class='entry-date' datetime='2015-07-05T20:57:49-04:00'><span class='date'>05/07/2015</span> <span class='time'>8:57 pm</span></time>
+<time class='entry-date' datetime='2017-05-13T17:13:53-04:00'><span class='date'>13/05/2017</span> <span class='time'>5:13 pm</span></time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/rails/'>rails</a>
-  
-</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/07/05/asset-pipeline-en-production/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/07/05/asset-pipeline-en-production/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2017/05/13/instalar-node-rapido/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2017/05/13/instalar-node-rapido/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -191,10 +156,8 @@ enlaces a las assets.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/06/30/bootstrap-en-rails-4/" title="Previous Post: bootstrap en rails 4">&laquo; bootstrap en rails 4</a>
+        <a class="basic-alignment left" href="/blog/2017/05/10/ssl-ca-local/" title="Previous Post: autoridad certificadora">&laquo; autoridad certificadora</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/" title="Next Post: añadir verbo a un scaffold">añadir verbo a un scaffold &raquo;</a>
       
     </p>
   </footer>
@@ -215,6 +178,14 @@ enlaces a las assets.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/05/13/instalar-node-rapido/">instalar node rápido</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/05/10/ssl-ca-local/">autoridad certificadora</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/04/08/xen-y-virt-manager/">xen y virt-manager</a>
@@ -365,7 +336,7 @@ enlaces a las assets.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en xen</a>
+			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en XenServer</a>
 		</li>
 		
 		<li class="post">
@@ -441,10 +412,6 @@ enlaces a las assets.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/11/22/certificado-autofirmado/">certificado autofirmado</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a>
 		</li>
 		
@@ -470,10 +437,6 @@ enlaces a las assets.</p>
 		
 		<li class="post">
 			<a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/10/05/assets-por-controlador/">assets por controlador</a>
 		</li>
 		
 		<li class="post">
@@ -513,19 +476,11 @@ enlaces a las assets.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/07/05/asset-pipeline-en-production/">asset pipeline en production</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a>
 		</li>
 		
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a>
 		</li>
 		
 		<li class="post">
@@ -660,8 +615,8 @@ enlaces a las assets.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2015/07/05/asset-pipeline-en-production/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2015/07/05/asset-pipeline-en-production/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2017/05/13/instalar-node-rapido/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2017/05/13/instalar-node-rapido/';
         var disqus_script = 'embed.js';
       
     (function () {

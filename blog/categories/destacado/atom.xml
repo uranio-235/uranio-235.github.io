@@ -4,7 +4,7 @@
   <title><![CDATA[Category: destacado | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/destacado/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-05-10T16:11:08-04:00</updated>
+  <updated>2017-05-15T15:09:55-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,254 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[autoridad certificadora]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/05/10/ssl-ca-local/"/>
+    <updated>2017-05-10T19:39:19-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/05/10/ssl-ca-local</id>
+    <content type="html"><![CDATA[<p>Es un gran mojón tener que generar un certificado para cada servicio. Y aquí, en
+el 5to infierno de infomed usar cualquier proveedor de CA gratis (como let&rsquo;s
+encrypt) es por gusto.</p>
+
+<p>En estos caso, no queda otro remiendo que usar un CA firmado localmente. La idea
+es.</p>
+
+<p>Generamos un par de claves que harán la función de &ldquo;autoridad certificadora&rdquo;</p>
+
+<ul>
+<li> crear un Clave Privada (.key) y mantenerla bien escondida</li>
+<li> crear la Clave Pública del anterior (.pem) y la distribuimos</li>
+</ul>
+
+
+<p>Una vez que tengamos nuestra autoridad certificadora. Empezamos a generar
+certificados y lo firmamos con esta.</p>
+
+<ul>
+<li> generamos una clave privada (el .key para este certificado)</li>
+<li> hacer una solicitud de certificado (.csr) al .key anterior</li>
+<li> generamos el dichoso certificado</li>
+<li> firmamos el certificado usando el .key de la CA</li>
+</ul>
+
+
+<p>Usaremos al tan legalmente controversial OpenSSL para esta tarea.</p>
+
+<p>La clave (.key) del CA, debe crearse en una máquina desconectada de la red y
+preferiblemente sepultada a 3 metros bajo tierra. Si esto le parece demasiado
+paranoico, entonces mantenga el &ldquo;.key&rdquo; en el servidor más aislado de la red.
+Preferiblemente, aquel que parezca menos importante y lejos de internet. En mi
+caso, yo uso mi laptop personal para tareas administrativas y es ahí donde tengo
+todas las claves privadas.</p>
+
+<p>Supón que lo hagas en un servidor determinado. Creamos entonces en el home del
+root, un espacio adecuado para esto.</p>
+
+<pre><code class="console "creando el directorio""> mkdir -m700 CA
+ cd CA
+ unmask 077
+</code></pre>
+
+<p>Creamos la super-secretísima clave privada, que hará la función de CA:</p>
+
+<p><strong>openssl genrsa -out rootCA.key 2048</strong></p>
+
+<pre><code class="console "creando el .key en la máquina secreta""> [lazaro@artema CA]$ openssl genrsa -out rootCA.key 2048
+ Generating RSA private key, 2048 bit long modulus
+ ..............................+++
+ .......................................................+++
+ e is 65537 (0x010001)
+</code></pre>
+
+<p>Ya tenemos la piedra angular de nuestro CA; pero así no sirve. Esa es la clave
+primaria, o sea, la que tiene la facultad de descifrar y derivar nuevos
+certificados. No nos conviene que nuestros &ldquo;usuarios finales&rdquo;, o lo servidores,
+usen esta clave. Necesitamos crear una &ldquo;clave pública&rdquo;, esta clave pública se
+deriva de la privada, pero solo tiene la facultad de cifrar, así la puede tener
+cualquiera y mandarnos datos cifrados. Sin embargo, <strong>NO</strong> se puede usar la clave
+pública para DEScifrar. Al menos no; usando tecnología civil.</p>
+
+<p>Nota para los imbéciles: El <strong>rootCA.key</strong> no se le puede dar a nadie.</p>
+
+<p><strong>openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 3650 -out rootCA.pem</strong></p>
+
+<pre><code class="console "creando la clave pública""> [lazaro@artema CA]$  openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 3650 -out rootCA.pem
+ You are about to be asked to enter information that will be incorporated
+ into your certificate request.
+ What you are about to enter is what is called a Distinguished Name or a DN.
+ There are quite a few fields but you can leave some blank
+ For some fields there will be a default value,
+ If you enter '.', the field will be left blank.
+ -----
+ Country Name (2 letter code) [AU]:CU
+ State or Province Name (full name) [Some-State]:Havana
+ Locality Name (eg, city) []:Plaza
+ Organization Name (eg, company) [Internet Widgits Pty Ltd]:Calixto Garcia
+ Organizational Unit Name (eg, section) []:Calixto Garcia
+ Common Name (e.g. server FQDN or YOUR name) []:Hospital Calixto Garcia
+ Email Address []:ssl@hcg.sld.cu
+</code></pre>
+
+<p>Ya tenemos la clave pública (el &ldquo;.pem&rdquo;). Este fichero será distribuido a
+nuestros clientes para que puedan hacer dos cosas: Cosa 1, cifrar los datos, sin
+poder descifrarlos. Cosa 2, identificar a la autoridad certificadora.</p>
+
+<pre><code class="console "la clave privada y publica de nuestra CA""> [lazaro@artema CA]$ ls
+ rootCA.key  rootCA.pem
+</code></pre>
+
+<p>Nota para los imbéciles: El <strong>rootCA.pem</strong> se instalará en los clientes,
+navegadores, teléfonos, etc&hellip;</p>
+
+<p>Note además, que hemos dado a nuestra clave pública, 10 años antes de su
+caducidad (-days 3650). Quizás quieras darle un solo.</p>
+
+<p><img class="left" src="/images/Enigma.jpg" title="&ldquo;Enigma, un disposotivo criptográfico de cuando no existía SSL.&rdquo;" ></p>
+
+<p>Ya puedes hacer público el &ldquo;.pem&rdquo; para que todo el que sepa que hacer con este,
+se lo instale. Por ejemplo, si tienes una intranet local, podrías dejarla con
+http plano y brindar información (así como la descarga) sobre el dicha clave.
+Puedes crear una página de HTML plano explicando porque SSL y como instalarlo
+en los navegadores. Ahí dices además, que se debe iniciar la conexión usando el
+prefijo &ldquo;https&rdquo;. Podrías poner esa página como el destino de redirección
+para todos los virtualhsot que usen &ldquo;http&rdquo; y así hacer conciencia a los
+usuarios. Por ejemplo, en servidores con información sensible (como los
+webmails), solo debe ser alcanzado usando ssl.</p>
+
+<p>Pero <strong>sin extremismos</strong>. Una intranet que brinda información pública, no tiene
+que ser obligado por SSL (a menos que sea un wordpress con login).</p>
+
+<p>Por cierto, Firefox tiene su propio almacén de certificados. Dirígete a
+Configuraciones, Avanzada, Certificados.</p>
+
+<p><img class="right" src="/images/localCA1.png" title="&ldquo;localizando el almacén de certificados&rdquo;" ></p>
+
+<p>Una vez ahí, ve a donde dice <strong>Autoridades</strong> (no a tus certificados) y procede a
+importar el certificado.</p>
+
+<p><img class="right" src="/images/localCA2.png" title="&ldquo;importando el certificado a firefox&rdquo;" ></p>
+
+<p>En android también es tremenda balasera instalar el &ldquo;.pem&rdquo; y no dejará de
+meterme miedo diciendo que &ldquo;un tercero podría estar manipulando tu información&rdquo;.
+Lo cual no deja de ser cierto, poner un SSLbumper a squid bataría para hacer
+horrores.</p>
+
+<p><img class="right" src="/images/localCA3.png" width="300" height="400" title="&ldquo;instalando el .pem en android&rdquo;" ></p>
+
+<p>Llégate a la configuración de seguridad y verás una opción que dice &ldquo;instalar
+certificados desde la tarjetaSD&rdquo; o &ldquo;desde el almacenamiento&rdquo;.</p>
+
+<p>En algunos android 4, si te pide una clave y no sabes cual es, debes configurar
+el acceso al teléfono mediante clave. O sea, quita el patrón, pon una clave y
+prueba importar el &ldquo;.pem&rdquo;. Al pedir la clave pones la que estableciste para
+entrar. Una vez importado el certificado, vuelves a poner el mecanismo de
+seguridad que deses (patrón, ninguno, etc&hellip;)</p>
+
+<h3>de vuelta al servidor secreto</h3>
+
+<p>Pasemos ahora a crear uno (o varios) certificados para nuestros servidores.
+Para empezar, crearemos el certificado del servidor de correo, pero no del
+smtp, si no del webmail.</p>
+
+<p><strong>MUY IMPORTANTE</strong> en los certificados, el CN (Common Name) no puede ser el que
+te de la gana a tí. Si por ejemplo tu servidor de correo está en
+webmail.dominio.cu, ese ha de ser su CN</p>
+
+<p>Nota para los imbéciles: Creas un certificado para cada servicio y su CN será el
+mismo nombre del virtualhost.</p>
+
+<p>Creamos una clave privada para este servidor (para que pueda cifrar, te requiero
+que es bilateral y simétrico).</p>
+
+<p><strong>openssl genrsa -out webmail.key 2048</strong></p>
+
+<pre><code class="console "la clave privada del webmail""> [lazaro@artema CA]$ openssl genrsa -out webmail.key 2048
+ Generating RSA private key, 2048 bit long modulus
+ .+++
+ ......................................................................................+++
+ e is 65537 (0x010001)
+</code></pre>
+
+<p>Le pedimos a esta clave que genera un certificado (certificate request).</p>
+
+<p><strong>openssl req -new -key webmail.key -out webmail.csr</strong></p>
+
+<pre><code class="console "solicitud de certificado""> [lazaro@artema CA]$ openssl req -new -key webmail.key -out webmail.csr
+ You are about to be asked to enter information that will be incorporated
+ into your certificate request.
+ What you are about to enter is what is called a Distinguished Name or a DN.
+ There are quite a few fields but you can leave some blank
+ For some fields there will be a default value,
+ If you enter '.', the field will be left blank.
+ -----
+ Country Name (2 letter code) [AU]:CU
+ State or Province Name (full name) [Some-State]:Havana
+ Locality Name (eg, city) []:Plaza
+ Organization Name (eg, company) [Internet Widgits Pty Ltd]:Calixto Garcia
+ Organizational Unit Name (eg, section) []:Calixto Garcia
+ Common Name (e.g. server FQDN or YOUR name) []:webmail.hcg.sld.cu
+ Email Address []:ssl@hcg.sld.cu
+
+ Please enter the following 'extra' attributes
+ to be sent with your certificate request
+ A challenge password []:
+ An optional company name []:
+</code></pre>
+
+<p>Ya tenemos las dos máquinas enigmas listas, pero no están sincronizadas y por
+ende, los cifrados producidos producidos por estos dos ficheros, serán
+simétricos pero no bilaterales. Alguien debe decirle que son padre e hijo.</p>
+
+<p>Eso lo haremos, firmando con nuestro CA, el certificado generado.</p>
+
+<p><strong>openssl x509 -req -in webmail.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out webmail.crt -days 3650 -sha256</strong></p>
+
+<pre><code class="console "firmando el certificado con la CA"">[lazaro@artema CA]$ openssl x509 -req -in webmail.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out webmail.crt -days 3650 -sha256
+Signature ok
+subject=C = CU, ST = Havana, L = Plaza, O = Calixto Garcia, OU = Calixto Garcia, CN = webmail.hcg.sld.cu, emailAddress = ssl@hcg.sld.cu
+Getting CA Private Key
+</code></pre>
+
+<p>Note como hacemos uso de las claves pública y privada del CA. Por tanto, si un
+atacante adquiere los certificados del webmail y los colocase en otro sitio,
+este no machea el CN webmail.hcg.sld.cu y desata una advertencia en el navegador
+de nuestros usuarios. Además, no podrá firmar el certificado para modificarlo e
+incluir su CN.</p>
+
+<pre><code class="console "los certificados del webmail"">[lazaro@artema CA]$ ls
+rootCA.key  rootCA.pem  rootCA.srl  webmail.crt  webmail.csr  webmail.key
+</code></pre>
+
+<p>Bueno, todo listo, hagamos un paquete con todo lo necesario para que nuestro
+servidor de correo se lo configure en el webmail. Para postfix y para dovecot,
+debemos hacer otro que machee smtp.hcg.sld.cu y pop3.hcg.sld.cu sucesivamete.</p>
+
+<p><strong>REPITO!</strong> el rootCA<strong>.key</strong> <strong>NO</strong> puede hacerse público. Así que le daremos
+una copia del rootCA<strong>.pem</strong></p>
+
+<pre><code class="console "empaquetando la entrega""> [lazaro@artema CA]$ mkdir webmail
+ [lazaro@artema CA]$ mv webmail.* webmail/
+ [lazaro@artema CA]$ cp rootCA.pem webmail/
+ [lazaro@artema CA]$ tar cvfz webmail.tar.gz webmail/
+ webmail/
+ webmail/webmail.crt
+ webmail/webmail.csr
+ webmail/webmail.key
+ webmail/rootCA.pem
+ [lazaro@artema CA]$ scp webmail.tar.gz root@webmail.hcg.sld.cu:/root/
+</code></pre>
+
+<p>Instálale esos certificado a tu
+<a href="http://lmgtfy.com/?q=apache+ssl+howto">apache</a>/<a href="http://lmgtfy.com/?q=nginx+ssl+howto">nginx</a>
+y todo el que tenga el <strong>rootCA.pem</strong> instalado en su dispositivo; verá a
+&ldquo;Calixto Garcia&rdquo; como una legítima autoridad certificadora al abrir el webmail.</p>
+
+<p>Lo que si no me queda claro es como se le instala el &ldquo;.pem&rdquo; a Windows. ¿Sugerencias?</p>
+
+<p><img class="center" src="/images/localCA4.png" width="200" height="300" title="&ldquo;autoridad certificadora, o al menos, eso dicen&rdquo;" ></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[portknocking en freebsd]]></title>
@@ -438,418 +686,6 @@ quieras hacer específica para ese servidor. Se mostrará si existe el fichero.<
 <pre><code class="bash "02-footer"">#!/bin/bash
 [ -f /etc/motd.tail ] &amp;&amp; cat /etc/motd.tail || true
 </code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[dkim y spf en postfix]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/06/18/dkim-y-spf-en-postfix/"/>
-    <updated>2016-06-18T13:57:51-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/06/18/dkim-y-spf-en-postfix</id>
-    <content type="html"><![CDATA[<p>Aunque no de mi agrado, reconozco que es una solución muy buena. DKIM y SPF, se
-ha vuelto hoy en día un mecanismo para mitigar el SPAM en el correo electrónico.</p>
-
-<p>Esto no quita, que un spammer puede hacerse con un buen esquema de DKIM para sus
-dominos de porquería; lo cual sería un estupendo negocio, teniendo en cuenta que
-un servidor puede tener tantos dominios como quiera. Si conoce a algún spammer
-que quiera tener DKIM y SPF en su negocio, por favor, mándele mi tarjeta.</p>
-
-<p>Me imagino que a los usuarios de nauta, les duela bajar un mensaje que
-aparentemente tiene dos lineas, pagando por uno que realmente tiene más de 20
-líneas de pura mierda que no les incumbe. Espero que etecsa se digne a retirar
-encabezados innecesarios como esos (para el cliente).</p>
-
-<p>Por otra parte, mucha gente tiene antivirus que modifican el correo o son
-fanáticos a instalar mil gangarreas (mailscanner, clamav, etc&hellip;) que también
-modifican el correo. Con esto, DKIM y SPF <strong>se van a la mierda</strong>.</p>
-
-<p>Le diré que hice con un postfix que ya estaba instalado en un debian8 para
-ponerle DKIM y SPF.</p>
-
-<p>Instalamos los jueguetes requeridos ante todo:</p>
-
-<pre><code class="bash">apt-get install opendkim opendkim-tools postfix-policyd-spf-python
-</code></pre>
-
-<p>y establecemos los permisos adecuados, ojo con esto, ya que dkim es muy riguroso
-con el tema de los permisos</p>
-
-<pre><code class="bash">adduser postfix opendkim
-</code></pre>
-
-<h2>SPF</h2>
-
-<p>Ahora procedemos a crear el registro DNS. Como hay muchos DNS y cada quién tiene
-sus preferencias, me reduciré a describir de manera abstracta los registros.
-Usted, aterrize la idea en su DNS.</p>
-
-<h3>Esto tiene <strong>DOS</strong> formas de hacerse:</h3>
-
-<h4>La primera:</h4>
-
-<p>Declarar que TODOS los <strong>MX</strong> del dominio, pueden mandar correo (lo cual
-inspira desconfianza) en este caso, registra un puntero del tipo <strong>TXT</strong> con el
-siguiente valor</p>
-
-<pre><code>v=spf1 mx -all
-</code></pre>
-
-<p>Por ejemplo, bind9</p>
-
-<pre><code class="cfg "registro"">@               IN      TXT     "v=spf1 mx -all"
-</code></pre>
-
-<h4>La segunda:</h4>
-
-<p>Declarar que un host, que tiene un registro <strong>A</strong>, está autorizado a enviar
-correos (esta me gusta más, si tienes un solo servidor de correo) Si fueran
-varios, por ejemplo 3. Podrías declarar un A para cada uno y de manera
-individual, ellos generarían su SPF apuntándose a si mismo.</p>
-
-<pre><code>v=spf1 a:mx1.tudominio.cu -all
-</code></pre>
-
-<p>Como ya sabemos, un puntero MX siempre deberá apuntar a un rgistro A, ya que no
-se recomienda apuntar a un CNAME&hellip;</p>
-
-<p><strong>Nota para los apurados:</strong> &ldquo;Si declaras ambos registros, no pincha, LEE!!&rdquo;</p>
-
-<p>Otra cosa, puedes declarar <strong>-all</strong> o <strong>~all</strong> El primero le dirá al receptor
-que si el correo no viene del dominio que dice enviarlo (el puntero A o los MX),
-lo rechace porque es falso (muy radical) y el segundo, que empieza por ~ le
-indica al receptor, que puede recibir el mensaje y si no pude verificarlo que lo
-marque como spam, pero que por favor, no lo rechaze.</p>
-
-<p>Esto nos lleva a una:</p>
-
-<h3>Situación peligrosa</h3>
-
-<p>Cuba, un descerebrado configuró verificación de DKIM, <strong>porque está de moda</strong>.
-PERO! Está detrás de un smarthost (pasarela) o simplemente, su configuración de
-DNS no vale un quilo (por culpa del proveedor)</p>
-
-<p>Metedura de pata - A:</p>
-
-<p>Ese servidor de correo, que se cree <em>Oggun con machete en mano</em>; descartará todo
-correo con <strong>-all</strong> debido a su incapacidad de realizar un lookup decente.</p>
-
-<p>Metedura de pata - B:</p>
-
-<p>Uno más descerebrado todavía, vio que DKIM estaba de moda y sin importar que no
-tiene control de su DNS, lo hizo todo, saltándose el paso del DNS. Su servidor
-le estará gritando a toda voz al mundo entero, <strong>que está falseando el dominio</strong></p>
-
-<p>Su ignorancia le costará caer de cabeza en las listas negras&hellip;</p>
-
-<p>Y es que:</p>
-
-<p>Generalmente, los servidores que entregan a través de un smarthost, carecen de
-DNS real. También hay una pila de gente que administran servidores sin tener
-control de su DNS.</p>
-
-<h4>Seguimos&hellip;</h4>
-
-<p>Ya que tenemos el SPF pinchando, podemos añadirle chequeo de SPF a nuestro
-postfix <strong>que tiene bien configurado el DNS y entrega de cara a internet sin
-smarthost</strong></p>
-
-<p>En el fichero <strong>/etc/postfix/master.cf</strong> le agregamos esto:</p>
-
-<pre><code class="cfg master.cf">policyd-spf  unix  -       n       n       -       0       spawn
-    user=policyd-spf argv=/usr/bin/policyd-spf
-</code></pre>
-
-<p>y a los posftfix cubanos, le decimos que sea paciente con el proceso de
-verificación, incrementando el tiempo que tiene que esperar por el policyd, ya
-que dicha verificación puede tardar (dns lookup, cpu a tope, etc..) Añadimos
-esto a <strong>/etc/postfix/main.cf</strong></p>
-
-<pre><code class="cfg main.cf">policyd-spf_time_limit = 3600
-</code></pre>
-
-<p>Ahora viene una parte complicada, pues no hay manera de que pueda reflejarla
-como para copiar y pegar.</p>
-
-<p>Deberás modificar tus reglas de postfix, de forma que antepongas el chequeo SPF,
-como una más de tus restricciones de recibo. Para mi caso, está bien la última
-linea.</p>
-
-<pre><code class="cfg "scpe del main.cf"">
-smtpd_sender_restrictions =
-   reject_non_fqdn_sender,
-   reject_non_fqdn_recipient,
-   permit_sasl_authenticated,
-   reject_unknown_sender_domain,
-   reject_unknown_recipient_domain,
-   reject_rbl_client bl.spamcop.net,
-   reject_rbl_client sbl.spamhaus.org,
-   reject_rbl_client xbl.spamhaus.org,
-   defer_unauth_destination,
-   reject_unverified_sender,
-   check_policy_service unix:private/policyd-spf
-</code></pre>
-
-<p>Reinicia postfix y chequea el <strong>/var/log/mail.log</strong> para que veas SPF pinchando.</p>
-
-<h2>DKIM</h2>
-
-<p>Me parece que la configuración de DKIM en debian está buena, pero por si las
-moscas. Copias esta que pongo aquí y métela en tu <strong>/etc/opendkim.conf</strong></p>
-
-<pre><code class="cfg /etc/opendkim.conf">Syslog          yes
-UMask           002
-UserID          opendkim
-KeyTable        /etc/opendkim/key.table
-SigningTable        refile:/etc/opendkim/signing.table
-ExternalIgnoreList  /etc/opendkim/trusted.hosts
-InternalHosts       /etc/opendkim/trusted.hosts
-Canonicalization    relaxed/simple
-Mode            sv
-SubDomains      no
-#ADSPAction     continue
-AutoRestart     yes
-AutoRestartRate     10/1M
-Background      yes
-DNSTimeout      5
-SignatureAlgorithm  rsa-sha256
-OversignHeaders     From
-</code></pre>
-
-<p>De ahí puede que quizás te interese la variables <strong>SubDomains</strong>, sobre todo si
-eres proveedor de correo.</p>
-
-<p>Como ya te dije, los permisos son sumamente importantes en este caso</p>
-
-<pre><code class="bash permisos">chmod u=rw,go=r /etc/opendkim.conf
-</code></pre>
-
-<p>Ahora creamos el directorio donde vamos a meter todo el zoológico requerido para
-que DKIM pinche. Hay quién prefiere meterlo en <strong>/var</strong>, para mi en
-<strong>/etc/opendkim</strong> es un buen lugar.</p>
-
-<pre><code class="bash "creando el directorio de residencia"">mkdir /etc/opendkim
-mkdir /etc/opendkim/keys
-chown -R opendkim:opendkim /etc/opendkim
-chmod go-rw /etc/opendkim/keys
-</code></pre>
-
-<h3>La Firma</h3>
-
-<p>Ahora vamos a crear la <em>tabla de rúbricas</em> (se aceptan contribuciones para
-traducir). Ahí, ponemos una linea por cada dominio que tengas. Creas el fichero
-<strong>/etc/opendkim/signing.table</strong> y está recomendado que le pongas lo siguiente:</p>
-
-<pre><code class="cfg "como dicen que debe ser"">   *@tudominio.cu   tudominio
-</code></pre>
-
-<p><strong>Nota para los imbéciles:</strong> No olvide remplazar <em>tudominio.cu</em> por el nombre
-del dominio suyo.</p>
-
-<p>Con eso, casamos todos los correos que parezcan a tu dominio, con el DKIM que
-llamamos &ldquo;tudominio&rdquo;, si quiere atrás le puede poner &ldquo;pepe&rdquo;. Lo que debe
-quedarte claro, es que todos los correos que macheen a la expresión regular de
-alante, pasarán por el filtro llamado <em>tudominio</em> (o &ldquo;pepe&rdquo; si lo cambiaste) ¿Se
-entendió?</p>
-
-<p>Por ejemplo, si tu dominio fuera *@cacocum.hlg.sld.cu podrías ponerle detrás
-&ldquo;midkim&rdquo; para que todos los correos de ese dominio, se firmen con la firma que
-será configurada bajo el nombre &ldquo;midkim&rdquo; Quedaría así:</p>
-
-<pre><code>  *@cacocum.hlg.sld.cu  midkim
-</code></pre>
-
-<p>Resumen:</p>
-
-<p>El primero campo, es una expresión regular que mache las direcciones de correo y
-el segundo el nombre de la firma que se usará. Para mayor confusión, se
-recomienda que se hagan nombres parecidos. Finalmente nos quedó así:</p>
-
-<pre><code class="cfg /etc/opendkim/signing.table">*@tudominio.cu    tudominio
-</code></pre>
-
-<h3>La clave</h3>
-
-<p>Ahora creamos el fichero, donde le diremos a &ldquo;midkim&rdquo; donde va a encontrar su
-parafernalia cifradora. Crea el fichero <strong>/etc/opendkim/key.table</strong> y ponle
-dentro esto:</p>
-
-<pre><code class="cfg /etc/opendkim/key.table">tudominio     tudominio.cu:YYYYMM:/etc/opendkim/keys/example.private
-</code></pre>
-
-<p><strong>IMPORTANTE</strong></p>
-
-<p>Remplaza <strong>YYYYMM</strong> por el año y el número de mes en el que estamos.</p>
-
-<p><strong>SI NO, NO PINCHA</strong></p>
-
-<p>A mi me quedó así:</p>
-
-<pre><code class="cfg /etc/opendkim/key.table">tudominio     tudominio.cu:201606:/etc/opendkim/keys/example.private
-</code></pre>
-
-<p>Ya que estamos en el año <strong>2016</strong> y el mes <strong>0</strong>6 no el 6 (lleva cero delante).</p>
-
-<p>Ojo aquí, ya que si tienes más dominios, es complicado. Nota que debes reflejar
-a localhost con sus pertinentes ip, además, tu nombre de host, tu dominio y el
-nombre del host conjugado con el dominio. Siendo entonces <strong>fulanito</strong> el nombre
-del host, quedaría así en el fichero <strong>/etc/opendkim/trusted.hosts</strong></p>
-
-<pre><code class="cfg /etc/opendkim/trusted.hosts">127.0.0.1
-::1
-localhost
-fulanito
-fulanito.dominio.cu
-dominio.cu
-</code></pre>
-
-<p>Los permisos, ya tu sabes:</p>
-
-<pre><code class="bash "seteando permisos"">chown -R opendkim:opendkim /etc/opendkim
-chmod -R go-rwx /etc/opendkim/keys
-</code></pre>
-
-<p>FINALMENTE! Vamos a generar la clave para el dominio:</p>
-
-<pre><code class="bash "generando las claves"">cd /etc/opendkim/keys/
-opendkim-genkey -b 2048 -r -s 201606
-</code></pre>
-
-<p>Las claves se generan en base a la fecha, pero luego se colocan en base al
-dominio. Esto se hace porque <strong>hay que renovarlos</strong> pero si configuramos
-opendkim para que apunte a un fichero cuyo nombre sea la fecha, tendríamos que
-cambiar la configuración cada vez que renovamos.</p>
-
-<pre><code class="bash "la clave por su nombre"">mv 201606.private tudominio.private
-mv 201606.txt tudominio.txt
-</code></pre>
-
-<p>Si tu clave se llamase &ldquo;pepe&rdquo; o &ldquo;midkim&rdquo;, ya sabes que esos ficheros se
-llamarían &ldquo;pepe.private&rdquo; o &ldquo;tudkim.txt&rdquo; ¿Entiendes ahora? Seguimos&hellip;</p>
-
-<p>El argumento <strong>-b</strong> indica la longitud de clave en Bit. En otros tiempo 1024 era
-la tisa, pero ahora, se recomienda usar 2048 porque las máquinas son más
-potentes. Quizás dentro de un par de años, sea 4096.</p>
-
-<p>Bueno, ya sabes, la ceremonia de los permisos:</p>
-
-<pre><code class="bash "seteando permisos"">chown -R opendkim:opendkim /etc/opendkim
-chmod -R go-rw /etc/opendkim/keys
-</code></pre>
-
-<p>Arranca opendkim y asegúrate mirando los; log que esté pinchando.</p>
-
-<pre><code class="bash "arranca opendkim"">systemctl restart opendkim
-systemctl status -l opendkim
-</code></pre>
-
-<h2>El DNS</h2>
-
-<p>   <blockquote><p>El patico feo de internet, el DNS. El remedio que se inventó pa ir tirando y acabó quedándose con su pésimo diseño y su horrible arquitectura que hasta el sol de hoy, pretende llamarse &ldquo;distribuida&rdquo;</p><footer><strong>Lázaro Armando</strong> <cite>Mi Criterio Sobre DNS</cite></footer></blockquote></p>
-
-<p>Agregamos le registro TXT con la clave. Te cuento que el fichero &ldquo;.txt&rdquo; contiene
-el tabaco base64 que usualmente vemos en el encabezado DKIM-Signature, pues
-proviene de este registro TXT que estamos creando.</p>
-
-<p>Añade un registro del tipo TXT que apunte a un hostname llamado
-<strong>201606._domainkey</strong> dentro de tu domino. Pero ahora viene la parte difícil:</p>
-
-<p>Copia <strong>el texto</strong> que contiene el fichero tudominio.txt dentro de la primera
-comilla hasta la última, pero sin tomar las comillas.</p>
-
-<p><strong>¿Se entendió?</strong></p>
-
-<p>O sea, dentro del fichero tiene esto:</p>
-
-<pre><code class="cfg "tudominio.txt"">201606._domainkey  IN  TXT ( "**v=DKIM1; k=rsa; s=email; " "p=ZjiONVGXom64jANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu5oIUrFDWZK7F4thFxpZa2or6jBEX3cSL6b2TJdPkO5iNn9vHNXhNX31nOefN8FksX94YbLJ8NHcFPbaZTW8R2HthYxRaCyqodxlLHibg8aHdfa+bxKeiI/xABRuAM0WG0JEDSyakMFqIO40ghj/h7DUc/4OXNdeQhrKDTlgf2bd+FjpJ3bNAFcMYa3Oeju33b2Tp+PdtqIwXR" "ZksfuXh7m30kuyavp3Uaso145DRBaJZA55lNxmHWMgMjO+YjNeuR6j4oQqyGwzPaVcSdOG8Js2mXt+J3Hr+nNmJGxZUUW4Uw5ws08wT9opRgSpn+ThX2d1AgQePpGrWOamC3PdcwIDAQAB**")  ; ----- DKIM key 201606 for tudominio.cu
-</code></pre>
-
-<p>Al extraer la parte que nos interesa, no quedamos con esto (sin las comillas)</p>
-
-<pre><code class="cfg "la clave sin las comillas"">**v=DKIM1; k=rsa; s=email; p=ZJiONVGXom64zhNjwdAmo2XnMhAXeGXxB0p5PJkHxUk5XMXNaoUbMwfGOBOQYKsiQp0k9KwcYu2SNAlcFrGIugPG035Ng4r8mlBRLS5+dak90HuH+hb2d8aa+djRFn4PIS2RcAZZJgJjRgF1NbWZpBlj8IpXJ7MywrUxtj1e+TU/tCiWQxCc9uMqgWA53NeqRGEFPwCuTfDMKWbbMhZkbe+pOOtEqQBQ0HsvJ3n09ZNhh3AjbNP6JOpAyK+4hqHohDTrLhxdSFsNiaoAaJXsxDdAHIs2U3QNmrbAFEg7aPOBgaHLXv28k88EDqo4cIuOxa/c24e3F4O6TY3fpydRmekadtCW+waY3aCIIwIA7DdAABFUTR3ABI8WnFTjgDyj1/IQ53Af**
-</code></pre>
-
-<p><strong>OJO</strong> Tiene más comillas en el medio!!!!</p>
-
-<p>Auxíliate de un editor de texto decente. Deshabilita el wrap y busca la comilla
-como cadena de texto.</p>
-
-<p>Ese texto, será el valor del puntero TXT</p>
-
-<p>A mi me quedó así:</p>
-
-<pre><code class="cfg "puntero TXT de 201606._domainkey"">201601._domainkey    IN      TXT     "**v=DKIM1; k=rsa; s=email; p=ZJiONVGXom64zhNjwdAmo2XnMhAXeGXxB0p5PJkHxUk5XMXNaoUbMwfGOBOQYKsiQp0k9KwcYu2SNAlcFrGIugPG035Ng4r8mlBRLS5+dak90HuH+hb2d8aa+djRFn4PIS2RcAZZJgJjRgF1NbWZpBlj8IpXJ7MywrUxtj1e+TU/tCiWQxCc9uMqgWA53NeqRGEFPwCuTfDMKWbbMhZkbe+pOOtEqQBQ0HsvJ3n09ZNhh3AjbNP6JOpAyK+4hqHohDTrLhxdSFsNiaoAaJXsxDdAHIs2U3QNmrbAFEg7aPOBgaHLXv28k88EDqo4cIuOxa/c24e3F4O6TY3fpydRmekadtCW+waY3aCIIwIA7DdAABFUTR3ABI8WnFTjgDyj1/IQ53Af**"
-</code></pre>
-
-<p>Completo! Vamos a probarlo a ver que pasa:</p>
-
-<pre><code class="bash "1, 2, 3, probando"">opendkim-testkey -d example.com -s 201606
-</code></pre>
-
-<p>Si sale silentemente sin mostrar algo. Es que todo está bien.</p>
-
-<h3>opendkim y postfix</h3>
-
-<p>Finalmente, nuestro postfix tendrá el privilegio de firmar los correos usando el
-aparataje recién configurado. Vamos a crearle un cuartico de dkim en la casa de
-postfix</p>
-
-<pre><code class="bash "dkim en postfix"">mkdir /var/spool/postfix/opendkim
-chown opendkim:postfix /var/spool/postfix/opendkim
-</code></pre>
-
-<p>y habilitamos el socket de opendkim, editando el fichero <strong>/etc/default/opendkim</strong></p>
-
-<pre><code class="cfg /etc/default/opendkim"># Command-line options specified here will override the contents of
-# /etc/opendkim.conf. See opendkim(8) for a complete list of options.
-#DAEMON_OPTS=""
-#
-# Uncomment to specify an alternate socket
-# Note that setting this will override any Socket value in opendkim.conf
-SOCKET="local:/var/spool/postfix/opendkim/opendkim.sock"
-#SOCKET="inet:54321" # listen on all interfaces on port 54321
-#SOCKET="inet:12345@localhost" # listen on loopback on port 12345
-#SOCKET="inet:12345@192.0.2.1" # listen on 192.0.2.1 on port 12345
-</code></pre>
-
-<p>Note como retiramos el comentario de la línea 7</p>
-
-<p>Ahora declaramos en postfix que debe usar a opendkim como demonio de
-preprocesamiento en el típico <strong>/etc/postfix/main.cf</strong></p>
-
-<pre><code class="cfg /etc/postfix/main.cf"># Milter configuration
-# OpenDKIM
-milter_default_action = accept
-milter_protocol = 2
-smtpd_milters = local:/opendkim/opendkim.sock
-non_smtpd_milters = local:/opendkim/opendkim.sock
-</code></pre>
-
-<p>Finalmente, reinicia opendkim y postfix</p>
-
-<pre><code class="bash "systemctl"">systemctl restart opendkim postfix
-</code></pre>
-
-<h3>COMPLETO!!!</h3>
-
-<p>Con eso hemos terminado. Para probarlo, puede enviar un correo a <a href="mailto:check-auth@verifier.port25.com">check-auth@verifier.port25.com</a></p>
-
-<p>Esa dirección le hará una prueba al DKIM+SPF de tu correo. No solo eso, le hará
-una prueba del Pi al Pa a tu correo y te dirá todo lo que necesitas.</p>
-
-<p>Si quieres ponerle la guinda al pastel, puede añadirle ADSP (Author Domain
-Signing Practices) a tu esquema. Esto indica que todos los correos que salgan de
-tu dominio deben estar firmados con DKIM, proveiendo aún más confianza al
-receptor.</p>
-
-<p>Crea un registro <strong>TXT</strong> para el hostname <strong><em>adsp.</em>domainkey</strong> y el valor del
-TXT será <strong>dkim=all</strong>. A mi me quedó así:</p>
-
-<pre><code class="cfg "registro"">_adsp._domainkey     IN      TXT     "dkim=all"
-</code></pre>
-
-<p>Con eso, tus correos no caerán más en la bandeja SPAM de gmail.</p>
-
-<p>Otra cosa importante, asegúrate de tener el reverse lookup de tu MX bien puesto.</p>
 ]]></content>
   </entry>
   

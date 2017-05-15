@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="dovecot entra en el baile 09/06/2014 8:56 am | Comments Otra escupía que me cae en la frente. Desde que conozco linux, estoy oyendo
-hablar de &hellip;">
+  <meta name="description" content="lxc en salud 18/04/2014 9:14 pm | Comments ¡Me han asignado mi segundo servidor en el calixto! Un cliente ligero con 2
+gigas de RAM, un buen micro y &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,450 +82,6 @@ hablar de &hellip;">
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-06-09T08:56:43-04:00'><span class='date'>09/06/2014</span> <span class='time'>8:56 am</span></time>
-        
-           | <a href="/blog/2014/06/09/dovecot-entra-en-el-baile/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/06/09/dovecot-entra-en-el-baile/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Otra escupía que me cae en la frente. Desde que conozco linux, estoy oyendo
-hablar de postfix con ldap, postfix con mysql y siempre mi criterio era el peor.</p>
-
-<p>Por lo general, veía a mis paisanos copiar guías y pasar mil trabajos creando la
-base de datos sin tener una finalidad útil. Ahora me doy cuenta que en un
-esquema monstruosamente grande; MySQL resulta útil.</p>
-
-<p>Por ejemplo, aquí tengo planificado un gran despliegue de tecnología
-estrafalaria y voy a necesitar un esquema como el de google:</p>
-
-<h3>&ldquo;una cuenta para todos los servicios&rdquo;</h3>
-
-<p>Por el momento le va tocando el turno al correo, que aunque aún no tenemos
-operando el dominio; esta pronto a cumplirse.</p>
-
-<p>Primero y principioso, instalar todo:</p>
-
-<figure class='code'><figcaption><span>&#8220;instalar todo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>root@blackjack:~# aptitude install postfix-mysql dovecot-mysql
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Seguidamente crearemos los usaurios del sistema. El esquema vmail corre como un
-usaurio aparte por una cuestión de seguridad.</p>
-
-<figure class='code'><figcaption><span>&#8220;crear los usaurios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">root@blackjack:~#</span> groupadd -g <span class="m">5000</span> vmail
-</span><span class='line'><span class="gp">root@blackjack:~#</span> useradd -g vmail -u <span class="m">5000</span> vmail -d /var/vmail
-</span><span class='line'><span class="gp">root@blackjack:~#</span> mkdir /var/vmail
-</span><span class='line'><span class="gp">root@blackjack:~#</span> chown vmail:vmail /var/vmail
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>La base de datos, tienes más o menos esta estructura:</p>
-
-<figure class='code'><figcaption><span>&#8220;estructura de las base de datos&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">lazaro@leviatan:~/ejemplo$</span> rails console
-</span><span class='line'><span class="go">Loading development environment (Rails 4.1.1)</span>
-</span><span class='line'><span class="go">irb(main):001:0&gt; User.column_names</span>
-</span><span class='line'><span class="go">=&gt; [&quot;id&quot;, &quot;username&quot;, &quot;realname&quot;, &quot;password&quot;, &quot;created_at&quot;, &quot;updated_at&quot;, &quot;telefono&quot;, &quot;correo&quot;, &quot;quota&quot;]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lo que más nos interesa de aquí es username y password, sobre todo teniendo en
-cuenta que que se almacena cifrado, osea, un chorro de mierda hexagesimal.</p>
-
-<p>Ahora vamos al fichero &ldquo;/etc/dovecot/conf.d/10-auth.conf&rdquo;. al fondo, le
-descomentamos el autenticador sql y le comentamos el de pam. Nos quedaría así</p>
-
-<figure class='code'><figcaption><span>&#8220;fondo de 10-auth.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#!include auth-system.conf.ext</span>
-</span><span class='line'><span class="o">!</span><span class="n">include</span> <span class="n">auth</span><span class="o">-</span><span class="n">sql</span><span class="p">.</span><span class="n">conf</span><span class="p">.</span><span class="n">ext</span>
-</span><span class='line'><span class="cp">#!include auth-ldap.conf.ext</span>
-</span><span class='line'><span class="cp">#!include auth-passwdfile.conf.ext</span>
-</span><span class='line'><span class="cp">#!include auth-checkpassword.conf.ext</span>
-</span><span class='line'><span class="cp">#!include auth-vpopmail.conf.ext</span>
-</span><span class='line'><span class="cp">#!include auth-static.conf.ext</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora le diremos al autenticador como conectarse a la base de datos. El irá
-solito a buscar la table &ldquo;users&rdquo;. Especificamos las conexión. También le diremos
-las linea sql que debe tirar para buscar el username y el password.</p>
-
-<p>También modificaremos el mecanismo de cifrado, le diremos que use SHA256 que es
-el generado por Ruby en mi esquema.</p>
-
-<figure class='code'><figcaption><span>/etc/dovecot/dovecot-sql.conf.ext</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">connect</span> <span class="o">=</span> <span class="n">host</span><span class="o">=</span><span class="mf">10.1.1.14</span> <span class="n">dbname</span><span class="o">=</span><span class="n">labasededatos</span> <span class="n">user</span><span class="o">=</span><span class="n">usuario</span> <span class="n">password</span><span class="o">=</span><span class="n">notelodir</span><span class="err">é</span>
-</span><span class='line'><span class="n">default_pass_scheme</span> <span class="o">=</span> <span class="n">SHA256</span>
-</span><span class='line'><span class="n">password_query</span> <span class="o">=</span> \
-</span><span class='line'>  <span class="n">SELECT</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span> \
-</span><span class='line'>  <span class="n">FROM</span> <span class="n">users</span> <span class="n">WHERE</span> <span class="n">username</span> <span class="o">=</span> <span class="err">&#39;</span><span class="o">%</span><span class="n">n</span><span class="err">&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Por último y antes de pasar a postfix. En el fichero conf.d/auth-sql.conf.ext
-declaramos como se gestionará la base datos.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/dovecot/conf.d/auth-sql.conf.ext&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">passdb</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">driver</span> <span class="o">=</span> <span class="n">sql</span>
-</span><span class='line'>  <span class="n">args</span> <span class="o">=</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">dovecot</span><span class="o">/</span><span class="n">dovecot</span><span class="o">-</span><span class="n">sql</span><span class="p">.</span><span class="n">conf</span><span class="p">.</span><span class="n">ext</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">userdb</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">driver</span> <span class="o">=</span> <span class="k">static</span>
-</span><span class='line'>  <span class="n">args</span> <span class="o">=</span> <span class="n">uid</span><span class="o">=</span><span class="n">vmail</span> <span class="n">gid</span><span class="o">=</span><span class="n">vmail</span> <span class="n">home</span><span class="o">=/</span><span class="n">var</span><span class="o">/</span><span class="n">vmail</span><span class="o">/%</span><span class="n">n</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Osea que el correo se almacene en /var/vmail/fulano y con usuario vmail. De
-hecho TODO el correo se almacenará con el usuario vmail; poniendo fin al
-perpetuo temor de escalada de permisos que descansa en el típico esquema
-/var/mail/fulano</p>
-
-<p>En este caso, se chequeará el password contra SQL pero el almacenamiento se
-hará en /var/vmail, con eso no vamos contra el princpio del cual siempre me
-agarro y es que las Bases de datos, NO son sistemas de archivos.</p>
-
-<p>Veremos en la próxima entrada, como se hace a postfix jugar con todo esto&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-05-02T13:51:13-04:00'><span class='date'>02/05/2014</span> <span class='time'>1:51 pm</span></time>
-        
-           | <a href="/blog/2014/05/02/wordpress-para-todos/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/05/02/wordpress-para-todos/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Recién se ha puesto de moda, en el mundo entero, &ldquo;wordpress&rdquo;. No hace mucho leí
-un twit de no se que perico de los palotes; diciendo que el 22% de los sitios en
-internet son wordpress.</p>
-
-<p>En infomed wordpress es un boom. Incluso se escriben plugins y temas para
-wordpress.</p>
-
-<p>Al llegar aquí me encontré con un drupal tirado en una IP detrás de un
-&ldquo;/intranet&rdquo; y con un estado de abandono tremendo. Ni siquiera había un DNS
-así que ni hablar de virtualhost.</p>
-
-<p>Lo primero fue crear un virtualhost para una intranet que albergaría un
-wordpress.</p>
-
-<figure class='code'><figcaption><span>/etc/apache2/sites-enabled/wordpress</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='apacheconf'><span class='line'><span class="err">lazaro@leviatan:~/octopress$</span> <span class="nb">cat</span> <span class="sx">/etc/apache2/sites-enabled/wordpress</span>
-</span><span class='line'><span class="nt">&lt;VirtualHost</span> <span class="s">*:80</span><span class="nt">&gt;</span>
-</span><span class='line'>        <span class="nb">ServerAdmin</span> lazaro@localhost
-</span><span class='line'>        <span class="nb">ServerName</span> intranet.hcg.sld.cu
-</span><span class='line'>
-</span><span class='line'>        <span class="nb">DocumentRoot</span> <span class="sx">/usr/share/wordpress/</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="nt">&lt;Directory</span> <span class="s">/usr/share/wordpress/</span><span class="nt">&gt;</span>
-</span><span class='line'>                <span class="nb">Options</span> FollowSymLinks MultiViews
-</span><span class='line'>                <span class="nb">AllowOverride</span> <span class="k">All</span>
-</span><span class='line'>                <span class="nb">Order</span> allow,deny
-</span><span class='line'>                <span class="nb">allow</span> from <span class="k">all</span>
-</span><span class='line'>        <span class="nt">&lt;/Directory&gt;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="nb">ErrorLog</span> ${APACHE_LOG_DIR}/error.log
-</span><span class='line'>
-</span><span class='line'>        <span class="c"># Possible values include: debug, info, notice, warn, error, crit,</span>
-</span><span class='line'>        <span class="c"># alert, emerg.</span>
-</span><span class='line'>        <span class="nb">LogLevel</span> <span class="k">warn</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="nb">CustomLog</span> ${APACHE_LOG_DIR}/access.log combined
-</span><span class='line'><span class="nt">&lt;/VirtualHost&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Declaramos el virtualhost en el DNS. En este caso, es hacer un puntero a la
-maquina donde está el wordpress. Como uso dnsmasq, basta con agregarlo al
-virtuahost.</p>
-
-<figure class='code'><figcaption><span>dnsmasq</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">root@blackjack:~#</span> cat /etc/hosts<span class="p">|</span>grep intranet
-</span><span class='line'><span class="go">10.1.1.14   intranet.hcg.sld.cu</span>
-</span><span class='line'>
-</span><span class='line'><span class="gp">root@blackjack:~#</span> /etc/init.d/dnsmasq restart
-</span><span class='line'><span class="go">Restarting DNS forwarder and DHCP server: dnsmasq.</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>E instalar wordpress:</p>
-
-<figure class='code'><figcaption><span>aptitude</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">root@leviatan:~#</span> aptitude install wordpress
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como si fuese poca la carga de mi servidor SQL, resulta que cada sitio de
-wordpress, es simplemente una configuración y una base de datos.</p>
-
-<p>Basta copiar la configuración de ejemplo y bautizarla en /etc/wordpress con el
-prefijo <strong>config-</strong> seguido del nombre del virtualhost.</p>
-
-<figure class='code'><figcaption><span>cp</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">lazaro@leviatan:~/octopress$</span>  cp /usr/share/wordpress/wp-config-sample.php /etc/wordpress/config-intranet.hcg.sld.cu.php
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Dentro del fichero, la configuración, es un bien comentado script de PHP, que
-figura los datos para una conexión a la base de datos. Obviemos los comentarios
-para ahorrar espacio. El fichero me quedó así.</p>
-
-<figure class='code'><figcaption><span>/etc/wordpress/config-intranet.hcg.sld.cu.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;wordpress&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_USER&#39;</span><span class="p">,</span> <span class="s1">&#39;wordpress&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_PASSWORD&#39;</span><span class="p">,</span> <span class="s1">&#39;secretisimo&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_HOST&#39;</span><span class="p">,</span> <span class="s1">&#39;localhost&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_CHARSET&#39;</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_COLLATE&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;AUTH_KEY&#39;</span><span class="p">,</span>         <span class="s1">&#39;put your unique phrase here&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;SECURE_AUTH_KEY&#39;</span><span class="p">,</span>  <span class="s1">&#39;put your unique phrase here&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;LOGGED_IN_KEY&#39;</span><span class="p">,</span>    <span class="s1">&#39;put your unique phrase here&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;NONCE_KEY&#39;</span><span class="p">,</span>        <span class="s1">&#39;put your unique phrase here&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;AUTH_SALT&#39;</span><span class="p">,</span>        <span class="s1">&#39;put your unique phrase here&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;SECURE_AUTH_SALT&#39;</span><span class="p">,</span> <span class="s1">&#39;put your unique phrase here&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;LOGGED_IN_SALT&#39;</span><span class="p">,</span>   <span class="s1">&#39;put your unique phrase here&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;NONCE_SALT&#39;</span><span class="p">,</span>       <span class="s1">&#39;put your unique phrase here&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$table_prefix</span>  <span class="o">=</span> <span class="s1">&#39;wp_&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;WPLANG&#39;</span><span class="p">,</span> <span class="s1">&#39;es_ES&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;WP_DEBUG&#39;</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nb">defined</span><span class="p">(</span><span class="s1">&#39;ABSPATH&#39;</span><span class="p">)</span> <span class="p">)</span>
-</span><span class='line'>        <span class="nb">define</span><span class="p">(</span><span class="s1">&#39;ABSPATH&#39;</span><span class="p">,</span> <span class="nb">dirname</span><span class="p">(</span><span class="k">__FILE__</span><span class="p">)</span> <span class="o">.</span> <span class="s1">&#39;/&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">require_once</span><span class="p">(</span><span class="nx">ABSPATH</span> <span class="o">.</span> <span class="s1">&#39;wp-settings.php&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;WP_ALLOW_REPAIR&#39;</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ven, hay un &ldquo;algo&rdquo;; no se si variable. Bajo el nombre DB_NAME, declaramos
-el nombre de la base de datos y así sucesivamente lo obvio hasta DB_HOST.</p>
-
-<p>De ahí pa alante, no tocamos más nada.</p>
-
-<p>Ya estamos listo para crear la base da datos. La rutina clásica: Haremos un
-usuario con el mismo nombre de la base y le daremos todos los permisos.</p>
-
-<figure class='code'><figcaption><span>$mysql</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">lazaro@leviatan:~/octopress$</span> mysql -u root -p
-</span><span class='line'><span class="go">Enter password:</span>
-</span><span class='line'><span class="go">Welcome to the MySQL monitor.  Commands end with ; or \g.</span>
-</span><span class='line'><span class="go">Your MySQL connection id is 42</span>
-</span><span class='line'><span class="go">Server version: 5.5.30-1.1 (Debian)</span>
-</span><span class='line'>
-</span><span class='line'><span class="go">Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.</span>
-</span><span class='line'>
-</span><span class='line'><span class="go">Oracle is a registered trademark of Oracle Corporation and/or its</span>
-</span><span class='line'><span class="go">affiliates. Other names may be trademarks of their respective</span>
-</span><span class='line'><span class="go">owners.</span>
-</span><span class='line'>
-</span><span class='line'><span class="go">Type &#39;help;&#39; or &#39;\h&#39; for help. Type &#39;\c&#39; to clear the current input statement.</span>
-</span><span class='line'>
-</span><span class='line'><span class="go">mysql&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="go">Y ahora creamos la base de datos y el usuario con estas sentencias</span>
-</span><span class='line'><span class="go">NOTA: en nuestro ejemplo tanto la base de datos como el usuario son wordpress, reemplazar PASSWORD_DB por el password que deseen asignarle a la base de datos.</span>
-</span><span class='line'>
-</span><span class='line'><span class="go">mysql&gt; CREATE DATABASE wordpress;</span>
-</span><span class='line'><span class="go">Query OK, 1 row affected (0.00 sec)</span>
-</span><span class='line'>
-</span><span class='line'><span class="go">mysql&gt; GRANT ALL ON wordpress.* TO wordpress@localhost IDENTIFIED BY &#39;secretisimo&#39;;</span>
-</span><span class='line'><span class="go">Query OK, 0 rows affected (0.00 sec)</span>
-</span><span class='line'>
-</span><span class='line'><span class="go">mysql&gt; FLUSH PRIVILEGES;</span>
-</span><span class='line'><span class="go">Query OK, 0 rows affected (0.00 sec)</span>
-</span><span class='line'>
-</span><span class='line'><span class="go">mysql&gt; \q</span>
-</span><span class='line'><span class="go">Bye</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>COMPLETO! Reinicia apache, reinicia dnsmasq y apunta un navegador al nombre del
-servidor para ver que pasa.</p>
-
-<p><a href="http://intranet.hcg.sld.cu">http://intranet.hcg.sld.cu</a></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
   
   
     <article>
@@ -843,7 +399,7 @@ caso, con uno solo basta. Veamos de cerca la configuración.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -904,7 +460,7 @@ tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -923,6 +479,14 @@ tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/05/13/instalar-node-rapido/">instalar node rápido</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/05/10/ssl-ca-local/">autoridad certificadora</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/04/08/xen-y-virt-manager/">xen y virt-manager</a>
@@ -1073,7 +637,7 @@ tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en xen</a>
+			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en XenServer</a>
 		</li>
 		
 		<li class="post">
@@ -1149,10 +713,6 @@ tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/11/22/certificado-autofirmado/">certificado autofirmado</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a>
 		</li>
 		
@@ -1178,10 +738,6 @@ tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
 		
 		<li class="post">
 			<a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/10/05/assets-por-controlador/">assets por controlador</a>
 		</li>
 		
 		<li class="post">
@@ -1221,19 +777,11 @@ tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/07/05/asset-pipeline-en-production/">asset pipeline en production</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a>
 		</li>
 		
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a>
 		</li>
 		
 		<li class="post">

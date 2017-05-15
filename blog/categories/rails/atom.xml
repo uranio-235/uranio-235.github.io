@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-05-10T16:11:08-04:00</updated>
+  <updated>2017-05-15T15:09:55-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -153,111 +153,6 @@ nos preguntara algo para confirmar. He aquí un buen ejemplo:</p>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[assets por controlador]]></title>
-    <link href="http://uranio-235.github.io/blog/2015/10/05/assets-por-controlador/"/>
-    <updated>2015-10-05T21:45:45-04:00</updated>
-    <id>http://uranio-235.github.io/blog/2015/10/05/assets-por-controlador</id>
-    <content type="html"><![CDATA[<p><strong>NUNCA</strong>, he logrado entender, porque el asset pipeline de Rails carga
-<strong>TODAS</strong> las porquerías de todos los controladores en todas las vistas.</p>
-
-<p>¡¡¡Como si fuese poco tener que cargar el mismo javascript por controlador!!!</p>
-
-<p>La documentación dice que puedes cargar solamente el del controlador; pero
-cuando la sigues al pie de la letra; Rails te da tremendo palo, diciendo que una
-asset se escapó sin compilar. La &ldquo;una&rdquo; suele ser la del controlador que estés
-cargando, o sea, todas.</p>
-
-<p>La solución que plantea la documentación, es un Proc asqueroso que tampoco
-pincha.</p>
-
-<p>Te cuento como lo hice:</p>
-
-<p>Primero tienes que quitar la cláusula &ldquo;<strong>require_tree .</strong>&rdquo; del <strong>application.js</strong></p>
-
-<p>A mi me quedó así:</p>
-
-<pre><code class="js application.js">// This is a manifest file that'll be compiled into application.js, which will include all the files
-// listed below.
-//
-// Any JavaScript/Coffee file within this directory, lib/assets/javascripts, vendor/assets/javascripts,
-// or any plugin's vendor/assets/javascripts directory can be referenced here using a relative path.
-//
-// It's not advisable to add code directly here, but if you do, it'll appear at the bottom of the
-// compiled file.
-//
-// Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
-// about supported directives.
-//
-//= require jquery
-//= require jquery_ujs
-//= require turbolinks
-//  require_tree . fíjate que quitamos el =
-Turbolinks.enableProgressBar();
-</code></pre>
-
-<p>Ahora vamos a dar un toque mágico para que las assets se compilen de manera
-dinámica, sin tener que colocarle manualmente al arreglo los nuevos .js
-generados. El fichero <strong>config/initializers/assets.rb</strong> me quedó así; <strong>OJO</strong> que es
-una linea bien larga:</p>
-
-<pre><code class="ruby "assets.rb - ojo con la linea larga""># Be sure to restart your server when you modify this file.
-
-# Version of your assets, change this if you want to expire all your assets.
-Rails.application.config.assets.version = '1.0'
-
-# Add additional assets to the asset load path
-# Rails.application.config.assets.paths &lt;&lt; Emoji.images_path
-
-# Precompile additional assets.
-# application.js, application.css, and all non-JS/CSS in app/assets folder are already added.
-# Rails.application.config.assets.precompile += %w( search.js )
-
-# compila todo lo que te encuentres por el camino
-Rails.application.config.assets.precompile += Dir.glob(File.join(Rails.root.to_path,'app/assets/javascripts/*.j*')).map{|f| File.basename(f).split('.')[0..1].join('.')}
-
-# activa el debug de la asset pipeline, solo en entorno de desarrollo
-Rails.application.config.assets.debug = ENV['RAILS_ENV'] and ENV['RAILS_ENV'].include? 'development'
-</code></pre>
-
-<p>Podría hacer lo mismo con las CSS si usa un poquito la células grises. Note como
-además, agregamos que se debugue la asset pipeline si y solo si estamos en
-development.</p>
-
-<p>Pero no hemos terminado, la vista lleva unos toques&hellip; pues debemos decirle lo
-más importante, que cargue solo las .js de su controlador. A mi me quedó así:</p>
-
-<p>  &lt;%= javascript_include_tag params[:controller] %></p>
-
-<pre><code class="html "app/views/layouts/application.html.erb"">&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;
-  &lt;title&gt;El Título&lt;/title&gt;
-  &lt;%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' =&gt; true %&gt;
-  &lt;%= javascript_include_tag 'application', 'data-turbolinks-track' =&gt; true %&gt;
-  &lt;!-- carga solo las .js del controlador dado --&gt;
-  &lt;%= javascript_include_tag params[:controller] %&gt;
-  &lt;%= csrf_meta_tags %&gt;
-&lt;/head&gt;
-&lt;body&gt;
-
-&lt;%= yield %&gt;
-
-&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-
-<p>Ahí te das cuenta que el que carga todo, es el manifest (application.js) con su
-&ldquo;requiere_tree .&rdquo; pero la cláusula en la línea 8 le dice que cargue la .js del
-controlador especificado en <strong>params[:controller]</strong></p>
-
-<p>Bueno así debe pinchar con javascript y con CoffeScript, al menos a mi me pinchó
-con ambos. Veamos que trae rails 5 con esto, porque la mejora urge&hellip;</p>
-
-<p>Si la cosa sigue así en la versión 5, me estoy mudando para Volt</p>
-]]></content>
-  </entry>
-  
-  <entry>
     <title type="html"><![CDATA[date_select en español]]></title>
     <link href="http://uranio-235.github.io/blog/2015/07/12/date-select-en-espanol/"/>
     <updated>2015-07-12T15:14:12-04:00</updated>
@@ -385,6 +280,64 @@ documentación de la API (que es casi lo mismo).</p>
 <p>Si buscas en la misma ruta, pero con <em>model</em> donde dice <em>support</em> verás el YAML
 que utiliza ActiveRecord para generar los errores de validación. Ahí puedes
 ponerlos a tu manera. Osea, el contenido de ese YAML se lo adicionas al tuyo.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[añadir verbo a un scaffold]]></title>
+    <link href="http://uranio-235.github.io/blog/2015/07/05/anadir-verbo-a-un-scaffold/"/>
+    <updated>2015-07-05T21:35:54-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2015/07/05/anadir-verbo-a-un-scaffold</id>
+    <content type="html"><![CDATA[<p>Cualquiera que sepa como usar debidamente los scaffolds, o sea, cualquiera que
+sepa como hacerle la paja a ruby on rails para que haga lo que queremos; seguro
+habrá intentado en algún momento, añadir un nuevo método a un scaffold. Además,
+de seguro quisiste luego poder llamarlo con los métodos &ldquo;metodo_user_path&rdquo; y que
+la ruta se cree de manera automática.</p>
+
+<p>Por ejemplo, en este caso, tengo el scaffold <strong>user</strong> y le agregué el método
+<strong>cambiar</strong> aparte de los clásicos PUT y DELETE.</p>
+
+<pre><code class="ruby "scope de users_controller.rb"">
+  # cambia el estado de habilitación del usuarios
+  def cambiar
+     @user.enabled=!@user.enabled
+     @user.save
+     redirect_to :back
+  end
+
+  # GET /users
+  def index
+    @users = User.all
+  end
+</code></pre>
+
+<p>Pero el método cambiar no aparece en rails hasta que no hagas lo siguiente en el
+fichero de las rutas.</p>
+
+<pre><code class="ruby "config/routes.rb"">
+   # el scaffold de los usuarios
+   resources :users do
+
+      # agregamos el verbo cambiar usado para
+      # @user.enabled=!@user.enabled
+      # para que exista: cambiar_user_path
+      member do 
+         get 'cambiar'
+      end
+
+   end
+</code></pre>
+
+<p>Ahora existirá el método <strong>cambiar_user_path</strong> que toma como argumento el
+usuario.</p>
+
+<p>   cambiar_user_path(user)</p>
+
+<p>De esta manera, se le manda el objeto usuario y genera una URL como</p>
+
+<p>   /users/345/cambiar</p>
+
+<p>Dicha ruta macheará el método User#cambiar</p>
 ]]></content>
   </entry>
   

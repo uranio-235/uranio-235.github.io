@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="xgproyect 29/12/2016 9:48 pm | Comments Se supone que te cuente la historia de Xnova, OAgame y XGProyect pero de verdad
-que NO estoy pa eso; ya me &hellip;">
+  <meta name="description" content="flasheando modem al S4 09/01/2017 7:00 pm | Comments Es un mojón de los Samsung, tener el módem (banda base) como una partición y
+(por ende un &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,185 @@ que NO estoy pa eso; ya me &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/01/09/flasheando-modem-al-s4/">flasheando modem al S4</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-01-09T19:00:58-05:00'><span class='date'>09/01/2017</span> <span class='time'>7:00 pm</span></time>
+        
+           | <a href="/blog/2017/01/09/flasheando-modem-al-s4/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/09/flasheando-modem-al-s4/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Es un mojón de los Samsung, tener el módem (banda base) como una partición y
+(por ende un firmware) aparte del sistema. Por este motivo, cuando flasheas
+cyanogen (léase &ldquo;cualquier ROM&rdquo;) una y otra vez; o cuando el teléfono se apaga
+abruptamente&hellip; Diiiicen que se corrompe el módem.</p>
+
+<p>Entonces, de buenas a primeras, el teléfono te dice &ldquo;tarjeta SIM expulsada,
+Reinicie&rdquo;. Aveces al reiniciar no se soluciona el problema. Yo he estado hasta 3
+días sin teléfono. Quitarle la batería un rato y volverla a poner, suele ser una
+solución, pero aveces, hasta 7 veces al día; he tenido que lidiar con el
+errorsito de los cojones.</p>
+
+<p><img class="right" src="/images/acercade_baseband.png" width="200" height="300" title="" ></p>
+
+<p>La única solución paliativa que he visto, es, de vez en vez, al menos una cada
+dos mes; flahsear el módem.</p>
+
+<p>El cómo dar con el módem te lo dejo de tarea. Lo siento, no soy la base de datos
+de bandas bases de samsung. La mía la <strong>busqué en google</strong> escribiendo el texto:</p>
+
+<p>&ldquo;modem SGH-M919&rdquo;</p>
+
+<p>Oséase, pidiendo el módem para mi modelo del teléfono, que al parecer, la
+<strong>M919UVUFNH7</strong>, es la última disponible para mi canchanfleta.</p>
+
+<p>El proceso de flasheo, la primera vez, requiere que nos hagamos con el
+fichero PIT del teléfono.</p>
+
+<p>Reinicia el teléfono en modo descarga. Si no sabes cómo hacerlo, googlea, cada
+samsung tiene su forma. El mío (S4 T-Mobile) es Power+VolDown+Home. Luego, en el
+modo descarga; una vez que (presiones VolUp) para inicializar la conexión,
+pasamos a Heimdall.</p>
+
+<p>Nota para los imbéciles: Conecte el teléfono a la computadora mediante un cable
+USB <strong>en buen estado</strong>.</p>
+
+<p><img class="right" src="/images/pitfile.png" width="600" height="700" title="" ></p>
+
+<p>En Heimdall, vamos a la pestaña <strong>Utilities</strong>. Presiona botón
+<em>Detect</em><sup>1</sup>, cuando te coja el teléfono, presiona <em>Save As</em><sup>2</sup>
+y te dará un nombre de fichero para salvar, por ejemplo, <strong>fulanito.pit</strong>.
+Finalmente presiona <em>Download</em><sup>3</sup> y te creará el fichero.</p>
+
+<p>Decirte quiero que este ficherito es muy famoso, ya que es algo así como tu
+tabla de particiones.</p>
+
+<p>Una vez que tienes el fichero en tu poder, Heimdall, será capaz de saber <em>a
+ciegas</em> donde están las particiones de tu teléfono sin tener que preguntárselo
+una y otra vez, así que guardalo en un directorio donde pongas todas las
+gangarreas de tu teléfono. Por cierto, terminamos con el teléfono; aunque diga
+&ldquo;do not turn off&rdquo; cágate en la noticia y reinicia (quita la batería).</p>
+
+<p>Ahora viene tiempo de google, muuuuucho google, para dar con tu módem.</p>
+
+<p>Digamos que finalmente diste con el módem de tu samsung. Seguro tiene un nombre
+muy genérico, casi siempre se llaman <strong>modem.bin</strong>. Procede con el mismo
+preludio del ritual (modo descarga y abre heimdall)</p>
+
+<p><img class="left" src="/images/flasheo_modem.png" width="600" height="700" title="" ></p>
+
+<p>Ahí ve para la pestaña que dice <strong>Flash</strong>. Click en <em>Browse</em><sup>1</sup> y
+localiza tu pitfile. Click en <em>Add</em><sup>2</sup> y luego en el <em>select</em> del campo
+<em>partition name</em><sup>3</sup> selecciona la partición <strong>MDM</strong>. Finalmente, le
+buscamos el fichero modem.bin haciendo click en Browse<sup>4</sup>.</p>
+
+<p>¿No tengo que decirte que pulses <strong>Start</strong>, verdad?</p>
+
+<p>Si todo salió bien, se reiniciará y tendrás tu módem recién flasheado. Pero no
+cantes victoria. Si tu modem se deterioró, fue que ALGO lo deterioró y ese algo,
+lo joderá de nuevo, así que, mantén las herramientas a manos; las necesitarás
+pronto.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/01/02/rails-assets/">rails-assets</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-01-02T18:55:02-05:00'><span class='date'>02/01/2017</span> <span class='time'>6:55 pm</span></time>
+        
+           | <a href="/blog/2017/01/02/rails-assets/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/02/rails-assets/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Gemas como twitter-bootstrap-rails, hacen que el trabajo con CSS complejas
+supuestamente se haga &ldquo;al click&rdquo;. Pero cuando deseas ir un poco más allá, por
+ejemplo, si quieres DataTables, notarás que tienes dos opciones, la primera,
+usar una gema desfasada (si hay, que casi siempre la hay, aunque buena para
+nada).</p>
+
+<p>Sin embargo, parece que algún cerebrito, hizo un sitio en el cual la fuente
+oficial de las assets (quizás a través de npm) se convierten de manera
+automatizada en una gema de rails.</p>
+
+<p>De esta manera, al poner en el Gemfile de tu aplicación esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;Gemfile&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span>  <span class="s1">&#39;https://rails-assets.org&#39;</span> <span class="k">do</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-underscore&#39;</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-DataTables&#39;</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-bootstrap&#39;</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-jquery-ui&#39;</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-stringjs&#39;</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-iCheck&#39;</span>
+</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-jquery&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Instalarás dichas js/css en tu aplicación.</p>
+
+<p>En el <a href="https://rails-assets.org">sito web de rails-assets</a> explica con unos
+diff, que debes poner en el application.js y aaplication.css para incluir cada
+una de las assets. Casi siempre es algo genérico al nombre, lo puedes intuir.</p>
+
+<p>De todas maneras, el fracasado proyecto de crear un jquery unobstructive;
+condujo a que jquery fuera expulsada del core de rails. Así que al parecer la
+tendencia de rails 5 en adelante, será usar las js aparte. Más vale tener un
+buen jquery a mano.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -231,7 +410,7 @@ te vuelvas a loguear el lunes, solo tienes que mirarlas. Consejo, haste una
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -470,7 +649,7 @@ quieres acceder.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -521,186 +700,6 @@ especial para el tema.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/12/09/rails-en-alpine/">rails en alpine</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-12-09T20:14:28-05:00'><span class='date'>09/12/2016</span> <span class='time'>8:14 pm</span></time>
-        
-           | <a href="/blog/2016/12/09/rails-en-alpine/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/12/09/rails-en-alpine/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="right" src="/images/shinkasen.jpg" width="400" height="500" title="" ></p>
-
-<p>Finalmente el boom de docker llegó a Cuba. En mi caso personal, hace rato lo uso
-para desplegar aplicaciones de Ruby on Rails y siempre me pareció que debian era
-la mejor base para hacer una imagen. Si bien, hay containers de rails, eso de
-usar en producción, con una distro hecha por un cualquiera, como que me da cosa.
-Hacer una a partir de la oficial, es más sencillo que verificar la integridad de
-una ya hecha.</p>
-
-<p>AlpineLinux para docker es un batazo, eso es in-negable. Pero instalar rails en
-alpine, resultó ser más complicado de lo que yo pensaba.</p>
-
-<figure class='code'><figcaption><span>&#8220;docker y alpine&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker pull alpine
-</span><span class='line'>docker run -ti alpine /bin/sh
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ante todo necesitamos instalar las librerías requeridas para compilar, sobre
-todo las dependencias de nokogiri. Instalaremos los paquetes: build-base,
-nodejs, tzdata, libxml2-dev,  libxslt-dev, sqlite-dev y claro, ruby</p>
-
-<p>En este caso, usaremos sqlite como ejemplo, pero a ti quizás te cuadre más con
-<strong>mariadb-dev</strong> (mysql) o <strong>postgresql-dev</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;apk add&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>apk update
-</span><span class='line'>apk add build-base nodejs tzdata libxml2-dev  libxslt-dev
-</span><span class='line'>apk add sqlite-dev mariadb-dev postgresql-dev
-</span><span class='line'>apk add ruby ruby-dev ca-certificates libffi libffi-dev
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como nokogiri es un caso tan peculiar, le diremos que compile usando las
-librerías del sistema, para ellos lo instalaremos aparte. Alpine <strong>no</strong> usa
-glibc, usa musl-libc y nokogiri NO compila, por tanto, hay que usar las
-librerías del sistema; en vez de las que provee nokogiri.</p>
-
-<figure class='code'><figcaption><span>&#8220;nokogiri&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>gem inst --no-document nokogiri -- --use-system-libraries
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con eso ya tenemos los cimientos echados. Nuestra imagen habrá crecido 200
-megas. Ahora vamos instalar rails.</p>
-
-<figure class='code'><figcaption><span>&#8220;gem&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>gem inst --no-document rails io-console
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El paso de instalar rails como gema del sistema es cuestionable para una pila de
-gente; pero ten en cuenta que es la manera de saber si rails funciona, recuerda
-que esto es un ejemplo. La primera vez me topé con que debía instalar
-<strong>io-console</strong>, ya que a pesar de ser dependencia, nadie la requería. Bueno a
-ver&hellip;</p>
-
-<figure class='code'><figcaption><span>&#8220;rails&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/ <span class="c"># rails -v</span>
-</span><span class='line'>Rails 5.0.0.1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Tengo una imagen llamada &ldquo;alpine_ruby&rdquo; en la que tengo todo lo necesario para
-instalar y No tengo la gema de rails instalada. Entonces, con cada versión de
-rails, por ejemplo, derivar de &ldquo;alpine_ruby&rdquo; la imagen alpine_rails50 , así
-cuando salga el rails 5.1 le llamaré alpine_rails51</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/11/24/squid3-bloquear-user-agent/">squid3 bloquear user-agent</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-11-24T14:36:13-05:00'><span class='date'>24/11/2016</span> <span class='time'>2:36 pm</span></time>
-        
-           | <a href="/blog/2016/11/24/squid3-bloquear-user-agent/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2016/11/24/squid3-bloquear-user-agent/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="right" src="/images/noiexplore.png" width="400" height="500" title="" ></p>
-
-<p>Recién, he tenido algunos problemas con descargadores multi-hilos que se chupan
-el ancho de banda y se cagan en los delay_pools. Buscando como bloquear dichos
-descargadores, el colega Agustín Ybarra me recomienda bloquear los user_agent.</p>
-
-<p>Pero pensándolo bien, resolví unos cuantos problemas. Pues por ejemplo, google
-play service de los teléfonos android, consume muchísimo y resuelve poco, de
-forma que el que navega en un delay_pool, ve afectado su ancho de banda por
-cosas que ignora.</p>
-
-<p>Solución, bloquear los User-Agent. La idea suena bien, pero primero hay que
-loguear los user agent. Para ellos usaremos un custom_log de squid, loguearemos
-los usuarios y los user-agent. A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># loguea los user-agent</span>
-</span><span class='line'>logformat useragent  %un <span class="s2">&quot;%{User-Agent}&gt;h&quot;</span>
-</span><span class='line'>access_log daemon:/var/log/squid3/user_agent.log useragent
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora tenemos el fichero <em>user_agent.log</em>, logueando usuario y user_agent; claro
-está, podría loguear, usuario, user-agent y url, pero la linea queda muy larga.</p>
-
-<p>Una vez que hallas encontrado el user-agent que te moleste, crea una ACL
-<strong>arriba</strong> de la ACL que autorize la navegación.</p>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># por ejemplo, blqueamos zapya y se fana</span>
-</span><span class='line'>acl zapya browser ^com<span class="se">\.</span>dewmobile
-</span><span class='line'>http_access deny zapya
-</span><span class='line'>http_reply_access deny zapya
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Seguiré aquí, como <a href="https://es.wikipedia.org/wiki/The_Catcher_in_the_Rye">el pescador del centeno</a>, esperando a que vuelva a usar su descargadorcito multi-hilo de mierda&hellip; aunque seguro puede cambiarle el user-agent.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/5">&larr; Older</a>
@@ -718,6 +717,14 @@ está, podría loguear, usuario, user-agent y url, pero la linea queda muy larga
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/05/13/instalar-node-rapido/">instalar node rápido</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/05/10/ssl-ca-local/">autoridad certificadora</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/04/08/xen-y-virt-manager/">xen y virt-manager</a>
@@ -868,7 +875,7 @@ está, podría loguear, usuario, user-agent y url, pero la linea queda muy larga
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en xen</a>
+			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en XenServer</a>
 		</li>
 		
 		<li class="post">
@@ -944,10 +951,6 @@ está, podría loguear, usuario, user-agent y url, pero la linea queda muy larga
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/11/22/certificado-autofirmado/">certificado autofirmado</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a>
 		</li>
 		
@@ -973,10 +976,6 @@ está, podría loguear, usuario, user-agent y url, pero la linea queda muy larga
 		
 		<li class="post">
 			<a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/10/05/assets-por-controlador/">assets por controlador</a>
 		</li>
 		
 		<li class="post">
@@ -1016,19 +1015,11 @@ está, podría loguear, usuario, user-agent y url, pero la linea queda muy larga
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/07/05/asset-pipeline-en-production/">asset pipeline en production</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a>
 		</li>
 		
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a>
 		</li>
 		
 		<li class="post">

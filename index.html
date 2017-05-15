@@ -9,7 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="xen y virt-manager 08/04/2017 12:04 am | Comments La miseria, es lo único que; aun repartida a muchos, toca en abundancia. La superioridad &hellip;">
+  <meta name="description" content="instalar node rápido 13/05/2017 5:13 pm | Comments Desde que surgió node, estaba deseando que hubiera una herramienta como RVM para
+instalar nodejs &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +82,401 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/05/13/instalar-node-rapido/">instalar node rápido</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-05-13T17:13:53-04:00'><span class='date'>13/05/2017</span> <span class='time'>5:13 pm</span></time>
+        
+           | <a href="/blog/2017/05/13/instalar-node-rapido/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/05/13/instalar-node-rapido/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Desde que surgió node, estaba deseando que hubiera una herramienta como RVM para
+instalar nodejs. Resulta que la hay!!! Al igual que RVM, requiere cURL. Por
+cierto, se llama <strong>n</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> curl -o /usr/local/bin/n https://raw.githubusercontent.com/visionmedia/n/master/bin/n</span>
+</span><span class='line'><span class="go"> chmod +x /usr/local/bin/n</span>
+</span><span class='line'><span class="go"> n lts</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Instala hasta npm!</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/05/10/ssl-ca-local/">autoridad certificadora</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-05-10T19:39:19-04:00'><span class='date'>10/05/2017</span> <span class='time'>7:39 pm</span></time>
+        
+           | <a href="/blog/2017/05/10/ssl-ca-local/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/05/10/ssl-ca-local/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Es un gran mojón tener que generar un certificado para cada servicio. Y aquí, en
+el 5to infierno de infomed usar cualquier proveedor de CA gratis (como let&rsquo;s
+encrypt) es por gusto.</p>
+
+<p>En estos caso, no queda otro remiendo que usar un CA firmado localmente. La idea
+es.</p>
+
+<p>Generamos un par de claves que harán la función de &ldquo;autoridad certificadora&rdquo;</p>
+
+<ul>
+<li> crear un Clave Privada (.key) y mantenerla bien escondida</li>
+<li> crear la Clave Pública del anterior (.pem) y la distribuimos</li>
+</ul>
+
+
+<p>Una vez que tengamos nuestra autoridad certificadora. Empezamos a generar
+certificados y lo firmamos con esta.</p>
+
+<ul>
+<li> generamos una clave privada (el .key para este certificado)</li>
+<li> hacer una solicitud de certificado (.csr) al .key anterior</li>
+<li> generamos el dichoso certificado</li>
+<li> firmamos el certificado usando el .key de la CA</li>
+</ul>
+
+
+<p>Usaremos al tan legalmente controversial OpenSSL para esta tarea.</p>
+
+<p>La clave (.key) del CA, debe crearse en una máquina desconectada de la red y
+preferiblemente sepultada a 3 metros bajo tierra. Si esto le parece demasiado
+paranoico, entonces mantenga el &ldquo;.key&rdquo; en el servidor más aislado de la red.
+Preferiblemente, aquel que parezca menos importante y lejos de internet. En mi
+caso, yo uso mi laptop personal para tareas administrativas y es ahí donde tengo
+todas las claves privadas.</p>
+
+<p>Supón que lo hagas en un servidor determinado. Creamos entonces en el home del
+root, un espacio adecuado para esto.</p>
+
+<figure class='code'><figcaption><span>&#8220;creando el directorio&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> mkdir -m700 CA</span>
+</span><span class='line'><span class="go"> cd CA</span>
+</span><span class='line'><span class="go"> unmask 077</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Creamos la super-secretísima clave privada, que hará la función de CA:</p>
+
+<p><strong>openssl genrsa -out rootCA.key 2048</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;creando el .key en la máquina secreta&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> [lazaro@artema CA]$ openssl genrsa -out rootCA.key 2048</span>
+</span><span class='line'><span class="go"> Generating RSA private key, 2048 bit long modulus</span>
+</span><span class='line'><span class="go"> ..............................+++</span>
+</span><span class='line'><span class="go"> .......................................................+++</span>
+</span><span class='line'><span class="go"> e is 65537 (0x010001)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya tenemos la piedra angular de nuestro CA; pero así no sirve. Esa es la clave
+primaria, o sea, la que tiene la facultad de descifrar y derivar nuevos
+certificados. No nos conviene que nuestros &ldquo;usuarios finales&rdquo;, o lo servidores,
+usen esta clave. Necesitamos crear una &ldquo;clave pública&rdquo;, esta clave pública se
+deriva de la privada, pero solo tiene la facultad de cifrar, así la puede tener
+cualquiera y mandarnos datos cifrados. Sin embargo, <strong>NO</strong> se puede usar la clave
+pública para DEScifrar. Al menos no; usando tecnología civil.</p>
+
+<p>Nota para los imbéciles: El <strong>rootCA.key</strong> no se le puede dar a nadie.</p>
+
+<p><strong>openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 3650 -out rootCA.pem</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;creando la clave pública&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> [lazaro@artema CA]$  openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 3650 -out rootCA.pem</span>
+</span><span class='line'><span class="go"> You are about to be asked to enter information that will be incorporated</span>
+</span><span class='line'><span class="go"> into your certificate request.</span>
+</span><span class='line'><span class="go"> What you are about to enter is what is called a Distinguished Name or a DN.</span>
+</span><span class='line'><span class="go"> There are quite a few fields but you can leave some blank</span>
+</span><span class='line'><span class="go"> For some fields there will be a default value,</span>
+</span><span class='line'><span class="go"> If you enter &#39;.&#39;, the field will be left blank.</span>
+</span><span class='line'><span class="go"> -----</span>
+</span><span class='line'><span class="go"> Country Name (2 letter code) [AU]:CU</span>
+</span><span class='line'><span class="go"> State or Province Name (full name) [Some-State]:Havana</span>
+</span><span class='line'><span class="go"> Locality Name (eg, city) []:Plaza</span>
+</span><span class='line'><span class="go"> Organization Name (eg, company) [Internet Widgits Pty Ltd]:Calixto Garcia</span>
+</span><span class='line'><span class="go"> Organizational Unit Name (eg, section) []:Calixto Garcia</span>
+</span><span class='line'><span class="go"> Common Name (e.g. server FQDN or YOUR name) []:Hospital Calixto Garcia</span>
+</span><span class='line'><span class="go"> Email Address []:ssl@hcg.sld.cu</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya tenemos la clave pública (el &ldquo;.pem&rdquo;). Este fichero será distribuido a
+nuestros clientes para que puedan hacer dos cosas: Cosa 1, cifrar los datos, sin
+poder descifrarlos. Cosa 2, identificar a la autoridad certificadora.</p>
+
+<figure class='code'><figcaption><span>&#8220;la clave privada y publica de nuestra CA&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> [lazaro@artema CA]$ ls</span>
+</span><span class='line'><span class="go"> rootCA.key  rootCA.pem</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nota para los imbéciles: El <strong>rootCA.pem</strong> se instalará en los clientes,
+navegadores, teléfonos, etc&hellip;</p>
+
+<p>Note además, que hemos dado a nuestra clave pública, 10 años antes de su
+caducidad (-days 3650). Quizás quieras darle un solo.</p>
+
+<p><img class="left" src="/images/Enigma.jpg" title="&#34;Enigma, un disposotivo criptográfico de cuando no existía SSL.&#34;" alt="&#34;Enigma, un disposotivo criptográfico de cuando no existía SSL.&#34;"></p>
+
+<p>Ya puedes hacer público el &ldquo;.pem&rdquo; para que todo el que sepa que hacer con este,
+se lo instale. Por ejemplo, si tienes una intranet local, podrías dejarla con
+http plano y brindar información (así como la descarga) sobre el dicha clave.
+Puedes crear una página de HTML plano explicando porque SSL y como instalarlo
+en los navegadores. Ahí dices además, que se debe iniciar la conexión usando el
+prefijo &ldquo;https&rdquo;. Podrías poner esa página como el destino de redirección
+para todos los virtualhsot que usen &ldquo;http&rdquo; y así hacer conciencia a los
+usuarios. Por ejemplo, en servidores con información sensible (como los
+webmails), solo debe ser alcanzado usando ssl.</p>
+
+<p>Pero <strong>sin extremismos</strong>. Una intranet que brinda información pública, no tiene
+que ser obligado por SSL (a menos que sea un wordpress con login).</p>
+
+<p>Por cierto, Firefox tiene su propio almacén de certificados. Dirígete a
+Configuraciones, Avanzada, Certificados.</p>
+
+<p><img class="right" src="/images/localCA1.png" title="&#34;localizando el almacén de certificados&#34;" alt="&#34;localizando el almacén de certificados&#34;"></p>
+
+<p>Una vez ahí, ve a donde dice <strong>Autoridades</strong> (no a tus certificados) y procede a
+importar el certificado.</p>
+
+<p><img class="right" src="/images/localCA2.png" title="&#34;importando el certificado a firefox&#34;" alt="&#34;importando el certificado a firefox&#34;"></p>
+
+<p>En android también es tremenda balasera instalar el &ldquo;.pem&rdquo; y no dejará de
+meterme miedo diciendo que &ldquo;un tercero podría estar manipulando tu información&rdquo;.
+Lo cual no deja de ser cierto, poner un SSLbumper a squid bataría para hacer
+horrores.</p>
+
+<p><img class="right" src="/images/localCA3.png" width="300" height="400" title="&#34;instalando el .pem en android&#34;" alt="&#34;instalando el .pem en android&#34;"></p>
+
+<p>Llégate a la configuración de seguridad y verás una opción que dice &ldquo;instalar
+certificados desde la tarjetaSD&rdquo; o &ldquo;desde el almacenamiento&rdquo;.</p>
+
+<p>En algunos android 4, si te pide una clave y no sabes cual es, debes configurar
+el acceso al teléfono mediante clave. O sea, quita el patrón, pon una clave y
+prueba importar el &ldquo;.pem&rdquo;. Al pedir la clave pones la que estableciste para
+entrar. Una vez importado el certificado, vuelves a poner el mecanismo de
+seguridad que deses (patrón, ninguno, etc&hellip;)</p>
+
+<h3>de vuelta al servidor secreto</h3>
+
+<p>Pasemos ahora a crear uno (o varios) certificados para nuestros servidores.
+Para empezar, crearemos el certificado del servidor de correo, pero no del
+smtp, si no del webmail.</p>
+
+<p><strong>MUY IMPORTANTE</strong> en los certificados, el CN (Common Name) no puede ser el que
+te de la gana a tí. Si por ejemplo tu servidor de correo está en
+webmail.dominio.cu, ese ha de ser su CN</p>
+
+<p>Nota para los imbéciles: Creas un certificado para cada servicio y su CN será el
+mismo nombre del virtualhost.</p>
+
+<p>Creamos una clave privada para este servidor (para que pueda cifrar, te requiero
+que es bilateral y simétrico).</p>
+
+<p><strong>openssl genrsa -out webmail.key 2048</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;la clave privada del webmail&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> [lazaro@artema CA]$ openssl genrsa -out webmail.key 2048</span>
+</span><span class='line'><span class="go"> Generating RSA private key, 2048 bit long modulus</span>
+</span><span class='line'><span class="go"> .+++</span>
+</span><span class='line'><span class="go"> ......................................................................................+++</span>
+</span><span class='line'><span class="go"> e is 65537 (0x010001)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Le pedimos a esta clave que genera un certificado (certificate request).</p>
+
+<p><strong>openssl req -new -key webmail.key -out webmail.csr</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;solicitud de certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> [lazaro@artema CA]$ openssl req -new -key webmail.key -out webmail.csr</span>
+</span><span class='line'><span class="go"> You are about to be asked to enter information that will be incorporated</span>
+</span><span class='line'><span class="go"> into your certificate request.</span>
+</span><span class='line'><span class="go"> What you are about to enter is what is called a Distinguished Name or a DN.</span>
+</span><span class='line'><span class="go"> There are quite a few fields but you can leave some blank</span>
+</span><span class='line'><span class="go"> For some fields there will be a default value,</span>
+</span><span class='line'><span class="go"> If you enter &#39;.&#39;, the field will be left blank.</span>
+</span><span class='line'><span class="go"> -----</span>
+</span><span class='line'><span class="go"> Country Name (2 letter code) [AU]:CU</span>
+</span><span class='line'><span class="go"> State or Province Name (full name) [Some-State]:Havana</span>
+</span><span class='line'><span class="go"> Locality Name (eg, city) []:Plaza</span>
+</span><span class='line'><span class="go"> Organization Name (eg, company) [Internet Widgits Pty Ltd]:Calixto Garcia</span>
+</span><span class='line'><span class="go"> Organizational Unit Name (eg, section) []:Calixto Garcia</span>
+</span><span class='line'><span class="go"> Common Name (e.g. server FQDN or YOUR name) []:webmail.hcg.sld.cu</span>
+</span><span class='line'><span class="go"> Email Address []:ssl@hcg.sld.cu</span>
+</span><span class='line'><span class="go"> </span>
+</span><span class='line'><span class="go"> Please enter the following &#39;extra&#39; attributes</span>
+</span><span class='line'><span class="go"> to be sent with your certificate request</span>
+</span><span class='line'><span class="go"> A challenge password []:</span>
+</span><span class='line'><span class="go"> An optional company name []:</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya tenemos las dos máquinas enigmas listas, pero no están sincronizadas y por
+ende, los cifrados producidos producidos por estos dos ficheros, serán
+simétricos pero no bilaterales. Alguien debe decirle que son padre e hijo.</p>
+
+<p>Eso lo haremos, firmando con nuestro CA, el certificado generado.</p>
+
+<p><strong>openssl x509 -req -in webmail.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out webmail.crt -days 3650 -sha256</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;firmando el certificado con la CA&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[lazaro@artema CA]$ openssl x509 -req -in webmail.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out webmail.crt -days 3650 -sha256</span>
+</span><span class='line'><span class="go">Signature ok</span>
+</span><span class='line'><span class="go">subject=C = CU, ST = Havana, L = Plaza, O = Calixto Garcia, OU = Calixto Garcia, CN = webmail.hcg.sld.cu, emailAddress = ssl@hcg.sld.cu</span>
+</span><span class='line'><span class="go">Getting CA Private Key</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note como hacemos uso de las claves pública y privada del CA. Por tanto, si un
+atacante adquiere los certificados del webmail y los colocase en otro sitio,
+este no machea el CN webmail.hcg.sld.cu y desata una advertencia en el navegador
+de nuestros usuarios. Además, no podrá firmar el certificado para modificarlo e
+incluir su CN.</p>
+
+<figure class='code'><figcaption><span>&#8220;los certificados del webmail&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[lazaro@artema CA]$ ls</span>
+</span><span class='line'><span class="go">rootCA.key  rootCA.pem  rootCA.srl  webmail.crt  webmail.csr  webmail.key</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Bueno, todo listo, hagamos un paquete con todo lo necesario para que nuestro
+servidor de correo se lo configure en el webmail. Para postfix y para dovecot,
+debemos hacer otro que machee smtp.hcg.sld.cu y pop3.hcg.sld.cu sucesivamete.</p>
+
+<p><strong>REPITO!</strong> el rootCA<strong>.key</strong> <strong>NO</strong> puede hacerse público. Así que le daremos
+una copia del rootCA<strong>.pem</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;empaquetando la entrega&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> [lazaro@artema CA]$ mkdir webmail</span>
+</span><span class='line'><span class="go"> [lazaro@artema CA]$ mv webmail.* webmail/</span>
+</span><span class='line'><span class="go"> [lazaro@artema CA]$ cp rootCA.pem webmail/</span>
+</span><span class='line'><span class="go"> [lazaro@artema CA]$ tar cvfz webmail.tar.gz webmail/</span>
+</span><span class='line'><span class="go"> webmail/</span>
+</span><span class='line'><span class="go"> webmail/webmail.crt</span>
+</span><span class='line'><span class="go"> webmail/webmail.csr</span>
+</span><span class='line'><span class="go"> webmail/webmail.key</span>
+</span><span class='line'><span class="go"> webmail/rootCA.pem</span>
+</span><span class='line'><span class="go"> [lazaro@artema CA]$ scp webmail.tar.gz root@webmail.hcg.sld.cu:/root/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Instálale esos certificado a tu
+<a href="http://lmgtfy.com/?q=apache+ssl+howto">apache</a>/<a href="http://lmgtfy.com/?q=nginx+ssl+howto">nginx</a>
+y todo el que tenga el <strong>rootCA.pem</strong> instalado en su dispositivo; verá a
+&ldquo;Calixto Garcia&rdquo; como una legítima autoridad certificadora al abrir el webmail.</p>
+
+<p>Lo que si no me queda claro es como se le instala el &ldquo;.pem&rdquo; a Windows. ¿Sugerencias?</p>
+
+<p><img class="center" src="/images/localCA4.png" width="200" height="300" title="&#34;autoridad certificadora, o al menos, eso dicen&#34;" alt="&#34;autoridad certificadora, o al menos, eso dicen&#34;"></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -409,7 +805,7 @@ virt-manager).</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -541,7 +937,7 @@ que termine una ronda, se cambiará el mapa.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -595,7 +991,7 @@ pasa a ser HVM.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -765,169 +1161,6 @@ pop en su cuenta de gmail.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/03/03/nginx-y-websocket/">nginx y websocket</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-03-03T23:49:47-05:00'><span class='date'>03/03/2017</span> <span class='time'>11:49 pm</span></time>
-        
-           | <a href="/blog/2017/03/03/nginx-y-websocket/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/03/nginx-y-websocket/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Resulta que los websocket no pasan tan fácilmente por el proxy inverso. Llevan
-su burumba.</p>
-
-<p>Aquí por ejemplo, haremos un proxy inverso con SSL para una aplicación que
-escucha por el puerto 8888.</p>
-
-<figure class='code'><figcaption><span>&#8220;nginx&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">server</span> <span class="p">{</span>
-</span><span class='line'>   <span class="n">listen</span> <span class="mi">80</span> <span class="n">default_server</span><span class="p">;</span>
-</span><span class='line'>   <span class="k">return</span> <span class="mi">301</span> <span class="nl">https</span><span class="p">:</span><span class="c1">//$host$request_uri;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="n">server</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">listen</span> <span class="mi">443</span> <span class="n">ssl</span> <span class="n">default_server</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">ssl_certificate</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">nginx</span><span class="p">.</span><span class="n">crt</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">ssl_certificate_key</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">nginx</span><span class="p">.</span><span class="n">key</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">location</span> <span class="o">/</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">proxy_set_header</span>        <span class="n">Host</span> <span class="err">$</span><span class="n">host</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">proxy_set_header</span>        <span class="n">X</span><span class="o">-</span><span class="n">Real</span><span class="o">-</span><span class="n">IP</span> <span class="err">$</span><span class="n">remote_addr</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">proxy_set_header</span>        <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">For</span> <span class="err">$</span><span class="n">proxy_add_x_forwarded_for</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">proxy_set_header</span>        <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">Proto</span> <span class="err">$</span><span class="n">scheme</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">proxy_pass</span> <span class="nl">http</span><span class="p">:</span><span class="c1">//127.0.0.1:8888/;</span>
-</span><span class='line'>      <span class="n">proxy_http_version</span> <span class="mf">1.1</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">proxy_set_header</span> <span class="n">Connection</span> <span class="s">&quot;upgrade&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">proxy_set_header</span> <span class="n">Upgrade</span> <span class="err">$</span><span class="n">http_upgrade</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">proxy_redirect</span> <span class="k">default</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">proxy_read_timeout</span> <span class="mi">1800</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">client_max_body_size</span> <span class="mi">128</span><span class="n">G</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note como los encabezados Upgrade son seteados. Ese es el truco&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/03/03/pkg-tras-un-proxy/">pkg tras un proxy</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-03-03T23:00:57-05:00'><span class='date'>03/03/2017</span> <span class='time'>11:00 pm</span></time>
-        
-           | <a href="/blog/2017/03/03/pkg-tras-un-proxy/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/03/pkg-tras-un-proxy/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>En el 5to infierno de infomed, con la vida detrás del proxy que ya he mencionado
-incontables veces; todo se vuelve difícil.</p>
-
-<p>Por suerte freebsd ha mejorado en materia de soporte de proxy. Si bien en
-<strong>csh</strong>, basta con usar:</p>
-
-<figure class='code'><figcaption><span>&#8220;setenv&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">setenv http_proxy http://proxy.sld.cu:3128</span>
-</span><span class='line'><span class="go">setenv https_proxy $http_proxy</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Operaciones de rutinas como <strong>pkg audit -F</strong> suelen fallar al ser ejecutadas por
-el cron. Setear el proxy de manera global es una opción; pero nunca ha sido de
-mi agrado. Por suerte, el nuevo gestor de paquetes de freebsd soporta proxy en
-su configuración.</p>
-
-<p>El fichero de configuración está en una ubicación bien extravagante. Nada menos
-que en <strong>/usr/local/etc/pkg.conf</strong>. Los comentarios hablan por si solos, vale la
-pena mirarlos; no necesitarás leer manual ni buscar en google para darte cuenta
-que:</p>
-
-<figure class='code'><figcaption><span>&#8220;/usr/local/etc/pkg.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">PKG_ENV</span> <span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>   <span class="nx">http_proxy</span><span class="o">:</span> <span class="s2">&quot;http://proxy.sld.cu:3128&quot;</span><span class="p">,</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>¡Establece el proxy!</p>
-
-<p>Con eso <strong>pkg audit</strong> corrido desde el cron funcionará perfectamente. Además de
-las demás operaciones que requieran bajar contenido de internet; claro está.</p>
-
-<p>OJO! Nota que al final de la declaración del proxy, lo que hay es una <strong>coma</strong>,
-NO un punto y coma. La configuración parece ser un <strong>json</strong>.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -943,6 +1176,14 @@ NO un punto y coma. La configuración parece ser un <strong>json</strong>.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/05/13/instalar-node-rapido/">instalar node rápido</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/05/10/ssl-ca-local/">autoridad certificadora</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/04/08/xen-y-virt-manager/">xen y virt-manager</a>
@@ -1093,7 +1334,7 @@ NO un punto y coma. La configuración parece ser un <strong>json</strong>.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en xen</a>
+			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en XenServer</a>
 		</li>
 		
 		<li class="post">
@@ -1169,10 +1410,6 @@ NO un punto y coma. La configuración parece ser un <strong>json</strong>.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/11/22/certificado-autofirmado/">certificado autofirmado</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a>
 		</li>
 		
@@ -1198,10 +1435,6 @@ NO un punto y coma. La configuración parece ser un <strong>json</strong>.</p>
 		
 		<li class="post">
 			<a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/10/05/assets-por-controlador/">assets por controlador</a>
 		</li>
 		
 		<li class="post">
@@ -1241,19 +1474,11 @@ NO un punto y coma. La configuración parece ser un <strong>json</strong>.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/07/05/asset-pipeline-en-production/">asset pipeline en production</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a>
 		</li>
 		
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a>
 		</li>
 		
 		<li class="post">

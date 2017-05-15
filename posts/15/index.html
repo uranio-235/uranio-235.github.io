@@ -9,7 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="rails con mongodb 12/02/2015 9:07 am | Comments Dicen que &ldquo;en el mundo&rdquo;, las bases de datos NoSQL están muy de moda&hellip; Recién &hellip;">
+  <meta name="description" content="proxy automático 28/10/2014 10:37 pm | Comments Todo el que halla configurado un navegador con proxy; o sea, todo cubano que
+halla configurado un &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,407 +82,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/12/rails-con-mongodb/">rails con mongodb</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-02-12T09:07:51-05:00'><span class='date'>12/02/2015</span> <span class='time'>9:07 am</span></time>
-        
-           | <a href="/blog/2015/02/12/rails-con-mongodb/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/12/rails-con-mongodb/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Dicen que &ldquo;en el mundo&rdquo;, las <a href="http://es.wikipedia.org/wiki/NoSQL">bases de datos NoSQL</a> están muy de moda&hellip;</p>
-
-<p>Recién estuve pinchando ArangoDB y la experiencia fue traumática. Hay que
-reconocer que tiene potencial; pero aún no está listo. Finalmente, después de
-mucho rodar (Casandra y Redis) di con MongoDB. La instalación de MongoDB es tan
-sencilla como mandarlo a instalar con tu manejador de paquetes, así que no
-cubriré dichos detalles en este post.</p>
-
-<p><img class="right" src="http://mongomapper.com/stylesheets/images/logo.png" width="150" height="250"></p>
-
-<p>El rollo viene con Rails&hellip; Resulta que al probar tal cual dice la documentación
-MongoMapper (la ORM de mongodb) a pesar de guiarte por los ejemplos al pie de la
-letra; NO PINCHA.</p>
-
-<p>Al principio pensé que era corte con ActiveRecord, pues al quitarlo; por lo
-general a Rails le da una pataleta. Por suerte, este no es el caso.</p>
-
-<h3>MongoMapper está BIEN escrito pero MAL documentado</h3>
-
-<p>Todo parece indicar que a la documentación le faltan algunos detallitos. Bueno
-comenzamos. Creamos un proyecto SIN ActiveRecord (que dolor).</p>
-
-<h3>rails new fulanito -O -T</h3>
-
-<p>El Gemfile me quedó así:</p>
-
-<figure class='code'><figcaption><span>Gemfile</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;file:///media/sdb1/ruby/repo/&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Bundle edge Rails instead: gem &#39;rails&#39;, github: &#39;rails/rails&#39;</span>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;rails&#39;</span><span class="p">,</span> <span class="s1">&#39;4.1.8&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Use jquery as the JavaScript library</span>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;jquery-rails&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;bson_ext&#39;</span>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;mongo_mapper&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora creamos un fichero que garantiza la conexión a la base de datos. Creamos
-un initializer de pacotilla y le declaramos la base de datos. Miren que
-facilito.</p>
-
-<h3>config/initializers/database.rb</h3>
-
-<figure class='code'><figcaption><span>config/initializers/database.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">MongoMapper</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="s2">&quot;fulanito-</span><span class="si">#{</span><span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="si">}</span><span class="s2">&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note que &ldquo;fulanito&rdquo; es el nombre de la aplicación, usted póngale a su base de
-datos el nombre que desee.</p>
-
-<p>Ahora viene un paso muy curioso. El fichero &ldquo;config/database.yml&rdquo; NO puede dejar
-de existir; pero sus valores deben estar vacíos. Solución, le metemos un yaml
-vacío.</p>
-
-<figure class='code'><figcaption><span>config/database.yml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s2">&quot;---&quot;</span> &gt; config/database.yml
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora bien, la documentación dice que debes poner</p>
-
-<pre><code>  config.gem 'mongo_mapper'
-</code></pre>
-
-<p>En el fichero config/environment.rb</p>
-
-<h3>¡LO CUAL NO ES VÁLIDO!</h3>
-
-<p>Eso va en config/application.rb</p>
-
-<figure class='code'><figcaption><span>config/application.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="no">File</span><span class="o">.</span><span class="n">expand_path</span><span class="p">(</span><span class="s1">&#39;../boot&#39;</span><span class="p">,</span> <span class="bp">__FILE__</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Pick the frameworks you want:</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;active_model/railtie&quot;</span>
-</span><span class='line'><span class="c1"># require &quot;active_record/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_controller/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_mailer/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_view/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;sprockets/railtie&quot;</span>
-</span><span class='line'><span class="c1"># require &quot;rails/test_unit/railtie&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Require the gems listed in Gemfile, including any gems</span>
-</span><span class='line'><span class="c1"># you&#39;ve limited to :test, :development, or :production.</span>
-</span><span class='line'><span class="no">Bundler</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="o">*</span><span class="no">Rails</span><span class="o">.</span><span class="n">groups</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">module</span> <span class="nn">Fulanito</span>
-</span><span class='line'>  <span class="k">class</span> <span class="nc">Application</span> <span class="o">&lt;</span> <span class="no">Rails</span><span class="o">::</span><span class="no">Application</span>
-</span><span class='line'>    <span class="c1"># Settings in config/environments/* take precedence over those specified here.</span>
-</span><span class='line'>    <span class="c1"># Application configuration should go into files in config/initializers</span>
-</span><span class='line'>    <span class="c1"># -- all .rb files in that directory are automatically loaded.</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.</span>
-</span><span class='line'>    <span class="c1"># Run &quot;rake -D time&quot; for a list of tasks for finding time zone names. Default is UTC.</span>
-</span><span class='line'>    <span class="c1"># config.time_zone = &#39;Central Time (US &amp; Canada)&#39;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.</span>
-</span><span class='line'>    <span class="c1"># config.i18n.load_path += Dir[Rails.root.join(&#39;my&#39;, &#39;locales&#39;, &#39;*.{rb,yml}&#39;).to_s]</span>
-</span><span class='line'>    <span class="c1">#config.i18n.default_locale = :es</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># AQUI ES DONDE VA ESO</span>
-</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">gem</span> <span class="s1">&#39;mongo_mapper&#39;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A este punto PINCHA, pero hay que escribir los modelos A MANO, ya que el
-scaffold te crea todo menos el modelo. Para que eso pinche, debemos activar el
-generador de códigos declarándole su nueva ORM en el fichero.</p>
-
-<h3>config/application.rb</h3>
-
-<figure class='code'><figcaption><span>config/application.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="no">File</span><span class="o">.</span><span class="n">expand_path</span><span class="p">(</span><span class="s1">&#39;../boot&#39;</span><span class="p">,</span> <span class="bp">__FILE__</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Pick the frameworks you want:</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;active_model/railtie&quot;</span>
-</span><span class='line'><span class="c1"># require &quot;active_record/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_controller/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_mailer/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_view/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;sprockets/railtie&quot;</span>
-</span><span class='line'><span class="c1"># require &quot;rails/test_unit/railtie&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Require the gems listed in Gemfile, including any gems</span>
-</span><span class='line'><span class="c1"># you&#39;ve limited to :test, :development, or :production.</span>
-</span><span class='line'><span class="no">Bundler</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="o">*</span><span class="no">Rails</span><span class="o">.</span><span class="n">groups</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">module</span> <span class="nn">Fulanito</span>
-</span><span class='line'>  <span class="k">class</span> <span class="nc">Application</span> <span class="o">&lt;</span> <span class="no">Rails</span><span class="o">::</span><span class="no">Application</span>
-</span><span class='line'>    <span class="c1"># Settings in config/environments/* take precedence over those specified here.</span>
-</span><span class='line'>    <span class="c1"># Application configuration should go into files in config/initializers</span>
-</span><span class='line'>    <span class="c1"># -- all .rb files in that directory are automatically loaded.</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.</span>
-</span><span class='line'>    <span class="c1"># Run &quot;rake -D time&quot; for a list of tasks for finding time zone names. Default is UTC.</span>
-</span><span class='line'>    <span class="c1"># config.time_zone = &#39;Central Time (US &amp; Canada)&#39;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.</span>
-</span><span class='line'>    <span class="c1"># config.i18n.load_path += Dir[Rails.root.join(&#39;my&#39;, &#39;locales&#39;, &#39;*.{rb,yml}&#39;).to_s]</span>
-</span><span class='line'>    <span class="c1"># config.i18n.default_locale = :de</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># AQUI ES DONDE VA ESO</span>
-</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">gem</span> <span class="s1">&#39;mongo_mapper&#39;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># AQUI DECLARAMOS LA ORM</span>
-</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">generators</span> <span class="k">do</span> <span class="o">|</span><span class="n">g</span><span class="o">|</span>
-</span><span class='line'>         <span class="n">g</span><span class="o">.</span><span class="n">orm</span> <span class="ss">:mongo_mapper</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora hay otro palo con el update de los scaffold, y eso si, no tiene remiendo.
-Por ejemplo</p>
-
-<figure class='code'><figcaption><span>scaffold</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># PATCH/PUT /users/1</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">update</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># el update, es borra y crea</span>
-</span><span class='line'>  <span class="vi">@user</span><span class="o">.</span><span class="n">destroy</span>
-</span><span class='line'>  <span class="vi">@user</span><span class="o">=</span><span class="no">User</span><span class="o">.</span><span class="n">create</span> <span class="n">user_params</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">if</span> <span class="vi">@user</span><span class="o">.</span><span class="n">save</span>
-</span><span class='line'>    <span class="n">redirect_to</span> <span class="vi">@user</span><span class="p">,</span> <span class="ss">notice</span><span class="p">:</span> <span class="s1">&#39;User was successfully updated.&#39;</span>
-</span><span class='line'>  <span class="k">else</span>
-</span><span class='line'>    <span class="n">render</span> <span class="ss">:edit</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A cada update le arreglas eso. SI, ya sé, está feo. Yo lo borro y lo vuelvo a
-crear, pero quizás a ti se te ocurra algo mejor.</p>
-
-<p>Bueno ahora si, con eso todo se vuelve NoSQL y nuestro cerebro sigue siendo
-Rails&hellip;</p>
-
-<p>Además, MongoMapper puede usarse fuera de Rails tranquilamente. Las dos simples
-lineas que componen nuestro initializer son más que suficiente para dejar a
-MongoMapper pinchando. Luego creas lo modelo y listo.</p>
-
-<p>Happy coding!</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/06/zentyal/">Zentyal</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-02-06T17:13:50-05:00'><span class='date'>06/02/2015</span> <span class='time'>5:13 pm</span></time>
-        
-           | <a href="/blog/2015/02/06/zentyal/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/06/zentyal/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Zentyal te mantendrá encerrado en tu cuarto, con tu TV y te dará la
-comida cada 6 horas. No habrá dificultades, nada te faltará.</p>
-
-<p>Nunca verás el hermoso mundo del software libre que hay por explorar.</p>
-
-<p>Los vagos y los mentequietas, prefieren poner una cosa &ldquo;que pinche y
-ya&rdquo; para luego pasarse horas chateando en facebook; antes de ofrecer
-un producto escalable y competitivo.</p>
-
-<p>Zentyal es el sistema de los infladores, que se las dan de informáticos&hellip; y que
-antes las necesidades responden al más puro estilo windows</p>
-
-<h3>&ldquo;no, eso no se puede hacer&rdquo;</h3>
-
-<p>Si no existe, lo programo, COÑO!!!</p>
-
-<p>Y si el que hay no me gusta, hago uno mejor. En cambio el usuario de
-Zentyal, si no tiene un botón que lo haga:</p>
-
-<h3>SE JODE!!</h3>
-
-<p>A esos nunca les ha pasado por la cabeza hacer su propio negocio&hellip;</p>
-
-<p>Yo seguiré llevando la luz a las tinieblas y combatiendo la ignorancia con
-intelecto. Con el software libre como espada, cuyo filo es la dificultad.</p>
-
-<p>Porque la mente que se abre para asimilar una idea, jamás vuelve a cerrarse.</p>
-
-<p>Con ese lenguaje abrupto, cuyas palabras caen como piedras pero que
-todo el mundo comprende y asimila. Porque el software libre es como el
-RAP</p>
-
-<p>Hagan Jails de FreeBSD y prueben su sistema de ports</p>
-
-<p>Hagan un servidor de almacenamiento con OpenIndiana y prueben su ZFS</p>
-
-<p>Prueben, gentoo, arch, slackware&hellip;</p>
-
-<p>Verás que no te toma 4 horas probar una distro en una máquina virtual</p>
-
-<h3>CIERRA FACEBOOK! Y verás cuanto tiempo hay</h3>
-
-<p>Luego aprende Python, Perl, Go, C (el que más te guste o el que más
-lindo nombre tenga) y siente como el sistema dice:</p>
-
-<h3>&ldquo;órdene mi amo&rdquo;</h3>
-
-<p>Hay tantas cosas bellas por aprender, tanto por experimentar y
-desarollar&hellip;</p>
-
-<p>   <blockquote><p>Con zentyal, aprenderás zentyal, con debian, aprendrás Linux</p><footer><strong>Lázaro Armando</strong> <cite>Mi Criterio Sobre Zentyal</cite></footer></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
   
   
     <article>
@@ -754,7 +354,7 @@ para que le mande imágenes a mi máquina.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -945,7 +545,159 @@ infomed me dijeron que fuera al &ldquo;GAU&rdquo; para renovar el contrato.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/15/subdesarrollo/">subdesarrollo</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-08-15T10:28:28-04:00'><span class='date'>15/08/2014</span> <span class='time'>10:28 am</span></time>
+        
+           | <a href="/blog/2014/08/15/subdesarrollo/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/08/15/subdesarrollo/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>¿Sabe usted que es el Subdesarrollo?</h3>
+
+<p>El subdesarrollo, es un fenómeno social y mental, que poco tiene que ver con la
+economía&hellip;</p>
+
+<p>A menudo se disfraza de socialismo, otras de capitalismo, porque a diferencia de
+estos dos, el subdesarrollo no está escrito en ninguna parte. Aun así, no deja
+de ser el sistema regente en américa latina y el Caribe</p>
+
+<p>Todo comenzó en la época precolombina. Cuando los colonos españoles llegaron a
+Cuba, mostraron un producto desarrollado y capturaron la facinación de los
+nativos. Enseguida picaron un espejo y se le cambiaron por oro. Este es el
+principio básico de subdesarrollo en el aspecto industrial.</p>
+
+<p>Los desarrollados compran la materia prima y luego te vender el producto final.</p>
+
+<p>Pero el fenómeno es mental, ya que el colono preguntó de donde provenía el oro,
+pero: El indio NO PREGUNTÓ COMO SE HACÍA EL ESPEJO!!!!</p>
+
+<p>De esta forma, los colonos modernos, subvencionan nuestras economías,
+vendiéndonos productos que si bien no son indispensables para la vida, se
+vuelven una necesidad. En sus paises, los desarrolladores fabrican esos
+productos, y la compra de los mismos, es un gasto que se subsidia de manera
+interna. Pero para los subdesarrollados, adquirir esos productos, implica una
+perdida en el producto interno bruto (dinero que sale).</p>
+
+<p>Como ven, el subdesarrollo, aparenta estar ligado a la economía, pero esto NO es
+así. Sucede que todos queremos celulares, pero a nadie se le ocurre pensar en
+fabricarlos&hellip;</p>
+
+<p>Por ejemplo, en nuestro momento histórico, si yo le digo a usted que tengo
+dinero y quiero invertir en un negocio, su pregunta más inmediata será:</p>
+
+<h3>¿qué quieres vender en tu cafetería?</h3>
+
+<p>Porque lo único que tenemos son timbiriches para vender comida o brujería.
+Algunos osados incursionaron con talleres textiles o cosas así MEDIEVALES.</p>
+
+<h3>Pregunto: -¿por qué no fabricamos radios?</h3>
+
+<p>Si ahora yo le digo a usted: -fabriquemos agujas para vendérselas a los talleres
+textiles. Su primera reacción será decir: -tú estás loco de verdad? Con razón,
+ya que en nuestra tierra, no hay un solo ingeniero mecánico capaz de inventar
+una máquina que le abra huecos a las agujas, al menos no sin importar
+componentes ya fabricados por los rubios.</p>
+
+<p>Ahí volvemos al problema del espejo&hellip;</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/11/ocs-inventory/">ocs-inventory</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-08-11T11:06:28-04:00'><span class='date'>11/08/2014</span> <span class='time'>11:06 am</span></time>
+        
+           | <a href="/blog/2014/08/11/ocs-inventory/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/08/11/ocs-inventory/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Parece que ahora se ha vuelto una costumbre <a href="http://es.wikipedia.org/wiki/Hurto">meterle las manos</a> al parque informático del Calixto
+García. Por lo que dicen los jefes, la cosa está que llueve sobre lo mojado. Yo
+desde que llegué, estoy con la cháchara de implementar OCS inventory para
+controlar el parque informático, pero me dan por loco. Una buena razón para
+darle de lado al asunto, es el echo de que más del 50% de las máquinas, carecen
+de red.</p>
+
+<p>Pero OCS inventory tiene una solución, existe un modo offline para situaciones
+como esta, <a href="http://wiki.ocsinventory-ng.org/index.php/Howtos:OCS_Inventory_Mass_Import_from_local">véalo en este link</a></p>
+
+<p><img src="/images/ocsinventory.png"></p>
+
+<p>En windows corre el instalador en modo inventario local. Al llevar a cabo la
+instalación, parecerá no haber sucedido nada. Se creará el archivo con el
+inventario en el la raíz del disco &ldquo;C:&rdquo; cuya extensión será &ldquo;.ocs&rdquo; y su nombre
+se deriva del nombre de la máquina.</p>
+
+<p>FELICIDADES! Ya casi terminó el inventario local. Copia el fichero para tu
+memoria y llévalo pal servidor.</p>
+
+<p>En linux, hay una herramienta que colegia los ficheros .ocs con el sistema
+principal.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ln -s /usr/share/ocsinventory-server/binutils/ocsinventory-injector.pl /usr/local/bin/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora que la tenemos cerca:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ocsinventory-injector.pl -f /ruta/al/fichero.ocs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Con eso colegiamos lo cambio en el servidor y VUALÁ! La máquina offline va para
+el servidor de OCS.</p>
+
+<p>Ah! Por cierto, el agente de windows, lo puede <a href="http://www.ocsinventory-ng.org/en/download/register-download-ocs-inventory-ng-agent-for-windows.html">descargar de aqui</a></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -966,6 +718,14 @@ infomed me dijeron que fuera al &ldquo;GAU&rdquo; para renovar el contrato.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/05/13/instalar-node-rapido/">instalar node rápido</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/05/10/ssl-ca-local/">autoridad certificadora</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/04/08/xen-y-virt-manager/">xen y virt-manager</a>
@@ -1116,7 +876,7 @@ infomed me dijeron que fuera al &ldquo;GAU&rdquo; para renovar el contrato.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en xen</a>
+			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en XenServer</a>
 		</li>
 		
 		<li class="post">
@@ -1192,10 +952,6 @@ infomed me dijeron que fuera al &ldquo;GAU&rdquo; para renovar el contrato.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/11/22/certificado-autofirmado/">certificado autofirmado</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a>
 		</li>
 		
@@ -1221,10 +977,6 @@ infomed me dijeron que fuera al &ldquo;GAU&rdquo; para renovar el contrato.</p>
 		
 		<li class="post">
 			<a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/10/05/assets-por-controlador/">assets por controlador</a>
 		</li>
 		
 		<li class="post">
@@ -1264,19 +1016,11 @@ infomed me dijeron que fuera al &ldquo;GAU&rdquo; para renovar el contrato.</p>
 		</li>
 		
 		<li class="post">
-			<a href="/blog/2015/07/05/asset-pipeline-en-production/">asset pipeline en production</a>
-		</li>
-		
-		<li class="post">
 			<a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a>
 		</li>
 		
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
-		<li class="post">
-			<a href="/blog/2015/06/03/transando-a-ext4/">transando a ext4</a>
 		</li>
 		
 		<li class="post">
