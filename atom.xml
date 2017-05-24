@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-05-15T15:51:59-04:00</updated>
+  <updated>2017-05-24T12:21:46-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -355,6 +355,32 @@ y todo el que tenga el <strong>rootCA.pem</strong> instalado en su dispositivo; 
 <p>Lo que si no me queda claro es como se le instala el &ldquo;.pem&rdquo; a Windows. ¿Sugerencias?</p>
 
 <p><img class="center" src="http://uranio-235.github.io/images/localCA4.png" width="200" height="300" title="&#34;autoridad certificadora, o al menos, eso dicen&#34;" alt="&#34;autoridad certificadora, o al menos, eso dicen&#34;"></p>
+
+<p>Aquí les dejo [el script que uso] para hacer esto de forma automatizada. Para
+correrlo cree un directorio. Por ejemplo:</p>
+
+<figure class='code'><figcaption><span>&#8220;CA&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> mkdir miCA</span>
+</span><span class='line'><span class="go"> cd miCA</span>
+</span><span class='line'><span class="go"> mkcert.sh</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al correrlo la primera vez te creara el <strong>rootCA.pem</strong>, luego al correrlo con
+argumentos, se generan certificados para dichos dominios.</p>
+
+<figure class='code'><figcaption><span>&#8220;CA&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> mkcert.sh fulanito.dominio.cu</span>
+</span><span class='line'><span class="go"> ...</span>
+</span><span class='line'><span class="go"> echo fulanito.dominio.cu.tar.gz está listo para despachar</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Te devolverá un .tar.gz con todo dentro.</p>
 ]]></content>
   </entry>
   

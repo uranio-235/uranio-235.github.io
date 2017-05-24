@@ -4,7 +4,7 @@
   <title><![CDATA[Category: destacado | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/destacado/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-05-15T15:51:59-04:00</updated>
+  <updated>2017-05-24T12:21:46-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -258,6 +258,24 @@ y todo el que tenga el <strong>rootCA.pem</strong> instalado en su dispositivo; 
 <p>Lo que si no me queda claro es como se le instala el &ldquo;.pem&rdquo; a Windows. ¿Sugerencias?</p>
 
 <p><img class="center" src="/images/localCA4.png" width="200" height="300" title="&ldquo;autoridad certificadora, o al menos, eso dicen&rdquo;" ></p>
+
+<p>Aquí les dejo [el script que uso] para hacer esto de forma automatizada. Para
+correrlo cree un directorio. Por ejemplo:</p>
+
+<pre><code class="console "CA""> mkdir miCA
+ cd miCA
+ mkcert.sh
+</code></pre>
+
+<p>Al correrlo la primera vez te creara el <strong>rootCA.pem</strong>, luego al correrlo con
+argumentos, se generan certificados para dichos dominios.</p>
+
+<pre><code class="console "CA""> mkcert.sh fulanito.dominio.cu
+ ...
+ echo fulanito.dominio.cu.tar.gz está listo para despachar
+</code></pre>
+
+<p>Te devolverá un .tar.gz con todo dentro.</p>
 ]]></content>
   </entry>
   
