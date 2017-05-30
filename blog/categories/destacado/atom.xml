@@ -4,7 +4,7 @@
   <title><![CDATA[Category: destacado | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/destacado/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-05-24T12:25:07-04:00</updated>
+  <updated>2017-05-29T21:57:37-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,34 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[instalar node rápido]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/05/13/instalar-node-rapido/"/>
+    <updated>2017-05-13T17:13:53-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/05/13/instalar-node-rapido</id>
+    <content type="html"><![CDATA[<p>Desde que surgió node, estaba deseando que hubiera una herramienta como RVM para
+instalar nodejs. Resulta que la hay!!! Al igual que RVM, requiere cURL. Por
+cierto, se llama <strong>n</strong></p>
+
+<pre><code class="console "> curl -o /usr/local/bin/n https://raw.githubusercontent.com/visionmedia/n/master/bin/n
+ chmod +x /usr/local/bin/n
+ n lts
+</code></pre>
+
+<p>Instala hasta npm!</p>
+
+<p><strong>En debian</strong>, otra manera de hacer esto, es usando el repo oficial que provee node:</p>
+
+<pre><code class="console"> curl -sL https://deb.nodesource.com/setup | bash -
+ aptitude update
+ aptitude install nodejs
+</code></pre>
+
+<p>Acuérdate que algunos paquetes (por no decir que los más usados) requieren
+compilar librerías. Así que no olvides instalar <strong>build-essential</strong>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[autoridad certificadora]]></title>
@@ -259,8 +287,7 @@ y todo el que tenga el <strong>rootCA.pem</strong> instalado en su dispositivo; 
 
 <p><img class="center" src="/images/localCA4.png" width="200" height="300" title="&ldquo;autoridad certificadora, o al menos, eso dicen&rdquo;" ></p>
 
-<p>Aquí les dejo [el script que uso] para hacer esto de forma automatizada. Para
-correrlo cree un directorio. Por ejemplo:</p>
+<p>Aquí les dejo <a href="https://gist.github.com/acf09c97f0bf27a18f0be9e757df1f80">el script que uso</a> para hacer esto de forma automatizada. Para correrlo cree un directorio. Por ejemplo:</p>
 
 <pre><code class="console "CA""> mkdir miCA
  cd miCA
@@ -617,93 +644,6 @@ XW.v5.6.2# reboot
 
 <p>Todavía hay quien cree que las MAC son una medida segura para crear reglas de
 control de acceso&hellip;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[sysinfo en el motd]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/11/20/sysinfo-en-el-motd/"/>
-    <updated>2016-11-20T17:13:27-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/11/20/sysinfo-en-el-motd</id>
-    <content type="html"><![CDATA[<p><img class="right" src="/images/sysinfo.png" width="400" height="500" title="" ></p>
-
-<p>Desde que lo vi en unbuntu server, había querido hacer que mi servidores
-mostraran un overview en el <a href="https://en.wikipedia.org/wiki/Motd_(Unix">MOTD</a>)</p>
-
-<p>Al menos debian, tiene una manera de cambiar el MOTD dinamicamente. Para sazonar
-bien el MOTD, vamos a usar figlet, una aplicación que genera letras en ascii-art a
-partir de una palabra dada.</p>
-
-<pre><code class="bash "instalando todo"">aptitude install figlet
-</code></pre>
-
-<p>El directorio <strong>/etc/update-motd.d/</strong> ejecutará en orden alfabético (o numérico
-en nuestro caso) aquellos script cuya salida estandard, compondrán nuestro MOTD.</p>
-
-<pre><code class="bash "aprovisionando el update-motd.d"">mkdir /etc/update-motd.d/
-cd /etc/update-motd.d/
-touch 00-header &amp;&amp; touch 01-sysinfo &amp;&amp; touch 02-footer
-chmod +x /etc/update-motd.d/*
-</code></pre>
-
-<p>Finalmente, nos echamos el MOTD de debian por defecto; que no deja de
-restregarnos en cara la falta de garantía.</p>
-
-<p>Además, el fichero <strong>/var/run/motd</strong> contendrá nuestro motd resultante, así que
-lo lincamos con el que borramos.</p>
-
-<pre><code class="bash "aprovisionando el update-motd.d"">rm /etc/motd
-ln -s /var/run/motd /etc/motd
-</code></pre>
-
-<p>Por una cuestión de organización, usaremos 3 ficheros:</p>
-
-<p><strong>00-header</strong> con lo que queremos poner primero. En este caso, el nombre y
-version de la distribución, además de un mensajito de bienvenida.</p>
-
-<pre><code class="bash "00-header"">#!/bin/bash
-[ -r /etc/lsb-release ] &amp;&amp; . /etc/lsb-release
-if [ -z "$DISTRIB_DESCRIPTION" ] &amp;&amp; [ -x /usr/bin/lsb_release ]; then
-        DISTRIB_DESCRIPTION=$(lsb_release -s -d)
-fi
-figlet $(hostname)
-printf "\n"
-printf "Welcome to %s (%s).\n" "$DISTRIB_DESCRIPTION" "$(uname -r)"
-printf "\n"
-</code></pre>
-
-<p>Yo instalo los sistemas en inglés, así que para mantener todo parejo, escribimos
-<em>güelcome</em> y lo hacemos con <strong>printf</strong> para procesar mejor los &ldquo;\n&rdquo; y que pinche
-sin importar la shell que se esté usando.</p>
-
-<p>El segundo fichero será <strong>01-sysinfo</strong> y contendrá la parte linda, de la memoria
-RAM en uso, el CPU, la carga y la dirección ip de la primera interfaz.</p>
-
-<pre><code class="bash "01-sysinfo"">#!/bin/bash
-date=`date`
-load=`cat /proc/loadavg | awk '{print $1}'`
-root_usage=`df -h / | awk '/\// {print $(NF-1)}'`
-memory_usage=`free -m | awk '/Mem:/ { total=$2 } /buffers\/cache/ { used=$3 } END { printf("%3.1f%%", used/total*100)}'`
-swap_usage=`free -m | awk '/Swap/ { printf("%3.1f%%", "exit !$2;$3/$2*100") }'`
-users=`users | wc -w`
-time=`uptime | grep -ohe 'up .*' | sed 's/,/\ hours/g' | awk '{ printf $2" "$3 }'`
-processes=`ps aux | wc -l`
-ip=`ip a  s dev eth0|grep inet|awk '{print $2}'|cut -d '/' -f 1`
-
-printf "System information as of: $date\n" 
-printf "System load:\t%s\tIP Address:\t%s\n" $load $ip
-printf "Memory usage:\t%s\tSystem uptime:\t%s\n" $memory_usage "$time"
-printf "Usage on /:\t%s\tSwap usage:\t%s\n" $root_usage $swap_usage
-printf "Local Users:\t%s\tProcesses:\t%s\n\n" $users $processes
-</code></pre>
-
-<p>Por último <strong>02-footer</strong> será la parte de abajo. Contendrá cualquier cosa que
-quieras poner en el fichero <strong>/etc/motd.tail</strong> por ejemplo, una anotación que
-quieras hacer específica para ese servidor. Se mostrará si existe el fichero.</p>
-
-<pre><code class="bash "02-footer"">#!/bin/bash
-[ -f /etc/motd.tail ] &amp;&amp; cat /etc/motd.tail || true
-</code></pre>
 ]]></content>
   </entry>
   
