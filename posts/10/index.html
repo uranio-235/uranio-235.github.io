@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="bind9, registro arbitratio 25/01/2016 8:35 pm | Comments En algunas ocasiones, nos vemos forzados a declarar registros para punteros, a
-host que &hellip;">
+  <meta name="description" content="arch compartir paquetes 01/02/2016 1:56 pm | Comments No desde cuando, pero por fin, un sueño echo realidad en ArchLinux. Revertir un
+paquete de su &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,144 @@ host que &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/02/01/arch-compartir-paquetes/">arch compartir paquetes</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-02-01T13:56:56-05:00'><span class='date'>01/02/2016</span> <span class='time'>1:56 pm</span></time>
+        
+           | <a href="/blog/2016/02/01/arch-compartir-paquetes/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/02/01/arch-compartir-paquetes/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>No desde cuando, pero por fin, un sueño echo realidad en ArchLinux. Revertir un
+paquete de su forma instalada, a su forma de paquete. Esto puede no resultar
+algo novedoso para el que tenga internet como algo cotidiano, pero para los
+cubanos de a pie, resulta una verdadera novedad.</p>
+
+<p>Digamos que mi socio necesita instalar nginx en su arch, misma arquitectura que
+el mío. Simplemente, le genero el paquete a partir de mi instalación y listo.</p>
+
+<figure class='code'><figcaption><span>&#8220;bacman en acción&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@samsung ~<span class="o">]</span><span class="c"># cd /var/cache/pacman/pkg/</span>
+</span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># bacman nginx</span>
+</span><span class='line'><span class="o">==</span>&gt; Package: nginx-1.8.1-1
+</span><span class='line'>  -&gt; Copying package files...
+</span><span class='line'>    -&gt; Generating .PKGINFO metadata...
+</span><span class='line'>    -&gt; Generating the package...
+</span><span class='line'>  <span class="o">==</span>&gt; Done.
+</span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># ls nginx*</span>
+</span><span class='line'>nginx-1.8.1-1-x86_64.pkg.tar.xz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pues <strong>bacman</strong> es la respuesta. Ahora se puede regresar un paquete a su estado;
+digamos &ldquo;pristino&rdquo;.</p>
+
+<p>¡¡OJO!! <strong>TUS</strong> ficheros de configuración, también se empaquetan.</p>
+
+<p>Usualmente solía mantener en mi caché los paquetes necesarios para llevar a cabo
+una instalación de archlinux usando mi laptop; pero con este nuevo método, la
+cosa cambia bastante. Ahora solo debo cargar con el &ldquo;.iso&rdquo;</p>
+
+<p>Mi proxima idea es reconstruir el grupo <strong>base</strong> completo dentro de la cache y
+luego con <strong>repo-add</strong> crear un mirror, capaz de llevar a cabo una instalación
+de sistema.</p>
+
+<p>De momento quiero probar este script:</p>
+
+<figure class='code'><figcaption><span>&#8220;pristine.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># cambiate al directorio de cache</span>
+</span><span class='line'><span class="nb">cd</span> /var/cache/pacman/pkg/
+</span><span class='line'>
+</span><span class='line'><span class="c"># itera por los paquetes del sistema base</span>
+</span><span class='line'><span class="k">for</span> pkg in <span class="k">$(</span>pacman -Qeg base<span class="p">|</span>awk <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span><span class="p">;</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># háblate</span>
+</span><span class='line'>   <span class="nb">echo</span> <span class="nv">$pkg</span> <span class="s1">&#39;&gt;&#39;</span> <span class="k">$(</span>pacman -Qi <span class="nv">$pkg</span><span class="p">|</span>grep Description<span class="p">|</span>cut -d : -f 2<span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># reviértelo</span>
+</span><span class='line'>   bacman <span class="nv">$pkg</span> 2&gt; /dev/null &gt; /dev/null
+</span><span class='line'>
+</span><span class='line'><span class="k">done</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># crea el repo</span>
+</span><span class='line'>rm /var/cache/pacman/pkg/custom.db.tar.gz
+</span><span class='line'>repo-add /var/cache/pacman/pkg/custom.db.tar.gz /var/cache/pacman/pkg/*.pkg.tar.xz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Tendré que probar a instalar usando mi cache como repo. Poniéndole a la máquina
+una source como esta:</p>
+
+<figure class='code'><figcaption><span>&#8220;pacman.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>mirepo<span class="o">]</span>
+</span><span class='line'><span class="nv">SigLevel</span> <span class="o">=</span> Optional TrustAll
+</span><span class='line'><span class="nv">Server</span> <span class="o">=</span> http://localhost:8080
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>Nota para los imbéciles: Cambiar <strong>localhost</strong> por la ip de la máquina que está compartiendo la caché.</em></p>
+
+<p>Y para servir tu cache como repo, puedes usar darkhttpd</p>
+
+<figure class='code'><figcaption><span>&#8220;darkhttpd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>darkhttpd /var/cache/pacman/pkg/ --chroot --port 8080
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -181,7 +319,7 @@ tiempo.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -349,7 +487,7 @@ especial.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -482,7 +620,7 @@ los parámetros. A mi me quedó así</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -561,142 +699,7 @@ oneshot, que cargue el /etc/rc.local</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/03/las-mujeres-gordas/">las mujeres gordas</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-03T23:41:52-05:00'><span class='date'>03/11/2015</span> <span class='time'>11:41 pm</span></time>
-        
-           | <a href="/blog/2015/11/03/las-mujeres-gordas/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/03/las-mujeres-gordas/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><em>¿Como te gustan las mujeres gordas o flacas?</em></p>
-
-<p><img class="right" src="/images/gorda2.jpg" width="190" height="290" title="" ></p>
-
-<p>Esa pregunta se ha vuelto un boicot.</p>
-
-<p>Hasta los <del>cojones</del> estoy de vivir en una sociedad que desprecia a las mujeres por
-que su figura no encaja en un patrón de belleza que <strong>alguien</strong> impuso.</p>
-
-<p>Resulta que &ldquo;delgado&rdquo; es sinónimo de &ldquo;lindo&rdquo;.</p>
-
-<p>Nadie hizo una encuesta ni le preguntó a los hombres si preferían a las mujeres
-flacas o gordas, simplemente, impusieron un paradigma.</p>
-
-<p>Hay gustos para todo y eso hay que tenerlo en cuenta.</p>
-
-<p><em>&ldquo;no debemos juzgar a una mujer por su figura&rdquo;</em> <strong>FALSO</strong> Las seguiremos
-juzgando por su figura, porque tenemos ojos en la cara, pero no con paradigmas
-impuesto por una sociedad, si no con nuestro gusto.</p>
-
-<p>¿A qué hombre no le gusta una mujer con las piernas gordas, los senos
-extratalla y las nalgas grandes.</p>
-
-<p>&ldquo;hembras y con masa&rdquo;</p>
-
-<p>Ah! Casi todas las gordas tienen la cara linda, eso es casi axiomático, aunque
-toda regla tiene su acepción.</p>
-
-<h4>NO estoy aplaudiendo la obesidad.</h4>
-
-<p>Las gordas lindas son las gordas que hacen ejercicio.</p>
-
-<ul>
-<li> tiene cintura</li>
-<li> no tienen mucho abdomen</li>
-<li> no están flácidas</li>
-<li> tienen carne en vez de grasa</li>
-</ul>
-
-
-<p>Gorda con Ejercicio</p>
-
-<p>Mi hermano, a una mujer así, múerdete la lengua antes de decirle gorda, porque
-estás ante un monumento.</p>
-
-<p>Si eres mujer y te sientes pasada de peso. No hagas ejercicios para bajar de
-peso. Has ejercicios para mejorar tu figura. Mi esposa usa ajustadores talla 44
-y cuando baja de peso le empiezan a quedar grandes. Pal coppelia urgente.</p>
-
-<p>Preocúpense por estar macizas en vez de grasosas, no por bajar de peso.</p>
-
-<p>Cuando coges una gorda sentada, le aprietas un muslo y te dice &ldquo;ay! eso duele&rdquo;,
-esa es masa pura. Si no le duele, es manteca.</p>
-
-<h4>deterioro de la autoestima</h4>
-
-<p><img class="right" src="/images/gorda1.jpg" width="190" height="290" title="" ></p>
-
-<p>Este tema es muy peliagudo y repercute, tanto pa las gordas, como para los
-amantes de las curvas.</p>
-
-<p>Los hombres, en la mayoría de los casos, NO andamos diciéndole a las mujeres si
-están gordas. Pero entre ellas mismas, se dicen &ldquo;ay mija que gorda estás&rdquo; y
-todas las sandeces esas.</p>
-
-<p>Resulta que una mujer gorda, se autoconsidera fea generalmente. <strong>Por el mero
-hecho de que a ella no le gusta lo que ve en el espejo.</strong> ¿Ya te cercioraste si
-a alguien de tu trabajo y barrio le gusta?</p>
-
-<p>Quizás quiere acercarse alguien, pero postpone el plan para cuando baje un poco
-de peso (nunca). Por esa misma razón: no va a la playa, no usa sayas cortas, no
-usa la ropa tal, etc&hellip;</p>
-
-<p>Por suerte las licras han vuelto a ponerse de moda.</p>
-
-<p>Otro caso es que le decimos a la mujer &ldquo;me gusta que seas gorda&rdquo; y casi se
-ofenden: &ldquo;¿me estás diciendo gorda?&rdquo; Síiii! Te estoy diciendo gorda! ¿Qué hay de
-malo en eso?</p>
-
-<p>Muchas mujeres <em>quieren</em> bajar de peso pero no tienen la voluntad suficiente
-para lograrlo. Mientras tanto, viven flagelándose con las dietas.</p>
-
-<h4>Si fueras flaca a lo mejor él no te hubiera mirado!!!</h4>
-
-<p>El tema <a href="https://es.wikipedia.org/wiki/All_About_That_Bass">All About That Bass</a>
-de Meghan Trainor, tuvo una crítica muy disímil por esta razón. Dijeron que era
-antifeminista. Como si ser gorda fuera ir contra la feminidad. No obstante, el
-tema estuvo en la cima de Billboard Hot 100 ocho semanas (y eso es mucho decir)
-así que la gente aceptó la cancioncita.</p>
-
-<p>Y vamos a estar aquí. Soy flaco como un güin, pero pa flaco yo. Prefiero abultar
-ideas que bíceps. Yo estoy malo, malo, maaaalooo y digo: <em>las lagartijas, pa
-poder treparse en la pared, no pueden ser musculosas</em>. No me preocupa mi figura,
-porque hay mujeres que le encantan los flacos desbaratados y por lo general, son
-gordas (afortunadamente).</p>
-
-<p>Las mujeres si no están en esa bobería. Está la rubia que le encantan los negros
-y NO se esconde para decirlo, se pasea con su prieto por la calle. En cambio, el
-tipo que le gustan las gordas, le pesa reconocerlo e incluso, le da pena que la
-gente lo vean con aun gorda.</p>
-
-<p>   <blockquote><p>Los huesos son para los perros,<br/>   los hombres comen carne.</p></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -717,6 +720,10 @@ gente lo vean con aun gorda.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/06/22/curiosa-acl-de-squid/">squid y navegar a .cu</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/05/13/instalar-node-rapido/">instalar node rápido</a>

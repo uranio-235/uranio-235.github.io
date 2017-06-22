@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="nginx y websocket 03/03/2017 11:49 pm | Comments Resulta que los websocket no pasan tan fácilmente por el proxy inverso. Llevan
-su burumba. Aquí por &hellip;">
+  <meta name="description" content="rainloop en debian 04/03/2017 1:45 pm | Comments Aún recuerdo que algunos clientes me preguntaban con mucho asombro: &ldquo;-y porque
+no roundcube& &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,172 @@ su burumba. Aquí por &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-04T13:45:55-05:00'><span class='date'>04/03/2017</span> <span class='time'>1:45 pm</span></time>
+        
+           | <a href="/blog/2017/03/04/rainloop-en-debian/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/04/rainloop-en-debian/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Aún recuerdo que algunos clientes me preguntaban con mucho asombro: &ldquo;-y porque
+no roundcube&rdquo;; cuando hablábamos de webmail. Pero finalmente rainloop se ha
+puesto de moda en cuba.</p>
+
+<p>Un método bastante perezoso de instalar una LAMP <strong>en Debian</strong>, es instalar el
+paquete <strong>phpmyadmin</strong>. Esto instala y configura el servidor SQL; además de
+hacer jugar a apache2 con php y mysql, todo de un solo teclazo. Pero aveces, por
+ejemplo, al instalar RainLoop, no queremos que phpmyadmin quede instalado. Una
+buena variante es desinstalarlo después; pero nos quedan algunos paquetes
+innecesarios instalados.</p>
+
+<p>Para lograr la armonía que buscamos, instalaremos la LAMP por partes. Primero
+apache SOLO.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> aptitude install apache2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora instalamos mysql, a través de los metapaquetes, para que se instale el
+adecuado de manera automática.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> aptitude install mysql-server mysql-client</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Llegado a este punto, debian y su magia te ayudarán a configurar el mysql,
+pidiéndote la contraseña del root. Ahora instalamos la piedra angular. El
+soporte de php+mysql de apache.</p>
+
+<figure class='code'><figcaption><span>&#8220;soporte de mysql&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> aptitude install php5 libmysqlclient-dev php5-mysql</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Instalamos el resto de la paquetería necesaria para rainloop.</p>
+
+<figure class='code'><figcaption><span>&#8220;paquetería de rainloop&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> aptitude install curl libcurl3 libcurl3-dev php5-curl php5-json</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora <strong>reinicia</strong> tanto apache como mysql.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> systemctl restart mysql</span>
+</span><span class='line'><span class="go"> systemctl restart apache2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Crearemos un par de bases de datos necesarias para rainloop. Puedes o no crear
+un usuario para rainloop, pero si vamos a tener un servidor sql con dos bases de
+datos para una aplicación; la cual además, será la única cosa sql en el
+servidor; no vale la pena crear otro usuario. Lo dejo a tu elección.</p>
+
+<figure class='code'><figcaption><span>&#8220;creando las bases&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">create</span> <span class="k">database</span> <span class="n">rainloop</span><span class="p">;</span>
+</span><span class='line'><span class="k">create</span> <span class="k">database</span> <span class="n">contactos</span><span class="p">;</span>
+</span><span class='line'><span class="k">commit</span><span class="p">;</span>
+</span><span class='line'><span class="n">exit</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si de todas maneras quieres crear el usuario.</p>
+
+<figure class='code'><figcaption><span>&#8220;un usuario pa rainloop&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">create</span> <span class="k">user</span> <span class="n">rainloop</span><span class="o">@</span><span class="n">localhost</span> <span class="n">identified</span> <span class="k">by</span> <span class="ss">&quot;rainloop&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">grant</span> <span class="k">all</span> <span class="k">privileges</span> <span class="k">on</span> <span class="n">rainloop</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="n">rainloop</span><span class="o">@</span><span class="n">localhost</span><span class="p">;</span>
+</span><span class='line'><span class="n">flush</span> <span class="k">privileges</span><span class="p">;</span>
+</span><span class='line'><span class="n">exit</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y vamos a instalar rainloop! La manera clásica de hacerlo es usando el paquete
+&ldquo;.zip&rdquo; del sitio. Si quieres llégate allá y bájatelo. Descomprimes en un
+directorio y sigue las instrucciones; sin embargo hay otra manera.</p>
+
+<figure class='code'><figcaption><span>&#8220;alando rainloop del repositorio&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">mkdir -p /var/www/rainloop</span>
+</span><span class='line'><span class="go">cd /var/www/rainloop</span>
+</span><span class='line'><span class="go">curl -s http://repository.rainloop.net/installer.php | php</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si tienes acceso a internet de verdad. Pinchará. Si estás detrás de un proxy, te
+jodiste, hazlo a la manera ortodoxa.</p>
+
+<p>Rainloop es fulísima con los permisos. Si no los tienes claros, dará unos palos
+horribles que no tienen nada que ver con permisos aparentemente. Por ejemplo, si
+el fichero que dice la versión, no pertenece al usuario que corre el servidor
+web, te dirá que no puede encontrar el directorio &ldquo;data&rdquo;. Espectacular! Para
+evitar eso, solo los directorios tendrán el ejecutable. Además, todo pertenecerá
+al usuario <strong>www-data</strong>; que en debian es el usuario que usa el apache para
+correr.</p>
+
+<figure class='code'><figcaption><span>&#8220;estableciendo permisos&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>chown -R www-data:www-data .
+</span><span class='line'>find . -type d -exec chmod <span class="m">755</span> <span class="o">{}</span> <span class="se">\;</span>
+</span><span class='line'>find . -type f -exec chmod <span class="m">644</span> <span class="o">{}</span> <span class="se">\;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No te pondré como hacer el virtualhost porque eso no tengo que explicártelo (no
+te hace falta verdad?). Te recomiendo que uses SSL.</p>
+
+<p>No olvides entrar al admin panel (o al fichero de configuración) de rainloop y
+pasarle la mano. Para abrir el admin panel, usa la url <strong>/?admin</strong>. Ahí
+configura las bases de datos. Muy importante habilitar el soporte de contactos y
+especificarle la base de datos, que creo, no debe ser la misma que rainloop;
+aunque una gente me dijo que tiene ambas cosas en la misma base de datos; yo no
+le he probado.</p>
+
+<p>El usuario por defecto es <strong>admin</strong> y la contraseña es <strong>12345</strong>. De más está
+que te diga: <strong>CÁMBIALO!</strong></p>
+
+<p>Si estás de cara a internet, recuerda que rainloop viene con yahoo y gmail
+configurado como servidores por defecto. No sé si está habilitados pero
+chequéalo. Juraría que hay versiones en que venía habilitado. De todas formas,
+te interesará que tus usuarios tengan gmail/yahoo más cerca, especialmente si un
+usuario tiene múltiples identidades. Recuérdales que deben habilitar el acceso
+pop en su cuenta de gmail.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -170,7 +336,7 @@ escucha por el puerto 8888.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -242,7 +408,7 @@ NO un punto y coma. La configuración parece ser un <strong>json</strong>.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -500,7 +666,7 @@ simplemente declaro los servidores de correo en un fakeroot y listo.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -623,136 +789,7 @@ y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/02/22/bind-personal/">bind personal</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-02-22T21:05:26-05:00'><span class='date'>22/02/2017</span> <span class='time'>9:05 pm</span></time>
-        
-           | <a href="/blog/2017/02/22/bind-personal/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/02/22/bind-personal/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Una cosa que me jode, es que linux el tema de los múltiples DNS no los maneje
-bien. Por ejemplo, estamos en una LAN con red 192.168.1.0/24 y además,
-tenemos una conexión a internet.</p>
-
-<p>Entonces seteas dos DNS en el resolv.conf y no pincha!</p>
-
-<p>Además, si la situación es itinerante (vas a múltiples LAN) mantener la
-configuración DNS se vuelve un rollo. Aunque el networkmanager te permita
-configurarlo, volvemos a la situación anterior.</p>
-
-<p>Solución, tenemos un bin con sus debidos forwarders para cada red. En mi caso,
-el <strong>/etc/named.conf</strong> me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">// vim:set ts=4 sw=4 et:</span>
-</span><span class='line'><span class="n">options</span> <span class="p">{</span>
-</span><span class='line'>        <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">recursion</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>        <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">recursion</span> <span class="n">yes</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">auth</span><span class="o">-</span><span class="n">nxdomain</span> <span class="n">no</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// la lan por su DNS local</span>
-</span><span class='line'><span class="n">zone</span> <span class="s">&quot;dominio.cu&quot;</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
-</span><span class='line'>  <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">192.168.1.3</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// lo demás por google</span>
-</span><span class='line'><span class="n">zone</span> <span class="s">&quot;.&quot;</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
-</span><span class='line'>  <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">8.8.8.8</span><span class="p">;</span> <span class="mf">8.8.4.4</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>De esta manera, el dominio de la LAN (<strong>dominio.cu</strong>), será resuelto a través
-del servidor DNS 192.168.1.3; que es el de la LAN. Para eso usamos la zona
-&ldquo;dominio.cu&rdquo; del tipo forward y especificamos a 192.168.1.3 como su forward.</p>
-
-<p>El resto, o sea, la zona &ldquo;.&rdquo;, será también del tipo forward y para este ejemplo,
-usamos los dns de google como forward.</p>
-
-<p>Ahora solo te queda actualizar el <strong>/etc/resolv.conf</strong> y setear a 127.0.0.1
-como tu servidor dns</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/resolv.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp"># Generated by resolvconf</span>
-</span><span class='line'><span class="n">nameserver</span> <span class="mf">127.0.0.1</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Recuerda que cada configuración automatizada, actualiza este fichero. Te
-recomiendo que no te fajes con el fichero, si no que en cada conexión que desees
-usar tu servidor, se lo especifiques. Por ejemplo, con networkmanager, le dices
-a N conexión, que el servidor dns es manual y será <em>127.0.0.1</em>. Si usas Gnome
-(NetworkManager), te recomiendo usar la utilidad <strong>nm-connection-editor</strong>. Te
-permitirá especificar el dominio de búsqueda, cosa que no he visto como hacer
-con el administrador de conexiones de gnome.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -773,6 +810,10 @@ con el administrador de conexiones de gnome.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/06/22/curiosa-acl-de-squid/">squid y navegar a .cu</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/05/13/instalar-node-rapido/">instalar node rápido</a>

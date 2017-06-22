@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-05-29T21:57:37-04:00</updated>
+  <updated>2017-06-22T11:26:20-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,121 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[squid y navegar a .cu]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/06/22/curiosa-acl-de-squid/"/>
+    <updated>2017-06-22T00:17:11-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/06/22/curiosa-acl-de-squid</id>
+    <content type="html"><![CDATA[<p>Aveces las necesidades de nuestros clientes, son tan raras que nos dejan
+anonadados. Pero ante necesidades extravagantes; soluciones extravagantes.  Este
+post me lo dejo a modo de reflexión, para recordar; que muchas veces, el ingenio
+combinado con la simpleza, puede desembocar en soluciones tan hermosas como
+raras.</p>
+
+<p>Es común, que en algunos lugares, la navegación a sitios &ldquo;.cu&rdquo; no requiera
+autenticación. Aveces poner una ACL como esta</p>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="err">acl</span> <span class="err">cuba</span> <span class="err">url_regex</span> <span class="err">\.cu</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">cuba</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Aparentemente <em>matamos la jugada</em>, pero luego, metemos una ACL relacionada con
+usuarios autenticados y se jodió bicicleta.</p>
+
+<p>El cartel de &ldquo;por favor autentique&rdquo; cae a cuanto &ldquo;.cu&rdquo; se navegue.</p>
+
+<p>Pero tocando el <em>squid.conf</em>, vi esta cosa hermosa</p>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="c1">#   acl aclname localport 3128  # TCP port the client connected to [fast]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Decidí que los que vallan a navegar con autenticación, usarán el puerto 8080 y
+los vuelos nacionales saldrán por el 3128.</p>
+
+<p>De esta manera, se hace una ACL que niegue las peticiones NO cubanas <strong>sin mostrar
+el puto login</strong>.</p>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="c1"># aquellos que se conectan por el puerto 3128</span>
+</span><span class='line'> <span class="err">acl</span> <span class="err">mortales</span> <span class="err">localport</span> <span class="err">3128</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># aquellos que se conectan por el 8080</span>
+</span><span class='line'> <span class="err">acl</span> <span class="err">olimpo</span> <span class="err">localport</span> <span class="err">8080</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># los sitios a los que se entran sin contraseña</span>
+</span><span class='line'> <span class="err">acl</span> <span class="err">cuba</span> <span class="err">url_regex</span> <span class="err">-i</span> <span class="err">&quot;/etc/squid3/cuba.lst&quot;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># CUBANOS</span>
+</span><span class='line'> <span class="c1"># lo que valla a cuba,</span>
+</span><span class='line'> <span class="c1"># sale sin autenticación</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">mortales</span> <span class="err">cuba</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">CONNECT</span> <span class="err">mortales</span> <span class="err">cuba</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># deniega a los mortales, lo que no sea cuba</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">deny</span> <span class="err">mortales</span> <span class="err">!cuba</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">deny</span> <span class="err">CONNECT</span> <span class="err">mortales</span> <span class="err">!cuba</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># PRIVILEGIADOS</span>
+</span><span class='line'> <span class="c1"># lo que NO valla para cuba debe autenticarse</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">CONNECT</span> <span class="err">olimpo</span> <span class="err">autenticados</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">olimpo</span> <span class="err">autenticados</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># y más nada pasa</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">deny</span> <span class="err">CONNECT</span> <span class="err">all</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">deny</span> <span class="err">all</span>
+</span><span class='line'> <span class="err">icp_access</span> <span class="err">deny</span> <span class="err">all</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¿Se entendió? Pasa que squid, al hacerle cualquier petición, que involucre
+internet, le mostrará al pobre <em>puntoseunauta</em> el cuadro de diálogo, ya que
+para acceder a internet real requiere autenticación; y squid te da la
+posibilidad probar que eres <em>usuario de internet</em>. Para evitar esta conducta,
+ponemos una cláusula permitiendo que los &ldquo;.cu&rdquo; usando el 3128, pasan. Luego
+ponemos otra ACL negando el acceso a lo que <strong>NO</strong> sea .cu por el mismo puerto.
+De esta manera, los que tengan solo acceso &ldquo;.cu&rdquo;, usarán el 3128 y la ACL que
+involucra autenticación nunca es probada.</p>
+
+<p>Para los autenticados, pusimos una ACL que machea el puerto 8080. O sea, los
+usuarios de internet, al hacer su peticiones por el puerto 8080, enseguida las
+pedirá autenticación.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[instalar node rápido]]></title>
@@ -2402,57 +2517,6 @@ buscamos el fichero modem.bin haciendo click en Browse<sup>4</sup>.</p>
 cantes victoria. Si tu modem se deterioró, fue que ALGO lo deterioró y ese algo,
 lo joderá de nuevo, así que, mantén las herramientas a manos; las necesitarás
 pronto.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[rails-assets]]></title>
-    <link href="http://uranio-235.github.io/blog/2017/01/02/rails-assets/"/>
-    <updated>2017-01-02T18:55:02-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2017/01/02/rails-assets</id>
-    <content type="html"><![CDATA[<p>Gemas como twitter-bootstrap-rails, hacen que el trabajo con CSS complejas
-supuestamente se haga &ldquo;al click&rdquo;. Pero cuando deseas ir un poco más allá, por
-ejemplo, si quieres DataTables, notarás que tienes dos opciones, la primera,
-usar una gema desfasada (si hay, que casi siempre la hay, aunque buena para
-nada).</p>
-
-<p>Sin embargo, parece que algún cerebrito, hizo un sitio en el cual la fuente
-oficial de las assets (quizás a través de npm) se convierten de manera
-automatizada en una gema de rails.</p>
-
-<p>De esta manera, al poner en el Gemfile de tu aplicación esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;Gemfile&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span>  <span class="s1">&#39;https://rails-assets.org&#39;</span> <span class="k">do</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-underscore&#39;</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-DataTables&#39;</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-bootstrap&#39;</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-jquery-ui&#39;</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-stringjs&#39;</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-iCheck&#39;</span>
-</span><span class='line'>   <span class="n">gem</span> <span class="s1">&#39;rails-assets-jquery&#39;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Instalarás dichas js/css en tu aplicación.</p>
-
-<p>En el <a href="https://rails-assets.org">sito web de rails-assets</a> explica con unos
-diff, que debes poner en el application.js y aaplication.css para incluir cada
-una de las assets. Casi siempre es algo genérico al nombre, lo puedes intuir.</p>
-
-<p>De todas maneras, el fracasado proyecto de crear un jquery unobstructive;
-condujo a que jquery fuera expulsada del core de rails. Así que al parecer la
-tendencia de rails 5 en adelante, será usar las js aparte. Más vale tener un
-buen jquery a mano.</p>
 ]]></content>
   </entry>
   
