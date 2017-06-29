@@ -4,7 +4,7 @@
   <title><![CDATA[Category: islam | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/islam/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-06-22T11:26:20-04:00</updated>
+  <updated>2017-06-29T11:59:05-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,62 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Apps islámicas android]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/06/28/android-islamico/"/>
+    <updated>2017-06-28T23:52:26-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/06/28/android-islamico</id>
+    <content type="html"><![CDATA[<p>Si queremos decir <em>una aplicación islámica de android bien completa</em>, la que más
+se acerca es sin duda es &ldquo;MuslimPro&rdquo;. Por tener, tiene hasta los 99 nombres de
+dios, recitados con un corito de lo más lindo. Sin embargo, cosas <strong>sensillas</strong>
+como cambiar el adhan, se vuelven complicadas. Si no te cuadran los 3 adhan que
+trae, te jodiste, por que lo más bonitos son para la versión de pago.</p>
+
+<p><img class="right" src="/images/muslim_daily.png" width="200" title="&ldquo;portada de Muslim Daily, note como falta la sesión de noticias&rdquo;" ></p>
+
+<p>En mi opinión, el adhan debe sonar más enérgico de día, pero el adhan de Isha&#8217;a,
+lo prefiero pasivo. Por ello, recomiendo más usar <a href="https://play.google.com/store/apps/details?id=com.honey.prayerassistant"><strong>Muslim Daily</strong></a>.
+Antes contaba con una sesión de noticias muy interesante, que se adaptaba a tu
+gusto como por arte de magia. No se por qué se la quitaron. También tiene la
+Qibla y un calendario islámico bastante poco funcional por cierto; me costó
+trabajo entender como conmutar las fechas.</p>
+
+<p>Entre los 9 adhan que ofrece, tenemos el <em>Adhan Nasse Al Qatmi</em> muy apropiado
+para Isha&#8217;a, suena bastante sereno.</p>
+
+<p>El corán que esta aplicación provee en español es la traducción de Cortés; una
+gran porquería en mi opinión. Pero de igual, si de coranes se trata, prefiero
+<a href="https://play.google.com/store/apps/details?id=com.chaks.quran"><strong>El noble corán</strong></a>
+Este cuenta con una buena gama de recitaciones en audio para todos los gustos.
+Además, el texto en los tres idiomas.</p>
+
+<p><img class="left" src="/images/chaksquran.png" width="200" title="&ldquo;«la apuertura» mostrando texto arábico, transliteración y traducción&rdquo;" ></p>
+
+<p>Recuerda, que mientras la app esté mostrando el texto en árabe, será entonces
+entonces un corán (no una traducción) y debes tener en cuenta el respeto que
+esto amerita; así que nada de leer en el baño. También tiene gestor de aleyas
+favoritas y permite añadirle notas.</p>
+
+<p><img class="right" src="/images/arabe_chat.png" width="200" title="&ldquo;transcripción a alfabeto de chat&rdquo;" ></p>
+
+<p>Pero lo que más me gusta es que tiene una transliteración escrita fonéticamente
+con <a href="https://es.wikipedia.org/wiki/Alfabeto_de_chat_%C3%A1rabe">árabe de chat</a>.</p>
+
+<p>Por si no lo sabes, esta es una manera de leer árabe con alfabeto latino. Es la
+mejor transliteración, ya que fue creada por los árabes de manera espontanea. En
+vez de valerse de dígrafos para representar las consonantes; usan simplemente
+números. Por ejemplo, <em>ayn</em> (ع) es el 3 y la <em>ha</em> gutural (ح) con el 7. Además,
+las vocales entre paréntesis, representan las vocales casi inaudibles que
+acompañan de manera implícita a una consonante, como la «i» de la <em>mim</em> (م).</p>
+
+<p>Por último, una aplicación de plegarias. Nada mal para afinar la fonética; la
+aplicación <a href="https://play.google.com/store/apps/details?id=com.chaks.duaas"><strong>34 Duaas</strong></a>.</p>
+
+<p>Conclusión, el corán transliterado con árabe de chat de com.chaks.quran, es un
+batazo y los adhanes de com.honey.prayerassistant son más variados.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[transliteración del corán]]></title>

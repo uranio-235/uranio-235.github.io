@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-06-22T11:26:20-04:00</updated>
+  <updated>2017-06-29T11:59:05-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,207 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[repos EPEL y demás]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/06/29/repos-epel-y-demas/"/>
+    <updated>2017-06-29T02:15:03-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/06/29/repos-epel-y-demas</id>
+    <content type="html"><![CDATA[<p>CentOS, es conocido por sus reducidos repositorios. Pero por suerte, los repos
+EPEL (enterprise linux) y el IUS nos permiten bandearnos un poco. Además,
+tenemos el Remi, tan fresco como explosivo, que si bien no es muy recomendable
+usarlo, nunca está de más tenerlo a mano. Si algo tiene lindo <em>yum</em> es la
+gestión de repositorios.</p>
+
+<p>Instala <strong>wget</strong>&hellip; vamos a necesitarlo.</p>
+
+<p>Para los criticones: -sí, ya se que el epel está en el repo oficial, pero para
+este ejemplo lo añadiremos desde la web.</p>
+
+<figure class='code'><figcaption><span>&#8220;añadiendo el EPEL&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</span>
+</span><span class='line'><span class="go"> rpm -Uvh epel-release-latest-7*.rpm</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El IUS es majomenos la misma historia</p>
+
+<figure class='code'><figcaption><span>&#8220;añadiendo el IUS</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> wget https://centos7.iuscommunity.org/ius-release.rpm</span>
+</span><span class='line'><span class="go"> rpm -Uvh ius-release*.rpm</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El repo IUS, suele contener paquetes más recientes de cosas que ya centos trae.
+La mejor manera de instalar esto, es usando un plugin de yum, llamado «replace»,
+así que instala el paquete <strong>yum-plugin-replace</strong>.</p>
+
+<p>Ahora busca el paquete que deseeas en el repo IUS:</p>
+
+<figure class='code'><figcaption><span>&#8220;buscando en el IUS&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum --disablerepo=&quot;*&quot; --enablerepo=&quot;ius&quot; search talcosa</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Luego remplaza el paquete <em>talcosa</em> de CentOS, por el <em>talcosa3u</em> de IUS</p>
+
+<figure class='code'><figcaption><span>&#8220;remplazando paquete&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum replace talcosa --replace-with talcosa3u</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Para más detalles, échale un vistazo a <a href="https://ius.io/Usage/">el user-guide de IUS</a></p>
+
+<p>El repositorio Remi es aún más peligroso, ya que los paquetes tienen el mismo
+nombre que el de los oficiales. Se recomienda no tener el repo remi activado NI
+JUGANDO.</p>
+
+<p>La instalación es la misma rutina</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando Remi&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> wget http://rpms.famillecollet.com/enterprise/remi-release-7.rpm</span>
+</span><span class='line'><span class="go"> rpm -Uvh remi-release-7*.rpm</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Luego usamos el mismo proceder, buscar en repo específico.</p>
+
+<figure class='code'><figcaption><span>&#8220;buscando paquetes&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">yum --enablerepo=remi search fulanito</span>
+</span><span class='line'><span class="go">yum --enablerepo=remi install fulanito</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El comando <em>repolist</em> permite ver los repositorios en juego. Para ver los repos
+que tienes acoplados, usa <strong>yum repolist</strong>. Si quieres ver que repo tienes
+deshabilitados, usa <strong>yum repolist disabled</strong>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[knockd en centos]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/06/29/knockd-en-centos/"/>
+    <updated>2017-06-29T02:06:34-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/06/29/knockd-en-centos</id>
+    <content type="html"><![CDATA[<p>Desafortunadamente, los repositorios oficiales de centos no traen port-knocking.
+No queda más remiendo que usar un repo de terceros.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/yum.repos.d/nux-misc.repo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> [root@proxy ~]# cat /etc/yum.repos.d/nux-misc.repo</span>
+</span><span class='line'><span class="go"> [nux-misc]</span>
+</span><span class='line'><span class="go"> name=Nux Misc</span>
+</span><span class='line'><span class="go"> baseurl=http://li.nux.ro/download/nux/misc/el7/x86_64/</span>
+</span><span class='line'><span class="go"> enabled=0</span>
+</span><span class='line'><span class="go"> gpgcheck=1</span>
+</span><span class='line'><span class="go"> gpgkey=http://li.nux.ro/download/nux/RPM-GPG-KEY-nux.ro</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Luego para instalar, declaramos dicho repositorio como activo.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum --enablerepo=nux-misc install knock knock-server</span>
+</span><span class='line'><span class="go"> systemctl enable knockd</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En mi caso, el /etc/knockd.conf me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/knockd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="k">[options]</span>
+</span><span class='line'>   <span class="err">UseSyslog</span>
+</span><span class='line'>   <span class="na">Interface</span> <span class="o">=</span> <span class="s">eth1</span>
+</span><span class='line'>
+</span><span class='line'> <span class="k">[abreme]</span>
+</span><span class='line'>   <span class="na">sequence</span> <span class="o">=</span> <span class="s">111,222,333</span>
+</span><span class='line'><span class="s">   tcpflags = syn</span>
+</span><span class='line'><span class="s">   seq_timeout = 15</span>
+</span><span class='line'><span class="s">   cmd_timeout = 8600</span>
+</span><span class='line'><span class="s">   start_command = /sbin/iptables -I INPUT -s %IP% -j ACCEPT</span>
+</span><span class='line'><span class="s">   stop_command =  /sbin/iptables -D INPUT -s %IP% -j ACCEPT</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nota para imbéciles: Cambia <strong>sequence</strong> por tu secuencia.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Apps islámicas android]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/06/28/android-islamico/"/>
+    <updated>2017-06-28T23:52:26-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/06/28/android-islamico</id>
+    <content type="html"><![CDATA[<p>Si queremos decir <em>una aplicación islámica de android bien completa</em>, la que más
+se acerca es sin duda es &ldquo;MuslimPro&rdquo;. Por tener, tiene hasta los 99 nombres de
+dios, recitados con un corito de lo más lindo. Sin embargo, cosas <strong>sensillas</strong>
+como cambiar el adhan, se vuelven complicadas. Si no te cuadran los 3 adhan que
+trae, te jodiste, por que lo más bonitos son para la versión de pago.</p>
+
+<p><img class="right" src="http://uranio-235.github.io/images/muslim_daily.png" width="200" title="&#34;portada de Muslim Daily, note como falta la sesión de noticias&#34;" alt="&#34;portada de Muslim Daily, note como falta la sesión de noticias&#34;"></p>
+
+<p>En mi opinión, el adhan debe sonar más enérgico de día, pero el adhan de Isha&#8217;a,
+lo prefiero pasivo. Por ello, recomiendo más usar <a href="https://play.google.com/store/apps/details?id=com.honey.prayerassistant"><strong>Muslim Daily</strong></a>.
+Antes contaba con una sesión de noticias muy interesante, que se adaptaba a tu
+gusto como por arte de magia. No se por qué se la quitaron. También tiene la
+Qibla y un calendario islámico bastante poco funcional por cierto; me costó
+trabajo entender como conmutar las fechas.</p>
+
+<p>Entre los 9 adhan que ofrece, tenemos el <em>Adhan Nasse Al Qatmi</em> muy apropiado
+para Isha&#8217;a, suena bastante sereno.</p>
+
+<p>El corán que esta aplicación provee en español es la traducción de Cortés; una
+gran porquería en mi opinión. Pero de igual, si de coranes se trata, prefiero
+<a href="https://play.google.com/store/apps/details?id=com.chaks.quran"><strong>El noble corán</strong></a>
+Este cuenta con una buena gama de recitaciones en audio para todos los gustos.
+Además, el texto en los tres idiomas.</p>
+
+<p><img class="left" src="http://uranio-235.github.io/images/chaksquran.png" width="200" title="&#34;«la apuertura» mostrando texto arábico, transliteración y traducción&#34;" alt="&#34;«la apuertura» mostrando texto arábico, transliteración y traducción&#34;"></p>
+
+<p>Recuerda, que mientras la app esté mostrando el texto en árabe, será entonces
+entonces un corán (no una traducción) y debes tener en cuenta el respeto que
+esto amerita; así que nada de leer en el baño. También tiene gestor de aleyas
+favoritas y permite añadirle notas.</p>
+
+<p><img class="right" src="http://uranio-235.github.io/images/arabe_chat.png" width="200" title="&#34;transcripción a alfabeto de chat&#34;" alt="&#34;transcripción a alfabeto de chat&#34;"></p>
+
+<p>Pero lo que más me gusta es que tiene una transliteración escrita fonéticamente
+con <a href="https://es.wikipedia.org/wiki/Alfabeto_de_chat_%C3%A1rabe">árabe de chat</a>.</p>
+
+<p>Por si no lo sabes, esta es una manera de leer árabe con alfabeto latino. Es la
+mejor transliteración, ya que fue creada por los árabes de manera espontanea. En
+vez de valerse de dígrafos para representar las consonantes; usan simplemente
+números. Por ejemplo, <em>ayn</em> (ع) es el 3 y la <em>ha</em> gutural (ح) con el 7. Además,
+las vocales entre paréntesis, representan las vocales casi inaudibles que
+acompañan de manera implícita a una consonante, como la «i» de la <em>mim</em> (م).</p>
+
+<p>Por último, una aplicación de plegarias. Nada mal para afinar la fonética; la
+aplicación <a href="https://play.google.com/store/apps/details?id=com.chaks.duaas"><strong>34 Duaas</strong></a>.</p>
+
+<p>Conclusión, el corán transliterado con árabe de chat de com.chaks.quran, es un
+batazo y los adhanes de com.honey.prayerassistant son más variados.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[squid y navegar a .cu]]></title>
@@ -2234,289 +2435,6 @@ de la fecha y muestra la barra cambiando de posición, el clásico palito girand
 
 <p>En el array, el último caracter tiene un String#strip porque al escribir <strong>\&lsquo;</strong>
 el compilador suele interpretarlo como que estás escapando la comilla simple.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[DataTables en español]]></title>
-    <link href="http://uranio-235.github.io/blog/2017/01/20/datatables-espanol/"/>
-    <updated>2017-01-20T16:39:32-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2017/01/20/datatables-espanol</id>
-    <content type="html"><![CDATA[<p>Siempre hay un cliente exquisito que le molesta la aplicación completa en
-español, a excepción del puñetero paginador que está en inglés.</p>
-
-<p>Como ya no uso kaminari ni will_paginate la cosa se complica. Decidí llamar a
-todas las tables id=&ldquo;latabla&rdquo; y en el <strong>application.js</strong>, según la
-documentación de la API de DataTables, le ponemos la clave <em>language</em> con sus
-pertinentes componentes.</p>
-
-<figure class='code'><figcaption><span>&#8220;application.js&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#latabla&#39;</span><span class="p">).</span><span class="nx">DataTable</span><span class="p">(</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="s2">&quot;language&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;decimal&quot;</span><span class="o">:</span>        <span class="s2">&quot;.&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;emptyTable&quot;</span><span class="o">:</span>     <span class="s2">&quot;No hay datos para mostrar&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;info&quot;</span><span class="o">:</span>           <span class="s2">&quot;del _START_ al _END_ (_TOTAL_ total)&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;infoEmpty&quot;</span><span class="o">:</span>      <span class="s2">&quot;del 0 al 0 (0 total)&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;infoFiltered&quot;</span><span class="o">:</span>   <span class="s2">&quot;(filtrado de todas las _MAX_ entradas)&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;infoPostFix&quot;</span><span class="o">:</span>    <span class="s2">&quot;&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;thousands&quot;</span><span class="o">:</span>      <span class="s2">&quot;&#39;&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;lengthMenu&quot;</span><span class="o">:</span>     <span class="s2">&quot;Mostrar _MENU_ entradas&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;loadingRecords&quot;</span><span class="o">:</span> <span class="s2">&quot;Cargando...&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;processing&quot;</span><span class="o">:</span>     <span class="s2">&quot;Procesando...&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;search&quot;</span><span class="o">:</span>         <span class="s2">&quot;Buscar:&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;zeroRecords&quot;</span><span class="o">:</span>    <span class="s2">&quot;No hay resultados&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;paginate&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="s2">&quot;first&quot;</span><span class="o">:</span>      <span class="s2">&quot;Primero&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="s2">&quot;last&quot;</span><span class="o">:</span>       <span class="s2">&quot;Último&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="s2">&quot;next&quot;</span><span class="o">:</span>       <span class="s2">&quot;Siguiente&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="s2">&quot;previous&quot;</span><span class="o">:</span>   <span class="s2">&quot;Anterior&quot;</span>
-</span><span class='line'>        <span class="p">},</span>
-</span><span class='line'>        <span class="s2">&quot;aria&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="s2">&quot;sortAscending&quot;</span><span class="o">:</span>  <span class="s2">&quot;: ordenar de manera Ascendente&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="s2">&quot;sortDescending&quot;</span><span class="o">:</span> <span class="s2">&quot;: ordenar de manera Descendente &quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">}</span> <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span> <span class="p">);</span> <span class="c1">// document ready</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Claro, realmente no lo hice así, ya que en vez de <strong>&ldquo;Anterior&rdquo;</strong> puse
-<strong>t(:dt_prev)</strong>  y cree su pertinente fichero de idioma con la traducción, pero
-escribí esta entrada pensando en gente que puede o no usar RoR. No obstante, el
-buen desarrollador de rails, sabe que lo correcto sería usar la in API de i18n.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[tendencias tecnológicas]]></title>
-    <link href="http://uranio-235.github.io/blog/2017/01/09/tendencias-tecnologicas/"/>
-    <updated>2017-01-09T21:04:02-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2017/01/09/tendencias-tecnologicas</id>
-    <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/bandwagon.jpg" width="400" height="500" title="" ></p>
-
-<p>Por suerte, la era de Zentyal está a punto de terminar.</p>
-
-<p>Ahora tenemos tocadores de pfSense, que se creen usuarios de FreeBSD.</p>
-
-<p>Siempre me ha maravillado el criterio de selección tecnológica de la mayoría (NO
-todos) los cubanos</p>
-
-<h4>puro efecto bandwagon</h4>
-
-<p>Funciona como especie de moda, donde el software más popular triunfa,
-simplemente por su popularidad, no por su adecuación, o idoneidad.</p>
-
-<p>Por ejemplo, nginx se puso de moda, porque el jovenclub lo usa. El jovenclub es
-famoso por sus disparates tecnológicos, pero no importa. ¡Usemos nginx! Antes yo
-usaba nginx, como proxy inverso, balanceo de carga y servidor web de contenido
-estático. Entonces yo era &ldquo;un extravagante&rdquo;. Ahora todo el mundo usa nginx para
-TODO. Tipos que AYER tocaron la puntica de nginx, te dicen: &ldquo;¿aún usas apache?&rdquo;
-y te miran como si tú fueras un bicho raro. Curiosamente, la misma mirada que
-ponían cuando les decías que usabas nginx (además de apache).</p>
-
-<p>Muchos dicen que &ldquo;systemd es una mierda&rdquo;, pero al preguntar &ldquo;por qué&rdquo;, son pocos
-los que dan argumentos técnicos que vallan más allá de simple resistencia al
-cambio. Parece no haber un término medio. Todo es blanco y negro. Nadie dice por
-ejemplo que systemd es bueno para máquinas de escritorios pero no tan bueno para
-servidores. NOOoo&hellip;</p>
-
-<p>Otro que bien baila es Proxmox. La herramienta de virtualización que ha caído en
-manos de los mas perezosos como dedo en el anillo. Al parecer soy el único
-cubano que usa Xen. Actualmente me dicen: &ldquo;ah! ¿no usas proxmox?&rdquo;. Pero cuando
-pregunto: ¿qué tiene proxmox superior a xen? Estoo, es queeee, veráaas,
-bueeenooo&hellip;. Nada, que está moda. La ecuación es simple:</p>
-
-<h4>Virtualización = Proxmox</h4>
-
-<p>click-click-click-click-click ¡<strong>ZAS</strong>! Todo está listo!!</p>
-
-<p>Dejaron de usar windows Server (click, click listo!)</p>
-
-<p>Para usar:</p>
-
-<p>Proxmox+Zimbra+pfSense (click, click ¡LISTO! ¡¡¡y además FUNCIONA!!)</p>
-
-<p>¿Cambio de paradigma? ¿Filosofía UNIX? ¿Estilo de trabajo? ¿Teorema de KISS?
-¿Software Libre? <em>-pfff, que chiste. Ese tipo está loco, anda con la pila de
-consolas que parecen salida de la matrix. Nerd!</em></p>
-
-<p>No saben que demonios es un cortafuegos, no son capaces de elaborar una solución
-a la medida de su problema y ni siquiera entienden el software que usan pero
-eso son nimiedades.</p>
-
-<p>Cuando las necesidades tan pecularies de cubita la bella dicen &ldquo;aquí estoy&rdquo;,
-entonces no saben como van a modificar el comportamiento del software para
-adecuarse a nuestras extravagantes necesidades. Por que hay cientos de menus con
-cientos de click y checkmarks, pero ninguna hace lo que le exigen al sysadmin
-cubano.</p>
-
-<p>El servidor de correos, es su mayor dolor de cabeza, pero hay Zimbra. A veces
-necesitan un servidor SIMPLE o un servidor COMPLEJO, nada que ver con Zimbra y
-bueno, prueba a ver si iRedMail te lo resuelve.</p>
-
-<p>Ven herramientas como nagios o smokeping, se quedan con la boca abierta, pero
-¡joder! es muy complicado, me paso. Al menos,  hasta que alguien me de una
-configuración que funcione y yo cambiarle los valores para que se adecue a mi
-entorno.</p>
-
-<p>Reza porque todo funcione. Ya que es tanta la ignorancia, que si hay un
-problema, ni siquiera saben como van a pedir ayuda, porque ni siquiera entienden
-con que están tratando.</p>
-
-<p>Siempre puedes decirle al jefe &ldquo;no se puede&rdquo;. Después de todo, eres un
-<strong>tolerable asalariado</strong> y no te pasará nada por incumplir. Le puedes echar la
-culpa <em>al país que es una mierda por el atraso tecnológico</em> y bla bla bla; todas
-esas excusas que usan los mediocres de gama alta.</p>
-
-<h4>pero tienen más horas de facebook que de consola</h4>
-
-<p>Los más triste del caso, es que luego quieren venir a discutir de tecnología y
-uno no sabe como va a llevar la conversación para no humillarlos.</p>
-
-<h4>punto y aparte</h4>
-
-<p>Además, están los tipos que <strong>Sí SABEN</strong>, pero que usan todo eso porque &ldquo;no
-tienen tiempo&rdquo;. Trabajan sentados, el día entero apretando teclas en aire
-acondicionado y &ldquo;no tienen tiempo&rdquo;.</p>
-
-<p>Pierden su tiempo en jugar con toda esta parafernalia modista, para luego darse
-cuenta que esos sistemas, están incompletos. Les falta algo que ellos ya han
-hecho mejor y es cuando se dan cuenta, que están andando con juguetes.</p>
-
-<h4>para los extremistas</h4>
-
-<p>No digo que Zimbra/pfSense/Proxmox sean malos, digo que el método perezoso, es
-malo.</p>
-
-<p>No puedes comparar la picoloro con la llave inglesa.</p>
-
-<p>Tampoco puedes pensar que solo necesitas una de las dos para hacerlo todo. Ambas
-son útiles, en su adecuado ambiente y para la tarea que fueron diseñadas.</p>
-
-<p>Antes de emitir un criterio tecnológico, pruebo el software, lo instalo, lo
-manoceo, trato de romperlo, de ver como funciona, que tiene por detrás;
-finalmente, que haría yo si quisiera/pudiera mejorarlo. Entonces me hago un
-criterio.</p>
-
-<p>La gente que me conoces, sabe que aveces digo: &ldquo;eso es una mierda&rdquo;. Otros, que
-me conocen mejor y que hace lo mismo que yo; suelen oírme cuando digo: -eso es
-una mierda y te contaré como llegué a esa conclusión, ya que seguro que a ti te
-ha pasado parecido.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[flasheando modem al S4]]></title>
-    <link href="http://uranio-235.github.io/blog/2017/01/09/flasheando-modem-al-s4/"/>
-    <updated>2017-01-09T19:00:58-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2017/01/09/flasheando-modem-al-s4</id>
-    <content type="html"><![CDATA[<p>Es un mojón de los Samsung, tener el módem (banda base) como una partición y
-(por ende un firmware) aparte del sistema. Por este motivo, cuando flasheas
-cyanogen (léase &ldquo;cualquier ROM&rdquo;) una y otra vez; o cuando el teléfono se apaga
-abruptamente&hellip; Diiiicen que se corrompe el módem.</p>
-
-<p>Entonces, de buenas a primeras, el teléfono te dice &ldquo;tarjeta SIM expulsada,
-Reinicie&rdquo;. Aveces al reiniciar no se soluciona el problema. Yo he estado hasta 3
-días sin teléfono. Quitarle la batería un rato y volverla a poner, suele ser una
-solución, pero aveces, hasta 7 veces al día; he tenido que lidiar con el
-errorsito de los cojones.</p>
-
-<p><img class="right" src="http://uranio-235.github.io/images/acercade_baseband.png" width="200" height="300" title="" ></p>
-
-<p>La única solución paliativa que he visto, es, de vez en vez, al menos una cada
-dos mes; flahsear el módem.</p>
-
-<p>El cómo dar con el módem te lo dejo de tarea. Lo siento, no soy la base de datos
-de bandas bases de samsung. La mía la <strong>busqué en google</strong> escribiendo el texto:</p>
-
-<p>&ldquo;modem SGH-M919&rdquo;</p>
-
-<p>Oséase, pidiendo el módem para mi modelo del teléfono, que al parecer, la
-<strong>M919UVUFNH7</strong>, es la última disponible para mi canchanfleta.</p>
-
-<p>El proceso de flasheo, la primera vez, requiere que nos hagamos con el
-fichero PIT del teléfono.</p>
-
-<p>Reinicia el teléfono en modo descarga. Si no sabes cómo hacerlo, googlea, cada
-samsung tiene su forma. El mío (S4 T-Mobile) es Power+VolDown+Home. Luego, en el
-modo descarga; una vez que (presiones VolUp) para inicializar la conexión,
-pasamos a Heimdall.</p>
-
-<p>Nota para los imbéciles: Conecte el teléfono a la computadora mediante un cable
-USB <strong>en buen estado</strong>.</p>
-
-<p><img class="right" src="http://uranio-235.github.io/images/pitfile.png" width="600" height="700" title="" ></p>
-
-<p>En Heimdall, vamos a la pestaña <strong>Utilities</strong>. Presiona botón
-<em>Detect</em><sup>1</sup>, cuando te coja el teléfono, presiona <em>Save As</em><sup>2</sup>
-y te dará un nombre de fichero para salvar, por ejemplo, <strong>fulanito.pit</strong>.
-Finalmente presiona <em>Download</em><sup>3</sup> y te creará el fichero.</p>
-
-<p>Decirte quiero que este ficherito es muy famoso, ya que es algo así como tu
-tabla de particiones.</p>
-
-<p>Una vez que tienes el fichero en tu poder, Heimdall, será capaz de saber <em>a
-ciegas</em> donde están las particiones de tu teléfono sin tener que preguntárselo
-una y otra vez, así que guardalo en un directorio donde pongas todas las
-gangarreas de tu teléfono. Por cierto, terminamos con el teléfono; aunque diga
-&ldquo;do not turn off&rdquo; cágate en la noticia y reinicia (quita la batería).</p>
-
-<p>Ahora viene tiempo de google, muuuuucho google, para dar con tu módem.</p>
-
-<p>Digamos que finalmente diste con el módem de tu samsung. Seguro tiene un nombre
-muy genérico, casi siempre se llaman <strong>modem.bin</strong>. Procede con el mismo
-preludio del ritual (modo descarga y abre heimdall)</p>
-
-<p><img class="left" src="http://uranio-235.github.io/images/flasheo_modem.png" width="600" height="700" title="" ></p>
-
-<p>Ahí ve para la pestaña que dice <strong>Flash</strong>. Click en <em>Browse</em><sup>1</sup> y
-localiza tu pitfile. Click en <em>Add</em><sup>2</sup> y luego en el <em>select</em> del campo
-<em>partition name</em><sup>3</sup> selecciona la partición <strong>MDM</strong>. Finalmente, le
-buscamos el fichero modem.bin haciendo click en Browse<sup>4</sup>.</p>
-
-<p>¿No tengo que decirte que pulses <strong>Start</strong>, verdad?</p>
-
-<p>Si todo salió bien, se reiniciará y tendrás tu módem recién flasheado. Pero no
-cantes victoria. Si tu modem se deterioró, fue que ALGO lo deterioró y ese algo,
-lo joderá de nuevo, así que, mantén las herramientas a manos; las necesitarás
-pronto.</p>
 ]]></content>
   </entry>
   

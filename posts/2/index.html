@@ -9,8 +9,7 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="rainloop en debian 04/03/2017 1:45 pm | Comments Aún recuerdo que algunos clientes me preguntaban con mucho asombro: &ldquo;-y porque
-no roundcube& &hellip;">
+  <meta name="description" content="xen y virt-manager 08/04/2017 12:04 am | Comments La miseria, es lo único que; aun repartida a muchos, toca en abundancia. La superioridad &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +81,523 @@ no roundcube& &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/04/08/xen-y-virt-manager/">xen y virt-manager</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-04-08T00:04:41-04:00'><span class='date'>08/04/2017</span> <span class='time'>12:04 am</span></time>
+        
+           | <a href="/blog/2017/04/08/xen-y-virt-manager/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/04/08/xen-y-virt-manager/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>La miseria, es lo único que; aun repartida a muchos, toca en abundancia.</p>
+
+<p>La superioridad tecnológica de XenServer es indiscutible: seguro (esquema de
+pacheo de XOA), versátil (la XAPI), robusto (CentOS) y sencillo (Xen Orchestra
+Appliance) y enterprise (next, next, next, install, boot, ready!) PERO:</p>
+
+<p><img class="right" src="/images/XenFuPandaWiki.png" title="&#34;el xenfu panda, el logo de Xen, olvidado o desconocido por los usuarios de Citrix XenServer&#34;" alt="&#34;el xenfu panda, el logo de Xen, olvidado o desconocido por los usuarios de Citrix XenServer&#34;"></p>
+
+<p>Cuando los megas de RAM se cuentan con los dedos de una mano, el peso de la XAPI
+y la necesidad de tener otra máquina corriendo para el XenOrchestra, DUELEN.
+Tomemos por ejemplo, una máquina con 2 gigas de RAM. En mi caso tengo Xen
+Orchestra en la laptop, pero desplegar node+servidor en una máquina virtual más;
+no es una opción en este escenario. Que se jodan XOA, XenServer y los
+capitalistas de la Citrix ¡Hora de ser completamente libre!</p>
+
+<p>Yo hubiera matado la jugada con LXC pero el cliente insiste en usar los 3
+sistemas; tal como está en mi esquema del calixto. Lo cierto es que 3
+contenedores no inspiran mucha confianza. Tampoco KVM es una buena opción, sobre
+todo cuado no hay un super microprocesador.</p>
+
+<p>Rercordemos que: Xen, mejor con CPU, peor peor IO. Mientras que: KVM, mejor IO,
+pero CPU más penalizado.</p>
+
+<p>El menú:</p>
+
+<p>Dos interfaces de red, un disco de 500G, 2G de ram, y un CPU que <strong>por suerte</strong>
+soporta virtualización. Un switch de 24 puertos a 100 megas, otro a gigabit. Un
+friki que oye reguetton, su mujer, la mía, 5 pesos de café en un vaso plástico
+y YO.</p>
+
+<p>Las VM y su RAM:</p>
+
+<ul>
+<li>debian como servidor de correo (postfix y dovecot, sin webmail) - 512M</li>
+<li>alpine como ruter (dns, dhcp y firewall) - 512M</li>
+<li>FreeBSD como proxy (squid) - 1G</li>
+</ul>
+
+
+<p>La brujería:</p>
+
+<p><strong>Con suerte</strong> No se matarán por los 2 Gigas de RAM. El squid con usuarios PAM
+como autenticación y casi nada en las ACL, además en BSD no come mucha ram.
+Alpine es un chiste en lo que a RAM se refiere y el de correo no tendrá un
+webmail así que plin.</p>
+
+<p>Los 3 servidores tendrán unos cortafuegos super estrictos. Descartarán todo tipo
+de ICMP para evitar cuellos de botella. La LAN funciona a 100 megas y el
+servidor está conectado al ÚNICO switch a gigabit. Osea, el server, un switch y
+un cable al netgear viejo que está a 100 megas. Con eso, la difusión &ldquo;uno a
+varios&rdquo; será mayor y no habrá congestiones, mientras que la peticiones entrantes
+(individual) no excederán el 10% el ancho de vianda del servidor. La ley del
+embudo.</p>
+
+<p>Entrando en materia:</p>
+
+<p>Volvemos a la génesis de xen pero usaremos virt-manager para manejar el
+hypervisor.</p>
+
+<p>Primero que todo, llevamos a cabo una instalación típica de Xen en un debian 8.
+Nada que contar; el clásico Dom0.</p>
+
+<figure class='code'><figcaption><span>&#8220;xen-linux-system&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> aptitude update</span>
+</span><span class='line'><span class="go"> aptitude install xen-linux-system</span>
+</span><span class='line'><span class="go"> dpkg-divert --divert /etc/grub.d/08_linux_xen --rename /etc/grub.d/20_linux_xen</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Esta PC tiene dos interfaz de red. Una de cara al router, con una ip/29
+&ldquo;públicas&rdquo; y otra interfaz, de cara a la LAN. Por tanto crearemos 3 puentes:</p>
+
+<ul>
+<li>br0 de eth0 hacia el router</li>
+<li>br1 de eth1 hacia la LAN</li>
+<li>br2 para comunicación interna (costumbre, nunca está de más)</li>
+</ul>
+
+
+<p>Así me quedó el <strong>/etc/network/interfaces</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/network/interfaces&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> # arriba todo el mundo</span>
+</span><span class='line'><span class="go"> auto lo eth0 eth1 br0 br1 br2</span>
+</span><span class='line'>
+</span><span class='line'><span class="go"> # el lo</span>
+</span><span class='line'><span class="go"> iface lo inet loopback</span>
+</span><span class='line'>
+</span><span class='line'><span class="go"> # levanta las dos interfacess</span>
+</span><span class='line'><span class="go"> # pa cuando el bridge se levante</span>
+</span><span class='line'><span class="go"> iface eth0 inet manual</span>
+</span><span class='line'><span class="go"> iface eth1 inet manual</span>
+</span><span class='line'>
+</span><span class='line'><span class="go"> # puente de la interfaz onboard (WAN)</span>
+</span><span class='line'><span class="go"> iface br0 inet static</span>
+</span><span class='line'><span class="go">    bridge_ports eth0</span>
+</span><span class='line'><span class="go">    bridge_stp off</span>
+</span><span class='line'><span class="go">    bridge_waitport 0</span>
+</span><span class='line'><span class="go">    bridge_fd 0</span>
+</span><span class='line'>
+</span><span class='line'><span class="go"> # puente de la interfaz PCI (LAN)</span>
+</span><span class='line'><span class="go"> # y la ip del hypervisor para hacer SSH</span>
+</span><span class='line'><span class="go"> iface br1 inet manual</span>
+</span><span class='line'><span class="go">    address 192.168.99.10</span>
+</span><span class='line'><span class="go">    netmask 255.255.255.0</span>
+</span><span class='line'><span class="go">    bridge_ports eth1</span>
+</span><span class='line'><span class="go">    bridge_stp off</span>
+</span><span class='line'><span class="go">    bridge_waitport 0</span>
+</span><span class='line'><span class="go">    bridge_fd 0</span>
+</span><span class='line'>
+</span><span class='line'><span class="go"> # una interfaz de red local de las VM</span>
+</span><span class='line'><span class="go"> # note que el puente apunta a la interfaz none</span>
+</span><span class='line'><span class="go"> iface br2 inet static</span>
+</span><span class='line'><span class="go">    bridge_ports eth0</span>
+</span><span class='line'><span class="go">    address 169.254.0.1</span>
+</span><span class='line'><span class="go">    netmask 255.255.255.0</span>
+</span><span class='line'><span class="go">    bridge_ports none</span>
+</span><span class='line'><span class="go">    bridge_stp off</span>
+</span><span class='line'><span class="go">    bridge_waitport 0</span>
+</span><span class='line'><span class="go">    bridge_fd 0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora vienen los toques mágicos. <strong>Libvirt!</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;libvirtd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> apt-get install libvirt-bin</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>De más está que te diga, que este debian fue instalado sobre LVM. Crea el
+directorio <strong>/etc/libvirt/storage/</strong> y dentro, le pondremos un fichero llamado
+<strong>xenvg.xml</strong> o comotedelagana<strong>.xml</strong>. Al instalar con el particionado guiado;
+el grupo llama hostname-vg, en este caso <strong>xen-vg</strong>. Note como la cláusula
+<strong>path</strong>, apunta hacia el mapper del grupo de volumen group y que tanto nombre
+del fichero como del pool; no deben contener espacios ni &ldquo;-&rdquo;.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/libvirt/storage/xenvg.xml&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;pool</span> <span class="na">type=</span><span class="s">&#39;logical&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;name&gt;</span>xenvg<span class="nt">&lt;/name&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;target&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;path&gt;</span>/dev/xen-vg<span class="nt">&lt;/path&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/target&gt;</span>
+</span><span class='line'><span class="nt">&lt;/pool&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora inicializaremos el pool de libvirt:</p>
+
+<figure class='code'><figcaption><span>&#8220;virsh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> virsh pool-define /etc/libvirt/storage/xenvg.xml</span>
+</span><span class='line'><span class="go"> virsh pool-start xenvg</span>
+</span><span class='line'><span class="go"> virsh pool-autostart xenvg</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Corre <strong>virsh pool-info xenvg</strong> para ver si todo pinchó. Llegado a este punto
+te recomiendo reiniciar&hellip;</p>
+
+<h4>De regreso a la máquina del informático&hellip;</h4>
+
+<p>Arrancamos el virt-manager:</p>
+
+<p><img class="center" src="/images/virtmanager1.png" title="&#34;iniciando virt-manager desde gnome-shell&#34;" alt="&#34;iniciando virt-manager desde gnome-shell&#34;"></p>
+
+<p>De más está que te diga, que las operaciones de libvirt se hacen por
+ssh, así que debes tener ssh en la máquina remota; preferiblemente con
+autenticación por llaves y no por password.</p>
+
+<figure class='code'><figcaption><span>&#8220;ssh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> ssh-keygen</span>
+</span><span class='line'><span class="go"> ssh-copy-id root@192.168.99.10</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Vamos a <strong>File</strong> y <strong>Add connection</strong>, agregaremos una conexión del tipo
+<strong>Xen</strong>.</p>
+
+<p><img class="center" src="/images/virtmanager2.png" title="&#34;conectando al libvirtd del servidor xen&#34;" alt="&#34;conectando al libvirtd del servidor xen&#34;"></p>
+
+<p>De aquí en adelante, es la misma mecánica básica de virt-manager. Solo quiero
+hacer un apartado para crear un pool más y me refrito a un pool donde pondremos
+los ficheros &ldquo;.iso&rdquo;.</p>
+
+<p>Creamos el directorio donde meteremos los ISO y copiamos el iso que querramos
+para allá. Como ya me conocen, soy el enemigo de las plantillas. Confío más en
+lo que yo mismo hago que en lo que hacen otros.</p>
+
+<figure class='code'><figcaption><span>&#8220;mkdir&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> ssh root@192.168.99.10 mkdir /opt/isos/</span>
+</span><span class='line'><span class="go"> scp ~/Downloads/ISO/*.iso root@192.168.99.10:/opt/isos/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Selecciona la conexión al Xen, y haz click en el botón de crear nueva máquina.</p>
+
+<p><img class="center" src="/images/virtmanager3.png" title="&#34;creando el repositorio con las iso&#34;" alt="&#34;creando el repositorio con las iso&#34;"></p>
+
+<p>El asistente nos llevará al gestor de almacenamiento. Seleccionamos &ldquo;Local
+install media&rdquo; y click en siguiente. Luego &ldquo;Use ISO image&rdquo;.</p>
+
+<p><img class="left" src="/images/virtmanager4.png" width="300" height="300" title="&#34;Local Install Media&#34;" alt="&#34;Local Install Media&#34;">
+<img class="left" src="/images/virtmanager5.png" width="300" height="300" title="&#34;Use ISO image&#34;" alt="&#34;Use ISO image&#34;"></p>
+
+<p>Aquí haces click en <strong>Browse</strong> y te conduce al lugar donde crearemos los ISO.
+Inmediatamente te verás en la pantalla donde te pedirá que selecciones los
+storage volume. En la imagen se puede apreciar que ya existe uno llamado &ldquo;iso&rdquo;,
+pero de igual, para el ejemplo mostraremos como se creará.</p>
+
+<p>Odio las interfaz visual, como hacen pasar trabajo! Pero virsh no es cosa jamón
+para mi cliente que no es del todo un hacha en linux.</p>
+
+<p>Bueno&hellip; has click en el signo de más color azul y te mostrará un dialogo que
+muestra &ldquo;Create Storage Pool&rdquo;. Lo nombramos &ldquo;iso&rdquo; y le decimos que será del tipo
+&ldquo;dir&rdquo;. O sea un directorio común en el sistema de archivos.</p>
+
+<p><img class="center" src="/images/virtmanager6.png" title="&#34;creando el storage pool de los ISO&#34;" alt="&#34;creando el storage pool de los ISO&#34;"></p>
+
+<p>Como segundo argumento, nos pedirá la ruta. Le daremos la que creamos en el
+servidor, en este caso <strong>/opt/isos</strong>.</p>
+
+<p><img class="center" src="/images/virtmanager7.png" title="&#34;la ruta del SR&#34;" alt="&#34;la ruta del SR&#34;"></p>
+
+<p>Sí todo salió bien, verás los .iso que tiene el directorio.</p>
+
+<p><img class="center" src="/images/virtmanager8.png" title="&#34;los .iso del directorio&#34;" alt="&#34;los .iso del directorio&#34;"></p>
+
+<p>Al hacer click en el iso seleccionado, vuelve el asistente y muestra que se
+usará dicho iso.</p>
+
+<p><img class="center" src="/images/virtmanager9.png" title="&#34;selecciona el iso&#34;" alt="&#34;selecciona el iso&#34;"></p>
+
+<p>Lo demás es pa mongo, la RAM el disco que creamos en el SR &ldquo;default&rdquo;, etc&hellip;</p>
+
+<p><img class="center" src="/images/virtmanager12.png" title="&#34;custumise configeichon befor instal&#34;" alt="&#34;custumise configeichon befor instal&#34;"></p>
+
+<p>Marcamos el <em>check</em> que dice &ldquo;Customize configuration before install&rdquo; y caeremos
+en la pantalla que muestra todos los detalles de la máquina.</p>
+
+<p><img class="center" src="/images/virtmanager14.png" title="&#34;modificando el hardware&#34;" alt="&#34;modificando el hardware&#34;"></p>
+
+<p>Esta pantalla es importante; no permite configurar de manera más exquisita el
+hardware. Por ejemplo, las interfaces de redes, yo quiero que tenga como primera
+interfaz, la que apunta a br0 y como segunda, la que apunta a br2. Además,
+algunas veces la máquinas traen una wacom tablet como interfaz (mariconerías del
+virt-manager).</p>
+
+<p>En fin, así me quedó la mía.</p>
+
+<p><img class="center" src="/images/virtmanager15.png" title="&#34;arrancando&#34;" alt="&#34;arrancando&#34;"></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/29/jugar-teeworlds-en-lan/">jugar teeworlds en LAN</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-29T00:00:16-04:00'><span class='date'>29/03/2017</span> <span class='time'>12:00 am</span></time>
+        
+           | <a href="/blog/2017/03/29/jugar-teeworlds-en-lan/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/29/jugar-teeworlds-en-lan/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Un otorrino me ha dejado sorprendido cuando me pidió que le instalara ArchLinux
+en su laptop (las todos tenemos de los médicos). La primera vez le instalé
+fedora, pero lo quitó y volvió pidiéndome que le instalara arch. El doctor
+Bershard, me cuenta las epopeyas de los usuarios de linux en la red de la
+habana.</p>
+
+<p><img class="center" src="/images/teeworlds.png"></p>
+
+<p>Durante el proceso de &ldquo;que te instalo&rdquo; me mencionó &ldquo;el tiwol&rdquo; como un juego muy
+importante. No me imaginé que sería tan fascinante. Similar al minimilitia de
+android. Me di cuenta que crear un server, es lanzar un comando y dejarlo
+funcionando. La gente se conecta y desconecta del servidor cuando quiera. Se
+pueden jugar partidas de equipo, pero la más caliente es el &ldquo;death match&rdquo;. Entra
+mata un rato y sale cuando te aburras.</p>
+
+<p>En el calixto el jueguito causó furor (está para windows y se conecta
+perfectamente). A cada rato entro y me encuentro 3 o 4 con nombres cada vez más
+creativos matándose a tiros y dando brincos.</p>
+
+<p>Según la documentación, al correr <strong>teeworlds_srv -f fichero.cfg</strong> cargará ese
+fichero. Muy útil para crear múltiples modos de juego. Al lanzar el comando
+<strong>teeworlds_srv</strong> noté que dice:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[58db3577][storage]: using standard paths</span>
+</span><span class='line'><span class="go">[58db3577][storage]: added path &#39;$USERDIR&#39; (&#39;/home/lazaro/.teeworlds&#39;)</span>
+</span><span class='line'><span class="go">[58db3577][storage]: added path &#39;$DATADIR&#39; (&#39;/usr/share/teeworlds/data&#39;)</span>
+</span><span class='line'><span class="go">[58db3577][storage]: added path &#39;$CURRENTDIR&#39; (&#39;/home/lazaro/.teeworlds&#39;)</span>
+</span><span class='line'><span class="go">[58db3577][console]: failed to open &#39;autoexec.cfg&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Así que al crear el fichero <strong>/home/lazaro/.teeworlds/autoexec.cfg</strong> resultó que
+se cargaba solo. Pero&hellip; ¿qué metemos ahí?</p>
+
+<figure class='code'><figcaption><span>&#8220;autoexec.cfg&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># teeworld_srv -f este_fichero.cfg</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Los mapas y la secuencia de mapas</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># ls /usr/share/teeworlds/data/maps/</span>
+</span><span class='line'><span class="err">sv_map</span> <span class="err">dm7</span>
+</span><span class='line'><span class="err">sv_maprotation</span> <span class="err">dm7</span> <span class="err">dm6</span> <span class="err">dm2</span> <span class="err">dm9</span> <span class="err">md8</span> <span class="err">dm1</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># como se ve el servidor</span>
+</span><span class='line'><span class="err">sv_name</span> <span class="err">Masacre</span> <span class="err">en</span> <span class="err">el</span> <span class="err">Calixto</span>
+</span><span class='line'><span class="err">sv_motd</span> <span class="err">&quot;las</span> <span class="err">teclas</span> <span class="err">son</span> <span class="err">«a»,</span> <span class="err">«d»</span> <span class="err">y</span> <span class="err">Espacio&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># que tipo de juego jugamos</span>
+</span><span class='line'><span class="err">sv_gametype</span> <span class="err">dm</span>
+</span><span class='line'><span class="err">sv_scorelimit</span> <span class="err">30</span>
+</span><span class='line'><span class="err">sv_timelimit</span> <span class="err">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># configuración del servidor</span>
+</span><span class='line'><span class="err">bindaddr</span> <span class="err">0.0.0.0</span>
+</span><span class='line'><span class="err">sv_register</span> <span class="err">to</span> <span class="err">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># permite usar la consola remota</span>
+</span><span class='line'><span class="err">sv_rcon_password</span> <span class="err">secretisimo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Dice: Jugaremos una ronda de 30 puntos, sin límite de tiempo, que empieza por el
+mapa &ldquo;dm7&rdquo;.</p>
+
+<p>El comando <em>sv_maprotation</em> recibe como argumento la lista de mapas. Cada vez
+que termine una ronda, se cambiará el mapa.</p>
+
+<p>Más información en el sitio de teeworlds <a href="https://www.teeworlds.com/?page=docs&amp;wiki=server_setup_2">www.teeworlds.com</a></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/">nueva VM siempre es PV</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-17T20:46:32-04:00'><span class='date'>17/03/2017</span> <span class='time'>8:46 pm</span></time>
+        
+           | <a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/17/nueva-vm-siempre-es-pv/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Cuando usamos XenOrchestra, aveces sucede que teniendo un XenServer con &ldquo;muchas&rdquo;
+máquinas virtuales, al crear una nueva; se crea como Paravirtualizada (PV) y no
+como Virutalización por Hardware (HVM). Nos damos cuenta porque arrancar la
+máquina buteando de una unidad óptica es casi imposible.</p>
+
+<p>Algunos creen que es porque XenServer impone un límite. Esto no es cierto, ya
+que XenServer es completamente gratuito hoy en día. Simplemente, asume que el
+servidor está muy cargado y que una PV es más ligera. En mi experiencia creo que
+XenOrchestra es el que hace eso; no xenserver como tal. También influye la
+plantilla que utilices para crear una nueva VM.</p>
+
+<p>Cuando esto pase, simplemente tomas la máquina y le dices que se pase a HVM. Lo
+haremos seteando un parámetros que involucre HVM.</p>
+
+<figure class='code'><figcaption><span>&#8220;xe&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> xe vm-param-set <span class="nv">uuid</span><span class="o">=</span>uuid-de-la-maquina HVM-boot-policy<span class="o">=</span><span class="s2">&quot;BIOS order&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al setearle que el orden de buteo será el que diga el bios y listo. La máquina
+pasa a ser HVM.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -245,7 +761,7 @@ pop en su cuenta de gmail.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -336,7 +852,7 @@ escucha por el puerto 8888.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -408,388 +924,7 @@ NO un punto y coma. La configuración parece ser un <strong>json</strong>.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/03/01/portknocking-en-freebsd/">portknocking en freebsd</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-03-01T23:53:01-05:00'><span class='date'>01/03/2017</span> <span class='time'>11:53 pm</span></time>
-        
-           | <a href="/blog/2017/03/01/portknocking-en-freebsd/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="right" src="/images/alibaba.jpg" width="400" height="500" title="" ></p>
-
-<p>La técnica port-knocking o knockd para otros, es en mi opinión, <strong>pilar de la
-seguridad</strong> en cualquier servidor que use SSH. Aunque es bastante versátil y
-puede ser usado hasta para reiniciar servicios sin loguearte.</p>
-
-<p>Una de las cosas que empece a extrañar en FreeBSD fue knockd, pero gracias a la
-flexbilidad de ipfw, podemos usar este poderoso software. En FreeBSD el fichero
-se encuentra en <strong>/usr/local/etc/knockd.conf.sample</strong> y el paquete se llama
-<strong>knock</strong>.</p>
-
-<p>OJO!! Muy importante especificarle la interfaz por la cual va a escuchar.</p>
-
-<figure class='code'><figcaption><span>&#8220;/usr/local/etc/knockd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="k">[options]</span>
-</span><span class='line'>         <span class="na">logfile</span> <span class="o">=</span> <span class="s">/var/log/knockd.log</span>
-</span><span class='line'><span class="s">         interface = xn0</span>
-</span><span class='line'>
-</span><span class='line'> <span class="k">[openSSH]</span>
-</span><span class='line'>         <span class="na">sequence</span>    <span class="o">=</span> <span class="s">111,222,333</span>
-</span><span class='line'><span class="s">         seq_timeout = 9</span>
-</span><span class='line'><span class="s">         command     = /sbin/ipfw -q add 00001 allow all from %IP% to me</span>
-</span><span class='line'><span class="s">         tcpflags    = syn</span>
-</span><span class='line'>
-</span><span class='line'> <span class="k">[closeSSH]</span>
-</span><span class='line'>         <span class="na">sequence</span>    <span class="o">=</span> <span class="s">222,111,333</span>
-</span><span class='line'><span class="s">         seq_timeout = 9</span>
-</span><span class='line'><span class="s">         command     = /sbin/ipfw -q delete 00001</span>
-</span><span class='line'><span class="s">         tcpflags    = syn</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Nada, resumiendo, que el truco está en poner la regla con el número 00001.
-Recuerdas que ipfw te permite (casi te obliga a) especificar un número para cada
-regla. Pues usaremos ese numerito diminuto para ponerla de primera.</p>
-
-<p>Los tipos ortodoxos criticarán que es una regla <em>al tetón</em>. Pienso que no vale
-la pena abrir solo el 22; si voy a pasar tanto trabajo, que se me abra la puerta
-completa.</p>
-
-<p>Por cierto, junto con knock, viene un programita para hacer el knocking. Yo
-solía hacerlo con netcat pero knock es más cómodo.</p>
-
-<figure class='code'><figcaption><span>&#8220;knock&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">   knock 192.168.3.1 111,222,333</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En mi <strong>.bashrc</strong>, tengo esta función declarada.</p>
-
-<figure class='code'><figcaption><span>&#8220;.bashrc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> abrete_cesamo<span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    knock  <span class="nv">$1</span> <span class="m">111</span> <span class="m">222</span> 333
-</span><span class='line'>    ssh root@<span class="nv">$1</span>
-</span><span class='line'>    knock  <span class="nv">$1</span> <span class="m">222</span> <span class="m">111</span> 333
-</span><span class='line'> <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>No tengo que decirte que la combinación de puertos está de acorde al ejemplo de
-la entrada y que debes cambiarla por la que tu establezcas. Así de esa manera,
-hacerle SSH a un servidor es ejecutar <strong>abrete_cesamo ip.del.servidor</strong> Luego al
-terminar la sesión ssh, se ejecuta la secuencia de cerrado.</p>
-
-<p>Y hablando de implementaciones raras de knockd!</p>
-
-<p>En alpine linux, iptables está en <strong>/sbin</strong>, no en /usr/sbin. Sin
-embargo, el fichero de configuración tiene puesto que está en /usr/sbin/, lo
-cual, repito; no es correcto.</p>
-
-<p>Además, tanto en debian como alpine. No importa que pongas en la configuración
-porque interfaz escuchará. Siempre lo hará por eth0. Para cambiar esta
-situación; debes:</p>
-
-<p>En <strong>alpine</strong> linux, configurar la interfaz en el fichero <strong>/etc/conf.d/knockd</strong></p>
-
-<p>En <strong>debian</strong>, configurar la interfaz (y poner un 1) en <strong>/etc/default/knockd</strong></p>
-
-<p>Recuerda que en linux, el comando de iptables, viene con &ldquo;-A INPUT&rdquo;. Si tienes
-un firewall corriendo, obviamente que no pincha; por tanto, ponlo con &ldquo;-I
-INPUT&rdquo;.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/03/01/bind-en-infomed/">bind en infomed</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-03-01T23:13:34-05:00'><span class='date'>01/03/2017</span> <span class='time'>11:13 pm</span></time>
-        
-           | <a href="/blog/2017/03/01/bind-en-infomed/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/01/bind-en-infomed/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Seguimos con bind&hellip;</p>
-
-<p>No hace mucho le comentaba a alguien, a raíz de una duda que tenía el colega
-Paradyx; la manera correcta de configurar un servidor bind para una red que
-cuelga de infomed.</p>
-
-<p>Le comentaba que no vale la pena usar un forward por defecto; que hacer del
-dominio &lsquo;.sld.cu&rsquo; una zona forward sería más que suficiente. Digo esto porque
-infomed no resuelve ningún dominio que valla más allá de &ldquo;.sld.cu&rdquo;, por tanto,
-no vale la pena transferirle las sepetecientas peticiones que hacen cuanta
-mierda se conecta a nuestra red (especialmente android).</p>
-
-<figure class='code'><figcaption><span>&#8220;named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">options</span> <span class="p">{</span>
-</span><span class='line'>   <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">10.1.1.1</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>   <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="n">view</span> <span class="n">lan</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">10.1.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;sld.cu&quot;</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">201.220.222.131</span><span class="p">;</span> <span class="mf">201.220.222.132</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">forward</span> <span class="n">only</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">};</span> <span class="c1">// view lan</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como mi dominio es hcg.sld.cu (subdominio de .sld.cu) lo declaramos ARRIBA
-del dominio sld.cu. El dominio <strong>hcg.sld.cu</strong> es una zona <strong>master</strong>, sin
-embargo, el dominio <strong>sld.cu</strong> es del tipo <strong>forward</strong> y entonces ahí declaramos
-los forwarders (los dns de infomed).</p>
-
-<p>Así solo le reenviaremos a infomed, aquellas peticiones que sean para infomed.</p>
-
-<p>En mi opinión esto no es necesario. Tanto así, que la zona donde infomed hace
-forward; la tengo para los servidores. En el caso de la zona para LAN,
-simplemente declaro los servidores de correo en un fakeroot y listo.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/03/01/qos-con-tc/">QoS con tc o dummynet</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-03-01T19:57:14-05:00'><span class='date'>01/03/2017</span> <span class='time'>7:57 pm</span></time>
-        
-           | <a href="/blog/2017/03/01/qos-con-tc/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/01/qos-con-tc/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Acá en el 5to infierno de infomed, algunos usuarios; están acostumbrados a usar
-un &ldquo;MUA&rdquo; (léase &ldquo;cliente de correo&rdquo;)  para alar el correo de infomed. Con el
-boom de la wifi, los médicos querían tener su correo de infomed en el puñetero
-cliente de correo de android/ios. Tras hacer un forward a los smtp y pop de
-infomed, el ancho de vianda se fue a la mierda. Por tanto, surgió la necesidad
-de chapiar el tráfico que va desde/hacia infomed. Por ejemplo, el tráfico smtp,
-es saliente (subida), sin embargo, el tráfico pop es entrante (bajada).</p>
-
-<p>El servidor que uso como &ldquo;router&rdquo;, es un alpine linux. El trinomio bind, dhcp e
-iptables, sumado al kernel grsec; convierte en mi opinión a alpinelinux en la
-mejor opción para un router.</p>
-
-<p>Entrando en materia. Tenemos un canal de 2 megabit (256 KB/s). Pero en HDSL, la
-subida es más triste que la bajada; y además, hay más gente bajando correo que
-subiendo. Por tanto, usaremos un canal para el smtp, más estrecho que el del
-pop. En este caso, <strong>eth0</strong> será la interfaz donde está el router.</p>
-
-<figure class='code'><figcaption><span>&#8220;tc del firewall&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># reiniciamos las colas que hallan en eth0</span>
-</span><span class='line'><span class="c"># para empezar a trabajar en limpio</span>
-</span><span class='line'>tc qdisc del root dev eth0
-</span><span class='line'>tc qdisc add dev eth0 root handle 1: htb default 30
-</span><span class='line'>
-</span><span class='line'><span class="c"># un canal de 256 KB/s lo partimos en dos</span>
-</span><span class='line'><span class="c"># una fracción de 10 KB/s y otro de 20KB/s</span>
-</span><span class='line'>tc class add dev eth0 parent 1:  classid 1:1  htb rate 256kbps burst 5k
-</span><span class='line'>tc class add dev eth0 parent 1:1 classid 1:10 htb rate  20kbps burst 5k
-</span><span class='line'>tc class add dev eth0 parent 1:1 classid 1:11 htb rate  10kbps burst 5k
-</span><span class='line'>
-</span><span class='line'><span class="c"># lo que valla para el pop e imap, lo dejamos en el :10 con 20kbps</span>
-</span><span class='line'>tc filter add dev eth0 parent 1: protocol ip prio <span class="m">1</span> u32 match ip src 201.220.211.7 match ip sport <span class="m">110</span> 0xffff flowid 1:10
-</span><span class='line'>tc filter add dev eth0 parent 1: protocol ip prio <span class="m">1</span> u32 match ip src 201.220.211.7 match ip sport <span class="m">143</span> 0xffff flowid 1:10
-</span><span class='line'>
-</span><span class='line'><span class="c"># lo que valla por el smtp, en el :11 de 10kbps</span>
-</span><span class='line'>tc filter add dev eth0 parent 1: protocol ip prio <span class="m">1</span> u32 match ip dst 201.220.211.39 match ip dport <span class="m">25</span> 0xffff flowid 1:11
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note como en el caso de lo que venga del &ldquo;.7&rdquo;, (src) de los puertos pop e imap
-(sport) pasarán por la cola <strong>1:10</strong>. Mientras que en el &ldquo;.39&rdquo;, se usan las
-cláusulas dst y dport.</p>
-
-<p><strong>pero aquí NO terminan las aventuras de QoS</strong></p>
-
-<p>Resulta que el tráfico proveniente de las WiFi era apabullante para el servidor
-proxy. Mientras que de una IP de una máquina entran 3 peticiones, de la IP de
-un router wifi entran 30.</p>
-
-<p>En un principio pensaba usar un delay_pool especial para estas ip, pero sería
-complicar más el esquema de delay_pool que funciona bien por usuarios. Por
-tanto, el tema de la bajada ya está cubierto. Ningún usuario puede acaparar todo
-el ancho de banda con una descarga. Sin embargo, 1&#8217;000 peticiones de basura
-(android con proxy configurado) ahogan al proxy. La medida fue, que el tráfico
-entrante de la wifi, no exceda los 200KB.</p>
-
-<p>En mi caso, los AP usan la ip 10 al 15, por tanto, haciendo un pipe de dummynet
-y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
-
-<figure class='code'><figcaption><span>&#8220;ipfw.rules&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw pipe <span class="m">1</span> config bw 200KBytes
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.10 to me
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.11 to me
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.12 to me
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.13 to me
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.14 to me
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.15 to me
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -810,6 +945,18 @@ y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/06/29/repos-epel-y-demas/">repos EPEL y demás</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/06/29/knockd-en-centos/">knockd en centos</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/06/28/android-islamico/">Apps islámicas android</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/06/22/curiosa-acl-de-squid/">squid y navegar a .cu</a>

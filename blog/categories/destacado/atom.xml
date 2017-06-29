@@ -4,7 +4,7 @@
   <title><![CDATA[Category: destacado | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/destacado/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-06-22T11:26:20-04:00</updated>
+  <updated>2017-06-29T11:59:05-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,70 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[repos EPEL y demás]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/06/29/repos-epel-y-demas/"/>
+    <updated>2017-06-29T02:15:03-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/06/29/repos-epel-y-demas</id>
+    <content type="html"><![CDATA[<p>CentOS, es conocido por sus reducidos repositorios. Pero por suerte, los repos
+EPEL (enterprise linux) y el IUS nos permiten bandearnos un poco. Además,
+tenemos el Remi, tan fresco como explosivo, que si bien no es muy recomendable
+usarlo, nunca está de más tenerlo a mano. Si algo tiene lindo <em>yum</em> es la
+gestión de repositorios.</p>
+
+<p>Instala <strong>wget</strong>&hellip; vamos a necesitarlo.</p>
+
+<p>Para los criticones: -sí, ya se que el epel está en el repo oficial, pero para
+este ejemplo lo añadiremos desde la web.</p>
+
+<pre><code class="console "añadiendo el EPEL""> wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+ rpm -Uvh epel-release-latest-7*.rpm
+</code></pre>
+
+<p>El IUS es majomenos la misma historia</p>
+
+<pre><code class="console "añadiendo el IUS"> wget https://centos7.iuscommunity.org/ius-release.rpm
+ rpm -Uvh ius-release*.rpm
+</code></pre>
+
+<p>El repo IUS, suele contener paquetes más recientes de cosas que ya centos trae.
+La mejor manera de instalar esto, es usando un plugin de yum, llamado «replace»,
+así que instala el paquete <strong>yum-plugin-replace</strong>.</p>
+
+<p>Ahora busca el paquete que deseeas en el repo IUS:</p>
+
+<pre><code class="console "buscando en el IUS""> yum --disablerepo="*" --enablerepo="ius" search talcosa
+</code></pre>
+
+<p>Luego remplaza el paquete <em>talcosa</em> de CentOS, por el <em>talcosa3u</em> de IUS</p>
+
+<pre><code class="console "remplazando paquete""> yum replace talcosa --replace-with talcosa3u
+</code></pre>
+
+<p>Para más detalles, échale un vistazo a <a href="https://ius.io/Usage/">el user-guide de IUS</a></p>
+
+<p>El repositorio Remi es aún más peligroso, ya que los paquetes tienen el mismo
+nombre que el de los oficiales. Se recomienda no tener el repo remi activado NI
+JUGANDO.</p>
+
+<p>La instalación es la misma rutina</p>
+
+<pre><code class="console "instalando Remi""> wget http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+ rpm -Uvh remi-release-7*.rpm
+</code></pre>
+
+<p>Luego usamos el mismo proceder, buscar en repo específico.</p>
+
+<pre><code class="console "buscando paquetes"">yum --enablerepo=remi search fulanito
+yum --enablerepo=remi install fulanito
+</code></pre>
+
+<p>El comando <em>repolist</em> permite ver los repositorios en juego. Para ver los repos
+que tienes acoplados, usa <strong>yum repolist</strong>. Si quieres ver que repo tienes
+deshabilitados, usa <strong>yum repolist disabled</strong>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[instalar node rápido]]></title>
@@ -593,57 +657,6 @@ thumbs&rdquo;</p>
 
 <p>De esta manera el paquete va al pipe y luego regresa al cortafuegos. O sea,
 intenta poner siempre los pipe arriba y el cortafuegos abajo</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[cambiar mac a un nano]]></title>
-    <link href="http://uranio-235.github.io/blog/2016/12/27/cambiar-mac-a-un-nano/"/>
-    <updated>2016-12-27T09:39:44-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2016/12/27/cambiar-mac-a-un-nano</id>
-    <content type="html"><![CDATA[<p>Un socio me preguntó hace poquito si yo podía cambiarle la MAC a un nano. Me
-pareció muy estrafalaria la necesidad de él, pero según me contó, en la red
-criolla que está suscrito, suelen banear los nanos cuando los usuarios se portan
-mal.</p>
-
-<p>Tras una búsqueda en internet vi unos post en un forum pero ninguno me funcionó.
-La idea es, correr un fichero al iniciar el sistema, que corra ifconfig y le
-cambie la MAC a las interfaces.</p>
-
-<p>La problemática radica, que a la interfaz &ldquo;ath0&rdquo;, no se le puede cambiar la MAC,
-ya que aún estando down, te dice dispositivo ocupado. Por esa razón, parecía no
-pinchar la solución de los post. Sin embargo, si bajas las 3 interfaces
-involucradas en la conexión, luego cambias dichas mac, <strong>sí pincha</strong>.</p>
-
-<p>Para ello crearemos el fichero <strong>/etc/persistent/rc.poststart</strong></p>
-
-<pre><code class="bash "/etc/persistent/rc.poststart"">#!/bin/sh
-
-ifconfig br0 down
-ifconfig wifi0 down
-ifconfig ath0 down
-
-ifconfig wifi0 hw ether 5e:53:84:bc:a3:54
-ifconfig ath0 hw ether 5e:53:84:bc:a3:54
-
-ifconfig ath0 up
-ifconfig wifi0 up
-ifconfig br0 up
-</code></pre>
-
-<p>A ese fichero le ponemos el ejecutable, si no, no pinchará.</p>
-
-<pre><code class="bash "ejecutable"">XW.v5.6.2# chmod a+rx /etc/persistent/rc.poststart 
-</code></pre>
-
-<p>Finalmente, le decimos al firmware que modifique los cambios y que reinicie.</p>
-
-<pre><code class="bash "salva y reinicia"">XW.v5.6.2# cfgmtd -w -p /etc/
-XW.v5.6.2# reboot
-</code></pre>
-
-<p>Todavía hay quien cree que las MAC son una medida segura para crear reglas de
-control de acceso&hellip;</p>
 ]]></content>
   </entry>
   

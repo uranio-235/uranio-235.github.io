@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="bind personal 22/02/2017 9:05 pm | Comments Una cosa que me jode, es que linux el tema de los múltiples DNS no los maneje
-bien. Por ejemplo, estamos &hellip;">
+  <meta name="description" content="portknocking en freebsd 01/03/2017 11:53 pm | Comments La técnica port-knocking o knockd para otros, es en mi opinión, pilar de la
+seguridad en &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,387 @@ bien. Por ejemplo, estamos &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/01/portknocking-en-freebsd/">portknocking en freebsd</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-01T23:53:01-05:00'><span class='date'>01/03/2017</span> <span class='time'>11:53 pm</span></time>
+        
+           | <a href="/blog/2017/03/01/portknocking-en-freebsd/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="right" src="/images/alibaba.jpg" width="400" height="500" title="" ></p>
+
+<p>La técnica port-knocking o knockd para otros, es en mi opinión, <strong>pilar de la
+seguridad</strong> en cualquier servidor que use SSH. Aunque es bastante versátil y
+puede ser usado hasta para reiniciar servicios sin loguearte.</p>
+
+<p>Una de las cosas que empece a extrañar en FreeBSD fue knockd, pero gracias a la
+flexbilidad de ipfw, podemos usar este poderoso software. En FreeBSD el fichero
+se encuentra en <strong>/usr/local/etc/knockd.conf.sample</strong> y el paquete se llama
+<strong>knock</strong>.</p>
+
+<p>OJO!! Muy importante especificarle la interfaz por la cual va a escuchar.</p>
+
+<figure class='code'><figcaption><span>&#8220;/usr/local/etc/knockd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="k">[options]</span>
+</span><span class='line'>         <span class="na">logfile</span> <span class="o">=</span> <span class="s">/var/log/knockd.log</span>
+</span><span class='line'><span class="s">         interface = xn0</span>
+</span><span class='line'>
+</span><span class='line'> <span class="k">[openSSH]</span>
+</span><span class='line'>         <span class="na">sequence</span>    <span class="o">=</span> <span class="s">111,222,333</span>
+</span><span class='line'><span class="s">         seq_timeout = 9</span>
+</span><span class='line'><span class="s">         command     = /sbin/ipfw -q add 00001 allow all from %IP% to me</span>
+</span><span class='line'><span class="s">         tcpflags    = syn</span>
+</span><span class='line'>
+</span><span class='line'> <span class="k">[closeSSH]</span>
+</span><span class='line'>         <span class="na">sequence</span>    <span class="o">=</span> <span class="s">222,111,333</span>
+</span><span class='line'><span class="s">         seq_timeout = 9</span>
+</span><span class='line'><span class="s">         command     = /sbin/ipfw -q delete 00001</span>
+</span><span class='line'><span class="s">         tcpflags    = syn</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nada, resumiendo, que el truco está en poner la regla con el número 00001.
+Recuerdas que ipfw te permite (casi te obliga a) especificar un número para cada
+regla. Pues usaremos ese numerito diminuto para ponerla de primera.</p>
+
+<p>Los tipos ortodoxos criticarán que es una regla <em>al tetón</em>. Pienso que no vale
+la pena abrir solo el 22; si voy a pasar tanto trabajo, que se me abra la puerta
+completa.</p>
+
+<p>Por cierto, junto con knock, viene un programita para hacer el knocking. Yo
+solía hacerlo con netcat pero knock es más cómodo.</p>
+
+<figure class='code'><figcaption><span>&#8220;knock&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">   knock 192.168.3.1 111,222,333</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En mi <strong>.bashrc</strong>, tengo esta función declarada.</p>
+
+<figure class='code'><figcaption><span>&#8220;.bashrc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> abrete_cesamo<span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    knock  <span class="nv">$1</span> <span class="m">111</span> <span class="m">222</span> 333
+</span><span class='line'>    ssh root@<span class="nv">$1</span>
+</span><span class='line'>    knock  <span class="nv">$1</span> <span class="m">222</span> <span class="m">111</span> 333
+</span><span class='line'> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No tengo que decirte que la combinación de puertos está de acorde al ejemplo de
+la entrada y que debes cambiarla por la que tu establezcas. Así de esa manera,
+hacerle SSH a un servidor es ejecutar <strong>abrete_cesamo ip.del.servidor</strong> Luego al
+terminar la sesión ssh, se ejecuta la secuencia de cerrado.</p>
+
+<p>Y hablando de implementaciones raras de knockd!</p>
+
+<p>En alpine linux, iptables está en <strong>/sbin</strong>, no en /usr/sbin. Sin
+embargo, el fichero de configuración tiene puesto que está en /usr/sbin/, lo
+cual, repito; no es correcto.</p>
+
+<p>Además, tanto en debian como alpine. No importa que pongas en la configuración
+porque interfaz escuchará. Siempre lo hará por eth0. Para cambiar esta
+situación; debes:</p>
+
+<p>En <strong>alpine</strong> linux, configurar la interfaz en el fichero <strong>/etc/conf.d/knockd</strong></p>
+
+<p>En <strong>debian</strong>, configurar la interfaz (y poner un 1) en <strong>/etc/default/knockd</strong></p>
+
+<p>Recuerda que en linux, el comando de iptables, viene con &ldquo;-A INPUT&rdquo;. Si tienes
+un firewall corriendo, obviamente que no pincha; por tanto, ponlo con &ldquo;-I
+INPUT&rdquo;.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/01/bind-en-infomed/">bind en infomed</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-01T23:13:34-05:00'><span class='date'>01/03/2017</span> <span class='time'>11:13 pm</span></time>
+        
+           | <a href="/blog/2017/03/01/bind-en-infomed/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/01/bind-en-infomed/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Seguimos con bind&hellip;</p>
+
+<p>No hace mucho le comentaba a alguien, a raíz de una duda que tenía el colega
+Paradyx; la manera correcta de configurar un servidor bind para una red que
+cuelga de infomed.</p>
+
+<p>Le comentaba que no vale la pena usar un forward por defecto; que hacer del
+dominio &lsquo;.sld.cu&rsquo; una zona forward sería más que suficiente. Digo esto porque
+infomed no resuelve ningún dominio que valla más allá de &ldquo;.sld.cu&rdquo;, por tanto,
+no vale la pena transferirle las sepetecientas peticiones que hacen cuanta
+mierda se conecta a nuestra red (especialmente android).</p>
+
+<figure class='code'><figcaption><span>&#8220;named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">options</span> <span class="p">{</span>
+</span><span class='line'>   <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">10.1.1.1</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">view</span> <span class="n">lan</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">10.1.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;sld.cu&quot;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">201.220.222.131</span><span class="p">;</span> <span class="mf">201.220.222.132</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">forward</span> <span class="n">only</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">};</span> <span class="c1">// view lan</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como mi dominio es hcg.sld.cu (subdominio de .sld.cu) lo declaramos ARRIBA
+del dominio sld.cu. El dominio <strong>hcg.sld.cu</strong> es una zona <strong>master</strong>, sin
+embargo, el dominio <strong>sld.cu</strong> es del tipo <strong>forward</strong> y entonces ahí declaramos
+los forwarders (los dns de infomed).</p>
+
+<p>Así solo le reenviaremos a infomed, aquellas peticiones que sean para infomed.</p>
+
+<p>En mi opinión esto no es necesario. Tanto así, que la zona donde infomed hace
+forward; la tengo para los servidores. En el caso de la zona para LAN,
+simplemente declaro los servidores de correo en un fakeroot y listo.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/01/qos-con-tc/">QoS con tc o dummynet</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-01T19:57:14-05:00'><span class='date'>01/03/2017</span> <span class='time'>7:57 pm</span></time>
+        
+           | <a href="/blog/2017/03/01/qos-con-tc/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/01/qos-con-tc/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Acá en el 5to infierno de infomed, algunos usuarios; están acostumbrados a usar
+un &ldquo;MUA&rdquo; (léase &ldquo;cliente de correo&rdquo;)  para alar el correo de infomed. Con el
+boom de la wifi, los médicos querían tener su correo de infomed en el puñetero
+cliente de correo de android/ios. Tras hacer un forward a los smtp y pop de
+infomed, el ancho de vianda se fue a la mierda. Por tanto, surgió la necesidad
+de chapiar el tráfico que va desde/hacia infomed. Por ejemplo, el tráfico smtp,
+es saliente (subida), sin embargo, el tráfico pop es entrante (bajada).</p>
+
+<p>El servidor que uso como &ldquo;router&rdquo;, es un alpine linux. El trinomio bind, dhcp e
+iptables, sumado al kernel grsec; convierte en mi opinión a alpinelinux en la
+mejor opción para un router.</p>
+
+<p>Entrando en materia. Tenemos un canal de 2 megabit (256 KB/s). Pero en HDSL, la
+subida es más triste que la bajada; y además, hay más gente bajando correo que
+subiendo. Por tanto, usaremos un canal para el smtp, más estrecho que el del
+pop. En este caso, <strong>eth0</strong> será la interfaz donde está el router.</p>
+
+<figure class='code'><figcaption><span>&#8220;tc del firewall&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># reiniciamos las colas que hallan en eth0</span>
+</span><span class='line'><span class="c"># para empezar a trabajar en limpio</span>
+</span><span class='line'>tc qdisc del root dev eth0
+</span><span class='line'>tc qdisc add dev eth0 root handle 1: htb default 30
+</span><span class='line'>
+</span><span class='line'><span class="c"># un canal de 256 KB/s lo partimos en dos</span>
+</span><span class='line'><span class="c"># una fracción de 10 KB/s y otro de 20KB/s</span>
+</span><span class='line'>tc class add dev eth0 parent 1:  classid 1:1  htb rate 256kbps burst 5k
+</span><span class='line'>tc class add dev eth0 parent 1:1 classid 1:10 htb rate  20kbps burst 5k
+</span><span class='line'>tc class add dev eth0 parent 1:1 classid 1:11 htb rate  10kbps burst 5k
+</span><span class='line'>
+</span><span class='line'><span class="c"># lo que valla para el pop e imap, lo dejamos en el :10 con 20kbps</span>
+</span><span class='line'>tc filter add dev eth0 parent 1: protocol ip prio <span class="m">1</span> u32 match ip src 201.220.211.7 match ip sport <span class="m">110</span> 0xffff flowid 1:10
+</span><span class='line'>tc filter add dev eth0 parent 1: protocol ip prio <span class="m">1</span> u32 match ip src 201.220.211.7 match ip sport <span class="m">143</span> 0xffff flowid 1:10
+</span><span class='line'>
+</span><span class='line'><span class="c"># lo que valla por el smtp, en el :11 de 10kbps</span>
+</span><span class='line'>tc filter add dev eth0 parent 1: protocol ip prio <span class="m">1</span> u32 match ip dst 201.220.211.39 match ip dport <span class="m">25</span> 0xffff flowid 1:11
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note como en el caso de lo que venga del &ldquo;.7&rdquo;, (src) de los puertos pop e imap
+(sport) pasarán por la cola <strong>1:10</strong>. Mientras que en el &ldquo;.39&rdquo;, se usan las
+cláusulas dst y dport.</p>
+
+<p><strong>pero aquí NO terminan las aventuras de QoS</strong></p>
+
+<p>Resulta que el tráfico proveniente de las WiFi era apabullante para el servidor
+proxy. Mientras que de una IP de una máquina entran 3 peticiones, de la IP de
+un router wifi entran 30.</p>
+
+<p>En un principio pensaba usar un delay_pool especial para estas ip, pero sería
+complicar más el esquema de delay_pool que funciona bien por usuarios. Por
+tanto, el tema de la bajada ya está cubierto. Ningún usuario puede acaparar todo
+el ancho de banda con una descarga. Sin embargo, 1&#8217;000 peticiones de basura
+(android con proxy configurado) ahogan al proxy. La medida fue, que el tráfico
+entrante de la wifi, no exceda los 200KB.</p>
+
+<p>En mi caso, los AP usan la ip 10 al 15, por tanto, haciendo un pipe de dummynet
+y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
+
+<figure class='code'><figcaption><span>&#8220;ipfw.rules&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw pipe <span class="m">1</span> config bw 200KBytes
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.10 to me
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.11 to me
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.12 to me
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.13 to me
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.14 to me
+</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.15 to me
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -208,7 +589,7 @@ con el administrador de conexiones de gnome.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -425,7 +806,7 @@ que ninguna pinche.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -715,334 +1096,6 @@ intenta poner siempre los pipe arriba y el cortafuegos abajo</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/28/freebsd-11/">mis crónicas con freebsd</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-28T23:39:52-05:00'><span class='date'>28/01/2017</span> <span class='time'>11:39 pm</span></time>
-        
-           | <a href="/blog/2017/01/28/freebsd-11/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/28/freebsd-11/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Si vas a leer este artículo, te aviso, que no tiene nada que ver con el blog. Me
-dispongo a expresar mi criterio sobre FreeBSD y un tanto de como ha formado
-parte de mi vida profesional.</p>
-
-<p>   <blockquote><p>FreeBSD, tecnología arcana para algunos y arcaica para otros.</p></blockquote></p>
-
-<p>Se cuentan leyendas sobre FreeBSD, como que es el sistema operativo de los nodos
-y cosas así. Mucha gente lo tiene como un arcano o algo que probarán <em>un día de
-estos</em>. Yo pienso que no tiene nada del otro mundo. De hecho, en mi opinión,
-gentoo es más complicado que freebsd.</p>
-
-<p>Lo que si me queda claro que es un excelente sistema operativo para servidores
-proxy. Además, ipfw, su cortafuegos, es sólido como una piedra. En FreeBSD eso
-de caer de rodillas ante un ataque DoS, es simplemente utópico.</p>
-
-<p>En ambientes libres de proxy, el binomio dummynet-<a href="https://www.freebsd.org/doc/handbook/firewalls-ipfw.html">ipfw</a>
-permite un manejo del ancho de banda con una simpleza que ya quisiera <strong>tc</strong>. Un
-solo pipe puede tener valores diferentes para su ancho de banda, encolamiento y
-delay.</p>
-
-<p>Por otra parte, el sistema de
-<a href="https://www.freebsd.org/doc/handbook/jails.html">jails</a> es un batazo. Sobre
-todo en ambientes donde te ves obligado a meter la pata y no dispones de
-virtualización. Lo único equivalente a esto en linux, sería LXC, pero no es ni
-la chancleta. Los jails combinado con ZFS, permiten hacer cosas alucinantes.</p>
-
-<p>Cada versión nueva que sale la pruebo; y aunque había hecho mis cositas con él,
-siempre acababa dejándolo de lado por el tema del ancho de banda. Cualquier
-operación que hagas con la paquetería requiere conexión y poco ancho de banda
-provoca que la operación falle. La versión 9 en mi opinión fue un desastre.
-Especialmente por el sistema de ports que daba unos palos horribles.</p>
-
-<p>El gestor de paquetes ha mejorado muchísimo. La resolución de dependencias y
-velocidad es espectacular. Además, han logrado una completa integración de
-gestión de paquetes en una sola herramienta. Ya no es el reguero ese de pkg_info
-por un lado y pkg_add por otro. Ahora además, soporta operaciones de limpieza
-como <em>autoremove</em> y <em>clean</em>. La herramienta <strong>portaudit</strong> al parecer fue
-<em>portada</em> a pkg también y ahora es oficial. Otras novedades relevantes son que permite crear
-respositorios y hacer operaciones en jails. Ah! y para que contarte el soporte
-de proxy. Más detalles (y una rosetta) <a href="https://wiki.freebsd.org/PkgPrimer">lo puedes ver aquí</a>.</p>
-
-<p>FreeBSD 10 no lo toqué, estuve más girado para OpenIndiana.</p>
-
-<p>Pero la versión 7 de OI parecía no terminar nunca. Finalmente el avión no
-despegó. El fiasco de nexenta store y la insertidumbre de oracle, golpearon
-fuertemente a la comunidad de OpenIndiana. El mundo se dio cuenta que OI tenía
-el futuro de un submarino descapotable y gran parte de la comunidad de illumos
-se mudó pa BSD. La comunidad de OpenIndiana se desmoronaba con las botas
-puestas. El agitado canal de freenode #openindiana se convirtió en un canal
-muerto. En lo personal, tras fracasar en mi afán por portar Ruby a OI, en parte
-debido a que no tengo ancho de banda para hacer operaciones en el Userland; alcé
-bandera blanca también.</p>
-
-<p>Pero como soy Linuxero! Volví a poner mis servidores en debian y comencé a mirar
-a fedora. De nuevo el ancho de vianda me golpeó; además de otros avatares de la
-vida. Terminé usando un chroot de arch, sobre la viejísima instalación de debian
-en mi laptop Pentium 3 que ya estaba más que obsoleta. Todas mis aplicaciones,
-mi /home, etc&hellip; Eran un chroot de arch dentro de un debian desnudo. Corría i3 y
-levantaba con startx luego de entrar al chroot.</p>
-
-<p>Free BSD andaba por finales de la 9 y la 10 en el horno; si mal no recuerdo&hellip;
-Yo, me dedicaba a leer noticias y continuaba suscrito a la lista de freebsd en
-español; donde hacer top-posting se paga con la pena capital.</p>
-
-<p>Mientras tanto, perdía yo mi trabajo y paradógicamente recién adquiría una nueva
-laptop. Apostar por el recién abierto &ldquo;modelo de trabajo por cuenta propia&rdquo;; me
-costó perder mi empleo y quedarme sentado un buen rato. Instalé ArchLinux en la
-laptop nueva para conservar las configuraciones de la anterior. Para este
-entonces me consideraba usuario de archlinux &ldquo;por casualidad&rdquo;. Me soñaba como un
-feliz usuario de Fedora. Consideraba ya a Debian; única y expresamente una
-herramienta para servidores. Seguía teniendo a FreeBSD en al mira, pero para
-cuando consiguiera un trabajo con un internet &ldquo;decente&rdquo; y tuviera algo de
-tiempo.</p>
-
-<p>El período más jodido de mi vida estaba aconteciendo en ese momento. No voy a
-escribir aquí mis problemas personales; pero a modo de resumen diré que la
-última enfermera que tuve como pareja me calló a tarros y la casa donde nací, la
-vendieron sin decirme nada. Al estilo país capitalista &ldquo;me quede en la calle&rdquo;.
-Con el ánimo y la autoestima en el piso; el único producto que podía ofrecer
-eran servidores con debian. A mediados del 2014, empecé en el calixto, de vuelta
-al trabajo estatal. El ancho de vianda seguía siendo un problema; también el
-tema de la cuota. FreeBSD seguía &ldquo;pospuesto pero no olvidado&rdquo;.</p>
-
-<p>A finales del 2016, me trajeron el servidor de gama media para remplazar el
-totem de servidores. Además, habían ampliado el susodicho ancho de vianda. Fue
-entonces cuando decidí, que el nuevo proxy, no podía quedarse mariado como le
-pasa al squid en linux; muchísimo menos con el micro tan poco potente del
-servidor (gama media).</p>
-
-<p>Para mi sopresa, FreeBSD andaba por la 11 (yo lo hacía por la 10 todavía) por lo
-lento que se desarrolla; el pobre. Ahora estoy muy contento con mi squid sobre
-FreeBSD 11. Que si bien también se marea, lo hace bastante poco y se recupera
-rápido.</p>
-
-<p>Por lo que veo ya no son tan retrógrados como antes; han mejorado mucho en ese
-aspecto, aunque siguen siendo una mirada al futuro desde el pasado. Mantienen la
-onda chea reflejada en su configuración; pero todo bien afinado, fresco y
-modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
-
-<p>Dejaron de ser retrógrados para convertirse en modernos pero anticuados.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/21/palito/">animación del palito</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-21T12:47:55-05:00'><span class='date'>21/01/2017</span> <span class='time'>12:47 pm</span></time>
-        
-           | <a href="/blog/2017/01/21/palito/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/21/palito/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Por si se me olvida, porque lo he olvidado varias veces. En ocasiones, queremos
-hacer una simple animación de consola, para representar trabajo de un script sin
-mostrar lo que está procesando. Este script de ejemplo, itera por cada caracter
-de la fecha y muestra la barra cambiando de posición, el clásico palito girando.</p>
-
-<figure class='code'><figcaption><span>&#8220;scope&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#!/usr/bin/env ruby</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># esta es la animación, puedes sustituirla</span>
-</span><span class='line'><span class="c1"># por lo que más te guste, solo pon la secuencia</span>
-</span><span class='line'><span class="n">animacion</span><span class="o">=[</span><span class="s1">&#39;|&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;\ &#39;</span><span class="o">.</span><span class="n">strip</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">for</span> <span class="n">d</span><span class="p">,</span><span class="n">i</span>  <span class="k">in</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">chars</span><span class="o">.</span><span class="n">each_with_index</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c1"># múeve a la siguiente frama de la animación</span>
-</span><span class='line'>   <span class="n">palito</span><span class="o">=</span><span class="p">(</span><span class="n">animacion</span><span class="o">.</span><span class="n">push</span> <span class="n">animacion</span><span class="o">.</span><span class="n">shift</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c1"># muestra el palito y has un retorno de carro</span>
-</span><span class='line'>   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">palito</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c1"># has una media</span>
-</span><span class='line'>   <span class="nb">sleep</span> <span class="mi">0</span><span class="o">.</span><span class="mi">3</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">d</span><span class="o">=</span><span class="n">d</span> <span class="c1"># nada que hacer con los datos</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En el array, el último caracter tiene un String#strip porque al escribir <strong>\&lsquo;</strong>
-el compilador suele interpretarlo como que estás escapando la comilla simple.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/20/datatables-espanol/">DataTables en español</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-20T16:39:32-05:00'><span class='date'>20/01/2017</span> <span class='time'>4:39 pm</span></time>
-        
-           | <a href="/blog/2017/01/20/datatables-espanol/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/20/datatables-espanol/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Siempre hay un cliente exquisito que le molesta la aplicación completa en
-español, a excepción del puñetero paginador que está en inglés.</p>
-
-<p>Como ya no uso kaminari ni will_paginate la cosa se complica. Decidí llamar a
-todas las tables id=&ldquo;latabla&rdquo; y en el <strong>application.js</strong>, según la
-documentación de la API de DataTables, le ponemos la clave <em>language</em> con sus
-pertinentes componentes.</p>
-
-<figure class='code'><figcaption><span>&#8220;application.js&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#latabla&#39;</span><span class="p">).</span><span class="nx">DataTable</span><span class="p">(</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="s2">&quot;language&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;decimal&quot;</span><span class="o">:</span>        <span class="s2">&quot;.&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;emptyTable&quot;</span><span class="o">:</span>     <span class="s2">&quot;No hay datos para mostrar&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;info&quot;</span><span class="o">:</span>           <span class="s2">&quot;del _START_ al _END_ (_TOTAL_ total)&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;infoEmpty&quot;</span><span class="o">:</span>      <span class="s2">&quot;del 0 al 0 (0 total)&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;infoFiltered&quot;</span><span class="o">:</span>   <span class="s2">&quot;(filtrado de todas las _MAX_ entradas)&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;infoPostFix&quot;</span><span class="o">:</span>    <span class="s2">&quot;&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;thousands&quot;</span><span class="o">:</span>      <span class="s2">&quot;&#39;&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;lengthMenu&quot;</span><span class="o">:</span>     <span class="s2">&quot;Mostrar _MENU_ entradas&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;loadingRecords&quot;</span><span class="o">:</span> <span class="s2">&quot;Cargando...&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;processing&quot;</span><span class="o">:</span>     <span class="s2">&quot;Procesando...&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;search&quot;</span><span class="o">:</span>         <span class="s2">&quot;Buscar:&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;zeroRecords&quot;</span><span class="o">:</span>    <span class="s2">&quot;No hay resultados&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;paginate&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="s2">&quot;first&quot;</span><span class="o">:</span>      <span class="s2">&quot;Primero&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="s2">&quot;last&quot;</span><span class="o">:</span>       <span class="s2">&quot;Último&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="s2">&quot;next&quot;</span><span class="o">:</span>       <span class="s2">&quot;Siguiente&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="s2">&quot;previous&quot;</span><span class="o">:</span>   <span class="s2">&quot;Anterior&quot;</span>
-</span><span class='line'>        <span class="p">},</span>
-</span><span class='line'>        <span class="s2">&quot;aria&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="s2">&quot;sortAscending&quot;</span><span class="o">:</span>  <span class="s2">&quot;: ordenar de manera Ascendente&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="s2">&quot;sortDescending&quot;</span><span class="o">:</span> <span class="s2">&quot;: ordenar de manera Descendente &quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">}</span> <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span> <span class="p">);</span> <span class="c1">// document ready</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Claro, realmente no lo hice así, ya que en vez de <strong>&ldquo;Anterior&rdquo;</strong> puse
-<strong>t(:dt_prev)</strong>  y cree su pertinente fichero de idioma con la traducción, pero
-escribí esta entrada pensando en gente que puede o no usar RoR. No obstante, el
-buen desarrollador de rails, sabe que lo correcto sería usar la in API de i18n.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -1060,6 +1113,18 @@ buen desarrollador de rails, sabe que lo correcto sería usar la in API de i18n.
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/06/29/repos-epel-y-demas/">repos EPEL y demás</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/06/29/knockd-en-centos/">knockd en centos</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/06/28/android-islamico/">Apps islámicas android</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/06/22/curiosa-acl-de-squid/">squid y navegar a .cu</a>

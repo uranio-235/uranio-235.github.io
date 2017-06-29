@@ -9,7 +9,7 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="las mujeres gordas 03/11/2015 11:41 pm | Comments ¿Como te gustan las mujeres gordas o flacas? Esa pregunta se ha vuelto un boicot. Hasta los &hellip;">
+  <meta name="description" content="mc demora en abrir 29/11/2015 7:37 pm | Comments Esta es una nota bien rápida pa que no se me olvide&hellip; Alguna vez han notado que los midnight &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +81,218 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/29/mc-demora-en-abrir/">mc demora en abrir</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-29T19:37:00-05:00'><span class='date'>29/11/2015</span> <span class='time'>7:37 pm</span></time>
+        
+           | <a href="/blog/2015/11/29/mc-demora-en-abrir/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/29/mc-demora-en-abrir/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Esta es una nota bien rápida pa que no se me olvide&hellip;</p>
+
+<p>Alguna vez han notado que los midnight commander con soporte para operaciones de
+red (especialmente samba) y al arrancarlo, se mete tremendo rato levantando?
+Pues esta es la razón por la cual debian <em>bota el sofá</em>.</p>
+
+<p><img class="right" src="/images/mc.png" title="" ></p>
+
+<p>Resulta que buscar el propio hostname de la máquina, se mete tremendo rato
+haciendo un reverse lookup. Cuando tiene declaro un servidor dns inalcanzable,
+se pone más feo todavía.</p>
+
+<p>Solución. Pon tu propio hostname en <strong>/etc/hosts</strong> junto a localhost</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/23/desmume-ultralento/">desmume ultralento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-23T21:37:40-05:00'><span class='date'>23/11/2015</span> <span class='time'>9:37 pm</span></time>
+        
+           | <a href="/blog/2015/11/23/desmume-ultralento/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/23/desmume-ultralento/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Es tremendo mojón departe del desmume, no venir con el compilador JIT activado
+por defecto. Los juegos de DS corren suúuuuper lentos. Pero si corres desmume
+con los siguientes argumentos:</p>
+
+<figure class='code'><figcaption><span>&#8220;desmume&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>desmume  --fwlang<span class="o">=</span><span class="m">5</span> --jit-size<span class="o">=</span><span class="m">100</span> --cpu-mode<span class="o">=</span><span class="m">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Se activará el <a href="https://es.wikipedia.org/wiki/Compilaci%C3%B3n_en_tiempo_de_ejecuci%C3%B3n">Compilador en Tiempo de Ejecución</a>
+que tiene desmume y créeme, la mejora es increíble. Tanto que luego se dispara
+de una manera descomunal, así que será necesario limitar el FrameSkip a 60 FPS.</p>
+
+<p><img class="right" src="/images/desmume.png"></p>
+
+<p>Como ven en la imagen, está corriendo Le pokemón negro, y con un micro de 2 mil
+herzios se me monta en los 80fps renderizando 3d. Con la Soul Silver, se me
+monta en +100 fps, ya que las peleas son en 2D.</p>
+
+<p>Te preguntarás por que usar Frameskip entonces. Pues al menos en mi caso, cuando
+el juego renderiza 3D, sin Frameskip, no llega ni a las 40FPS. Por suerte, con
+la opción marcada debajo, ni se siente el frame-skip, cosa que en otros
+emuladores es un dolor.</p>
+
+<p>Por suerte el DS solo puede renderizar 3D en una sola pantalla a la vez. Ah!
+OpenGL es por gusto, desmume pincha arriba del micro.</p>
+
+<p>Para mayor comodida, puedes crear un .desktop en tu home, el cual se lanze con
+los parámetros. A mi me quedó así</p>
+
+<figure class='code'><figcaption><span>&#8221;~/.local/share/applications/desmume.desktop&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[Desktop Entry]</span>
+</span><span class='line'><span class="na">Version</span><span class="o">=</span><span class="s">1.0</span>
+</span><span class='line'><span class="na">Type</span><span class="o">=</span><span class="s">Application</span>
+</span><span class='line'><span class="na">Name</span><span class="o">=</span><span class="s">DeSmuME (Gtk)</span>
+</span><span class='line'><span class="na">Comment</span><span class="o">=</span><span class="s">Nintento DS emulator</span>
+</span><span class='line'><span class="na">TryExec</span><span class="o">=</span><span class="s">desmume --fwlang=5 --jit-size=90 --cpu-mode=1</span>
+</span><span class='line'><span class="na">Exec</span><span class="o">=</span><span class="s">desmume --fwlang=5 --jit-size=90 --cpu-mode=1</span>
+</span><span class='line'><span class="na">Icon</span><span class="o">=</span><span class="s">DeSmuME</span>
+</span><span class='line'><span class="na">Categories</span><span class="o">=</span><span class="s">GNOME;GTK;Game;Emulator;</span>
+</span><span class='line'><span class="na">MimeType</span><span class="o">=</span><span class="s">application/x-nintendo-ds-rom;</span>
+</span><span class='line'><span class="na">X-Desktop-File-Install-Version</span><span class="o">=</span><span class="s">0.22</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-12T09:49:30-05:00'><span class='date'>12/11/2015</span> <span class='time'>9:49 am</span></time>
+        
+           | <a href="/blog/2015/11/12/rc-dot-local-en-systemd/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/12/rc-dot-local-en-systemd/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Déjame decirte, que es un gran mojón de parte de systemd; el hecho de que no
+halla una puñetera compatibilidad con el <strong>rc.local</strong>. Si buscas en google, como
+correr un comando al butear, verás que complicado se vuelve.</p>
+
+<p>Para palear este desmesurado inconveniente. Me he creado una unit del tipo
+oneshot, que cargue el /etc/rc.local</p>
+
+<p>Crea el fichero <strong>/etc/systemd/system/rclocal.service</strong> y métele esto:</p>
+
+<figure class='code'><figcaption><span>/etc/systemd/system/rclocal.service</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>Unit<span class="o">]</span>
+</span><span class='line'><span class="nv">Description</span><span class="o">=</span>El viejo /etc/rc.local
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Service<span class="o">]</span>
+</span><span class='line'><span class="nv">Type</span><span class="o">=</span>oneshot
+</span><span class='line'><span class="nv">ExecStart</span><span class="o">=</span>/bin/bash /etc/rc.local
+</span><span class='line'><span class="nv">TimeoutSec</span><span class="o">=</span>0
+</span><span class='line'><span class="nv">StandardOutput</span><span class="o">=</span>tty
+</span><span class='line'><span class="nv">RemainAfterExit</span><span class="o">=</span>yes
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Install<span class="o">]</span>
+</span><span class='line'><span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lo habilitamos:</p>
+
+<figure class='code'><figcaption><span>&#8220;systemctl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl daemon-reload
+</span><span class='line'>systemctl <span class="nb">enable </span>rclocal
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A singar por tuberías, esto es todo&hellip;</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -213,7 +425,7 @@ gente lo vean con aun gorda.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -503,7 +715,7 @@ ver con SSL, declarando esto:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -713,478 +925,7 @@ NetworkManager.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/18/systemd-timesyncd/">systemd-timesyncd</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-10-18T13:19:01-04:00'><span class='date'>18/10/2015</span> <span class='time'>1:19 pm</span></time>
-        
-           | <a href="/blog/2015/10/18/systemd-timesyncd/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/18/systemd-timesyncd/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Mantener un reloj sincronizado y en hora, siempre ha sido un dilema. Algunas
-personas no reconocen la necesidad de esto; y además son tan imbéciles, que
-luego se quejan cuando la desfasada fecha de su computadora les impide
-conectarse a un sitio SSL.</p>
-
-<p>En los servidores y en las estaciones de trabajo que se respeten; siempre ha
-sido una opción usar un cliente NTP. Pero los ntp, cuando la fecha no está en el
-día adecuado, no se toman la molestia de sincronizar. En los raspberry-pi eso
-puede llegar a ser un tremendo problema, ya que NO tienen reloj de hardware y ni
-siquiera conservan la fecha.</p>
-
-<p>El tan criticado <a href="https://es.wikipedia.org/wiki/Systemd">Systemd</a>, tiene una
-solución para este problema. Sucia y burda, pero muy eficiente. Normalmente, los
-&ldquo;clientes&rdquo; <a href="https://es.wikipedia.org/wiki/Network_Time_Protocol">NTP</a>, son
-cliente y servidor. En el caso de systemd-timsyncd, no se tomaron la molestia de
-implementar un servidor; solamente un cliente minimalista. Además, guarda las
-sincronizaciones en un fichero, para determinar si tu reloj de hardware se
-adelante o atraza y contrarrestar dicho efecto.</p>
-
-<p>Lo bueno que tiene es que agarra la fecha y hora de cualquier parte; luego, la
-setea sin chistar. La configuración es sencillísima. Localiza el fichero:</p>
-
-<p><strong>/etc/systemd/timesyncd.conf</strong></p>
-
-<p>Declárale un servidor principal y si te da la gana, uno o varios adicionales. A
-mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>/etc/systemd/timesyncd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#  This file is part of systemd.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#  systemd is free software; you can redistribute it and/or modify it</span>
-</span><span class='line'><span class="c">#  under the terms of the GNU Lesser General Public License as published by</span>
-</span><span class='line'><span class="c">#  the Free Software Foundation; either version 2.1 of the License, or</span>
-</span><span class='line'><span class="c">#  (at your option) any later version.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># You can override the directives in this file by creating files in</span>
-</span><span class='line'><span class="c"># /etc/systemd/timesyncd.conf.d/*.conf.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># See timesyncd.conf(5) for details</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>Time<span class="o">]</span>
-</span><span class='line'><span class="nv">NTP</span><span class="o">=</span>time.hcg.sld.cu
-</span><span class='line'><span class="nv">FallbackNTP</span><span class="o">=</span>time.sld.cu time.microsoft.com
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Generalmente, mi laptop está en el calixto, por eso puse mi servidor local como
-primario; pero si no lo estuviera, de seguro <strong>time.sld.cu</strong> sería alcanzable. En
-el dificilísimo caso de que estuviera de cara a internet, quizás responda el de
-microsoft, que no está malo. Por cierto, los comentarios del fichero son
-bastante útiles, vale la pena leerlos.</p>
-
-<p>Por último, lo más importante, habilitar y arrancar el servicio:</p>
-
-<p>systemctl <strong>start</strong> systemd-timesyncd.service</p>
-
-<p>systemctl <strong>enable</strong> systemd-timesyncd.service</p>
-
-<p>Para saber el estado del servicio, corre:</p>
-
-<p><strong>timedatectl</strong></p>
-
-<p>Te dirá la hora local y la UTC; te dirá además si está sincronizando por NTP.
-Con ese comando puede hacer un montón de operaciones, por ejemplo, setear la
-hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.org/wiki/Reloj_en_tiempo_real">RTC</a> también.</p>
-
-<p>   <blockquote><p>No existe juez más justo, que el pasar del tiempo.</p></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/15/repo-de-fdroid/">repo de fdroid</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-10-15T14:38:20-04:00'><span class='date'>15/10/2015</span> <span class='time'>2:38 pm</span></time>
-        
-           | <a href="/blog/2015/10/15/repo-de-fdroid/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/15/repo-de-fdroid/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&ldquo;La que se avecina&rdquo;, sería una buena manera para describir la revolución de
-aparatos con android que habrá en el Calixto García muy pronto. Yo siempre con
-el paso al frente y las luz larga (modestia y aparte) estuve pensando que tener
-nuestro propio repositorio de aplicaciones para android; sería una buena manera
-de mantener a todo el mundo bien actualizado, sobre todo a aquellos que no
-tienen acceso a internet.</p>
-
-<p>Para el que no lo conozca, <a href="https://f-droid.org/">fdroid</a> es una herramienta
-cliente para repositorios de android, osea como google market pero libre.</p>
-
-<p>La mecánica es sencilla: Bajo los paquetes con
-<a href="http://www.aptoide.com">aptoide</a>, verifico que sean seguros y copio la cache
-para el directorio repo/ de fdroid en el servidor con <a href="https://acrosync.com/">acrosync</a></p>
-
-<p>En el repo de debian y en AUR, el paquete se llama <strong>fdroidserver</strong>. La rutina
-de instalación ya la conoces.</p>
-
-<p>Creamos el directorio donde meteremos el repo, en mi caso, aquí:</p>
-
-<figure class='code'><figcaption><span>mkdir</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -p /srv/http/fdroid/repo
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Creamos la configuración de nginx, a mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>nginx.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>server <span class="o">{</span>
-</span><span class='line'>     listen   10.1.1.14:80<span class="p">;</span>
-</span><span class='line'>     listen   10.1.1.14:443 ssl<span class="p">;</span>
-</span><span class='line'>     server_name android.hcg.sld.cu<span class="p">;</span>
-</span><span class='line'>     location / <span class="o">{</span>
-</span><span class='line'>     root /srv/http/fdroid/repo/<span class="p">;</span>
-</span><span class='line'>     <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Un virtualhost nombrado <em>android</em>. <strong>No olvide crear el puntero DNS</strong></p>
-
-<p>Ahora, ve al directorio raíz del repo, OJO <strong>A LA RAIZ</strong>, NO a donde dice repo/.</p>
-
-<figure class='code'><figcaption><span>fdroid</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /srv/http/fdroid/
-</span><span class='line'>fdroid init
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Te preguntará por la <strong>android-sdk</strong>, por lo general, está en /opt/android-sdk,
-dale la ruta.</p>
-
-<p>¿¿No tienes la SDK de android?? Ah pues estás muy jodio&hellip; En el caso de arch,
-el repo de bbqlinux contiene la sdk completa, solo para 64 bits.</p>
-
-<p>Pero volviendo con fdroid:</p>
-
-<p>Ahora debe habérse creado el directorio <strong>repo/</strong> dentro del directorio
-<strong>/srv/http/fdroid</strong> y es ahí donde copiarás las APK.</p>
-
-<p>cp /donde/esten/tus/*.apk /srv/http/fdroid/<strong>repo/</strong></p>
-
-<p>Pero claro, querrás que tu repo se identifique.  El fichero
-<strong>/srv/http/fdroid/config.py</strong> contiene lo que buscas. Por la linea trenta y
-pico; a mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>config.py</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">...</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">repo_url</span> <span class="o">=</span> <span class="s">&quot;http://android.hcg.sld.cu&quot;</span>
-</span><span class='line'><span class="n">repo_name</span> <span class="o">=</span> <span class="s">&quot;Calixto Garcia&quot;</span>
-</span><span class='line'><span class="n">repo_icon</span> <span class="o">=</span> <span class="s">&quot;calixto_xsm.png&quot;</span>
-</span><span class='line'><span class="n">repo_description</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
-</span><span class='line'><span class="s">Repositorio de aplicaciones de android del calixto. Intentaremos proveerle</span>
-</span><span class='line'><span class="s">aplicaciones debidamente actualizadas. Sientase libre de colaborar, trayendonos</span>
-</span><span class='line'><span class="s">las mas recientes APK.</span>
-</span><span class='line'><span class="s">&quot;&quot;&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">...</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ah! y sin tildes, si no, python se vuelve loco con el encoding.</p>
-
-<p>Ahora vamos a crear el índice inicial, pero eso mismo comando lo correrás cuando
-agregues aplicaciones a tu repo.</p>
-
-<figure class='code'><figcaption><span>fdroid</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>fdroid update --create-metadata
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>OJO!! Asegúrate de que las APK no tengan un espacio en su nombre; muchísimo
-menos un caracter raro. Si todo salió bien debes ver algo como &ldquo;Generating
-metada&rdquo;.</p>
-
-<p>Con eso terminaste el servidor&hellip; Ve a fdroid y ponle la URL del virtualhost
-como repo, luego update y listo&hellip;</p>
-
-<p>¿Cómo se hace? Facilito. Párate en la primer pantalla, aprieta el botón de menú
-del dispositivo y toca donde dice &ldquo;Gestionar Repositorios&rdquo; o en inglés, &ldquo;Manage
-Repos&rdquo;</p>
-
-<p>Desactiva los respos inalcanzables y añade tu repo local. Luego actualiza y
-listo, verás las aplicaciones disponibles.</p>
-
-<p>Ya solo te quedaría instalar un rsync que desemboque en el repo y con
-<a href="https://acrosync.com/">acrosync</a> subes la cache de aptotide para el repo, así
-como lo estoy haciendo yo ahora.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-10-08T21:45:55-04:00'><span class='date'>08/10/2015</span> <span class='time'>9:45 pm</span></time>
-        
-           | <a href="/blog/2015/10/08/prawn-pdf-con-ruby/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/08/prawn-pdf-con-ruby/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>De siempre, los usuarios que fueron forzados a abandonar
-<a href="https://es.wikipedia.org/wiki/Microsoft_Access">MSAcces</a> por un motivo u otro;
-sienten un incontenible necesidad por los &ldquo;informes&rdquo;.</p>
-
-<p>A la hora de imprimir, muchos usaurios no entienden que un HTML se imprima.
-Incluso, habiéndoles hecho un javascript que muestra el diálogo de impresión,
-simplemente lo cierra y me preguntan &ldquo;¿y ahora que hago con esto?&rdquo;</p>
-
-<p>En recientes diálogos con un bibliotecario (que hereda la clase Usuario) me dijo
-que la gente entiende más de imprimir PDF.</p>
-
-<p>Hacer un PDF me pareció una tare bastante compleja; y lo es, pero
-<a href="http://prawn.majesticseacreature.com">Prawn</a> lo hace de una manera casi
-increíble. Para no aburrirte con el cuento, te mostraré como montarlo arriba del
-tren.</p>
-
-<p><strong>EjemploController</strong> que tu conoce:</p>
-
-<figure class='code'><figcaption><span>&#8220;ejemplo_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># el controlador bin ban bin ban</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">EjemploController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="k">def</span> <span class="nf">accion</span> <span class="c1"># la acción, como se llame</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="c1"># a según el sapo, la pedrá</span>
-</span><span class='line'>      <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
-</span><span class='line'>
-</span><span class='line'>         <span class="c1"># tírame el pdf</span>
-</span><span class='line'>         <span class="nb">format</span><span class="o">.</span><span class="n">pdf</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># tráeme al animal</span>
-</span><span class='line'>            <span class="nb">require</span> <span class="s1">&#39;prawn&#39;</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># créame un nuevo documento pdf</span>
-</span><span class='line'>            <span class="vi">@pdf</span><span class="o">=</span><span class="no">Prawn</span><span class="o">::</span><span class="no">Document</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># tírame el banner, el H1 como quien dice, tamaño de fuente 25px en negrita</span>
-</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">formatted_text</span> <span class="o">[</span> <span class="p">{</span><span class="ss">text</span><span class="p">:</span> <span class="s1">&#39;El título del documentos&#39;</span><span class="p">,</span><span class="ss">size</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span><span class="ss">styles</span><span class="p">:</span> <span class="o">[</span><span class="ss">:bold</span><span class="o">]</span><span class="p">}</span> <span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># hazle una rallita horizontal debano al header</span>
-</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">stroke_horizontal_line</span> <span class="mi">0</span><span class="p">,</span><span class="mi">235</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># mueve el cursor pa abajo</span>
-</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">20</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># la variable cuerpo contiene un texto laaaaaaargooo en HTML</span>
-</span><span class='line'>            <span class="c1"># un HTML muy rudimentario, Prawn lo interpresta, por ejemplo</span>
-</span><span class='line'>            <span class="c1"># las cláusulas &lt;strong&gt;</span>
-</span><span class='line'>            <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="vi">@cuerpo</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># por jemeplo, itera en el modelo User y escribe sus nombres</span>
-</span><span class='line'>            <span class="k">for</span> <span class="n">user</span> <span class="k">in</span> <span class="no">User</span><span class="o">.</span><span class="n">all</span>
-</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="s2">&quot;Nombre: </span><span class="si">#{</span><span class="n">user</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
-</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">10</span>
-</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">text</span> <span class="s2">&quot;Edad: </span><span class="si">#{</span><span class="n">user</span><span class="o">.</span><span class="n">edad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">inline_format</span><span class="p">:</span> <span class="kp">true</span>
-</span><span class='line'>               <span class="vi">@pdf</span><span class="o">.</span><span class="n">move_down</span> <span class="mi">30</span>
-</span><span class='line'>            <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1"># tírala!!!</span>
-</span><span class='line'>            <span class="n">send_data</span> <span class="vi">@pdf</span><span class="o">.</span><span class="n">render</span><span class="p">,</span> <span class="ss">filename</span><span class="p">:</span> <span class="s2">&quot;solicitud.pdf&quot;</span>
-</span><span class='line'>
-</span><span class='line'>         <span class="k">end</span> <span class="c1"># format</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">end</span> <span class="c1"># respond_to</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="k">end</span> <span class="c1"># def</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span> <span class="c1"># class</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Vamos a dividir en sílabas:</p>
-
-<h4>Línea 7</h4>
-
-<p>Rails, la acción responde a múltiples mime-types</p>
-
-<h4>Línea 10</h4>
-
-<p>Rails, application/pdf responde a la extensión PDF <em>format.pdf do</em></p>
-
-<h4>Línea 13</h4>
-
-<p>Carga la librería, sí, ya se que en Rails debes hacer eso en un initializer, de
-cualquier manera, aún, luego de haberlo agregado a tu Gemfile, no te olvides de
-requerirla, ya sea en un initializer o en el controlador.</p>
-
-<h4>Línea 16</h4>
-
-<p>Crea un nuevo PDF y almacénalo en la variable de instancia <strong>@pdf</strong></p>
-
-<h4>Línea 19</h4>
-
-<p>El método <strong>formatted_text</strong>, recibe como argumento un array de hashes</p>
-
-<p>Cada array en un bloque de texto y contiene un hash. La clave :text contiene el
-texto a renderizar, :size el tamaño y :style el estilo de fuente.</p>
-
-<h4>Línea 22</h4>
-
-<p>Trazar línea horizontal, el método <strong>stroke_horizontal_line</strong> recibe como
-argumento, de donde, a donde debe trazar la línea.</p>
-
-<h4>Pasemos a la línea 41</h4>
-
-<p>El método <strong>render</strong> devuelve el PDF. Si lo sacas con <strong>puts</strong> verás el PDF
-crudo. Podrías también tirarlo pa un fichero así:</p>
-
-<figure class='code'><figcaption><span>&#8220;fulanito.pdf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>   <span class="no">IO</span><span class="o">.</span><span class="n">write</span> <span class="s1">&#39;fulanito.pdf&#39;</span><span class="p">,</span><span class="vi">@pdf</span><span class="o">.</span><span class="n">render</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A los usuarios le encantan los PDF, hazlos feliz ;)</p>
-
-<p>   <blockquote><p>Existen dos tipos de personas,<br/>   las que hacen lo que le dicen; y,<br/>   las que dicen lo que hay que hacer.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1205,6 +946,18 @@ crudo. Podrías también tirarlo pa un fichero así:</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+		
+		<li class="post">
+			<a href="/blog/2017/06/29/repos-epel-y-demas/">repos EPEL y demás</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/06/29/knockd-en-centos/">knockd en centos</a>
+		</li>
+		
+		<li class="post">
+			<a href="/blog/2017/06/28/android-islamico/">Apps islámicas android</a>
+		</li>
 		
 		<li class="post">
 			<a href="/blog/2017/06/22/curiosa-acl-de-squid/">squid y navegar a .cu</a>
