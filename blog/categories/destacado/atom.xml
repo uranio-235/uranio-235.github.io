@@ -4,7 +4,7 @@
   <title><![CDATA[Category: destacado | El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/blog/categories/destacado/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-06-29T12:10:41-04:00</updated>
+  <updated>2017-07-06T13:22:34-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -63,6 +63,12 @@ JUGANDO.</p>
 
 <pre><code class="console "instalando Remi""> wget http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
  rpm -Uvh remi-release-7*.rpm
+</code></pre>
+
+<p>Otro repo bueno, es el de alcancelibre, que provee sarg.</p>
+
+<pre><code class="console "alcancelibre"">wget -N http://www.alcancelibre.org/al/server/AL-Server.repo \
+-O /etc/yum.repos.d/AL-Server.repo
 </code></pre>
 
 <p>Luego usamos el mismo proceder, buscar en repo específico.</p>

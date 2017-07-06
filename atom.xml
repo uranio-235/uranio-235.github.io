@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-06-29T12:10:41-04:00</updated>
+  <updated>2017-07-06T13:22:34-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -77,6 +77,17 @@ JUGANDO.</p>
 </span><span class='line'><span class="go"> rpm -Uvh remi-release-7*.rpm</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p>Otro repo bueno, es el de alcancelibre, que provee sarg.</p>
+
+<figure class='code'><figcaption><span>&#8220;alcancelibre&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">wget -N http://www.alcancelibre.org/al/server/AL-Server.repo \</span>
+</span><span class='line'><span class="go">-O /etc/yum.repos.d/AL-Server.repo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
 
 <p>Luego usamos el mismo proceder, buscar en repo específico.</p>
 
