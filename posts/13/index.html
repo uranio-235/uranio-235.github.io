@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="archlinux con dos kernel 07/09/2015 8:32 pm | Comments Tener los dos kernel y elegir cual butear con el grub al principio; no es algo
-sencillo en &hellip;">
+  <meta name="description" content="dhcp por grupos 17/09/2015 5:42 pm | Comments La fiebre LTSP sigue subiendo en el Calixto. La solución definitiva para toda
+máquina que butee por la &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,491 @@ sencillo en &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/17/dhcp-por-grupos/">dhcp por grupos</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-17T17:42:04-04:00'><span class='date'>17/09/2015</span> <span class='time'>5:42 pm</span></time>
+        
+           | <a href="/blog/2015/09/17/dhcp-por-grupos/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/09/17/dhcp-por-grupos/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>La fiebre LTSP sigue subiendo en el Calixto. La solución definitiva para toda
+máquina que butee por la red, sin importar su cantidad de RAM o micro&hellip;</p>
+
+<p>Pero cuando hay más de un servidor con DHCP en la misma red, se forma el rollo.</p>
+
+<h4>isc-dhcp no se puede bloquear con iptables</h4>
+
+<p>Si tienes alguna duda de la afirmación anterior, has la tarea y busca en google.
+De nada vale ponerle un cortafuegos a cada servidor porque <strong>isc</strong> usa &ldquo;raw
+packets&rdquo; y se caga en lo que diga iptables. Por suerte de afuera pa dentro eso
+no se aplica. No obstante, ojo si pones un isc con múltiples interfaces, no sea
+que acabes dándole DHCP al ruter.</p>
+
+<p>En un ambiente como este, no queda otra que hacer un DHCP central con múltiples
+parámetros, de forma que los clientes ligeros se agrupen por MAC address y se
+seleccione el servidor adecuado a la hora de butear.</p>
+
+<p>El fichero de configuración es <strong>/etc/dhcp/dhcpd.conf</strong> y bajo la declaración de
+la subnet puedes poner una cláusula <strong>group</strong> para dar parámetros diferentes.</p>
+
+<p>La sintaxis es sencilla:</p>
+
+<figure class='code'><figcaption><span>&#8220;ejemplo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>subnet <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>   parametros de la red
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>group <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>   parametros del grupo
+</span><span class='line'>
+</span><span class='line'>   host nombre <span class="o">{</span>
+</span><span class='line'>      parametros del host
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Tomemos el caso de dos servidores LTSP en la red, el 10.1.1.6 y el 10.1.1.3, a
+mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/dhcp/dhcpd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># vim:filetype=config</span>
+</span><span class='line'>authoritative<span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># la red</span>
+</span><span class='line'>subnet 10.1.1.0 netmask 255.255.255.0 <span class="o">{</span>
+</span><span class='line'>    range 10.1.1.100 10.1.1.254<span class="p">;</span>
+</span><span class='line'>    option domain-name <span class="s2">&quot;hcg.sld.cu&quot;</span><span class="p">;</span>
+</span><span class='line'>    option domain-name-servers 10.1.1.1<span class="p">;</span>
+</span><span class='line'>    option broadcast-address 10.1.1.255<span class="p">;</span>
+</span><span class='line'>    option subnet-mask 255.255.255.0<span class="p">;</span>
+</span><span class='line'><span class="o">}</span> <span class="c"># subnet</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ganker y su pandilla, la gente de archivos médicos</span>
+</span><span class='line'>group <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># clientes ligeros con linux y ltsp</span>
+</span><span class='line'>    option root-path <span class="s2">&quot;/opt/ltsp/i386&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> substring<span class="o">(</span> option vendor-class-identifier, 0, <span class="m">9</span> <span class="o">)</span> <span class="o">=</span> <span class="s2">&quot;PXEClient&quot;</span> <span class="o">{</span>
+</span><span class='line'>        filename <span class="s2">&quot;/ltsp/i386/pxelinux.0&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>        filename <span class="s2">&quot;/ltsp/i386/nbi.img&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># buteen por ganker</span>
+</span><span class='line'>   next-server 10.1.1.3<span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># los clientes</span>
+</span><span class='line'>   host clganker1 <span class="o">{</span> hardware ethernet 00:1E:90:E1:B4:0A<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>   host clganker2 <span class="o">{</span> hardware ethernet 00:1E:90:E2:6E:1A<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>   host clganker3 <span class="o">{</span> hardware ethernet 00:1E:90:E2:75:B6<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>   host clganker4 <span class="o">{</span> hardware ethernet 00:1E:90:F5:E8:A5<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>   host clganker5 <span class="o">{</span> hardware ethernet 00:1E:90:F5:E9:88<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span> <span class="c"># ganker</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c"># atenea y su flotilla, el servidor de la biblioteca</span>
+</span><span class='line'>group <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># clientes ligeros con linux y ltsp</span>
+</span><span class='line'>    option root-path <span class="s2">&quot;/opt/ltsp/i386&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> substring<span class="o">(</span> option vendor-class-identifier, 0, <span class="m">9</span> <span class="o">)</span> <span class="o">=</span> <span class="s2">&quot;PXEClient&quot;</span> <span class="o">{</span>
+</span><span class='line'>        filename <span class="s2">&quot;/ltsp/i386/pxelinux.0&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>        filename <span class="s2">&quot;/ltsp/i386/nbi.img&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># buteen por el servidor de la bibliteoca</span>
+</span><span class='line'>   next-server 10.1.1.6<span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># los clientes</span>
+</span><span class='line'>   host biblioteca1 <span class="o">{</span> hardware ethernet 00:1E:90:E1:B4:0A<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>   host biblioteca2 <span class="o">{</span> hardware ethernet 00:1E:90:E2:6E:1A<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>   host biblioteca3 <span class="o">{</span> hardware ethernet 00:1E:90:E2:75:B6<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>   host biblioteca4 <span class="o">{</span> hardware ethernet 00:1E:90:F5:E8:A5<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>   host biblioteca5 <span class="o">{</span> hardware ethernet 00:1E:90:F5:E9:88<span class="p">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span> <span class="c"># ganker</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¿Qué hicimos? Sencillo, declaramos un grupo con distintos parámetros, aunque en
+este caso solo <strong>next-server</strong> es verdaderamente distinto. En ambos casos se
+engatilla el mismo <strong>file-name</strong> y <strong>root-path</strong> ya que ambos servidores hay lo
+mismo.  Pero quizás en su red usted tiene otro servidor bootp o PXE y no querrá
+que las opciones de LTSP sean la misma.</p>
+
+<p>Finalmente el parámetro <strong>next-server</strong> difiere y es que es este el que le da
+porque servidor bootear.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/10/plymouth-boot-screen/">plymouth boot screen</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-10T18:28:48-04:00'><span class='date'>10/09/2015</span> <span class='time'>6:28 pm</span></time>
+        
+           | <a href="/blog/2015/09/10/plymouth-boot-screen/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/09/10/plymouth-boot-screen/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Sigo con mi plan de &ldquo;civilizarme&rdquo;, me he propuesto dejar de parecer un friki en
+materia de software. He cambiado i3 por MATE (en la máquina personal) e incluso
+tengo un tema en el grub. Intenté cambiar Atom por Vim, evolution por mutt y
+double-cmd por mc; pero por gusto, acabé virando pa atrá.</p>
+
+<p>Una de las cosas que antes solía molestarme en las distros duras como debian,
+era el hecho de que no tuvieran una pantalla bien bonita mientras buteaban.
+Ubuntu por ejemplo, te pone las bolitas.</p>
+
+<p>Archlinux es particularmente rápido buteando, pero aún tenía conmigo mismo la
+deuda del bootscren pendiente.</p>
+
+<p>Resulta que ya splashy no se usa, ahora la talla es un software con nombre de
+almendrón: <strong>Plymouth</strong></p>
+
+<p>Plymouth, es una proyecto de fedora, para proveer una pantalla de buteo a nivel
+de framebuffer. Hoy en día casi todas las distros butean con el framebuffer en
+la máxima resolución posible, así que me imagino que Plymouth sea algo bastante
+simple.</p>
+
+<p>En el repo de arch no está incluido pero como todo, está disponible en AUR. La
+rutina ya la conoces. Selecciona el que dice plymouth pelao.</p>
+
+<figure class='code'><figcaption><span>&#8220;yaourt&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yaourt plymouth
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora vamos a cambiar unos parámetros en el generador de imágenes de inicio.
+Localiza el fichero <strong>/etc/mkinitcpio.conf</strong> y ahí vamos a cambiar unas
+cosillas.</p>
+
+<p>Primero necesitaremos poner el <strong>HOOK</strong> para plymouth. La documentación advierte
+que debe ser después de <strong>base</strong> y de <strong>udev</strong>, así que mejor <strong>ponlo de
+último</strong>. Por tanto, dentro de las comillas colocarás <strong>plymouth</strong> como un
+objeto más de dicha lista; como el último.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/mkinitcpio.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">HOOKS</span><span class="o">=</span><span class="s2">&quot;base udev fulanito menganito el_ultimo plymouth&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Nota para los imbéciles:</strong> <em>Si copias y pegas el código anterior, el sistema no te arrancará más.</em></p>
+
+<p>Necesitaremos el módulo apropiado para pinchar el framebufer. En mi caso,
+desgraciadamente, uso nvidia, así que me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/mkinitcpio.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">MODULES</span><span class="o">=</span><span class="s2">&quot;nouveau&quot;</span>
+</span><span class='line'><span class="c">#MODULES=&quot;i915&quot;</span>
+</span><span class='line'><span class="c">#MODULES=&quot;radeon&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Fíjate que los demás quedaron a modo de comentario. Te aclaro que <strong>i915</strong> es
+para las tarjetas de video Intel.</p>
+
+<p>Si usas el blob oficial de nvidia, te jodiste. Ni sigas leyendo.</p>
+
+<p>Ahora tenemos que decirle al grub, que incluya el parámetro <strong>splash</strong> en la
+linea de buteo. Eso lo hacemos editando el fichero <strong>/etc/default/grub</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/default/grub&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">GRUB_CMDLINE_LINUX_DEFAULT</span><span class="o">=</span><span class="s2">&quot;quiet splash&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Yo en lo personal suelo quitarle &ldquo;quiet&rdquo; porque me gusta ver lo que hace el
+sistema mientras butea. Aunque ya no da tiempo. Como te dije, los sistemas
+modernos butean MUY rápido. Es más el tiempo en que carga init o el display
+manager, que el de buteo como tal.</p>
+
+<p>Más adelante veremos que hacer para que la pantalla se vea más tiempo, por ahora
+terminemos de configurar. Tanto el grub como initramfs, tienen que reflejar los
+cambios</p>
+
+<figure class='code'><figcaption><span>&#8220;reflejando cambios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>grub-mkconfig -o /boot/grub/grub.cfg
+</span><span class='line'>mkinitcpio -p linux
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si usas linux-lts, corre:</p>
+
+<figure class='code'><figcaption><span>&#8220;reflejando cambios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkinitcpio -p linux-lts
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Algo que suele molestar, es que el display manager te caiga en la cara de
+pronto. Arch suele manejar bien ese tema, pero por si acaso, nos aseguramos de
+habilitar la unit para cada display manager.</p>
+
+<p>En mi caso yo uso slim y corrí:</p>
+
+<figure class='code'><figcaption><span>&#8220;enable&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl <span class="nb">enable </span>slim-plymouth.service
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Puede que el tuyo sea:</p>
+
+<ul>
+<li>gdm-plymouth.service</li>
+<li>kdm-plymouth.service</li>
+<li>lxdm-plymouth.service</li>
+</ul>
+
+
+<p>Con eso ya debe estar listo para pinchar pero vamos a darle unos toquesitos
+finales.</p>
+
+<p>El fichero <strong>/etc/plymouth/plymouthd.conf</strong> contiene los parámetros de
+configuración del mismo. El mío luce así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/plymouth/plymouthd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>cat /etc/plymouth/plymouthd.conf
+</span><span class='line'><span class="c"># Distribution defaults. Changes to this file will get overwritten during</span>
+</span><span class='line'><span class="c"># upgrades.</span>
+</span><span class='line'><span class="o">[</span>Daemon<span class="o">]</span>
+</span><span class='line'><span class="nv">Theme</span><span class="o">=</span>tribar
+</span><span class='line'><span class="nv">ShowDelay</span><span class="o">=</span>2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El parámetro <strong>ShowDelay</strong>, define que tiempo se mostrará la pantalla. Como ya
+te dije, arch a mi me butea en segundos. Si pones 5 ahí, la pantalla de buteo se
+mostrará cinco segundos. Dos buteando y otros tres pa que tu la mires mostrando
+su animación.</p>
+
+<p>Yo cuando terminé de verla correr la primera vez; desinstalé plymouth. No me
+interesa tener 2 segundos adicionales de media por el mero hecho de que sea más
+bonito.</p>
+
+<p>El otro parámetro, <strong>Theme</strong>, setea el tema que usarás. Para ver que temas
+tienes en el menú, corre:</p>
+
+<figure class='code'><figcaption><span>&#8220;plymouth-set-default-theme&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>lazaro@artema ~<span class="o">]</span><span class="nv">$ </span>plymouth-set-default-theme -l
+</span><span class='line'>details
+</span><span class='line'>fade-in
+</span><span class='line'>glow
+</span><span class='line'>script
+</span><span class='line'>solar
+</span><span class='line'>spinfinity
+</span><span class='line'>spinner
+</span><span class='line'>text
+</span><span class='line'>tribar
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A mi me gustó &ldquo;tribar&rdquo; y el que viene por defecto también está lindo, pero es
+una copia al carbón de MacOS.</p>
+
+<h4>OJO!</h4>
+
+<p>Cada vez que cambies un parámetro ahí, debes correr &ldquo;mkinitcpio -p&rdquo;</p>
+
+<p>Ah! Una cosita, si en algún momento quieres ver lo que está haciendo el kernel
+por detrás de plymouth, presiona &ldquo;home&rdquo; mientras butea.</p>
+
+<p>Eso es todo. ¡Reinicia!</p>
+
+<p>   <blockquote><p>Si no te queda bueno, al menos que te quede lindo.</p><footer><strong>Bill Gates</strong></footer></blockquote></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/07/git-clone-rapido/">git clone rápido</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-07T22:36:56-04:00'><span class='date'>07/09/2015</span> <span class='time'>10:36 pm</span></time>
+        
+           | <a href="/blog/2015/09/07/git-clone-rapido/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/09/07/git-clone-rapido/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>En paises con internet lento (adivina a cual me refiero) el mero hecho de clonar
+un repositorio de git; puede llegar a ser un verdadero problema.</p>
+
+<figure class='code'><figcaption><span>&#8220;git&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone --depth<span class="o">=</span><span class="m">1</span> http://repositorio.tld/fulanito/aplicacion.git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¿Rápido verdad? Es que solo cogió el HEAD, no el historial de commits completo.</p>
+
+<p>Si lo quieres pa siempre, pon en tu gitconfig esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;.gitconfig&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>clone<span class="o">]</span>
+</span><span class='line'>   <span class="nv">depth</span> <span class="o">=</span> 1
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
   
   
     <article>
@@ -169,7 +654,7 @@ volátiles, uno nunca sabe cuando le va a hacer falta.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -242,7 +727,7 @@ encendida y el uptime dice lo contrario.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -311,448 +796,7 @@ que mejor aprender a leer árabe y listo.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/07/12/date-select-en-espanol/">date_select en español</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-07-12T15:14:12-04:00'><span class='date'>12/07/2015</span> <span class='time'>3:14 pm</span></time>
-        
-           | <a href="/blog/2015/07/12/date-select-en-espanol/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/07/12/date-select-en-espanol/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Algunos componentes de <a href="http://rubyonrails.org/">Ruby on Rails</a>, se pueden usar
-de manera independiente, como es el caso de
-<a href="https://github.com/rails/rails/tree/master/activerecord">active_record</a> (sin
-dudas es el más potente). Pero otro que no se queda atrás, es active_support.
-Lleno de sorpresas y de joyas poco documentadas.</p>
-
-<p>Para el que no lo conozca, en ruby on rails, hay un método muy cómodo que genera
-un <a href="https://www.w3.org/wiki/HTML/Elements/select"><strong>select</strong></a> cuyas <em>option</em> son nada menos que la fecha. Los usuarios
-mononeuronales, encuentran más cómodo introducir una fecha así, que con un
-datepicker.</p>
-
-<p>El método <a href="http://apidock.com/rails/ActionView/Helpers/DateHelper/select_date"><strong>select_date</strong></a> genera una cosa similar a esta:</p>
-
-<p><select id="caudocidad_day" name="caudocidad[day]">
-<option value="12" selected="selected">12</option>
-</select>
-<select id="caudocidad_month" name="caudocidad[month]">
-<option value="8" selected="selected">Agosto</option>
-</select>
-<select id="caudocidad_year" name="caudocidad[year]">
-<option value="2015" selected="selected">2015</option>
-</select></p>
-
-<p>Pero con todos los meses y sus días claro. Ahí soló te puse un pedazito. Para
-generar esto, se supone que solo necesites poner algo como:</p>
-
-<figure class='code'><figcaption><span>&#8220;select_date&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="cp">&lt;%=</span> <span class="n">select_date</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="p">,</span> <span class="ss">prefix</span><span class="p">:</span> <span class="ss">:caudocidad</span> <span class="cp">%&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Luego en el controlador, generas la fecha, procesando el dato. Hay mil y una
-forma de hacerlo. Más mágica y menos mágica, yo lo hago de una manera bien
-rudimentaria:</p>
-
-<figure class='code'><figcaption><span>&#8220;Time.mktime en el controller&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@cuando</span><span class="o">=</span><span class="no">Time</span><span class="o">.</span><span class="n">mktime</span> <span class="n">params</span><span class="o">[</span><span class="ss">:caudocidad</span><span class="o">][</span><span class="ss">:year</span><span class="o">]</span><span class="p">,</span><span class="n">params</span><span class="o">[</span><span class="ss">:caudocidad</span><span class="o">][</span><span class="ss">:month</span><span class="o">]</span><span class="p">,</span><span class="n">params</span><span class="o">[</span><span class="ss">:caudocidad</span><span class="o">][</span><span class="ss">:day</span><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como vez, a <strong>prefix:</strong> se le mandó un símbolo, que pasó a ser el valor del HTML
-generado, <strong>name=&ldquo;caudocidad&rdquo;</strong>. En mi caso, se llama &ldquo;cadocidad&rdquo; usted le pone
-como le de la gana. Sería :prefix=>&lsquo;nombre_que_quieras&rsquo; o prefix: &lsquo;nombre&rsquo; en su
-versión corta.</p>
-
-<p>En el controlador, <strong>params[:caudocidad]</strong>, contiene un Hash, donde las claves
-<strong>:year</strong>, <strong>:month</strong> y <strong>:day</strong> tendrán los valores numéricos listos para ser
-procesados.</p>
-
-<figure class='code'><figcaption><span>params[:caudocidad]</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">{</span><span class="ss">:year</span><span class="o">=&gt;</span><span class="mi">2015</span><span class="p">,</span> <span class="ss">:month</span><span class="o">=&gt;</span><span class="mi">8</span><span class="p">,</span> <span class="ss">:day</span><span class="o">=&gt;</span><span class="mi">12</span><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Todo eso está muy bonito, pero lo jodido del caso, es que los meses vienen en
-inglés.</p>
-
-<p>Llevarlo a español, requiere estar un poco familiarizado con el
-<a href="http://guides.rubyonrails.org/i18n.html">i18n</a> de Ruby on rails.</p>
-
-<p>Para el que no lo conozca, el i18n, es un sistema que nos permite crear
-aplicaciones en múltiples idiomas. De forma tal que nuestra aplicación le hable
-al navegador en el idioma que este soporta. Lo malo del caso es que no lo hace
-solo. Serás tu quien deba indicarle cuando usar que idioma. Una buena manera de
-hacer eso, es parseando el encabezado &ldquo;content-&rdquo; para ver que idioma soporta el
-navegador. Métodos hay miles, pero no se porque rails no lo hace solo.</p>
-
-<p>Si nuestra aplicación fuera canadiense, le diría que cree un fichero para cada
-idioma. Pero como nuestra aplicación es Cubana, con ponerlo todo en el
-<strong>en.yml</strong> resolvemos el problema.</p>
-
-<p>Al principio me fajaba con el <strong>en.yml</strong> y trataba de ponerle cosas, pero luego
-descubrí que hay una especie de esqueleto en la gema de active_support.</p>
-
-<p>En vez de escribir un en.yml desde cero, podemos usar el que está en
-active_support. Ejecuta este comando:</p>
-
-<figure class='code'><figcaption><span>&#8220;buscando el en.yml&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> gem  cont activesupport<span class="p">|</span>grep en.yml
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Copia dicho fichero a tu <strong>config/locales/en.yml</strong> y comencemos a editarlo.</p>
-
-<p>En la linea 30 y pico. Hay una cláusula llamada <strong>month_names</strong>, ahí le pones
-los meses. A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;month_names, cerca de la linea 30&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>    <span class="c1"># Don&#39;t forget the nil at the beginning; there&#39;s no such thing as a 0th month</span>
-</span><span class='line'>    <span class="ss">month_names</span><span class="p">:</span> <span class="o">[~</span><span class="p">,</span> <span class="no">Enero</span><span class="p">,</span> <span class="no">Febrero</span><span class="p">,</span> <span class="no">Marzo</span><span class="p">,</span> <span class="no">Abril</span><span class="p">,</span> <span class="no">Mayo</span><span class="p">,</span> <span class="no">Junio</span><span class="p">,</span> <span class="no">Julio</span><span class="p">,</span> <span class="no">Agosto</span><span class="p">,</span> <span class="no">Septiembre</span><span class="p">,</span> <span class="no">Octubre</span><span class="p">,</span> <span class="no">Novimebre</span><span class="p">,</span> <span class="no">Diciembre</span><span class="o">]</span>
-</span><span class='line'>    <span class="ss">abbr_month_names</span><span class="p">:</span> <span class="o">[~</span><span class="p">,</span> <span class="no">Ene</span><span class="p">,</span> <span class="no">Feb</span><span class="p">,</span> <span class="no">Mar</span><span class="p">,</span> <span class="no">Abr</span><span class="p">,</span> <span class="no">May</span><span class="p">,</span> <span class="no">Jun</span><span class="p">,</span> <span class="no">Jul</span><span class="p">,</span> <span class="no">Aug</span><span class="p">,</span> <span class="no">Sep</span><span class="p">,</span> <span class="no">Oct</span><span class="p">,</span> <span class="no">Nov</span><span class="p">,</span> <span class="no">Dec</span><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Además, más abajo, por la linea 40, tienes el orden en el que se muestra la
-fecha.</p>
-
-<figure class='code'><figcaption><span>&#8220;order: bajo la linea 40&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Used in date_select and datetime_select.</span>
-</span><span class='line'><span class="ss">order</span><span class="p">:</span>
-</span><span class='line'>  <span class="o">-</span> <span class="n">day</span>
-</span><span class='line'>  <span class="o">-</span> <span class="n">month</span>
-</span><span class='line'>  <span class="o">-</span> <span class="n">year</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A mi me quedó así, porque los yumas ponen el mes delante y el día detrás.</p>
-
-<p>Si miras más abajo, verás que tiene incluso la moneda (currency) y los
-separadores, por ejemplo, usar coma en vez de punto para separar los decimales.
-También están los numerales (millones, millares, centenas, etc&hellip;)</p>
-
-<p>Hay un método muy curioso que yo uso mucho. Convierte un array en una oración
-delimitada por coma; pero pone una conjunción &ldquo;y&rdquo; en el último elemento.</p>
-
-<figure class='code'><figcaption><span>&#8216;to_sentence&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="ss">:&gt;</span> <span class="sx">%w[perros gatos]</span><span class="o">.</span><span class="n">to_sentence</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;perros y gatos&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="ss">:&gt;</span> <span class="sx">%w[papas malangas calabazas]</span><span class="o">.</span><span class="n">to_sentence</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;papas, malangas y calabazas&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El separador se configura ahí también. Por defecto dice &ldquo;<strong>and</strong>&rdquo; en vez de &ldquo;<strong>y</strong>&rdquo;</p>
-
-<p>Conclusión:</p>
-
-<p>La instrumentación de active_support (ese nombre tan suigeneris se lo pusieron
-ellos) es bastante rica. Deberían verla bien de cerca. La guia es bastante
-escueta; te recomiendo que mires un poco el código fuente de active_support o la
-documentación de la API (que es casi lo mismo).</p>
-
-<p>Si buscas en la misma ruta, pero con <em>model</em> donde dice <em>support</em> verás el YAML
-que utiliza ActiveRecord para generar los errores de validación. Ahí puedes
-ponerlos a tu manera. Osea, el contenido de ese YAML se lo adicionas al tuyo.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/07/11/openvas-en-archlinux/">OpenVAS en Archlinux</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-07-11T19:19:59-04:00'><span class='date'>11/07/2015</span> <span class='time'>7:19 pm</span></time>
-        
-           | <a href="/blog/2015/07/11/openvas-en-archlinux/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/07/11/openvas-en-archlinux/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="left" src="/images/greenbone.png" title="Login del Greenbone" alt="Login del Greenbone"></p>
-
-<p>Recientemente, un &ldquo;Webmaster&rdquo; usó en uno de los servidores que patrocino; un
-escaner de vulnerabilidades. El administrador de red del lugar, le dio acceso al
-servidor; claro está. El informe reveló un cartapaso de vulnerabilidades. Por
-ejemplo, la ausencia de una partición swap; podría dar lugar a un kernel-panic
-por falta de memoria RAM; en un servidor de correo con 4 Gigas de RAM. Además,
-advertía que la versión de bash (con sus parches puestos) era muy vieja y
-recomendaba usar una reciente. Como si instalar software reciente en debian
-fuese jamón.</p>
-
-<p>No vi nada con respecto a postfix o dovecot pero de inmediato me llamaron para
-que explicara como era posible que mi servidor tuviera semejantes
-vulnerabilidades. Claro, con acceso a root cualquiera busca vulnerabilidades.</p>
-
-<p>Soy de los que pasa HORAS, intentando penetrar mi propia seguridad; pero el caso
-llevaba un contra ataque más elaborado.</p>
-
-<p>El sosftware por excelencia para probar la seguridad: <a href="http://es.wikipedia.org/wiki/OpenVAS">OpenVAS</a></p>
-
-<h3>No solo identifica el problema, también te dice como arreglarlo.</h3>
-
-<p>Funciona de manera similar a un antivirus. Una base de datos se actualiza y ala
-las vulnerabilidades conocidas. Luego, una interfaz web, de lo más cómoda;
-permite llevar a cabo un análisis tanto ligero como exhaustivo del sistema
-seleccionado como objetivo. Además, se pueden programar análisis de manera
-automatizada.</p>
-
-<p>Su interfaz web, el llamado &ldquo;Greenbone Security Assistant&rdquo;, nos hará la vida muy
-fácil una vez instalado.</p>
-
-<p>En archlinux todo es un rollo, así que empezemos:</p>
-
-<figure class='code'><figcaption><span>&#8220;instalando openvas&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S openvas
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>La interfaz web de openvas (el greenbone) debe ser contactada por SSL (obligao).
-Como siempre, crear los certificados es todo una ceremonia.</p>
-
-<figure class='code'><figcaption><span>&#8220;creando certificados&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvas-mkcert
-</span><span class='line'>openvas-mkcert-client -n -i
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora lo más importante. Descargarnos la base de datos con las amenazas, o sea,
-con las vulnerabilidades.</p>
-
-<figure class='code'><figcaption><span>&#8220;actualizando las bases&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvas-nvt-sync
-</span><span class='line'>openvas-scapdata-sync
-</span><span class='line'>openvas-certdata-sync
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El escaner, es un servicio, que en producción, está supuestamente corriendo y
-realizando escaneos bajo demanda. Lo echamos a andar:</p>
-
-<figure class='code'><figcaption><span>&#8220;el servicio&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl start openvas-scanner
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Una vez que tenemos las bases de datos descargadas, las instalamos en openvas</p>
-
-<figure class='code'><figcaption><span>&#8220;instalando las bases&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvasmd --rebuild --progress
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Y hasta aquí es donde la wiki de arch está bien. Pues para crear el usuario de
-openvas y echar a andar el greenbone, se forma la moña.</p>
-
-<p>Primero debemos crear el usuario de openvas. En este caso de ejemplo, el
-usuario será <strong>admin</strong> con password <strong>admin</strong>.</p>
-
-<figure class='code'><figcaption><span>&#8220;creando usuarios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvasmd --create-user<span class="o">=</span>admin --role<span class="o">=</span>Admin
-</span><span class='line'>openvasmd --user<span class="o">=</span>admin --new-password<span class="o">=</span>admin
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Por último, echamos a andar la interfaz web:</p>
-
-<figure class='code'><figcaption><span>&#8220;iniciando gsad&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>gsad --http-only --listen<span class="o">=</span>127.0.0.1 -p 9392
-</span><span class='line'>openvasmd -p <span class="m">9390</span> -a 127.0.0.1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Abre un navegador y apunta para <a href="http://127.0.0.1:9392">http://127.0.0.1:9392</a></p>
-
-<p>Una vez dentro, verás la página donde se almacenan los escaneos. Ahí localiza un
-botón morado con una barita mágica. Vea la imagen de abajo</p>
-
-<p><img class="center" src="/images/openvas_wiz.png" title="Botón del Wizard" alt="Botón del Wizard"></p>
-
-<p>En la pantalla que le sigue, especificamos el host al que queremos escanear.</p>
-
-<p><img class="center" src="/images/openvas_scan.png" title="Seleccionar Objetivo" alt="Seleccionar objetivo"></p>
-
-<p>Apto seguido, comenzará el escaneo. Es posible que el servidor deje de prestar
-servicios; pues openvas le da con todo.</p>
-
-<p>Finalmente, cuando el escaneo esté terminado, en vez de un tanto por ciento,
-verás; como en la primera imagen, un letrero que dice &ldquo;<strong>done</strong>&rdquo; sobre la barra
-azul.</p>
-
-<p><img class="center" src="/images/openvas_result.png" title="resultado del escaneo" alt="resultado de escaneo"></p>
-
-<p>La imagen muestra, el resultado del webmaster que le tiró piedras al tejado del
-vecino con el suyo de vidrio. Al hacer click en la vulnerabilidad, nos muestra
-la solución, como es el ejemplo de esta:</p>
-
-<p><img class="center" src="/images/openvas_sol.png" title="solución" alt="solución"></p>
-
-<p>Hermosa pareja; el problema y la solución junticos&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/">añadir verbo a un scaffold</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-07-05T21:35:54-04:00'><span class='date'>05/07/2015</span> <span class='time'>9:35 pm</span></time>
-        
-           | <a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/07/05/anadir-verbo-a-un-scaffold/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Cualquiera que sepa como usar debidamente los scaffolds, o sea, cualquiera que
-sepa como hacerle la paja a ruby on rails para que haga lo que queremos; seguro
-habrá intentado en algún momento, añadir un nuevo método a un scaffold. Además,
-de seguro quisiste luego poder llamarlo con los métodos &ldquo;metodo_user_path&rdquo; y que
-la ruta se cree de manera automática.</p>
-
-<p>Por ejemplo, en este caso, tengo el scaffold <strong>user</strong> y le agregué el método
-<strong>cambiar</strong> aparte de los clásicos PUT y DELETE.</p>
-
-<figure class='code'><figcaption><span>&#8220;scope de users_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="c1"># cambia el estado de habilitación del usuarios</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">cambiar</span>
-</span><span class='line'>     <span class="vi">@user</span><span class="o">.</span><span class="n">enabled</span><span class="o">=!</span><span class="vi">@user</span><span class="o">.</span><span class="n">enabled</span>
-</span><span class='line'>     <span class="vi">@user</span><span class="o">.</span><span class="n">save</span>
-</span><span class='line'>     <span class="n">redirect_to</span> <span class="ss">:back</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># GET /users</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
-</span><span class='line'>    <span class="vi">@users</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">all</span>
-</span><span class='line'>  <span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Pero el método cambiar no aparece en rails hasta que no hagas lo siguiente en el
-fichero de las rutas.</p>
-
-<figure class='code'><figcaption><span>&#8220;config/routes.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>   <span class="c1"># el scaffold de los usuarios</span>
-</span><span class='line'>   <span class="n">resources</span> <span class="ss">:users</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="c1"># agregamos el verbo cambiar usado para</span>
-</span><span class='line'>      <span class="c1"># @user.enabled=!@user.enabled</span>
-</span><span class='line'>      <span class="c1"># para que exista: cambiar_user_path</span>
-</span><span class='line'>      <span class="n">member</span> <span class="k">do</span>
-</span><span class='line'>         <span class="n">get</span> <span class="s1">&#39;cambiar&#39;</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora existirá el método <strong>cambiar_user_path</strong> que toma como argumento el
-usuario.</p>
-
-<p>   cambiar_user_path(user)</p>
-
-<p>De esta manera, se le manda el objeto usuario y genera una URL como</p>
-
-<p>   /users/345/cambiar</p>
-
-<p>Dicha ruta macheará el método User#cambiar</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -773,421 +817,647 @@ usuario.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+
 		
+
+		<li class="post">
+			<a href="/blog/2017/08/14/odoo-en-centos7/">odoo en centos7</a>
+      </li>
+
+      
+
+		<li class="post">
+			<a href="/blog/2017/08/13/yum-estrecho/">yum estrecho</a>
+      </li>
+
+      
+
+		<li class="post">
+			<a href="/blog/2017/07/23/lemp-en-debian/">LEMP en debian</a>
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/06/29/repos-epel-y-demas/">repos EPEL y demás</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/06/29/knockd-en-centos/">knockd en centos</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/06/28/android-islamico/">Apps islámicas android</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/06/22/curiosa-acl-de-squid/">squid y navegar a .cu</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/05/13/instalar-node-rapido/">instalar node rápido</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/05/10/ssl-ca-local/">autoridad certificadora</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/04/08/xen-y-virt-manager/">xen y virt-manager</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/29/jugar-teeworlds-en-lan/">jugar teeworlds en LAN</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/">nueva VM siempre es PV</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/03/nginx-y-websocket/">nginx y websocket</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/03/pkg-tras-un-proxy/">pkg tras un proxy</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/01/portknocking-en-freebsd/">portknocking en freebsd</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/01/bind-en-infomed/">bind en infomed</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/01/qos-con-tc/">QoS con tc o dummynet</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/02/05/dns-con-vistas/">dns con vistas</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/02/01/ipfw-simple-y-consiso/">ipfw simple y conciso</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/28/freebsd-11/">mis crónicas con freebsd</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/21/palito/">animación del palito</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/20/datatables-espanol/">DataTables en español</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/09/tendencias-tecnologicas/">tendencias tecnológicas</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/09/flasheando-modem-al-s4/">flasheando modem al S4</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/02/rails-assets/">rails-assets</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/12/29/xgproyect/">xgproyect</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/12/27/cambiar-mac-a-un-nano/">cambiar mac a un nano</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/12/19/phpmyadmin-multiples-servidores/">phpmyadmin múltiples servidores</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/12/19/iptables-y-ftp/">iptables y ftp</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/12/09/rails-en-alpine/">rails en alpine</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/11/24/squid3-bloquear-user-agent/">squid3 bloquear user-agent</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/11/22/redimensionar-lvm/">redimensionar lvm</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/11/20/sysinfo-en-el-motd/">sysinfo en el motd</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/11/14/openvpn-user-plus-pass/">openvpn user+pass</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/el-domain-pop/">recolección DomainPOP</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/domainpop-con-postfix/">domainpop con postfix</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/tunel-6in4/">túnel 6in4</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/cortafuegos-ipv6-sencillo/">cortafuegos ipv6 sencillo</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/poniendo-direcciones-ipv6/">las reglas del juego ipv6</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/ipv6/">la resolución 185/2016</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/04/dirver-broadcom/">driver broadcom</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/09/22/audifonos-blutu/">audífonos blutú</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/09/16/dispatcher-script/">dispatcher script</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/08/16/password-de-windows/">password de windows</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en XenServer</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/07/31/kiwix-como-servicio/">kiwix como servicio</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/07/17/hibernar-en-archlinux/">hibernar en archlinux</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/07/17/rsync-basico/">rsync básico</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/06/20/correos-del-cron/">correos del cron</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/06/18/dkim-y-spf-en-postfix/">dkim y spf en postfix</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/06/06/desacelerar-mouse/">desacelerar mouse</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/05/12/deshabilitar-historial-de-bash/">deshabilitar historial de bash</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/04/29/reparar-archivos-de-innodb/">reparar archivos de innodb</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/04/01/wpa2-con-freeradius/">WPA2 con freeradius</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/03/14/misterio-con-ethernet-foxconn/">misterio con ethernet foxconn</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/03/07/cargar-rvm/">cargar rvm</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/02/22/data-confirm-en-un-boton/">data confirm en un boton</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/02/20/hooks-de-pacman/">los hooks de pacman</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/02/01/arch-compartir-paquetes/">arch compartir paquetes</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/01/25/hostname-arbitrario-en-bind9/">bind9, registro arbitratio</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/12/14/servidor-jabber-con-prosody/">servidor jabber con prosody</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/11/29/mc-demora-en-abrir/">mc demora en abrir</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/11/23/desmume-ultralento/">desmume ultralento</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/11/03/las-mujeres-gordas/">las mujeres gordas</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/11/03/tls-y-ssl-en-postfix/">tls y ssl en postfix</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/10/20/compartir-la-wifi/">compartir la wifi</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/10/18/systemd-timesyncd/">systemd-timesyncd</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/10/15/repo-de-fdroid/">repo de fdroid</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/09/17/dhcp-por-grupos/">dhcp por grupos</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/09/10/plymouth-boot-screen/">plymouth boot screen</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/09/07/git-clone-rapido/">git clone rápido</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/09/07/archlinux-dos-kernel/">archlinux con dos kernel</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/08/28/compute-remote-uptime/">compute remote uptime</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/07/24/transliteracion-del-coran/">transliteración del corán</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/07/12/date-select-en-espanol/">date_select en español</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/07/11/openvas-en-archlinux/">OpenVAS en Archlinux</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/">añadir verbo a un scaffold</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/06/01/pacman-bajo-el-microscopio/">pacman bajo el microscopio</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/05/28/cambiar-user-agent-en-squid/">cambiar user agent con squid</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/05/26/nic-bonding/">NIC bonding</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/05/23/ltsp-en-debian8-y-salud/">ltsp en debian8 y salud</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/02/19/delay-pools-de-squid/">delay pools de squid</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/02/12/rails-con-mongodb/">rails con mongodb</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/02/06/zentyal/">Zentyal</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/09/24/verdial-y-el-imagis/">la pena de verdial</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/09/05/palos-de-wordpress/">palos de wordpress</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/08/15/subdesarrollo/">subdesarrollo</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/08/11/ocs-inventory/">ocs-inventory</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/07/08/select-en-bootstrap/">select en bootstrap</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/07/05/empirico/">empíricos</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/06/10/autenticador-sql-en-el-proxy/">autenticador SQL en el proxy</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/06/09/postfix-entrando-en-el-baile/">postfix entrando en el baile</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
-		</li>
-		
-	</ul>
-	
+      </li>
+
+      
+
+   </ul>
+
 </section>
 
 

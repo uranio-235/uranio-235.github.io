@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="SASL homeclub only 21/02/2015 2:16 pm | Comments Mientras tanto, muy lejos de infomed y del calixto; con mi triste licencia de
-&ldquo;programador de &hellip;">
+  <meta name="description" content="cambiar user agent con squid 28/05/2015 6:46 pm | Comments En esta sofocante tarde de verano cubano y en un lugar que no diré, me encontré
+detrás de &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +88,555 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2015/05/28/cambiar-user-agent-en-squid/">cambiar user agent con squid</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-28T18:46:04-04:00'><span class='date'>28/05/2015</span> <span class='time'>6:46 pm</span></time>
+        
+           | <a href="/blog/2015/05/28/cambiar-user-agent-en-squid/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/05/28/cambiar-user-agent-en-squid/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>En esta sofocante tarde de verano cubano y en un lugar que no diré, me encontré
+detrás de un proxy administrador por la
+<a href="http://es.wikipedia.org/wiki/Schutzstaffel">Schutzstaffel</a>. Lo que no se
+parezca a un navegador, NO PASA. Por tanto, Ruby, Wget y demás, NO pinchan.</p>
+
+<p>Por suerte, tengo la costumbre de usar un squid local, para no tener que estar
+configurando el navegador. En ese squid declaro como padre el squid del momento
+(ya sea salud u otro) y ahí pongo el nombre de usuario con la contraseña una
+sola vez. Si estás en cuba y tienes una laptop con linux, te aconsejo que acates
+esa costumbre.</p>
+
+<p>Solución:</p>
+
+<p>Reescribir el encabezado User-Agent de las peticiones en el squid local. Así
+todas salen de un supuesto firefox.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/squid/squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='squidconf'><span class='line'>request_header_access<span class="w"> </span><span class="k">User</span>-Agent<span class="w"> </span><span class="no">deny</span><span class="w"> </span><span class="no">all</span><span class="w"></span>
+</span><span class='line'>request_header_replace<span class="w"> </span><span class="k">User</span>-Agent<span class="w"> </span>Mozilla/5.0<span class="w"> </span>(X11;<span class="w"> </span>U;<span class="w"> </span>Linux<span class="w"> </span>i686;<span class="w"> </span>en-US;<span class="w"> </span>rv:1.8.1.4)<span class="w"> </span>Gecko/20070515<span class="w"> </span>Firefox/2.0.0.4<span class="w"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>   <blockquote><p>Al carajo albañiles que se acabó la mezcla.</p></blockquote></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/26/nic-bonding/">NIC bonding</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-26T16:32:02-04:00'><span class='date'>26/05/2015</span> <span class='time'>4:32 pm</span></time>
+        
+           | <a href="/blog/2015/05/26/nic-bonding/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/05/26/nic-bonding/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Recién terminé el servidor de LTSP; pero aún estoy como niño con juguete nuevo,
+viendo que otra gangarrea le puedo poner. En la <a href="http://gutl.jovenclub.cu/">lista de GUTL</a> un colega
+me comentó que sería bueno darle explotación a ambas tarjetas de red. Enseguida
+dijo lo primero en que piensan mis coterráneos, un proxy. Yo le comenté que le
+había hecho un bonding, operación a la cual yo denomíno &ldquo;albóndiga&rdquo; y consiste
+en levantar una interfaz de red especial que usa dos tarjetas de red como si
+fueran una.</p>
+
+<p>Esto; para un servidor de tanto tráfico como es el caso de ltsp, es un verdadero
+batazo. Otros colegas parecieron sorprendidos al ver tal cosa y me pidieron que
+escribiera un tutorial de como hacerlo; sobre todo para que llegase a aquellos
+que no tienen internet.</p>
+
+<p>Instala un paquete llamado  <strong>ifenslave</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;instalando ifenslave&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install ifenslave
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Luego declaras en &ldquo;/etc/network/interfaces&rdquo; una interfaz llamada bond0 en la
+cual declaras que interface quieres unir.</p>
+
+<p>A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/network/interfaces&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">root@ganker:~#</span> cat /etc/network/interfaces
+</span><span class='line'><span class="gp">#</span> This file describes the network interfaces available on your system
+</span><span class='line'><span class="gp">#</span> and how to activate them. For more information, see interfaces<span class="o">(</span>5<span class="o">)</span>.
+</span><span class='line'>
+</span><span class='line'><span class="go">source /etc/network/interfaces.d/*</span>
+</span><span class='line'>
+</span><span class='line'><span class="gp">#</span> The loopback network interface
+</span><span class='line'><span class="go">auto lo</span>
+</span><span class='line'><span class="go">iface lo inet loopback</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="go">auto bond0</span>
+</span><span class='line'><span class="go">iface bond0 inet static</span>
+</span><span class='line'><span class="go">    address 10.1.1.3</span>
+</span><span class='line'><span class="go">    netmask 255.255.255.0</span>
+</span><span class='line'><span class="go">    network 10.1.1.0</span>
+</span><span class='line'><span class="go">    gateway 10.1.1.1</span>
+</span><span class='line'><span class="go">    dns-nameservers 10.1.1.1</span>
+</span><span class='line'><span class="go">    dns-search hcg.sld.cu</span>
+</span><span class='line'><span class="go">    slaves eth0 eth1</span>
+</span><span class='line'><span class="go">    bond_mode 2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Donde eth0 y eth1 son las interfaces que se unirán. Eso es todo&hellip;</p>
+
+<p>OJO! Si tienes un cortafuegos que involucre reglas de interfaces, ya tienestarea
+pa la casa.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/23/ltsp-en-debian8-y-salud/">ltsp en debian8 y salud</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-23T01:46:08-04:00'><span class='date'>23/05/2015</span> <span class='time'>1:46 am</span></time>
+        
+           | <a href="/blog/2015/05/23/ltsp-en-debian8-y-salud/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/05/23/ltsp-en-debian8-y-salud/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Problema</h3>
+
+<p>21 de Mayo: La situación de los clientes ligeros en el Calixto no da más. El
+servidor DHCP del ardence dejó pinchar sin previo aviso. El encargado de los
+clientes ligeros, reinstaló todo y siguió sin pinchar. Luego determinó que era
+culpa de un virus. El incha-cojones de Windows vuelve a hacer de la suya.
+Mientras tanto, el caos se ríe de todos y se frota las manos.</p>
+
+<p>A la novena llamada preguntando &ldquo;cuando se arreglan los clientes ligeros&rdquo;
+determiné que la situación llevaba medidas drásticas, siendo hora de pasar el
+servidor al lado oscuro de la fuerza.</p>
+
+<p>Plan de migración: El miembro sobre la mesa.</p>
+
+<p>Tiempo estimado: Menos del que te imaginas.</p>
+
+<p>Por un lado, 6 clientes ligeros con un windows XP que se arrastra en los 128
+megas de RAM y un servidor dongan de manufactura vietnamita. Por el otro, más de
+6 usuarios quejándose porque su sistema funciona lento, cuando le da la gana y
+además deben reiniciar más de 10 veces al día. Eso sin contar que deben tener la
+información en memorias flash, porque no se guardan los cambios en las imágenes.</p>
+
+<h3>Solución</h3>
+
+<p>Linux Terminal Server Project, más conocido como &ldquo;LTSP&rdquo;.</p>
+
+<p>Instalar ltsp es un proceso relativamente fácil, sobre todo cuando tienes un
+tubo de internet a full.</p>
+
+<p>Pero detrás del proxy satánico de infomed; la cosa se vuelve un tanto compleja.</p>
+
+<p>Por suerte, el repo de debian en infomed está bien afinadito y ahora con el tubo
+de 2 megas, la cosa mejora considerablemente.</p>
+
+<p>Hay dos maneras de hacer esto, la fácil y novel; o la difícil y tediosa. En caso
+de la fácil, bastará con instalar el paquete &ldquo;ltsp-server-standalone&rdquo;; el cual
+instalará y configurará todo la orquesta de software requerido para pinchar lo
+que se conoce como ltsp. Entre ellos, el servidor dhcp de ics, el servidor
+tftp-hpa, la maritrónica que sirve la SWAP por nfs y todo el rebortillo de cosas
+que requiere NFS.</p>
+
+<p>Corre esto y ponte cómodo, que va pa largo&hellip;</p>
+
+<figure class='code'><figcaption><span>&#8220;ltsp-build-client&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> ltsp-build-client --http-proxy http://127.0.0.1:3128 \</span>
+</span><span class='line'><span class="go"> --mirror http://ftp.sld.cu/debian \</span>
+</span><span class='line'><span class="go"> --security-mirror http://ftp.sld.cu/debian-security \</span>
+</span><span class='line'><span class="go"> --copy-sourceslist --copy-package-cache --accept-unsigned-packages</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El comando que corriste, generó un fichero de configuración para el servidor
+dhcp de isc. Te sugiero que lo uses como DHCP.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">cp /etc/ltsp/dhcpd.conf /etc/dhcp/dhcpd.conf</span>
+</span><span class='line'><span class="go">systemctl restart isc-dhcp-server</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Muy importante NFS. En el fichero <strong>/etc/exports</strong> ponemos esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/exports&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ltsp</span> <span class="o">*</span><span class="p">(</span><span class="n">ro</span><span class="p">,</span><span class="n">no_root_squash</span><span class="p">,</span><span class="n">async</span><span class="p">,</span><span class="n">no_subtree_check</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y reiniciamos el servicio de NFS</p>
+
+<figure class='code'><figcaption><span>&#8220;reiniciando nfs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl restart nfs-kernel-server
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Cuando butees una máquina, el login no te pinchará. Deberás correr esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;crear el squash&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ltsp-update-sshkeys
+</span><span class='line'>ltsp-update-image --config-nbd
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La imagen que se instaló en /opt no es más que la matriz para crear un squashfs
+que se le sirve a los clientes. Con ese comando, reflejamos los cambios
+volviendo a crear la imagen &ldquo;squashada&rdquo;.</p>
+
+<p>Con eso te digo que si haces un cambio en la imagen, deberás correr ese comando.</p>
+
+<p>Ahora bien. Para que no queden lagunas mentales:</p>
+
+<h3>Todo lo que tendrán los usuarios, ESTÁ EN EL SERVIDOR</h3>
+
+<p>Por tanto, hay que instalar una interfaz visual EN EL SERVIDOR. Será lo que los
+clientes pinchen. Por supuesto, no necesariamente el servidor tiene que correr
+dicha interfaz. En mi caso yo instalé solo sistema base y luego corrí esto:</p>
+
+<figure class='code'><figcaption><span>&#8220;instalar lxde completo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install task-lxde-desktop
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora el servidor está equipado con una interfaz visual, pero no la pincha, ya
+que no le instalamos ningún &ldquo;display manager&rdquo;; por tanto, las X no arrancan. El
+display manager lo tiene la imagen que levantan los clientes; nada menos que
+LDM.</p>
+
+<p>Los clientes levantan un LDM e inician sesión remota en el servidor.</p>
+
+<h2>¿se entendió?</h2>
+
+<p>Toas las instrucciones que cargará esta interfaz gráfica minimalista (el LDM de
+los clientes ligeros), se declaran en el fichero /opt/ltsp/i386/etc/lts.conf a
+mi me quedó así la primera versión de este fichero.</p>
+
+<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">[default]</span>
+</span><span class='line'>    <span class="na">LTSP_CONFIG</span><span class="o">=</span><span class="s">True</span>
+</span><span class='line'><span class="s">    SOUND=True</span>
+</span><span class='line'><span class="s">    LOCALDEV=True</span>
+</span><span class='line'><span class="s">    CONFIGURE_X=True</span>
+</span><span class='line'><span class="s">    LDM_SESSION=/usr/bin/startlxde</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Dice que está configurado, que tiene sonido, que use dispositivos locales, que
+configure las X dinámicamente y que arranque lxde como sesión por defecto.</p>
+
+<p>Y ahí empezaron mis problemas. En mi caso, las canchanfletas que usé como
+clientes ligeros, tenían una tarjeta de video unichrome más extraña que un
+calsoncillo con tirantes. La pantalla se veía con una capa verde delante. Nunca
+había visto cosa igual.</p>
+
+<p>Solución. Levanta un cliente ligero, entra en la consola (con
+Ctrl+Alt+F1) y ejecuta:</p>
+
+<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">X</span> <span class="err">-configure</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Eso te creará el fichero xorg.conf.new EN EL CLIENTE. A ese punto, se habrá
+generado una configuración de X decente. Pero ese fichero hay que ponerlo EN EL
+SERVIDOR:</p>
+
+<figure class='code'><figcaption><span>&#8220;monta que te queda&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>scp xorg.conf root@servidor:/opt/ltsp/i386/etc/X11/xorg.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora además, al servidor hay que especificarle que las X NO se auto-configuren
+y que en cambio, usen el fichero dado. Todo eso lo haremos en /opt/ltsp/i386/etc/lts.conf</p>
+
+<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="k">[default]</span>
+</span><span class='line'>    <span class="na">LTSP_CONFIG</span><span class="o">=</span><span class="s">True</span>
+</span><span class='line'><span class="s">    SOUND=True</span>
+</span><span class='line'><span class="s">    LOCALDEV=True</span>
+</span><span class='line'><span class="s">    LDM_SESSION=/usr/bin/startlxde</span>
+</span><span class='line'><span class="s">    CONFIGURE_X=False</span>
+</span><span class='line'><span class="s">    X_CONF=/etc/X11/xorg.conf</span>
+</span><span class='line'><span class="s">    X_MODE_0=1024x768</span>
+</span><span class='line'><span class="s">    MODULE_01 = &quot;usb-storage&quot;</span>
+</span><span class='line'><span class="s">    MODULE_02 = &quot;sd_mod&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Dice ahora que: Está configurado, tiene sonido, dispositivos locales (pa que
+pinchen las memorias flash), que levante lxde, que NO configure las X, que use
+el fichero dado, que la resolución de su pantalla 0 (la única) es de 1024x768 y
+además que meta ese par de módulos, pa que pinchen los puertos USB.</p>
+
+<p>Por supuesto, en el chroot que levanta el cliente, la ruta absoluta
+/etc/X11/xorg.conf es completamente válida.</p>
+
+<p>¡¡Ah, y no olvides volver a crear la imagen!!</p>
+
+<h3>pero de vuelta al servidor</h3>
+
+<p>Entre los palos más comunes, vemos uno que al iniciar la sesión dice que el
+usuario &ldquo;fulano&rdquo; no pertenece a netdev y que por tanto, el puñetero data-bus no
+arranca.</p>
+
+<figure class='code'><figcaption><span>&#8220;agregando a netdev&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>adduser fulano netdev
+</span><span class='line'>systemctl restart dbus
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En el fichero <strong>/etc/adduser.conf</strong> puedes especificar los parámetros de los
+nuevos usuarios creados, ahí puedes declarar que se creen con sus pertinentes
+grupos.</p>
+
+<figure class='code'><figcaption><span>&#8220;adduser.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Set this if you want the --add_extra_groups option to adduser to add</span>
+</span><span class='line'><span class="c"># new users to other groups.</span>
+</span><span class='line'><span class="c"># This is the list of groups that new non-system users will be added to</span>
+</span><span class='line'><span class="c"># Default:</span>
+</span><span class='line'><span class="nv">EXTRA_GROUPS</span><span class="o">=</span><span class="s2">&quot;dialout cdrom audio video plugdev users netdev netdev messagebus pulse lpadmin&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El directorio <strong>/etc/skel/</strong> contiene la plantilla para crear el nuevo usuario.
+Crea un usuario, has la configuración que desees y cópialo pa /etc/skel.</p>
+
+<p>Otro palo común es que las memorias NTFS se montan como solo lectura. Solución,
+instala ntfs-3g EN EL CHROOT que está en /opt y vuelve a crear la imagen.</p>
+
+<h3>Nota para los mentequieta:</h3>
+
+<p>Los usuarios se crean EN EL SERVIDOR no en la imagen.</p>
+
+<h3>Sugerencias</h3>
+
+<p>Cada cosa que los clientes ejecuten, lo harán en el servidor, y puedes ponerte a
+mirar con htop que proceso se está metiendo la RAM o el CPU, detener dicho
+proceso y requerir al usuario. Porque verás los procesos y el usuario que lo
+ejecuta. Déjame recordarte que Linux, es un sistema multitarea y multiusuarios
+de verdad.</p>
+
+<p>En mi caso, el servidor (los &ldquo;dongan&rdquo; vietnamitas) tiene dos discos duros. Monté
+uno para el sistema y la swap, el otro lo dejé para el /home.</p>
+
+<p>Mi servidor tiene 512 de RAM y aún con 4 clientes ligeros no ha llenado la mitad
+de la memoria. ¿Dime tu con 1 Giga de RAM?</p>
+
+<p>Por defecto, los homes de los usuarios se crean con permisos que los hace
+visibles entre si. Ejecuta: &ldquo;chmod 770 /home/fulano&rdquo; cada vez que crees un
+usuario. Si no, el home de este usuario será visible por los demás usuarios.</p>
+
+<p>¿Has pensando que ahora es más fácil hacerle salvas a las cosas? Todo está en el
+/home.</p>
+
+<p>No olvides decirle al usuario que ahora pueden hacer y guardar cambios en su
+&ldquo;perfil&rdquo; (como ellos le llaman) pues algunos están acostumbrados a que el
+cliente ligero No guarda cambios.</p>
+
+<p>Puedes decirle a tus usuarios que su perfil puede ser abierto desde cualquier
+cliente ligero de la flota. Lo cual les da cierta &ldquo;movilidad&rdquo;.</p>
+
+<p>Puedes decirle que si su cliente ligero se rompe no se preocupe, que su
+información está a salvo. Incluso, le recuerdas además que puede abrir su perfil
+desde otro cliente ligero que esté en la misma flota.</p>
+
+<p>Puedes hacer configuraciones individuales de cada máquina en el fichero
+<strong>/opt/ltsp/i386/etc/lts.conf</strong></p>
+
+<p>En donde dice <strong>[default]</strong> puedes poner la MAC del
+cliente.</p>
+
+<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="c1"># configuración genérica</span>
+</span><span class='line'><span class="k">[default]</span>
+</span><span class='line'>    <span class="na">LTSP_CONFIG</span><span class="o">=</span><span class="s">True</span>
+</span><span class='line'><span class="s">    SOUND=True</span>
+</span><span class='line'><span class="s">    LOCALDEV=True</span>
+</span><span class='line'><span class="s">    LDM_SESSION=/usr/bin/startlxde</span>
+</span><span class='line'><span class="s">    CONFIGURE_X=False</span>
+</span><span class='line'><span class="s">    X_CONF=/etc/X11/xorg.conf</span>
+</span><span class='line'><span class="s">    X_MODE_0=1024x768</span>
+</span><span class='line'><span class="s">    MODULE_01 = &quot;usb-storage&quot;</span>
+</span><span class='line'><span class="s">    MODULE_02 = &quot;sd_mod&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># configuración de un cliente individual el</span>
+</span><span class='line'><span class="c1"># jefe no quiere que oiga música ni use</span>
+</span><span class='line'><span class="c1"># memorias flash</span>
+</span><span class='line'><span class="k">[00:90:4b:a2:55:05]</span>
+</span><span class='line'>    <span class="na">LTSP_CONFIG</span><span class="o">=</span><span class="s">True</span>
+</span><span class='line'><span class="s">    SOUND=False</span>
+</span><span class='line'><span class="s">    LOCALDEV=False</span>
+</span><span class='line'><span class="s">    LDM_SESSION=/usr/bin/startlxde</span>
+</span><span class='line'><span class="s">    CONFIGURE_X=True</span>
+</span><span class='line'><span class="s">    X_MODE_0=1024x768</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># EOF</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Una buena idea, es usar un dhcp con las MAC e ip fijas para cada usuario, sería
+una mejor manera de cortar el bacalao. Así el servidor solo le respondería a sus
+clientes. Además, en caso de tener múltiples servidores de clientes ligeros, no
+tendrás otra opción, pues si no, cada cliente ligero buteará por donde mejor la
+parezca y seguro no querrás eso.</p>
+
+<p>En el servidor DHCP central, rechaza las MAC de los clientes si se dirigen al
+puerto 67, para que no reciban dicho servicio, así lo obligas a bootear por el
+servidor de clientes ligeros.</p>
+
+<figure class='code'><figcaption><span>&#8220;iptables&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>iptables -A INPUT -p tcp --dport <span class="m">67</span> -m mac --mac-source 00:90:4b:a2:55:05 -j DROP
+</span><span class='line'>iptables -A INPUT -p udp --dport <span class="m">67</span> -m mac --mac-source 00:90:4b:a2:55:05 -j DROP
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lo ideal sería que el DHCP central tuviera las direcciones MAC de los clientes y
+le diera los parámetros de buteo a cada cual, pero eso aún no lo he logrado.
+Hay algo que tiene que ver con el parámetro &ldquo;next server&rdquo;. He logrado que estos
+den con el tftp adecuado, pero luego tratan de contactar al propio servidor DHCP
+como servidor NFS.</p>
+
+<p>También podrías tener un firewall en el servidor de clientes ligeros. Que
+permite el DHCP solo a las MAC de los clientes. Así no le das DHCP a cualquiera.
+Además, podrías decirle también a ese servidor, que solo permite el tráfico de
+las MAC de los clientes ligeros. No me parece que un servidor como ese tenga que
+ser alcanzado por otra máquina.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a></h1>
     
     
@@ -143,7 +692,7 @@ use SIEMPRE fail2ban.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -321,7 +870,7 @@ del canal y navega con cordura.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -638,366 +1187,7 @@ MongoMapper pinchando. Luego creas lo modelo y listo.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/06/zentyal/">Zentyal</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-02-06T17:13:50-05:00'><span class='date'>06/02/2015</span> <span class='time'>5:13 pm</span></time>
-        
-           | <a href="/blog/2015/02/06/zentyal/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/06/zentyal/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Zentyal te mantendrá encerrado en tu cuarto, con tu TV y te dará la
-comida cada 6 horas. No habrá dificultades, nada te faltará.</p>
-
-<p>Nunca verás el hermoso mundo del software libre que hay por explorar.</p>
-
-<p>Los vagos y los mentequietas, prefieren poner una cosa &ldquo;que pinche y
-ya&rdquo; para luego pasarse horas chateando en facebook; antes de ofrecer
-un producto escalable y competitivo.</p>
-
-<p>Zentyal es el sistema de los infladores, que se las dan de informáticos&hellip; y que
-antes las necesidades responden al más puro estilo windows</p>
-
-<h3>&ldquo;no, eso no se puede hacer&rdquo;</h3>
-
-<p>Si no existe, lo programo, COÑO!!!</p>
-
-<p>Y si el que hay no me gusta, hago uno mejor. En cambio el usuario de
-Zentyal, si no tiene un botón que lo haga:</p>
-
-<h3>SE JODE!!</h3>
-
-<p>A esos nunca les ha pasado por la cabeza hacer su propio negocio&hellip;</p>
-
-<p>Yo seguiré llevando la luz a las tinieblas y combatiendo la ignorancia con
-intelecto. Con el software libre como espada, cuyo filo es la dificultad.</p>
-
-<p>Porque la mente que se abre para asimilar una idea, jamás vuelve a cerrarse.</p>
-
-<p>Con ese lenguaje abrupto, cuyas palabras caen como piedras pero que
-todo el mundo comprende y asimila. Porque el software libre es como el
-RAP</p>
-
-<p>Hagan Jails de FreeBSD y prueben su sistema de ports</p>
-
-<p>Hagan un servidor de almacenamiento con OpenIndiana y prueben su ZFS</p>
-
-<p>Prueben, gentoo, arch, slackware&hellip;</p>
-
-<p>Verás que no te toma 4 horas probar una distro en una máquina virtual</p>
-
-<h3>CIERRA FACEBOOK! Y verás cuanto tiempo hay</h3>
-
-<p>Luego aprende Python, Perl, Go, C (el que más te guste o el que más
-lindo nombre tenga) y siente como el sistema dice:</p>
-
-<h3>&ldquo;órdene mi amo&rdquo;</h3>
-
-<p>Hay tantas cosas bellas por aprender, tanto por experimentar y
-desarollar&hellip;</p>
-
-<p>   <blockquote><p>Con zentyal, aprenderás zentyal, con debian, aprendrás Linux</p><footer><strong>Lázaro Armando</strong> <cite>Mi Criterio Sobre Zentyal</cite></footer></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-10-28T22:37:20-04:00'><span class='date'>28/10/2014</span> <span class='time'>10:37 pm</span></time>
-        
-           | <a href="/blog/2014/10/28/proxy-automatico/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/10/28/proxy-automatico/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Todo el que halla configurado un navegador con proxy; o sea, todo cubano que
-halla configurado un navegador, quizás halla visto que una de las tantas
-opciones dice &ldquo;configuración automática&rdquo;. Seguro se preguntarán que carajo es
-eso.</p>
-
-<p>Pues es un javascript que le dice al navegador como debe ser la configuración
-del proxy; obviamente.</p>
-
-<p>Resulta que hay dos maneras de hacerlo, vía DHCP o vía DNS. Algunos navegadores
-lo cogen por DHCP mientras que otros lo hacen por DNS.</p>
-
-<h3>Para evitar problemas, configuramos las dos&hellip;</h3>
-
-<p>Primero y principioso. Creamos el fichero wpad.dat, el nombre debe respetarse.
-Dicho fichero los servimos, así que por definición los podremos en /var/www.
-Este fichero contendrá las instrucciones que un navegador necesita para pinchar.</p>
-
-<figure class='code'><figcaption><span>&#8220;/var/www/wpad.dat&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">FindProxyForURL</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">host</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// los host locales NO pasan a través del proxy</span>
-</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">shExpMatch</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span><span class="s2">&quot;*.hcg.sld.cu:*&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;DIRECT&quot;</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">shExpMatch</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span><span class="s2">&quot;*.hcg.sld.cu:*/*&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;DIRECT&quot;</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// la red local, tampoco</span>
-</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">isInNet</span><span class="p">(</span><span class="nx">host</span><span class="p">,</span> <span class="s2">&quot;10.1.1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;255.255.255.0&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;DIRECT&quot;</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// lo demás sale por el proxy</span>
-</span><span class='line'>        <span class="k">return</span> <span class="s2">&quot;PROXY 10.1.1.1:3128&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ve, es javascript puro, osea que las opciones se podrían hacer más
-creativas. Por ejemplo, si la ip de la máquina es tal, configuralo así o asao.</p>
-
-<p>Los criticones de código diran que se pudo usar un swith en vez de 4 &ldquo;if&rdquo;. Pero
-eso correrá en un momento y entorno casi imposible de debugar. Lo intenté con
-swith y no me pinchó.</p>
-
-<p>Ahora el problema es que hay que declarar un nuevo contenido mime para este
-dato. En mi caso uso nginx y en el fichero de configuración de mime, le
-aclaramos el nuevo; a mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>mime.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='lighttpd'><span class='line'><span class="k">types</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">application</span><span class="n">/x-ns-proxy-autoconfig</span>     <span class="k">dat</span><span class="err">;</span>
-</span><span class='line'>    <span class="k">text</span><span class="n">/html</span>                             <span class="k">html</span> <span class="k">htm</span> <span class="k">shtml</span><span class="err">;</span>
-</span><span class='line'>    <span class="k">text</span><span class="n">/css</span>                              <span class="k">css</span><span class="err">;</span>
-</span><span class='line'>    <span class="p">(</span><span class="k">muchas</span> <span class="k">lineas</span> <span class="k">m</span><span class="err">á</span><span class="k">s</span> <span class="k">aqui</span><span class="p">)</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Bueno ahora, vamos pal DHCP. Por supuesto, nada menos que el mismísimo dnsmasq:</p>
-
-<p>Primero el método DHCP, declaramos una option cuyo código sea 252</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/dnsmasq.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">option</span><span class="o">=</span><span class="mi">252</span><span class="p">,</span><span class="nl">http</span><span class="p">:</span><span class="c1">//10.1.1.1/wpad.dat</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>También declaramos un puntero DNS, que apunte a wpad.hcg.sld.cu y que sea el
-servidor donde está el wpad. Le recuerdo que &ldquo;hcg.sld.cu&rdquo; es el nombre del
-dominio.</p>
-
-<p>Al reiniciar nginx y dnsmasq, todo debe estar listo&hellip;</p>
-
-<p>En caso de que <strong>no</strong> uses dnsmasq, asumiré que usas bind e ICS dhcpd&hellip;</p>
-
-<p>Para ICS dhcpd, la cosa es un tin más compleja, ya que hay que declarar
-globalmente el tipo de opción, pero darle el valor en cada subnet o en le única
-que uses. A mi me pinchó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;dhcpd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='squidconf'><span class='line'><span class="c"># vim:filetype=config</span><span class="w"></span>
-</span><span class='line'>authoritative;<span class="w"></span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># declaramos lo del proxy automático</span><span class="w"></span>
-</span><span class='line'>option<span class="w"> </span>local-proxy-config<span class="w"> </span>code<span class="w"> </span><span class="m">252</span><span class="w"> </span>=<span class="w"> </span>text;<span class="w"></span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># la red</span><span class="w"></span>
-</span><span class='line'>subnet<span class="w"> </span><span class="mf">10.1.1.0</span><span class="w"> </span>netmask<span class="w"> </span><span class="mf">255.255.255.0</span><span class="w"> </span>{<span class="w"></span>
-</span><span class='line'>
-</span><span class='line'><span class="w">    </span><span class="c"># los parámetros del rango</span><span class="w"></span>
-</span><span class='line'><span class="w">    </span>range<span class="w"> </span><span class="mf">10.1.1.100</span><span class="w"> </span><span class="mf">10.1.1.254</span>;<span class="w"></span>
-</span><span class='line'><span class="w">    </span>option<span class="w"> </span>domain-name<span class="w"> </span>&quot;hcg.sld.cu&quot;;<span class="w"></span>
-</span><span class='line'><span class="w">    </span>option<span class="w"> </span>domain-name-servers<span class="w"> </span><span class="mf">10.1.1.1</span>;<span class="w"></span>
-</span><span class='line'><span class="w">    </span>option<span class="w"> </span>broadcast-address<span class="w"> </span><span class="mf">10.1.1.255</span>;<span class="w"></span>
-</span><span class='line'><span class="w">    </span>option<span class="w"> </span>subnet-mask<span class="w"> </span><span class="mf">255.255.255.0</span>;<span class="w"></span>
-</span><span class='line'><span class="w">    </span>option<span class="w"> </span>routers<span class="w"> </span><span class="mf">10.1.1.1</span>;<span class="w"></span>
-</span><span class='line'>
-</span><span class='line'><span class="w">    </span><span class="c"># envía el proxy automático</span><span class="w"></span>
-</span><span class='line'><span class="w">    </span>option<span class="w"> </span>local-proxy-config<span class="w"> </span>&quot;http://10.1.1.1/wpad.dat&quot;;<span class="w"></span>
-</span><span class='line'>
-</span><span class='line'>}<span class="w"> </span><span class="c"># subnet</span><span class="w"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En el caso de bind9, declaras un CNAME con el nombre wpad que apunte al servidor
-donde descansa el <strong>wpad.dat</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/bind/ejemplo/dominio.cu.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">servidor1</span>    <span class="n">IN</span> <span class="n">A</span>     <span class="mf">10.1.1.1</span>
-</span><span class='line'><span class="n">servidor2</span>    <span class="n">IN</span> <span class="n">A</span>     <span class="mf">10.1.1.2</span>
-</span><span class='line'><span class="n">mail</span>         <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor2</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
-</span><span class='line'><span class="n">pop</span>          <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor2</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
-</span><span class='line'><span class="n">pop3</span>         <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor2</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
-</span><span class='line'><span class="n">smtp</span>         <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor2</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
-</span><span class='line'><span class="n">proxy</span>        <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor1</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
-</span><span class='line'><span class="n">gateway</span>      <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor1</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
-</span><span class='line'><span class="p">;</span> <span class="n">env</span><span class="err">í</span><span class="n">a</span> <span class="n">el</span> <span class="n">proxy</span> <span class="n">autom</span><span class="err">á</span><span class="n">tico</span>
-</span><span class='line'><span class="n">wpad</span>         <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor1</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Firefox pincha al palo, los demás no se&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/24/verdial-y-el-imagis/">la pena de verdial</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-09-24T08:15:19-04:00'><span class='date'>24/09/2014</span> <span class='time'>8:15 am</span></time>
-        
-           | <a href="/blog/2014/09/24/verdial-y-el-imagis/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/09/24/verdial-y-el-imagis/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Verdial, el omnisapiente neurocirujano que dice haber recorrido el mundo; de
-siempre se ha quejado por no tener un software para ver las imágenes del somatón
-en Winwdows 7. Últimamente me tiene los cojones hinchados con eso.</p>
-
-<p>Ayer, mientras este conversaba con Karman (un técnico llamado &ldquo;Jose Luis&rdquo;); le
-contaba su pena mientras yo escuchaba del otro lado del pladur (mi oficina). Me
-paré para que me explicara por milésima ves su problema pero esta vez; pensó con
-la cabeza.</p>
-
-<p>Me dijo que los ficheros DICOM, eran el producto del somatón y de los Rayos X.
-Una rápida búsqueda con apt-cache, reveló que hay mas de 20 programas macheando
-la palabra &ldquo;dicom&rdquo;.</p>
-
-<p>Tras consultar <a href="http://www.google.com.cu">el oráculo</a>, resulta que los ficheros
-del tipo DICOM, son una especia de imagen que contiene metadatos, muuuuchos
-metadatos; para cosas como por ejemplo: nombre del paciente, parte del cuerpo,
-fecha del estudio, objetivo del estudio, etc&hellip; Todo parece indicar que las
-operaciones con el somatón son llamadas &ldquo;estudios&rdquo;.</p>
-
-<p>Verdial me soltó una pila de imágenes en una memoria, los ficheros contienen la
-extensión &ldquo;.dcm&rdquo;</p>
-
-<p>En el respositorio de debian, hay un software llamado &ldquo;amide&rdquo; resulta que amide
-es capaz de renderizar las imagenes prodcuto del somatón, incluso, en colores
-con vista térmica, etc&hellip; A según verdial, el software es capaz de crear
-imagines que el somatón no crea. Conjugando la vista horizontal y vertical te
-permite tener una vista exacta en ambos planos de un punto específico.</p>
-
-<p><img src="/images/amide.png"></p>
-
-<p>El único problema que tiene esto, es recibir las imágenes provenientes del
-somatón; sin tener que traer archivos y carpetas.</p>
-
-<p>Pero adivinen que lenguaje tiene una librería para trabajar con ficheros DICOM?</p>
-
-<p>Pues el mio, Ruby, <a href="http://github.com/dicom/ruby-dicom">http://github.com/dicom/ruby-dicom</a></p>
-
-<p>Manoseando ruby-dicom, entendí que imagis y efilm, aún siendo cliente y
-servidor, funcionan al revés. Pues el cliente escucha por un puerto ye el
-servidor está configurado para empujarle las imágenes a los cliente; tipo
-torrent.</p>
-
-<p>Veamos que pasa tras el primer experimento, pues Fumero configurará el server
-para que le mande imágenes a mi máquina.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -1018,421 +1208,647 @@ para que le mande imágenes a mi máquina.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+
 		
+
+		<li class="post">
+			<a href="/blog/2017/08/14/odoo-en-centos7/">odoo en centos7</a>
+      </li>
+
+      
+
+		<li class="post">
+			<a href="/blog/2017/08/13/yum-estrecho/">yum estrecho</a>
+      </li>
+
+      
+
+		<li class="post">
+			<a href="/blog/2017/07/23/lemp-en-debian/">LEMP en debian</a>
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/06/29/repos-epel-y-demas/">repos EPEL y demás</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/06/29/knockd-en-centos/">knockd en centos</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/06/28/android-islamico/">Apps islámicas android</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/06/22/curiosa-acl-de-squid/">squid y navegar a .cu</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/05/13/instalar-node-rapido/">instalar node rápido</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/05/10/ssl-ca-local/">autoridad certificadora</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/04/08/xen-y-virt-manager/">xen y virt-manager</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/29/jugar-teeworlds-en-lan/">jugar teeworlds en LAN</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/">nueva VM siempre es PV</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/03/nginx-y-websocket/">nginx y websocket</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/03/pkg-tras-un-proxy/">pkg tras un proxy</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/01/portknocking-en-freebsd/">portknocking en freebsd</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/01/bind-en-infomed/">bind en infomed</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/01/qos-con-tc/">QoS con tc o dummynet</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/02/05/dns-con-vistas/">dns con vistas</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/02/01/ipfw-simple-y-consiso/">ipfw simple y conciso</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/28/freebsd-11/">mis crónicas con freebsd</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/21/palito/">animación del palito</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/20/datatables-espanol/">DataTables en español</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/09/tendencias-tecnologicas/">tendencias tecnológicas</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/09/flasheando-modem-al-s4/">flasheando modem al S4</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/02/rails-assets/">rails-assets</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/12/29/xgproyect/">xgproyect</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/12/27/cambiar-mac-a-un-nano/">cambiar mac a un nano</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/12/19/phpmyadmin-multiples-servidores/">phpmyadmin múltiples servidores</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/12/19/iptables-y-ftp/">iptables y ftp</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/12/09/rails-en-alpine/">rails en alpine</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/11/24/squid3-bloquear-user-agent/">squid3 bloquear user-agent</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/11/22/redimensionar-lvm/">redimensionar lvm</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/11/20/sysinfo-en-el-motd/">sysinfo en el motd</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/11/14/openvpn-user-plus-pass/">openvpn user+pass</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/el-domain-pop/">recolección DomainPOP</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/domainpop-con-postfix/">domainpop con postfix</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/tunel-6in4/">túnel 6in4</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/cortafuegos-ipv6-sencillo/">cortafuegos ipv6 sencillo</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/poniendo-direcciones-ipv6/">las reglas del juego ipv6</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/ipv6/">la resolución 185/2016</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/04/dirver-broadcom/">driver broadcom</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/09/22/audifonos-blutu/">audífonos blutú</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/09/16/dispatcher-script/">dispatcher script</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/08/16/password-de-windows/">password de windows</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en XenServer</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/07/31/kiwix-como-servicio/">kiwix como servicio</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/07/17/hibernar-en-archlinux/">hibernar en archlinux</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/07/17/rsync-basico/">rsync básico</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/06/20/correos-del-cron/">correos del cron</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/06/18/dkim-y-spf-en-postfix/">dkim y spf en postfix</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/06/06/desacelerar-mouse/">desacelerar mouse</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/05/12/deshabilitar-historial-de-bash/">deshabilitar historial de bash</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/04/29/reparar-archivos-de-innodb/">reparar archivos de innodb</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/04/01/wpa2-con-freeradius/">WPA2 con freeradius</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/03/14/misterio-con-ethernet-foxconn/">misterio con ethernet foxconn</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/03/07/cargar-rvm/">cargar rvm</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/02/22/data-confirm-en-un-boton/">data confirm en un boton</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/02/20/hooks-de-pacman/">los hooks de pacman</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/02/01/arch-compartir-paquetes/">arch compartir paquetes</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/01/25/hostname-arbitrario-en-bind9/">bind9, registro arbitratio</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/12/14/servidor-jabber-con-prosody/">servidor jabber con prosody</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/11/29/mc-demora-en-abrir/">mc demora en abrir</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/11/23/desmume-ultralento/">desmume ultralento</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/11/03/las-mujeres-gordas/">las mujeres gordas</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/11/03/tls-y-ssl-en-postfix/">tls y ssl en postfix</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/10/20/compartir-la-wifi/">compartir la wifi</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/10/18/systemd-timesyncd/">systemd-timesyncd</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/10/15/repo-de-fdroid/">repo de fdroid</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/09/17/dhcp-por-grupos/">dhcp por grupos</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/09/10/plymouth-boot-screen/">plymouth boot screen</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/09/07/git-clone-rapido/">git clone rápido</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/09/07/archlinux-dos-kernel/">archlinux con dos kernel</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/08/28/compute-remote-uptime/">compute remote uptime</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/07/24/transliteracion-del-coran/">transliteración del corán</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/07/12/date-select-en-espanol/">date_select en español</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/07/11/openvas-en-archlinux/">OpenVAS en Archlinux</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/">añadir verbo a un scaffold</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/06/01/pacman-bajo-el-microscopio/">pacman bajo el microscopio</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/05/28/cambiar-user-agent-en-squid/">cambiar user agent con squid</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/05/26/nic-bonding/">NIC bonding</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/05/23/ltsp-en-debian8-y-salud/">ltsp en debian8 y salud</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/02/19/delay-pools-de-squid/">delay pools de squid</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/02/12/rails-con-mongodb/">rails con mongodb</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/02/06/zentyal/">Zentyal</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/09/24/verdial-y-el-imagis/">la pena de verdial</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/09/05/palos-de-wordpress/">palos de wordpress</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/08/15/subdesarrollo/">subdesarrollo</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/08/11/ocs-inventory/">ocs-inventory</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/07/08/select-en-bootstrap/">select en bootstrap</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/07/05/empirico/">empíricos</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/06/10/autenticador-sql-en-el-proxy/">autenticador SQL en el proxy</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/06/09/postfix-entrando-en-el-baile/">postfix entrando en el baile</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
-		</li>
-		
-	</ul>
-	
+      </li>
+
+      
+
+   </ul>
+
 </section>
 
 

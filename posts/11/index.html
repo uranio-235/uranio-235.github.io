@@ -9,7 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="mc demora en abrir 29/11/2015 7:37 pm | Comments Esta es una nota bien rápida pa que no se me olvide&hellip; Alguna vez han notado que los midnight &hellip;">
+  <meta name="description" content="arch compartir paquetes 01/02/2016 1:56 pm | Comments No desde cuando, pero por fin, un sueño echo realidad en ArchLinux. Revertir un
+paquete de su &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -87,6 +88,414 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/02/01/arch-compartir-paquetes/">arch compartir paquetes</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-02-01T13:56:56-05:00'><span class='date'>01/02/2016</span> <span class='time'>1:56 pm</span></time>
+        
+           | <a href="/blog/2016/02/01/arch-compartir-paquetes/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/02/01/arch-compartir-paquetes/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>No desde cuando, pero por fin, un sueño echo realidad en ArchLinux. Revertir un
+paquete de su forma instalada, a su forma de paquete. Esto puede no resultar
+algo novedoso para el que tenga internet como algo cotidiano, pero para los
+cubanos de a pie, resulta una verdadera novedad.</p>
+
+<p>Digamos que mi socio necesita instalar nginx en su arch, misma arquitectura que
+el mío. Simplemente, le genero el paquete a partir de mi instalación y listo.</p>
+
+<figure class='code'><figcaption><span>&#8220;bacman en acción&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@samsung ~<span class="o">]</span><span class="c"># cd /var/cache/pacman/pkg/</span>
+</span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># bacman nginx</span>
+</span><span class='line'><span class="o">==</span>&gt; Package: nginx-1.8.1-1
+</span><span class='line'>  -&gt; Copying package files...
+</span><span class='line'>    -&gt; Generating .PKGINFO metadata...
+</span><span class='line'>    -&gt; Generating the package...
+</span><span class='line'>  <span class="o">==</span>&gt; Done.
+</span><span class='line'><span class="o">[</span>root@samsung pkg<span class="o">]</span><span class="c"># ls nginx*</span>
+</span><span class='line'>nginx-1.8.1-1-x86_64.pkg.tar.xz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pues <strong>bacman</strong> es la respuesta. Ahora se puede regresar un paquete a su estado;
+digamos &ldquo;pristino&rdquo;.</p>
+
+<p>¡¡OJO!! <strong>TUS</strong> ficheros de configuración, también se empaquetan.</p>
+
+<p>Usualmente solía mantener en mi caché los paquetes necesarios para llevar a cabo
+una instalación de archlinux usando mi laptop; pero con este nuevo método, la
+cosa cambia bastante. Ahora solo debo cargar con el &ldquo;.iso&rdquo;</p>
+
+<p>Mi proxima idea es reconstruir el grupo <strong>base</strong> completo dentro de la cache y
+luego con <strong>repo-add</strong> crear un mirror, capaz de llevar a cabo una instalación
+de sistema.</p>
+
+<p>De momento quiero probar este script:</p>
+
+<figure class='code'><figcaption><span>&#8220;pristine.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># cambiate al directorio de cache</span>
+</span><span class='line'><span class="nb">cd</span> /var/cache/pacman/pkg/
+</span><span class='line'>
+</span><span class='line'><span class="c"># itera por los paquetes del sistema base</span>
+</span><span class='line'><span class="k">for</span> pkg in <span class="k">$(</span>pacman -Qeg base<span class="p">|</span>awk <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span><span class="p">;</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># háblate</span>
+</span><span class='line'>   <span class="nb">echo</span> <span class="nv">$pkg</span> <span class="s1">&#39;&gt;&#39;</span> <span class="k">$(</span>pacman -Qi <span class="nv">$pkg</span><span class="p">|</span>grep Description<span class="p">|</span>cut -d : -f 2<span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c"># reviértelo</span>
+</span><span class='line'>   bacman <span class="nv">$pkg</span> 2&gt; /dev/null &gt; /dev/null
+</span><span class='line'>
+</span><span class='line'><span class="k">done</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># crea el repo</span>
+</span><span class='line'>rm /var/cache/pacman/pkg/custom.db.tar.gz
+</span><span class='line'>repo-add /var/cache/pacman/pkg/custom.db.tar.gz /var/cache/pacman/pkg/*.pkg.tar.xz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Tendré que probar a instalar usando mi cache como repo. Poniéndole a la máquina
+una source como esta:</p>
+
+<figure class='code'><figcaption><span>&#8220;pacman.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>mirepo<span class="o">]</span>
+</span><span class='line'><span class="nv">SigLevel</span> <span class="o">=</span> Optional TrustAll
+</span><span class='line'><span class="nv">Server</span> <span class="o">=</span> http://localhost:8080
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>Nota para los imbéciles: Cambiar <strong>localhost</strong> por la ip de la máquina que está compartiendo la caché.</em></p>
+
+<p>Y para servir tu cache como repo, puedes usar darkhttpd</p>
+
+<figure class='code'><figcaption><span>&#8220;darkhttpd&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>darkhttpd /var/cache/pacman/pkg/ --chroot --port 8080
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/25/hostname-arbitrario-en-bind9/">bind9, registro arbitratio</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-01-25T20:35:37-05:00'><span class='date'>25/01/2016</span> <span class='time'>8:35 pm</span></time>
+        
+           | <a href="/blog/2016/01/25/hostname-arbitrario-en-bind9/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2016/01/25/hostname-arbitrario-en-bind9/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>En algunas ocasiones, nos vemos forzados a declarar registros para punteros, a
+host que nada tienen que ver con nuestro domino. Por ejemplo, queremos que el
+host time.windows.com apunte a nuestro servidor de tiempo, para que todos las
+computadoras con windows de la red, se actualicen por nuestro servidor ntp.</p>
+
+<p>Si bien esto con dnsmasq es muy sencillo, en una red donde se use un servidor
+dns decente (como bind) la cosa empieza a enredarse.</p>
+
+<p>En salud por ejemplo, los clientes de correo; requieren resolver las direcciones
+del pop y smtp. No vale la pena hacer forward para esto, mejor declarar estos
+punteros como registro arbitrario y punto.</p>
+
+<p>Para lograr esto, debemos declarar una raíz dns en nuestro named.conf, que
+responda a todo, o sea, &ldquo;.&rdquo;, a mi me quedó así.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/bind/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// la zona pa hacer lo que me de la gana</span>
+</span><span class='line'><span class="nx">zone</span> <span class="s2">&quot;.&quot;</span> <span class="p">{</span>
+</span><span class='line'>   <span class="nx">type</span> <span class="nx">master</span><span class="p">;</span>
+</span><span class='line'>   <span class="nx">file</span> <span class="s2">&quot;/etc/bind/fakeroot.zone&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Acá, el fichero <strong>fakeroot.zone</strong> tendrá los registros, donde declaramos los
+FQDN como si fueran hostnames.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/bind/fakeroot.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err">@</span>       <span class="nx">IN</span>      <span class="nx">SOA</span>     <span class="p">.</span> <span class="nx">hostmaster</span><span class="p">.</span><span class="nx">domain</span><span class="p">.</span><span class="nx">com</span><span class="p">.</span> <span class="p">(</span> <span class="mi">1</span> <span class="mi">3</span><span class="nx">h</span> <span class="mi">1</span><span class="nx">h</span> <span class="mi">1</span><span class="nx">w</span> <span class="mi">1</span><span class="nx">d</span> <span class="p">)</span>
+</span><span class='line'><span class="nx">localhost</span>             <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">127.0</span><span class="p">.</span><span class="mf">0.1</span>
+</span><span class='line'><span class="err">@</span>                     <span class="nx">IN</span>      <span class="nx">NS</span>      <span class="nx">localhost</span><span class="p">.</span>
+</span><span class='line'><span class="p">;</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">Los</span> <span class="nx">servidores</span> <span class="nx">de</span> <span class="nx">correo</span> <span class="nx">de</span> <span class="nx">infomed</span>
+</span><span class='line'><span class="nx">smtp</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">201.220</span><span class="p">.</span><span class="mf">211.39</span>
+</span><span class='line'><span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>            <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">201.220</span><span class="p">.</span><span class="mf">211.7</span>
+</span><span class='line'><span class="nx">pop3</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>
+</span><span class='line'><span class="nx">imap</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>           <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pop</span><span class="p">.</span><span class="nx">sld</span><span class="p">.</span><span class="nx">cu</span>
+</span><span class='line'><span class="p">;</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">Los</span> <span class="nx">servidores</span> <span class="nx">de</span> <span class="nx">tiempo</span> <span class="nx">m</span><span class="err">á</span><span class="nx">s</span> <span class="nx">pedidos</span>
+</span><span class='line'><span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>          <span class="nx">IN</span>      <span class="nx">A</span>       <span class="mf">10.1</span><span class="p">.</span><span class="mf">1.1</span>
+</span><span class='line'><span class="o">*</span><span class="p">.</span><span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span><span class="p">.</span>       <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
+</span><span class='line'><span class="nx">time</span><span class="p">.</span><span class="nx">microsoft</span><span class="p">.</span><span class="nx">com</span>    <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
+</span><span class='line'><span class="nx">time</span><span class="p">.</span><span class="nx">windows</span><span class="p">.</span><span class="nx">com</span>      <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
+</span><span class='line'><span class="nx">time</span><span class="o">-</span><span class="nx">ios</span><span class="p">.</span><span class="nx">apple</span><span class="p">.</span><span class="nx">com</span>    <span class="nx">IN</span>      <span class="nx">CNAME</span>   <span class="nx">pool</span><span class="p">.</span><span class="nx">ntp</span><span class="p">.</span><span class="nx">org</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En este caso de ejemplo, declaramos un par de host que son de salud, con una ip
+externa. Abajo, los host ntp más típicos, apuntando a nuestro servidor de
+tiempo.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/12/14/servidor-jabber-con-prosody/">servidor jabber con prosody</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-12-14T18:22:29-05:00'><span class='date'>14/12/2015</span> <span class='time'>6:22 pm</span></time>
+        
+           | <a href="/blog/2015/12/14/servidor-jabber-con-prosody/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/12/14/servidor-jabber-con-prosody/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Lua, es uno de los tantos lenguajes interpretados que hay. Lo curioso de este es
+que es Made in Brasil&hellip;</p>
+
+<p>Aunque no les quedó mal, lo de ellos definitivamente es la samba y el futboll.
+Lo digo porque ese fue uno de los primeros lenguajes que estuve manoseando y No
+creo que halla un buen motivo para escribir algo con él.</p>
+
+<p>¡Pero <a href="https://prosody.im/">Proŝody</a>, demuestra que me equivoco!</p>
+
+<p>La robusteza, simplicidad y el rendimiento de este servidor, quizás sean
+superiores a la de ejabberd (que está escrito en Erlang, un lenguaje aún más
+exótico que Lua). Por otra parte, su todo en uno, lo hace más versátil que otros
+cuantos. No tiene nada que envidiarle al cochino OpenFire y toda su parafernaria
+de Java.</p>
+
+<p>En su estado natural, prosody solo viene con lo básico. Ampliarlo, es solo
+cuestión de modificar la configuración. No piense en una extraña interfaz web
+como la de ejabber, hablamos de un fichero de configuración &ldquo;.lua&rdquo; con todo
+comentado. Lua, que es bien rarito, usa para comentario es &ldquo;&ndash;&rdquo; en vez de &ldquo;#&rdquo;</p>
+
+<p>Comenzamos. En debian todo es muy fácil:</p>
+
+<figure class='code'><figcaption><span>&#8220;aptitude&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install prosody
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Esto dará lugar un fichero de configuracion en: <strong>/etc/prosody/prosody.cfg.lua</strong></p>
+
+<p>De ahí modificaremos lo que necesitamos. Primero, poner la JID del admin, eso
+lo haremos aunque nuestro dominio no halla sido declarado.</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">admins</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;</span><span class="s">tu_usaurio@tudominio.cu&#39;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora vamos a la sesión modules_enabled. Todo bien comentadito. Yo lo habilito
+todo menos el servidor http y el telnet, como que no me da buena espina.</p>
+
+<p>Si habilitamos el módulo &ldquo;motd&rdquo; nuestro servidor contará con un MOTD,
+pero debemos especificarlo. De esta forma cada módulo es una función que puede
+o no llevar parámetros de configuración. Para argumentar la configuración
+de motd, escribimos FUERA de las sesión de módulos.</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">motd_text</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="s">este es el motd de mi server&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero <strong>motd_text</strong> no estaba escrito en ninguna parte. Para ver si un
+módulo tiene o no configuración, sus detalles, que hace y hasta un ejemplo,
+podemos verlo en la lista de módulos.</p>
+
+<p><a href="http://prosody.im/doc/modules">http://prosody.im/doc/modules</a></p>
+
+<p>Pero volvamos a la configuración. La siguiente linea de interés es la
+que permite el registro de usuarios.</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">allow_registration</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>OJO! se requiere un &ldquo;;&rdquo; al final de la configuración (razón por la cual abandoné
+Lua en aquel entonce). Si no quieres que los usuarios se registren déjalo en
+false. Puedes usar la aplicación de control para crear usuarios. Ejecuta
+<strong>prosodyctl</strong> sin parámetros y veras una pantalla aprueba de imbéciles que te
+dice como crear los usuarios y otras opciones interesantes.</p>
+
+<p>Por ejemplo, para crear un usuario</p>
+
+<figure class='code'><figcaption><span>&#8220;prosodyctl&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>prosodyctl adduser fulanito@dominio.cu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lo siguiente es el SSL, no es bueno desabilitarlo porque muchos cliente jabbers
+traen por definición usar ssl. Mejor seguir a las que dice:</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">c2s_require_encryption</span> <span class="o">=</span> <span class="kc">false</span>
+</span><span class='line'><span class="n">s2s_require_encryption</span> <span class="o">=</span> <span class="kc">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Poniéndolas en false, el servidor usara lo mismo SSL que plana.</p>
+
+<p>Pero aún no hemos declarado el dominio. Resulta que como te dije todo es
+modular. Los dominios son VirtualHost. Al igual que en apache, incluso el
+dominio por defecto, es un virtual host. Podemos declarar varios dominios y
+dejarlos deshabilitados.</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">VirtualHost</span> <span class="s2">&quot;</span><span class="s">tudominio.cu&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya tenemos un dominio, podríamos tener más con solo agregarlos pero con eso ya
+tenemos un servidor con lo indispensable. Vamos a extenderlo un poco, una sala
+de conferencia:</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">Component</span> <span class="s2">&quot;</span><span class="s">conference.tudominio.cu&quot;</span> <span class="s2">&quot;</span><span class="s">muc&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora solo falta crear un puntero DNS que apunte a <strong>conference.tudominio.cu</strong></p>
+
+<p>Pero hablando de punteros DNS. Para que jabber pinche, necesita un puntero DNS
+especial.</p>
+
+<p>Para <strong>dnsmasq</strong>, supongamos que el servidor que correo el jabber se llama
+<strong>chat.tudominio.cu</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;dnsmasq.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">address</span><span class="o">=</span>/chat.tudominio.cu/10.1.1.1
+</span><span class='line'>srv-host<span class="o">=</span>_xmpp-client._tcp.chat.tudominio.cu,chat.tudominio.cu,5222
+</span><span class='line'>srv-host<span class="o">=</span>_xmpp-server._tcp.chat.tudominio.cu,chat.tudominio.cu,5269
+</span><span class='line'>txt-record<span class="o">=</span>_xmppconnect.chat.tudominio.cu,<span class="s2">&quot;_xmpp-client-xbosh=http://chat.tudominio.cu:5280/http-bind&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por cierto, eso último, es el puntero al servidor bosh.</p>
+
+<figure class='code'><figcaption><span>&#8220;prosody.cfg.lua&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'> <span class="n">bosh_ports</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">5280</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y a cotorrear se ha dicho&hellip;</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2015/11/29/mc-demora-en-abrir/">mc demora en abrir</a></h1>
     
     
@@ -124,7 +533,7 @@ se pone más feo todavía.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -211,7 +620,7 @@ los parámetros. A mi me quedó así</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
 
     </article>
   
@@ -294,641 +703,6 @@ oneshot, que cargue el /etc/rc.local</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/03/las-mujeres-gordas/">las mujeres gordas</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-03T23:41:52-05:00'><span class='date'>03/11/2015</span> <span class='time'>11:41 pm</span></time>
-        
-           | <a href="/blog/2015/11/03/las-mujeres-gordas/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/03/las-mujeres-gordas/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><em>¿Como te gustan las mujeres gordas o flacas?</em></p>
-
-<p><img class="right" src="/images/gorda2.jpg" width="190" height="290" title="" ></p>
-
-<p>Esa pregunta se ha vuelto un boicot.</p>
-
-<p>Hasta los <del>cojones</del> estoy de vivir en una sociedad que desprecia a las mujeres por
-que su figura no encaja en un patrón de belleza que <strong>alguien</strong> impuso.</p>
-
-<p>Resulta que &ldquo;delgado&rdquo; es sinónimo de &ldquo;lindo&rdquo;.</p>
-
-<p>Nadie hizo una encuesta ni le preguntó a los hombres si preferían a las mujeres
-flacas o gordas, simplemente, impusieron un paradigma.</p>
-
-<p>Hay gustos para todo y eso hay que tenerlo en cuenta.</p>
-
-<p><em>&ldquo;no debemos juzgar a una mujer por su figura&rdquo;</em> <strong>FALSO</strong> Las seguiremos
-juzgando por su figura, porque tenemos ojos en la cara, pero no con paradigmas
-impuesto por una sociedad, si no con nuestro gusto.</p>
-
-<p>¿A qué hombre no le gusta una mujer con las piernas gordas, los senos
-extratalla y las nalgas grandes.</p>
-
-<p>&ldquo;hembras y con masa&rdquo;</p>
-
-<p>Ah! Casi todas las gordas tienen la cara linda, eso es casi axiomático, aunque
-toda regla tiene su acepción.</p>
-
-<h4>NO estoy aplaudiendo la obesidad.</h4>
-
-<p>Las gordas lindas son las gordas que hacen ejercicio.</p>
-
-<ul>
-<li> tiene cintura</li>
-<li> no tienen mucho abdomen</li>
-<li> no están flácidas</li>
-<li> tienen carne en vez de grasa</li>
-</ul>
-
-
-<p>Gorda con Ejercicio</p>
-
-<p>Mi hermano, a una mujer así, múerdete la lengua antes de decirle gorda, porque
-estás ante un monumento.</p>
-
-<p>Si eres mujer y te sientes pasada de peso. No hagas ejercicios para bajar de
-peso. Has ejercicios para mejorar tu figura. Mi esposa usa ajustadores talla 44
-y cuando baja de peso le empiezan a quedar grandes. Pal coppelia urgente.</p>
-
-<p>Preocúpense por estar macizas en vez de grasosas, no por bajar de peso.</p>
-
-<p>Cuando coges una gorda sentada, le aprietas un muslo y te dice &ldquo;ay! eso duele&rdquo;,
-esa es masa pura. Si no le duele, es manteca.</p>
-
-<h4>deterioro de la autoestima</h4>
-
-<p><img class="right" src="/images/gorda1.jpg" width="190" height="290" title="" ></p>
-
-<p>Este tema es muy peliagudo y repercute, tanto pa las gordas, como para los
-amantes de las curvas.</p>
-
-<p>Los hombres, en la mayoría de los casos, NO andamos diciéndole a las mujeres si
-están gordas. Pero entre ellas mismas, se dicen &ldquo;ay mija que gorda estás&rdquo; y
-todas las sandeces esas.</p>
-
-<p>Resulta que una mujer gorda, se autoconsidera fea generalmente. <strong>Por el mero
-hecho de que a ella no le gusta lo que ve en el espejo.</strong> ¿Ya te cercioraste si
-a alguien de tu trabajo y barrio le gusta?</p>
-
-<p>Quizás quiere acercarse alguien, pero postpone el plan para cuando baje un poco
-de peso (nunca). Por esa misma razón: no va a la playa, no usa sayas cortas, no
-usa la ropa tal, etc&hellip;</p>
-
-<p>Por suerte las licras han vuelto a ponerse de moda.</p>
-
-<p>Otro caso es que le decimos a la mujer &ldquo;me gusta que seas gorda&rdquo; y casi se
-ofenden: &ldquo;¿me estás diciendo gorda?&rdquo; Síiii! Te estoy diciendo gorda! ¿Qué hay de
-malo en eso?</p>
-
-<p>Muchas mujeres <em>quieren</em> bajar de peso pero no tienen la voluntad suficiente
-para lograrlo. Mientras tanto, viven flagelándose con las dietas.</p>
-
-<h4>Si fueras flaca a lo mejor él no te hubiera mirado!!!</h4>
-
-<p>El tema <a href="https://es.wikipedia.org/wiki/All_About_That_Bass">All About That Bass</a>
-de Meghan Trainor, tuvo una crítica muy disímil por esta razón. Dijeron que era
-antifeminista. Como si ser gorda fuera ir contra la feminidad. No obstante, el
-tema estuvo en la cima de Billboard Hot 100 ocho semanas (y eso es mucho decir)
-así que la gente aceptó la cancioncita.</p>
-
-<p>Y vamos a estar aquí. Soy flaco como un güin, pero pa flaco yo. Prefiero abultar
-ideas que bíceps. Yo estoy malo, malo, maaaalooo y digo: <em>las lagartijas, pa
-poder treparse en la pared, no pueden ser musculosas</em>. No me preocupa mi figura,
-porque hay mujeres que le encantan los flacos desbaratados y por lo general, son
-gordas (afortunadamente).</p>
-
-<p>Las mujeres si no están en esa bobería. Está la rubia que le encantan los negros
-y NO se esconde para decirlo, se pasea con su prieto por la calle. En cambio, el
-tipo que le gustan las gordas, le pesa reconocerlo e incluso, le da pena que la
-gente lo vean con aun gorda.</p>
-
-<p>   <blockquote><p>Los huesos son para los perros,<br/>   los hombres comen carne.</p></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/03/tls-y-ssl-en-postfix/">tls y ssl en postfix</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-03T21:13:44-05:00'><span class='date'>03/11/2015</span> <span class='time'>9:13 pm</span></time>
-        
-           | <a href="/blog/2015/11/03/tls-y-ssl-en-postfix/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/11/03/tls-y-ssl-en-postfix/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Acá en salud, ahora <em>se están cayendo de la mata</em> y dándose cuenta de los
-peligroso que son las conexiones planas.</p>
-
-<p>Aún no logro hacerle entender a la gente, la diferencia entre un certificado
-autofirmado y un certificado emitido por una <a href="https://es.wikipedia.org/wiki/Autoridad_de_certificaci%C3%B3n">autoridad de certificación</a>
-; pero que más les vamos a pedir, si el certificado de nauta es autofirmado.</p>
-
-<p>De momento con darle la muela del candadito y las letricas verdes en el
-navegador, van cogiendo algo.</p>
-
-<p>Pero volviendo al tema <strong>postfix con SSL</strong>. Vamos a crear un certificado
-autofirmado, por tanto, regla de oro:</p>
-
-<h4>el hostname que provees en el certificado, debe ser machear al del servicio</h4>
-
-<p>En letra de molde. Si proveemos un certificado autofirmado, para conectarnos a
-<strong>smtp.hcg.sld.cu</strong> no puedes decir en el cliente de correo, que el servidor
-smtp es <strong>192.168.0.1</strong> porque no será válido.</p>
-
-<p>Aún cuando el certificado no sea válido, déjame recodarte que debemos ir
-haciéndole cultura de seguridad informática, si no&hellip; bueno&hellip; no me voy a meter
-en un lío diciendo las barbaridades que se logran suplantando identidades.</p>
-
-<p>Bueno entremos en materia. Lo Primero que haremos será generar la clave privada
-para el servidor.</p>
-
-<p>Donde dice <strong>smtp.tudominio.cu</strong> tu pondrás el hostname de que apunta para tu
-servidor smtp. Si eres un desastre y no tiene DNS. Pon la IP de tu servidor de
-correo.</p>
-
-<h4>REPITO</h4>
-
-<p>Donde dice <strong>FQDN or YOUR name</strong> debe decir la dirección del servidor SMTP. La
-dirección tal cual la pones en los clientes.</p>
-
-<p>Cuando lo hagas, te pedirá un password.</p>
-
-<figure class='code'><figcaption><span>&#8220;generando clave privada del servidor&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl genrsa -des3 -out smtp.tudominio.cu.key 2048
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora creamos el certificado. Te pedirá hasta la talla de calzoncillos que usas.
-<strong>NO respondas a lo locoi</strong>, recuerda el <strong>FQDN</strong>. Te acuerdas del password
-que pusiste?</p>
-
-<figure class='code'><figcaption><span>&#8220;creando el certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl req -new -key smtp.tudominio.cu.key -out smtp.tudominio.cu.csr
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Debes ver algo como esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;ceremonia de creación de certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Enter pass phrase <span class="k">for</span> smtp.tudominio.cu.key:
-</span><span class='line'>You are about to be asked to enter information that will be incorporated
-</span><span class='line'>into your certificate request.
-</span><span class='line'>What you are about to enter is what is called a Distinguished Name or a DN.
-</span><span class='line'>There are quite a few fields but you can leave some blank
-</span><span class='line'>For some fields there will be a default value,
-</span><span class='line'>If you enter <span class="s1">&#39;.&#39;</span>, the field will be left blank.
-</span><span class='line'>-----
-</span><span class='line'>Country Name <span class="o">(</span><span class="m">2</span> letter code<span class="o">)</span> <span class="o">[</span>AU<span class="o">]</span>:CU
-</span><span class='line'>State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>Some-State<span class="o">]</span>:Havana
-</span><span class='line'>Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[]</span>:Plaza
-</span><span class='line'>Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>Internet Widgits Pty Ltd<span class="o">]</span>:Calixto
-</span><span class='line'>Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[]</span>:Informatica
-</span><span class='line'>Common Name <span class="o">(</span>e.g. server FQDN or YOUR name<span class="o">)</span> <span class="o">[]</span>:smtp.tudominio.cu
-</span><span class='line'>Email Address <span class="o">[]</span>:ssl@tudominio.cu
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Bites verdad? Bueno, ya hicimos lo más importante, pero no hemos terminado.
-Vamos a firmar el certificado con la la llave emisora.</p>
-
-<figure class='code'><figcaption><span>&#8220;cri-cra firmando el certificado&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl x509 -req -days <span class="m">365</span> -in smtp.tudominio.cu.csr -signkey smtp.tudominio.cu.key -out smtp.tudominio.cu.crt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora vamos a dar un paso <strong>cuestionable</strong>.</p>
-
-<p>Cada vez que un servicio con con un certificado SSL valla a ser iniciado.
-Debería pedir un password, para así asegurar que el legítimo operador de
-servicio ha sido quien le dio la arrancada. Pero poner un password cada vez que
-arranca postfix, no es ninguna gracia. Por tanto, quitamos el password.
-Obviamente, te lo pedirá una última vez.</p>
-
-<figure class='code'><figcaption><span>&#8220;quitando el password&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl rsa -in smtp.tudominio.cu.key -out smtp.tudominio.cu.key.sinpassword
-</span><span class='line'>mv smtp.tudominio.cu.key.sinpassword smtp.tudominio.cu.key
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Emitimos una autoridad de raíz (de pacotilla)</p>
-
-<figure class='code'><figcaption><span>&#8220;la CA del chiste&#8221; </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl req -new -x509 -extensions v3_ca -keyout cakey.pem -out cacert.pem -days 3650
-</span><span class='line'><span class="c"># aqui te pedirá la misma rutina, ojo con lo que pones en el campo FQDN or YOUR name</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Bueno, con el disi y con el mulo, ya tenemos una CA loca, que la podemos reusar
-para otros servicios, por tanto, tratemosla como tal.</p>
-
-<figure class='code'><figcaption><span>&#8220;los puntos sobre las ies&#8221; </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>chmod <span class="m">600</span> smtp.tudominio.cu.key
-</span><span class='line'>chmod <span class="m">600</span> cakey.pem
-</span><span class='line'>mv smtp.tudominio.cu.key /etc/ssl/private/
-</span><span class='line'>mv smtp.tudominio.cu.crt /etc/ssl/certs/
-</span><span class='line'>mv cakey.pem /etc/ssl/private/
-</span><span class='line'>mv cacert.pem /etc/ssl/certs/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora viene el turno de postfix. Haremos dos cosas</p>
-
-<ul>
-<li>habilitar el tranporte ssl/tls por el puerto 465</li>
-<li>habilitar las funciones ssl</li>
-</ul>
-
-
-<p>Ve al <strong>master.cf</strong> y busca la cadena de texto <strong>smtps</strong> debes ver algo como
-esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;parte del master.cf ANTES&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>smtp      inet  n       -       -       -       -       smtpd
-</span><span class='line'><span class="c">#smtp      inet  n       -       -       -       1       postscreen</span>
-</span><span class='line'><span class="c">#smtpd     pass  -       -       -       -       -       smtpd</span>
-</span><span class='line'><span class="c">#dnsblog   unix  -       -       -       -       0       dnsblog</span>
-</span><span class='line'><span class="c">#tlsproxy  unix  -       -       -       -       0       tlsproxy</span>
-</span><span class='line'><span class="c">#submission inet n       -       -       -       -       smtpd</span>
-</span><span class='line'><span class="c">#  -o syslog_name=postfix/submission</span>
-</span><span class='line'><span class="c">#  -o smtpd_tls_security_level=encrypt</span>
-</span><span class='line'><span class="c">#  -o smtpd_sasl_auth_enable=yes</span>
-</span><span class='line'><span class="c">#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject</span>
-</span><span class='line'><span class="c">#  -o milter_macro_daemon_name=ORIGINATING</span>
-</span><span class='line'><span class="c">#smtps     inet  n       -       -       -       -       smtpd</span>
-</span><span class='line'><span class="c">#  -o syslog_name=postfix/smtps</span>
-</span><span class='line'><span class="c">#  -o smtpd_tls_wrappermode=yes</span>
-</span><span class='line'><span class="c">#  -o smtpd_sasl_auth_enable=yes</span>
-</span><span class='line'><span class="c">#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject</span>
-</span><span class='line'><span class="c">#  -o milter_macro_daemon_name=ORIGINATING</span>
-</span><span class='line'><span class="c">#628       inet  n       -       -       -       -       qmqpd</span>
-</span><span class='line'>pickup    fifo  n       -       -       <span class="m">60</span>      <span class="m">1</span>       pickup
-</span><span class='line'>cleanup   unix  n       -       -       -       <span class="m">0</span>       cleanup
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Descomentamos todo lo que tenga que ver con <strong>smtps</strong> debe quedarte más o menos
-así:</p>
-
-<figure class='code'><figcaption><span>&#8220;parte del master.cf DESPUES&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>smtp      inet  n       -       -       -       -       smtpd
-</span><span class='line'><span class="c">#smtp      inet  n       -       -       -       1       postscreen</span>
-</span><span class='line'><span class="c">#smtpd     pass  -       -       -       -       -       smtpd</span>
-</span><span class='line'><span class="c">#dnsblog   unix  -       -       -       -       0       dnsblog</span>
-</span><span class='line'><span class="c">#tlsproxy  unix  -       -       -       -       0       tlsproxy</span>
-</span><span class='line'><span class="c">#submission inet n       -       -       -       -       smtpd</span>
-</span><span class='line'><span class="c">#  -o syslog_name=postfix/submission</span>
-</span><span class='line'><span class="c">#  -o smtpd_tls_security_level=encrypt</span>
-</span><span class='line'><span class="c">#  -o smtpd_sasl_auth_enable=yes</span>
-</span><span class='line'><span class="c">#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject</span>
-</span><span class='line'><span class="c">#  -o milter_macro_daemon_name=ORIGINATING</span>
-</span><span class='line'>smtps     inet  n       -       -       -       -       smtpd
-</span><span class='line'>  -o <span class="nv">syslog_name</span><span class="o">=</span>postfix/smtps
-</span><span class='line'>  -o <span class="nv">smtpd_tls_wrappermode</span><span class="o">=</span>yes
-</span><span class='line'>  -o <span class="nv">smtpd_sasl_auth_enable</span><span class="o">=</span>yes
-</span><span class='line'>  -o <span class="nv">smtpd_client_restrictions</span><span class="o">=</span>permit_sasl_authenticated,reject
-</span><span class='line'>  -o <span class="nv">milter_macro_daemon_name</span><span class="o">=</span>ORIGINATING
-</span><span class='line'><span class="c">#628       inet  n       -       -       -       -       qmqpd</span>
-</span><span class='line'>pickup    fifo  n       -       -       <span class="m">60</span>      <span class="m">1</span>       pickup
-</span><span class='line'>cleanup   unix  n       -       -       -       <span class="m">0</span>       cleanup
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora trabajemos con el <strong>main.cf</strong>, habilitamos las funciones que tengan que
-ver con SSL, declarando esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;tope del main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">smtpd_use_tls</span> <span class="o">=</span> yes
-</span><span class='line'><span class="nv">smtpd_tls_auth_only</span> <span class="o">=</span> no
-</span><span class='line'><span class="nv">smtpd_tls_key_file</span> <span class="o">=</span> /etc/ssl/private/smtp.tudominio.cu.key
-</span><span class='line'><span class="nv">smtpd_tls_cert_file</span> <span class="o">=</span> /etc/ssl/certs/smtp.tudominio.cu.crt
-</span><span class='line'><span class="nv">smtpd_tls_CAfile</span> <span class="o">=</span> /etc/ssl/certs/cacert.pem
-</span><span class='line'><span class="nv">tls_random_source</span> <span class="o">=</span> dev:/dev/urandom
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>No olvides correr <strong>postfix reload</strong></p>
-
-<p>   <blockquote><p>Te voy a coser el culo con un alambre finito.<br/>   No te quedará bonito, pero te quedará seguro.</p><footer><strong>Décima popular</strong></footer></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/20/compartir-la-wifi/">compartir la wifi</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-10-20T23:36:19-04:00'><span class='date'>20/10/2015</span> <span class='time'>11:36 pm</span></time>
-        
-           | <a href="/blog/2015/10/20/compartir-la-wifi/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/20/compartir-la-wifi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="right" src="/images/23_gente.jpg" width="300" height="500" title="" ></p>
-
-<p>Cada vez que paso por
-<a href="http://www.ecured.cu/index.php/Calle_23_%28Vedado%29">23</a>, me cuentro mil y una
-red cuyo ESSID tiene el sufijo <strong>Conectify</strong> delante. Insultado por semejante
-derroche de windows, le comentaba a un colega, que daba tristeza no ver un
-linuxero ahí conectado.</p>
-
-<p>El socio me dijo: -en linux no se puede compartir la wifi</p>
-
-<p>PA DARLE POR LA CARA!</p>
-
-<p>Dos paquetes nada más que hacen falta: <strong>iw</strong>, <strong>hostapd</strong></p>
-
-<p>La idea es:</p>
-
-<ul>
-<li>crear una interfaz wifi como estacion</li>
-<li>crear una interfaz wifi como AP</li>
-<li>crear un interfaz bridge (puente)</li>
-<li>declarar que la interfaz de salida del puente, es la estación</li>
-<li>echar a andar el AP por software</li>
-</ul>
-
-
-<h3>¿SE ENTENDIÓ?</h3>
-
-<p>Si tienes el puñetero NetworkManager corriendo, este es un buen momento para
-pararlo.</p>
-
-<p>La interfaz que usualmente vez como <strong>wlan0</strong> es en realidad <strong>phy0</strong>. ¿Quieres
-verlo? Corre esto:</p>
-
-<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw dev wlan0 del
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>¿Te fijaste que<strong> wlan0</strong> desapareció? No te preocupes, puedes volver a crearla.
-Así:</p>
-
-<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw phy phy0 interface add estacion0 <span class="nb">type </span>station
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como mismo hicimos una estación, podemos hacer un AP.</p>
-
-<figure class='code'><figcaption><span>iw</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iw phy phy0 interface add hotspot0 <span class="nb">type </span>__ap
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora creamos la interfaz de puente y le asignamos a <strong>wlan0</strong> como extremo de
-salida.</p>
-
-<figure class='code'><figcaption><span>br0</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip link add name br0 <span class="nb">type </span>bridge
-</span><span class='line'>iw dev estacion0 <span class="nb">set </span>4addr on
-</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 promisc on
-</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 up
-</span><span class='line'>ip link <span class="nb">set </span>dev estacion0 master br0
-</span><span class='line'>ip link <span class="nb">set </span>up dev br0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En letra de molde:</p>
-
-<ul>
-<li>crea un bridge llamado br0</li>
-<li>dile que lleva ipv4 (requerido, no se por qué)</li>
-<li>pon la interfaz en modo promiscuo</li>
-<li>levanta el enlace de estaicon0</li>
-<li>coloca a estacion0 como interfaz de salida del túnel</li>
-<li>levanta el bridge</li>
-</ul>
-
-
-<p>Ahora viene lo más importante, el AP. El fichero <strong>/etc/hostapd/hostapd.conf</strong>
-contendrá la configuración de nuestros AP. A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>/etc/hostapd/hostapd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># el nombre de tu wifi</span>
-</span><span class='line'><span class="nv">ssid</span><span class="o">=</span>Linux
-</span><span class='line'>
-</span><span class='line'><span class="c"># la contraseña de tu wifi</span>
-</span><span class='line'><span class="nv">wpa_passphrase</span><span class="o">=</span>secretisisimo
-</span><span class='line'>
-</span><span class='line'><span class="c"># la interfaz de red que hará de AP</span>
-</span><span class='line'><span class="nv">interface</span><span class="o">=</span>hostspot0
-</span><span class='line'>
-</span><span class='line'><span class="c"># el puente al que se acoplará</span>
-</span><span class='line'><span class="nv">bridge</span><span class="o">=</span>br0
-</span><span class='line'>
-</span><span class='line'><span class="c"># el canal, lo puede seleccionar manual</span>
-</span><span class='line'><span class="c"># pero un valor de 0, hará el survey.</span>
-</span><span class='line'><span class="c"># Mejor que el ap lo seleccione, así</span>
-</span><span class='line'><span class="c"># no chocas con ningún canal de etecsa en 23</span>
-</span><span class='line'><span class="c"># y aprovechemos ahora que podemos hacer lo</span>
-</span><span class='line'><span class="c"># que nos de la gana con el espectro radioeléctrico</span>
-</span><span class='line'><span class="nv">channel</span><span class="o">=</span>0
-</span><span class='line'>
-</span><span class='line'><span class="c"># no toques más nada de aquí pa abajo</span>
-</span><span class='line'><span class="nv">auth_algs</span><span class="o">=</span>3
-</span><span class='line'><span class="nv">driver</span><span class="o">=</span>nl80211
-</span><span class='line'><span class="nv">hw_mode</span><span class="o">=</span>g
-</span><span class='line'><span class="nv">logger_stdout</span><span class="o">=</span>-1
-</span><span class='line'><span class="nv">logger_stdout_level</span><span class="o">=</span>2
-</span><span class='line'><span class="nv">max_num_sta</span><span class="o">=</span>5
-</span><span class='line'><span class="nv">rsn_pairwise</span><span class="o">=</span>CCMP
-</span><span class='line'><span class="nv">wpa</span><span class="o">=</span>2
-</span><span class='line'><span class="nv">wpa_key_mgmt</span><span class="o">=</span>WPA-PSK
-</span><span class='line'><span class="nv">wpa_pairwise</span><span class="o">=</span>TKIP CCMP
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>y arráncalo:</p>
-
-<figure class='code'><figcaption><span>systemctl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl start hostapd
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Desde entonces, lo que se conecte a tu wifi con ESSID &ldquo;Linux&rdquo; en este caso, irá
-a dar a la red que tengas conectada en tu Wifi. En este caso la red de br0, cuyo
-otro extremo sería la wifi de etecsa.</p>
-
-<p>Lo mismo puede hacer cambiando el extremo del tunel. Por ejemplo, con eth0
-saldría hacia una red cableada. Una manera de meter una WiFi en una red.</p>
-
-<h4>Además</h4>
-
-<p>De esta misma forma, si tuvieras dos tarjetas wifi, pones una como AP y le pones
-la otra como extremo del puente.</p>
-
-<h4>OJO</h4>
-
-<p>Otra cosa, si tienes corriendo el <strong>NetworkManager</strong> no podrás echar a andar
-<strong>hostapd</strong>. Páralo, arranca hostapd y vuelve a hechar a andar el
-NetworkManager.</p>
-
-<p>   <blockquote><p>La técnica es la técnica y sin técnica, no hay técnica.</p><footer><strong>Teófilo Stevenson</strong> <cite><a href='https://es.wikipedia.org/wiki/Te%C3%B3filo_Stevenson'>Boxeador Cubano</a></cite></footer></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">1Kg4gu3e7u8HUw8bj5NbBciRg6Y56kuFCU</a> </p>
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/12">&larr; Older</a>
@@ -946,421 +720,647 @@ NetworkManager.</p>
 	<h1>Lo m&aacute;s reciente</h1>
 
 	<ul id="recent_posts">
+
 		
+
+		<li class="post">
+			<a href="/blog/2017/08/14/odoo-en-centos7/">odoo en centos7</a>
+      </li>
+
+      
+
+		<li class="post">
+			<a href="/blog/2017/08/13/yum-estrecho/">yum estrecho</a>
+      </li>
+
+      
+
+		<li class="post">
+			<a href="/blog/2017/07/23/lemp-en-debian/">LEMP en debian</a>
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/06/29/repos-epel-y-demas/">repos EPEL y demás</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/06/29/knockd-en-centos/">knockd en centos</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/06/28/android-islamico/">Apps islámicas android</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/06/22/curiosa-acl-de-squid/">squid y navegar a .cu</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/05/13/instalar-node-rapido/">instalar node rápido</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/05/10/ssl-ca-local/">autoridad certificadora</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/04/08/xen-y-virt-manager/">xen y virt-manager</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/29/jugar-teeworlds-en-lan/">jugar teeworlds en LAN</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/17/nueva-vm-siempre-es-pv/">nueva VM siempre es PV</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/03/nginx-y-websocket/">nginx y websocket</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/03/pkg-tras-un-proxy/">pkg tras un proxy</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/01/portknocking-en-freebsd/">portknocking en freebsd</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/01/bind-en-infomed/">bind en infomed</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/03/01/qos-con-tc/">QoS con tc o dummynet</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/02/22/bind-personal/">bind personal</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/02/05/dns-con-vistas/">dns con vistas</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/02/01/ipfw-simple-y-consiso/">ipfw simple y conciso</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/28/freebsd-11/">mis crónicas con freebsd</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/21/palito/">animación del palito</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/20/datatables-espanol/">DataTables en español</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/09/tendencias-tecnologicas/">tendencias tecnológicas</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/09/flasheando-modem-al-s4/">flasheando modem al S4</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2017/01/02/rails-assets/">rails-assets</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/12/29/xgproyect/">xgproyect</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/12/27/cambiar-mac-a-un-nano/">cambiar mac a un nano</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/12/19/phpmyadmin-multiples-servidores/">phpmyadmin múltiples servidores</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/12/19/iptables-y-ftp/">iptables y ftp</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/12/09/rails-en-alpine/">rails en alpine</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/11/24/squid3-bloquear-user-agent/">squid3 bloquear user-agent</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/11/22/redimensionar-lvm/">redimensionar lvm</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/11/20/sysinfo-en-el-motd/">sysinfo en el motd</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/11/14/openvpn-user-plus-pass/">openvpn user+pass</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/el-domain-pop/">recolección DomainPOP</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/domainpop-con-postfix/">domainpop con postfix</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/tunel-6in4/">túnel 6in4</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/cortafuegos-ipv6-sencillo/">cortafuegos ipv6 sencillo</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/poniendo-direcciones-ipv6/">las reglas del juego ipv6</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/22/ipv6/">la resolución 185/2016</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/10/04/dirver-broadcom/">driver broadcom</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/09/22/audifonos-blutu/">audífonos blutú</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/09/16/dispatcher-script/">dispatcher script</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/08/16/password-de-windows/">password de windows</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/08/15/repositorio-de-iso-en-xen/">Local ISO en XenServer</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/07/31/kiwix-como-servicio/">kiwix como servicio</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/07/17/hibernar-en-archlinux/">hibernar en archlinux</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/07/17/rsync-basico/">rsync básico</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/06/20/correos-del-cron/">correos del cron</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/06/18/dkim-y-spf-en-postfix/">dkim y spf en postfix</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/06/06/desacelerar-mouse/">desacelerar mouse</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/05/12/deshabilitar-historial-de-bash/">deshabilitar historial de bash</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/04/29/reparar-archivos-de-innodb/">reparar archivos de innodb</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/04/01/wpa2-con-freeradius/">WPA2 con freeradius</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/03/14/misterio-con-ethernet-foxconn/">misterio con ethernet foxconn</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/03/07/cargar-rvm/">cargar rvm</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/02/22/data-confirm-en-un-boton/">data confirm en un boton</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/02/20/hooks-de-pacman/">los hooks de pacman</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/02/01/arch-compartir-paquetes/">arch compartir paquetes</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2016/01/25/hostname-arbitrario-en-bind9/">bind9, registro arbitratio</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/12/14/servidor-jabber-con-prosody/">servidor jabber con prosody</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/11/29/mc-demora-en-abrir/">mc demora en abrir</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/11/23/desmume-ultralento/">desmume ultralento</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/11/12/rc-dot-local-en-systemd/">rc.local en systemd</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/11/03/las-mujeres-gordas/">las mujeres gordas</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/11/03/tls-y-ssl-en-postfix/">tls y ssl en postfix</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/10/20/compartir-la-wifi/">compartir la wifi</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/10/18/systemd-timesyncd/">systemd-timesyncd</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/10/15/repo-de-fdroid/">repo de fdroid</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/10/08/prawn-pdf-con-ruby/">prawn, pdf con ruby</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/09/17/dhcp-por-grupos/">dhcp por grupos</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/09/10/plymouth-boot-screen/">plymouth boot screen</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/09/07/git-clone-rapido/">git clone rápido</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/09/07/archlinux-dos-kernel/">archlinux con dos kernel</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/08/28/compute-remote-uptime/">compute remote uptime</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/07/24/transliteracion-del-coran/">transliteración del corán</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/07/12/date-select-en-espanol/">date_select en español</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/07/11/openvas-en-archlinux/">OpenVAS en Archlinux</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/">añadir verbo a un scaffold</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/06/30/bootstrap-en-rails-4/">bootstrap en rails 4</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/06/21/se-dice-dios-no-ala/">se dice DIOS, no alá</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/06/01/pacman-bajo-el-microscopio/">pacman bajo el microscopio</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/05/28/cambiar-user-agent-en-squid/">cambiar user agent con squid</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/05/26/nic-bonding/">NIC bonding</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/05/23/ltsp-en-debian8-y-salud/">ltsp en debian8 y salud</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/02/19/delay-pools-de-squid/">delay pools de squid</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/02/12/rails-con-mongodb/">rails con mongodb</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2015/02/06/zentyal/">Zentyal</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/09/24/verdial-y-el-imagis/">la pena de verdial</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/09/05/palos-de-wordpress/">palos de wordpress</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/08/15/subdesarrollo/">subdesarrollo</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/08/11/ocs-inventory/">ocs-inventory</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/07/08/select-en-bootstrap/">select en bootstrap</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/07/05/empirico/">empíricos</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/06/10/autenticador-sql-en-el-proxy/">autenticador SQL en el proxy</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/06/09/postfix-entrando-en-el-baile/">postfix entrando en el baile</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/06/09/dovecot-entra-en-el-baile/">dovecot entra en el baile</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/05/02/wordpress-para-todos/">wordpress para todos</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/04/06/squid-en-infomed/">el toten de proxies</a>
-		</li>
-		
+      </li>
+
+      
+
 		<li class="post">
 			<a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a>
-		</li>
-		
-	</ul>
-	
+      </li>
+
+      
+
+   </ul>
+
 </section>
 
 

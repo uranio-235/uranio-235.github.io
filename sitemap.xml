@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://uranio-235.github.io/blog/2017/08/14/odoo-en-centos7/</loc>
+<lastmod>2017-08-14T21:19:54-04:00</lastmod>
+</url>
+<url>
+<loc>http://uranio-235.github.io/blog/2017/08/13/yum-estrecho/</loc>
+<lastmod>2017-08-13T16:36:12-04:00</lastmod>
+</url>
+<url>
+<loc>http://uranio-235.github.io/blog/2017/07/23/lemp-en-debian/</loc>
+<lastmod>2017-07-23T15:19:47-04:00</lastmod>
+</url>
+<url>
 <loc>http://uranio-235.github.io/blog/2017/06/29/repos-epel-y-demas/</loc>
 <lastmod>2017-06-29T02:15:03-04:00</lastmod>
 </url>

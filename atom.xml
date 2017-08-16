@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-07-06T13:22:34-04:00</updated>
+  <updated>2017-08-16T15:35:39-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,296 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[odoo en centos7]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/08/14/odoo-en-centos7/"/>
+    <updated>2017-08-14T21:19:54-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/08/14/odoo-en-centos7</id>
+    <content type="html"><![CDATA[<p>Odoo, el sucesor de openerp; un software muy versátil, con funcionalidades para
+manejar cualquier negocio (ERP). En mi caso; lo uso para manejar facturación y
+la contabilidad de mi negocio. Recién me vi obligado a reinstalarlo pero resulta
+que los <strong>.deb</strong> están mirando pa debian8, por tanto, decidí instalarlo en
+centos7. Además estoy cada día más peleado con debian.</p>
+
+<p>Como mi laptop no virtualiza, tengo centos7 en un contenedor de LXC. Esto me
+resulta más confiable que docker, ya que he tenido muy malas experiencias
+linkando el container de postgres con el de odoo. Eso sin contar que systemd no
+pincha en un container, al menos no sin levantarlo desde el init y privilegiado;
+tal como funciona LXC. Claro, hacer un script que corra todo en el container sin
+necesidad de systemd es una solución; pero el hecho de tener múltiples distros
+corriendo, me resulta más emocionante que los &ldquo;contenedores&rdquo;.</p>
+
+<p>Vamos a necesitar unas cuantas cosas del repo EPEL y un servidor de postgresql
+operacional.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum install -y epel-release</span>
+</span><span class='line'><span class="go"> yum update</span>
+</span><span class='line'><span class="go"> yum install -y postgresql-server</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Inicializamos el servidor de postgresql</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> postgresql-setup initdb</span>
+</span><span class='line'><span class="go"> systemctl start postgresql</span>
+</span><span class='line'><span class="go"> systemctl enable postgresql</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Creamos un repositorio para odoo, a mi me quedó así</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/yum.repos.d/odoo.repo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="k">[odoo-nightly]</span>
+</span><span class='line'> <span class="na">name</span><span class="o">=</span><span class="s">Odoo Nightly repository</span>
+</span><span class='line'><span class="s"> baseurl=http://nightly.odoo.com/10.0/nightly/rpm/</span>
+</span><span class='line'><span class="s"> enabled=1</span>
+</span><span class='line'><span class="s"> gpgcheck=1</span>
+</span><span class='line'><span class="s"> gpgkey=https://nightly.odoo.com/odoo.key</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora vamos a la parte más compleja de la película. Resulta que odoo requiere
+wkhtmltopdf para funcionar y debe machear la versión de odoo con la versión de
+wkhtml. Para la 9.0, usaremos wkhtmltopdf <strong>0.12</strong>. Según advierten en la guía
+de instalación de odoo, el paquete de wkhtmltopdf que provee centos, no soporta
+header y footer, así que te dicen que lo descargues del sitio web oficial. Ahí
+aparece solo un <strong>.tar.gz</strong> pero siempre hay un <strong>rpm</strong> escondido abajo de una
+piedra:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">yum install -y fontconfig libpng libX11 libXext libXrender xorg-x11-fonts-Type1 xorg-x11-fonts-75dpi</span>
+</span><span class='line'><span class="go">rpm -Uvh https://downloads.wkhtmltopdf.org/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos7-amd64.rpm</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finalmente, instalamos odoo.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum install -y odoo</span>
+</span><span class='line'><span class="go"> systemctl enable odoo</span>
+</span><span class='line'><span class="go"> systemctl start odoo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[yum estrecho]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/08/13/yum-estrecho/"/>
+    <updated>2017-08-13T16:36:12-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/08/13/yum-estrecho</id>
+    <content type="html"><![CDATA[<p>Si en algo me destaco, es en mi habilidad por trabajar con espacios estrechos
+(poca RAM, poco espacio en disco, etc&hellip;)</p>
+
+<p>Cuando tenemos un servidor con CentOS, aveces no queremos más de las mil cosas
+que una completa instalación involucra. Por ejemplo, las páginas de man en una
+pila de idiomas, el contenido de /usr/share/doc/, etc&hellip; Si bien actualmente uso
+un script para eliminar todo eso, lo cierto es que sería mucho más fácil si
+nunca se desplegaran esos archivos.</p>
+
+<p>Gracias a <strong>yum-config-manager</strong> no hay que estar cargando con el fichero de
+configuración, simplemente se puede hacer un script que setee dichas
+configuraciones.</p>
+
+<p>Esta es la secuencia de comando que le tiro en un yum virgen:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum-config-manager --save --setopt assumeyes=true</span>
+</span><span class='line'><span class="go"> yum-config-manager --save --setopt tsflags=nodocs</span>
+</span><span class='line'><span class="go"> yum-config-manager --save --setopt override_install_langs=en</span>
+</span><span class='line'><span class="go"> yum-config-manager --save --setopt clean_requirements_on_remove</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al correr <strong>yum-config-manager</strong> puedes ver todas las opciones que este brinda.
+Lo demás sería buscar la documentación.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[LEMP en debian]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/07/23/lemp-en-debian/"/>
+    <updated>2017-07-23T15:19:47-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/07/23/lemp-en-debian</id>
+    <content type="html"><![CDATA[<p>Resulta que <em>&ldquo;linux, apache, mysql y php&rdquo;</em>, solía llamarse L<strong>A</strong>MP. Ahora,
+cuando cambian apache por ningx le llaman L<strong>E</strong>MP no se por qué (y no quiero
+averiguarlo, la moda me enferma).</p>
+
+<p>En debian 9, la rima de php con nignx cambia un poquito. No hay que ser un genio
+para darse cuento que cosas como <em>php5</em> ahora son <em>php7</em>, pero como para mi este
+blog es un sitio donde escribo el código para luego copiar y pegar, pondré como
+hacerlo en el &ldquo;debian nuevo&rdquo;.</p>
+
+<p>Vamos a empezar de atrás pa alante; el MySQL</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando sql y compañía&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> root@299c0ecdbedc:~# apt install mysql-server</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Uno de los cabezazos más grandes que me dí con debian 9 fue la configuración del
+SQL. Ya no es asistido como antes. Así que vamos a correr un par de comandos.</p>
+
+<figure class='code'><figcaption><span>&#8220;configurando mysql&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> root@299c0ecdbedc:~# mysql_install_db</span>
+</span><span class='line'><span class="go"> root@299c0ecdbedc:~# mysql_secure_installation</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al correr el segundo te saldrán unas cuantas preguntas. Respóndelas a tu gusto y
+necesidad.</p>
+
+<p>Ahora bien, conectar lo que No sea por el socket, se vuelve una jodienda. Por
+ejemplo root@localhost suele no estar autorizado; si esto se interpreta como
+127.0.0.1</p>
+
+<p>Ejecuta: <strong>mysql -u root</strong> o con <strong>-p</strong> si seleccionaste tener password.</p>
+
+<p>Veamos por ejemplo, que creamos el usuario <strong>admin</strong> para la base de datos
+<strong>misdatos</strong>.</p>
+
+<figure class='code'><figcaption><span>&#8220;creando «admin»&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">misdatos</span><span class="p">;</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="k">USER</span> <span class="s1">&#39;admin&#39;</span><span class="o">@</span><span class="s1">&#39;%&#39;</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">&#39;secretisimo&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">PRIVILEGES</span> <span class="k">ON</span> <span class="n">misdatos</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">&#39;admin&#39;</span><span class="o">@</span><span class="s1">&#39;%&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="n">FLUSH</span> <span class="k">PRIVILEGES</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si quieres saber los usuarios ejecuta la sentencia:</p>
+
+<figure class='code'><figcaption><span>&#8220;ver los usuarios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'> <span class="k">SELECT</span> <span class="k">User</span><span class="p">,</span><span class="k">Host</span><span class="p">,</span><span class="n">Password</span> <span class="k">FROM</span> <span class="n">mysql</span><span class="p">.</span><span class="k">user</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Bueno ya tenemos el SQL corriendo. Vamos pal resto</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando cosas&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">apt install nginx mysql-client php-fpm php-mysql libfcgi0ldbl</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Una vez que se instale <strong>php-fpm</strong> lo echamos a andar y lo probamos.</p>
+
+<figure class='code'><figcaption><span>&#8220;probando fpm&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">root@299c0ecdbedc:~#</span> /etc/init.d/php7.0-fpm restart
+</span><span class='line'><span class="gp">root@299c0ecdbedc:~#</span> cgi-fcgi -bind -connect /run/php/php7.0-fpm.sock
+</span><span class='line'><span class="go">Content-type: text/html; charset=UTF-8</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al virtualhost de nginx, le hacemos unos arreglitos; para que nginx tire el php
+por fastcgi. Que ricura debian, tan solo incluyendo un snippet todo se resuelve.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/nginx/sites-available/default&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">server</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nx">listen</span> <span class="mi">80</span> <span class="nx">default_server</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nx">root</span> <span class="o">/</span><span class="kd">var</span><span class="err">/www/html;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nx">index</span> <span class="nx">index</span><span class="p">.</span><span class="nx">php</span> <span class="nx">index</span><span class="p">.</span><span class="nx">html</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nx">server_name</span> <span class="nx">_</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nx">location</span> <span class="o">/</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nx">try_files</span> <span class="nx">$uri</span> <span class="nx">$uri</span><span class="o">/</span> <span class="o">=</span><span class="mi">404</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nx">location</span> <span class="o">~</span> <span class="err">\</span><span class="p">.</span><span class="nx">php$</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nx">include</span> <span class="nx">snippets</span><span class="o">/</span><span class="nx">fastcgi</span><span class="o">-</span><span class="nx">php</span><span class="p">.</span><span class="nx">conf</span><span class="p">;</span>
+</span><span class='line'>                <span class="nx">fastcgi_pass</span> <span class="nx">unix</span><span class="o">:</span><span class="err">/var/run/php/php7.0-fpm.sock;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Reinicia nginx!</p>
+
+<p>Pa probar que todo está pinchando, creamos un script que llame la función
+<strong>phpinfo()</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;phpinfo()&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> root@299c0ecdbedc:~# /etc/init.d/nginx restart</span>
+</span><span class='line'><span class="go"> root@299c0ecdbedc:~# /etc/init.d/php7.0-fpm restart</span>
+</span><span class='line'><span class="go"> root@299c0ecdbedc:~# /etc/init.d/mysql restart</span>
+</span><span class='line'><span class="go"> root@299c0ecdbedc:~# echo &#39;&lt;?php phpinfo(); ?&gt;&#39; &gt; /var/www/html/index.php</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Debes poder ver la típica página que produce <strong>phpinfo()</strong></p>
+
+<p>Para probar la base de datos, creas un script de php que inicialice mysqli:</p>
+
+<figure class='code'><figcaption><span>&#8221;&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nv">$misql</span> <span class="o">=</span> <span class="nb">mysqli_connect</span><span class="p">(</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="s1">&#39;admin&#39;</span><span class="p">,</span> <span class="s1">&#39;ok&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$misql</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">die</span><span class="p">(</span><span class="s1">&#39;esto no pincha: &#39;</span> <span class="o">.</span> <span class="nx">mysqli_error</span><span class="p">());</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">echo</span> <span class="s1">&#39;Conexion satisfactoria&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nx">mysqli_close</span><span class="p">(</span><span class="nv">$misql</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Puedes correr ese script con php o llamarlo con el navegador. El resultado es
+bastante obvio.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[repos EPEL y demás]]></title>
@@ -2019,433 +2309,6 @@ forward. Cabe destacar, que una zona forward y un fakeroot, no se por qué; hace
 que ninguna pinche.</p>
 
 <p>Sensillo y seguro.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ipfw simple y conciso]]></title>
-    <link href="http://uranio-235.github.io/blog/2017/02/01/ipfw-simple-y-consiso/"/>
-    <updated>2017-02-01T23:15:47-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2017/02/01/ipfw-simple-y-consiso</id>
-    <content type="html"><![CDATA[<p>Las instrucciones para hacer un cortafuegos realmente <strong>SIMPLE</strong> y la vez
-funcional (statefull firewall) con ipfw; sensillamente <em>&ldquo;no existen&rdquo;</em>, al menos
-No de manera oficial. El cortafuegos ejemplificado en el handbook es bastante
-ortodoxo y no muestra la flexibilidad de ipfw.</p>
-
-<p>Para empezar, el módulo debe ser cargado en el kernel, así que inicializaremos
-ipfw como si fuera un demonio más del sistema. Esto quiere decir que lo
-añadiremos al <strong>/etc/rc.conf</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/rc.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="nv">firewall_enable</span><span class="o">=</span><span class="s2">&quot;YES&quot;</span>
-</span><span class='line'> <span class="nv">firewall_type</span><span class="o">=</span><span class="s2">&quot;/usr/local/etc/ipfw.rules&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Te recomiendo reiniciar ahora; para que todo se cargue correctamente.</p>
-
-<p>La <a href="https://www.freebsd.org/doc/handbook/firewalls-ipfw.html">documentación oficial</a> aclara que
-los firewall pueden ser (además) del tipo: open, client, simple, closed o
-UNKNOWN. Sin embargo, <strong>en mi opinión</strong> estas configuraciones prefabricadas, no
-son suficiente para un servidor (por ejemplo proxy).</p>
-
-<p>Para mantener la armonía chea y anticuada de freebsd; colocamos el cortafuegos
-en el etc/ que está bajo /usr/local/. Ten en cuenta que casi todas las
-aplicaciones que instales, tendrán su /etc ahí.</p>
-
-<p>Reiniciar ipfw no es tan jamón como un usuario de iptables haría. Hacer un flush
-de las reglas, significa quedarse trancado y perder la conexión por ssh. Para
-reiniciar el cortafuegos, deberás tener un script que haga flush y además,
-reiniciar el servicio. Este scriptsito me lo hice para la faena de toquetear el
-cortafuegos</p>
-
-<figure class='code'><figcaption><span>&#8220;/usr/local/bin/reiniciar_ipfw.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="c">#!/bin/csh</span>
-</span><span class='line'> service ipfw stop
-</span><span class='line'> ipfw -q flush
-</span><span class='line'> service ipfw start
-</span><span class='line'> ipfw show
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<p>La documentación oficial (y otras muchas) indican que cada regla se cree
-enumerada y que bebes mantener esta numeración manualmente. Sin embargo, esto no
-es estrictamente necesario. Cada regla incrementará el número de manera
-implícita.</p>
-
-<p>La mecánica de ipfw es más sencilla que cualquier firewall de linux en mi
-opinión.</p>
-
-<p><strong>ipfw add accion argumento</strong></p>
-
-<p>Si ya conoces <strong>ufw</strong>, te darás cuenta de que es una copia bastante mala de
-ipfw, sobre todo; teniendo cuenta que ipfw es un firewall en sí, mientras que
-ufw, es un stack que genera instrucciones de iptables.</p>
-
-<p>Algo de lo que linux se ha alejado mucho es el teorema de KISS, pero en BSD, que
-es unix ortodoxo, mantiene la simpleza como pilar. De esta manera, una acción
-allow, en su forma más simple, es casi lenguaje natural.</p>
-
-<p><strong>ipfw add allow all from 10.99 to me</strong></p>
-
-<p>O sea, permite todo lo que venga de 10.0.0.1 para mi. Pero podemos hacer algo
-más discriminatorio.</p>
-
-<p><strong>ipfw add allow tcp from 10.0.0.99 to 10.0.0.1 dst-port 22 in via xn0</strong></p>
-
-<p>Permite el tráfico tcp de 10.99 para 10.1 que valla para el puerto 22 en sentido
-entrante (in) por la interfaz (via) xn0</p>
-
-<p>¿Te la llevaste? Jamón de pollo! ¿Verdad?</p>
-
-<p>Veamos pues un <strong>ipfw.rules</strong> bien básico. La interfaz <strong>lo0</strong> (lo con un cero)
-es el localhost. La interfaz xn0 es la WAN y xn1 es la LAN.</p>
-
-<figure class='code'><figcaption><span>&#8220;ipfw.rules&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="c"># lo permitimos todo pa afuera</span>
-</span><span class='line'> ipfw -q add allow all from any to any out keep-state
-</span><span class='line'>
-</span><span class='line'> <span class="c"># permite todo por el localhost</span>
-</span><span class='line'> ipfw -q add allow all from any to any via lo0
-</span><span class='line'>
-</span><span class='line'> <span class="c"># las conexiones que ya estén iniciadas, pásalas</span>
-</span><span class='line'> <span class="c"># compara eso con el de iptables</span>
-</span><span class='line'> ipfw -q add allow tcp from any to any established
-</span><span class='line'>
-</span><span class='line'> <span class="c"># permite que te hagan ping desde la LAN </span>
-</span><span class='line'> <span class="c"># pero no mucho icmp para que no hagan flood</span>
-</span><span class='line'> ipfw pipe <span class="m">1</span> config bw 30KBytes
-</span><span class='line'> ipfw -q add pipe <span class="m">1</span> icmp from 192.168.1.0/24 to me in via xn1
-</span><span class='line'> ipfw -q add allow  icmp from 192.168.1.0/24 to me in via xn1
-</span><span class='line'>
-</span><span class='line'> <span class="c"># permite que accedan al proxy desde la LAN</span>
-</span><span class='line'> ipfw -q add allow tcp from 192.168.1.0/24 to me <span class="m">3128</span> via xn1
-</span><span class='line'>
-</span><span class='line'> <span class="c"># permite el servidor web pero solo deade la WAN</span>
-</span><span class='line'> <span class="c"># en este caso &quot;me&quot; será la ip de la WAN</span>
-</span><span class='line'> ipfw -q add allow tcp from any to me dst-port <span class="m">80</span> via xn0
-</span><span class='line'>
-</span><span class='line'> <span class="c"># descarta el resto de los paquetes ENTRANTES</span>
-</span><span class='line'> <span class="c"># esta regla casi nunca es necesaria, ya que</span>
-</span><span class='line'> <span class="c"># suele ser implícita, o sea, drop por defecto</span>
-</span><span class='line'> ipfw -q add drop all from any to any
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Veamos algunas características de este cortafuegos&hellip;</p>
-
-<p>Como ven, no arranca haciendo flush como los de iptables. De hecho, hacer flush
-como primera linea puede causarte problemas muy serios. Por otro parte,
-reiniciar el cortafuegos sin hacer flush, provoca que se dupliquen las reglas.</p>
-
-<p>La salida, por definición, está bloqueada. La última regla; autoriza la salida
-del tráfico. ¿Por qué la última? ¿Por qué no al principio? Pues por si hacemos
-un pipe de salida. Aveces regular el ancho de banda de salida, es más útil que
-regular el de entrada. Por ejemplo, si queremos moderar la cantidad de tráfico
-que un servidor web exporta. Más adelante veremos dummynet y los pipe.</p>
-
-<p>En iptables, hacemos DROP cuando queremos desechar paquetes. En ipfw usamos
-<strong>deny</strong>, aunque también puedes usar <strong>drop</strong> que es sinónimo de deny. El
-cortafuego lo sustituirá por deny. Lo puedes ver al usar: ipfw show</p>
-
-<p>Note que &ldquo;<strong>from me</strong>&rdquo; para ipfw, significa un paquete que provenga de cualquiera de
-las ip que tiene configurada el servidor. En este caso, la interfaz xn0 debe
-tener alguna de la red 192.168.1.0/24 así que <strong>me</strong> será dicha ip.</p>
-
-<p>Una característica de ipfw <strong>bien peligrosa</strong> es que tiene muchas cosas
-<strong>implícitas</strong>. Como lo de la numeración. Cuando digo implícita me refrito a que
-si no las pones, ipfw las asume. Fíjate bien como se maneja el tema de los
-puertos en la siguientes reglas.</p>
-
-<figure class='code'><figcaption><span>&#8220;ipfw dst-port&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="c"># permite que accedan al proxy desde la LAN</span>
-</span><span class='line'> ipfw -q add allow tcp from 192.168.1.0/24 to me <span class="m">3128</span> via xn1
-</span><span class='line'>
-</span><span class='line'> <span class="c"># permite el servidor web pero solo deade la WAN</span>
-</span><span class='line'> <span class="c"># en este caso &quot;me&quot; será la ip de la WAN</span>
-</span><span class='line'> ipfw -q add allow tcp from any to me dst-port <span class="m">80</span> via xn0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En la primera regla, declaramos &ldquo;<strong>me 3128</strong>&rdquo;, esto significa &ldquo;para mi ip por el
-puerto 3128&rdquo;. Realmente ipfw lo reescribe (puedes verlo con &ldquo;show&rdquo;) y pondrá la
-cláusula <strong>dst-port</strong> al igual que la siguiente linea, detrás de <strong>me</strong> viene la
-cláusula <strong>dst-port</strong> seguida por el puerto. Pero si no la pones, se asume como
-implícita. En poca palabras:</p>
-
-<p>&ldquo;to me 3128&rdquo; y &ldquo;to me dst-port 3128&rdquo; es exactamente lo mismo.</p>
-
-<p>Otro tema que le retraquetea el mango; es la gestión del ancho de vianda. Porque
-tc de iproute (en linux) es un asco. Pero si conocemos ipfw, sabremos que maneja
-el ancho de vianda de una menera muy peculiar; usando un módulo llamado
-dummynet. No esperes ver la palabra &ldquo;dummynet&rdquo; escrita en el cortafuegos. En
-fin; analiza este ejemplo:</p>
-
-<figure class='code'><figcaption><span>&#8220;ipfw y dummynet&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> ipfw add pipe <span class="m">1</span> ip from me to 192.168.1.0/24 out via xn0
-</span><span class='line'> ipfw pipe <span class="m">1</span> config bw 128KBytes
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Se crea el pipe número 1, con un ancho de banda de 128 KyloBytes. En la regla de
-arriba, se dijo que todo el tráfico de la interfaz xn0, proveniente de el
-servidor hacia la red 192.168.1.0/24 y en sentido saliente; será a 128K. O sea,
-modificamos el ancho de banda <strong>que sale</strong> del servidor, lo cual es bastante
-útil para un servidor web o ftp.</p>
-
-<p>En el caso de un servidor proxy, no vale la pena modificar el ancho de banda de
-<strong>salida</strong>, ya que las páginas son enviadas al cliente una vez bajadas y si ya
-nos hicimos el arakiri de bajarla: ¿Pa que demorarlas más? Para un servidor
-proxy usamos una regla bidireccional. O sea, creamos el pipe 1 y el pipe 2 con
-igual o diferente ancho de banda y aplicamos una regla pa afuera y otra pa
-adentro.</p>
-
-<p>Tenga en cuenta que el las conexiones HDSL tiene más ancho de vianda pa abajo
-que pa arriba. Osea, que salida a la WAN (el router) debe ser más estrecha que
-salida a la LAN.</p>
-
-<p>En un servidor de correo sí sería útil regular la entrada, ya que hay gente que
-manda elefantes por el puerto 25. Sobre todo en redes conmutadas o muy lentas.
-También sería útil moderar la entrada en un servidor que involucre subida de
-ficheros, por ejemplo, una nube, un servidor de carpetas compartidas.</p>
-
-<p>Ah! por cierto:</p>
-
-<p>Si crearas un pipe y le dijeras que 3 ip, lo usan, el ancho de vianda sería
-compartido para esas 3 ip. O sea</p>
-
-<figure class='code'><figcaption><span>&#8220;ipfw y dummynet&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> ipfw add pipe <span class="m">1</span> ip from me to 192.168.1.10/24 out via xn0
-</span><span class='line'> ipfw add pipe <span class="m">1</span> ip from me to 192.168.1.11/24 out via xn0
-</span><span class='line'> ipfw add pipe <span class="m">1</span> ip from me to 192.168.1.12/24 out via xn0
-</span><span class='line'> ipfw pipe <span class="m">1</span> config bw 128KBytes
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En este caso, 10, 11 y 12, tienen un total de 128KB/s, si 10 acapara todo el
-ancho de banda (los 128) entonces 11 y 12 tendrán unos bellos timeout como
-respuesta. Piensa en todo lo que puedes hacer con eso.</p>
-
-<p><strong>OJO CON EL ÓRDEN!!!</strong></p>
-
-<p>Esa regla machea <strong>la salida</strong>. Si la colocaras <strong>debajo</strong> de la regla que
-permite todo hacia afuera, simplemente, <strong>no pinchará</strong> porque <strong>no machea</strong>.
-Coge por la regla de salida y nunca va al pipe. Como diría los yumas &ldquo;rule of
-thumbs&rdquo;</p>
-
-<p><strong>Las reglas que envían el tráfico al pipe, debes ponerlas arriba de la regla
-&ldquo;destino final&rdquo; del paquete.</strong></p>
-
-<p>De esta manera el paquete va al pipe y luego regresa al cortafuegos. O sea,
-intenta poner siempre los pipe arriba y el cortafuegos abajo</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[mis crónicas con freebsd]]></title>
-    <link href="http://uranio-235.github.io/blog/2017/01/28/freebsd-11/"/>
-    <updated>2017-01-28T23:39:52-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2017/01/28/freebsd-11</id>
-    <content type="html"><![CDATA[<p>Si vas a leer este artículo, te aviso, que no tiene nada que ver con el blog. Me
-dispongo a expresar mi criterio sobre FreeBSD y un tanto de como ha formado
-parte de mi vida profesional.</p>
-
-<p>   <blockquote><p>FreeBSD, tecnología arcana para algunos y arcaica para otros.</p></blockquote></p>
-
-<p>Se cuentan leyendas sobre FreeBSD, como que es el sistema operativo de los nodos
-y cosas así. Mucha gente lo tiene como un arcano o algo que probarán <em>un día de
-estos</em>. Yo pienso que no tiene nada del otro mundo. De hecho, en mi opinión,
-gentoo es más complicado que freebsd.</p>
-
-<p>Lo que si me queda claro que es un excelente sistema operativo para servidores
-proxy. Además, ipfw, su cortafuegos, es sólido como una piedra. En FreeBSD eso
-de caer de rodillas ante un ataque DoS, es simplemente utópico.</p>
-
-<p>En ambientes libres de proxy, el binomio dummynet-<a href="https://www.freebsd.org/doc/handbook/firewalls-ipfw.html">ipfw</a>
-permite un manejo del ancho de banda con una simpleza que ya quisiera <strong>tc</strong>. Un
-solo pipe puede tener valores diferentes para su ancho de banda, encolamiento y
-delay.</p>
-
-<p>Por otra parte, el sistema de
-<a href="https://www.freebsd.org/doc/handbook/jails.html">jails</a> es un batazo. Sobre
-todo en ambientes donde te ves obligado a meter la pata y no dispones de
-virtualización. Lo único equivalente a esto en linux, sería LXC, pero no es ni
-la chancleta. Los jails combinado con ZFS, permiten hacer cosas alucinantes.</p>
-
-<p>Cada versión nueva que sale la pruebo; y aunque había hecho mis cositas con él,
-siempre acababa dejándolo de lado por el tema del ancho de banda. Cualquier
-operación que hagas con la paquetería requiere conexión y poco ancho de banda
-provoca que la operación falle. La versión 9 en mi opinión fue un desastre.
-Especialmente por el sistema de ports que daba unos palos horribles.</p>
-
-<p>El gestor de paquetes ha mejorado muchísimo. La resolución de dependencias y
-velocidad es espectacular. Además, han logrado una completa integración de
-gestión de paquetes en una sola herramienta. Ya no es el reguero ese de pkg_info
-por un lado y pkg_add por otro. Ahora además, soporta operaciones de limpieza
-como <em>autoremove</em> y <em>clean</em>. La herramienta <strong>portaudit</strong> al parecer fue
-<em>portada</em> a pkg también y ahora es oficial. Otras novedades relevantes son que permite crear
-respositorios y hacer operaciones en jails. Ah! y para que contarte el soporte
-de proxy. Más detalles (y una rosetta) <a href="https://wiki.freebsd.org/PkgPrimer">lo puedes ver aquí</a>.</p>
-
-<p>FreeBSD 10 no lo toqué, estuve más girado para OpenIndiana.</p>
-
-<p>Pero la versión 7 de OI parecía no terminar nunca. Finalmente el avión no
-despegó. El fiasco de nexenta store y la insertidumbre de oracle, golpearon
-fuertemente a la comunidad de OpenIndiana. El mundo se dio cuenta que OI tenía
-el futuro de un submarino descapotable y gran parte de la comunidad de illumos
-se mudó pa BSD. La comunidad de OpenIndiana se desmoronaba con las botas
-puestas. El agitado canal de freenode #openindiana se convirtió en un canal
-muerto. En lo personal, tras fracasar en mi afán por portar Ruby a OI, en parte
-debido a que no tengo ancho de banda para hacer operaciones en el Userland; alcé
-bandera blanca también.</p>
-
-<p>Pero como soy Linuxero! Volví a poner mis servidores en debian y comencé a mirar
-a fedora. De nuevo el ancho de vianda me golpeó; además de otros avatares de la
-vida. Terminé usando un chroot de arch, sobre la viejísima instalación de debian
-en mi laptop Pentium 3 que ya estaba más que obsoleta. Todas mis aplicaciones,
-mi /home, etc&hellip; Eran un chroot de arch dentro de un debian desnudo. Corría i3 y
-levantaba con startx luego de entrar al chroot.</p>
-
-<p>Free BSD andaba por finales de la 9 y la 10 en el horno; si mal no recuerdo&hellip;
-Yo, me dedicaba a leer noticias y continuaba suscrito a la lista de freebsd en
-español; donde hacer top-posting se paga con la pena capital.</p>
-
-<p>Mientras tanto, perdía yo mi trabajo y paradógicamente recién adquiría una nueva
-laptop. Apostar por el recién abierto &ldquo;modelo de trabajo por cuenta propia&rdquo;; me
-costó perder mi empleo y quedarme sentado un buen rato. Instalé ArchLinux en la
-laptop nueva para conservar las configuraciones de la anterior. Para este
-entonces me consideraba usuario de archlinux &ldquo;por casualidad&rdquo;. Me soñaba como un
-feliz usuario de Fedora. Consideraba ya a Debian; única y expresamente una
-herramienta para servidores. Seguía teniendo a FreeBSD en al mira, pero para
-cuando consiguiera un trabajo con un internet &ldquo;decente&rdquo; y tuviera algo de
-tiempo.</p>
-
-<p>El período más jodido de mi vida estaba aconteciendo en ese momento. No voy a
-escribir aquí mis problemas personales; pero a modo de resumen diré que la
-última enfermera que tuve como pareja me calló a tarros y la casa donde nací, la
-vendieron sin decirme nada. Al estilo país capitalista &ldquo;me quede en la calle&rdquo;.
-Con el ánimo y la autoestima en el piso; el único producto que podía ofrecer
-eran servidores con debian. A mediados del 2014, empecé en el calixto, de vuelta
-al trabajo estatal. El ancho de vianda seguía siendo un problema; también el
-tema de la cuota. FreeBSD seguía &ldquo;pospuesto pero no olvidado&rdquo;.</p>
-
-<p>A finales del 2016, me trajeron el servidor de gama media para remplazar el
-totem de servidores. Además, habían ampliado el susodicho ancho de vianda. Fue
-entonces cuando decidí, que el nuevo proxy, no podía quedarse mariado como le
-pasa al squid en linux; muchísimo menos con el micro tan poco potente del
-servidor (gama media).</p>
-
-<p>Para mi sopresa, FreeBSD andaba por la 11 (yo lo hacía por la 10 todavía) por lo
-lento que se desarrolla; el pobre. Ahora estoy muy contento con mi squid sobre
-FreeBSD 11. Que si bien también se marea, lo hace bastante poco y se recupera
-rápido.</p>
-
-<p>Por lo que veo ya no son tan retrógrados como antes; han mejorado mucho en ese
-aspecto, aunque siguen siendo una mirada al futuro desde el pasado. Mantienen la
-onda chea reflejada en su configuración; pero todo bien afinado, fresco y
-modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
-
-<p>Dejaron de ser retrógrados para convertirse en modernos pero anticuados.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[animación del palito]]></title>
-    <link href="http://uranio-235.github.io/blog/2017/01/21/palito/"/>
-    <updated>2017-01-21T12:47:55-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2017/01/21/palito</id>
-    <content type="html"><![CDATA[<p>Por si se me olvida, porque lo he olvidado varias veces. En ocasiones, queremos
-hacer una simple animación de consola, para representar trabajo de un script sin
-mostrar lo que está procesando. Este script de ejemplo, itera por cada caracter
-de la fecha y muestra la barra cambiando de posición, el clásico palito girando.</p>
-
-<figure class='code'><figcaption><span>&#8220;scope&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#!/usr/bin/env ruby</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># esta es la animación, puedes sustituirla</span>
-</span><span class='line'><span class="c1"># por lo que más te guste, solo pon la secuencia</span>
-</span><span class='line'><span class="n">animacion</span><span class="o">=[</span><span class="s1">&#39;|&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;\ &#39;</span><span class="o">.</span><span class="n">strip</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">for</span> <span class="n">d</span><span class="p">,</span><span class="n">i</span>  <span class="k">in</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">chars</span><span class="o">.</span><span class="n">each_with_index</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c1"># múeve a la siguiente frama de la animación</span>
-</span><span class='line'>   <span class="n">palito</span><span class="o">=</span><span class="p">(</span><span class="n">animacion</span><span class="o">.</span><span class="n">push</span> <span class="n">animacion</span><span class="o">.</span><span class="n">shift</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c1"># muestra el palito y has un retorno de carro</span>
-</span><span class='line'>   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">palito</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c1"># has una media</span>
-</span><span class='line'>   <span class="nb">sleep</span> <span class="mi">0</span><span class="o">.</span><span class="mi">3</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">d</span><span class="o">=</span><span class="n">d</span> <span class="c1"># nada que hacer con los datos</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En el array, el último caracter tiene un String#strip porque al escribir <strong>\&lsquo;</strong>
-el compilador suele interpretarlo como que estás escapando la comilla simple.</p>
 ]]></content>
   </entry>
   
