@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>El SysAdmin del 3er Mundo</title>
+  <title>daloradius y sus amigos - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
@@ -19,7 +19,7 @@ Radius, podría &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2017/09/01/daloradius-y-sus-amigos/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -80,15 +80,12 @@ Radius, podría &hellip;">
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2017/09/01/daloradius-y-sus-amigos/">daloradius y sus amigos</a></h1>
+      <h1 class="entry-title">daloradius y sus amigos</h1>
     
     
       <p class="meta">
@@ -99,15 +96,15 @@ Radius, podría &hellip;">
 
 <time class='entry-date' datetime='2017-09-01T18:59:56-04:00'><span class='date'>01/09/2017</span> <span class='time'>6:59 pm</span></time>
         
-           | <a href="/blog/2017/09/01/daloradius-y-sus-amigos/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/09/01/daloradius-y-sus-amigos/">Comments</a>
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>En un tutorial anterior, examinábamos como funcionaba radius. Mencionábamos que
+<div class="entry-content"><p>En un tutorial anterior, examinábamos como funcionaba radius. Mencionábamos que
 Radius, podría funcional usando MySQL (y otros sql) como backendcore. Finalmente
 un cliente necesitó una solución de capa completa y he aquí; la prometida
 expansión del mencionado artículo.</p>
@@ -483,593 +480,58 @@ Para que tenga una idea, esto sería una configuración de hostapd.</p>
 
 <p><img class="center" src="/images/ddwrt_radius.png" title="&#34;un ddwrt acoplado a un radius&#34;" alt="&#34;un ddwrt acoplado a un radius&#34;"></p>
 </div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/08/14/odoo-en-centos7/">odoo en centos7</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-08-14T21:19:54-04:00'><span class='date'>14/08/2017</span> <span class='time'>9:19 pm</span></time>
-        
-           | <a href="/blog/2017/08/14/odoo-en-centos7/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/08/14/odoo-en-centos7/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Odoo, el sucesor de openerp; un software muy versátil, con funcionalidades para
-manejar cualquier negocio (ERP). En mi caso; lo uso para manejar facturación y
-la contabilidad de mi negocio. Recién me vi obligado a reinstalarlo pero resulta
-que los <strong>.deb</strong> están mirando pa debian8, por tanto, decidí instalarlo en
-centos7. Además estoy cada día más peleado con debian.</p>
-
-<p>Como mi laptop no virtualiza, tengo centos7 en un contenedor de LXC. Esto me
-resulta más confiable que docker, ya que he tenido muy malas experiencias
-linkando el container de postgres con el de odoo. Eso sin contar que systemd no
-pincha en un container, al menos no sin levantarlo desde el init y privilegiado;
-tal como funciona LXC. Claro, hacer un script que corra todo en el container sin
-necesidad de systemd es una solución; pero el hecho de tener múltiples distros
-corriendo, me resulta más emocionante que los &ldquo;contenedores&rdquo;.</p>
-
-<p>Vamos a necesitar unas cuantas cosas del repo EPEL y un servidor de postgresql
-operacional.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum install -y epel-release</span>
-</span><span class='line'><span class="go"> yum update</span>
-</span><span class='line'><span class="go"> yum install -y postgresql-server</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Inicializamos el servidor de postgresql</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> postgresql-setup initdb</span>
-</span><span class='line'><span class="go"> systemctl start postgresql</span>
-</span><span class='line'><span class="go"> systemctl enable postgresql</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Creamos un repositorio para odoo, a mi me quedó así</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/yum.repos.d/odoo.repo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="k">[odoo-nightly]</span>
-</span><span class='line'> <span class="na">name</span><span class="o">=</span><span class="s">Odoo Nightly repository</span>
-</span><span class='line'><span class="s"> baseurl=http://nightly.odoo.com/10.0/nightly/rpm/</span>
-</span><span class='line'><span class="s"> enabled=1</span>
-</span><span class='line'><span class="s"> gpgcheck=1</span>
-</span><span class='line'><span class="s"> gpgkey=https://nightly.odoo.com/odoo.key</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora vamos a la parte más compleja de la película. Resulta que odoo requiere
-wkhtmltopdf para funcionar y debe machear la versión de odoo con la versión de
-wkhtml. Para la 9.0, usaremos wkhtmltopdf <strong>0.12</strong>. Según advierten en la guía
-de instalación de odoo, el paquete de wkhtmltopdf que provee centos, no soporta
-header y footer, así que te dicen que lo descargues del sitio web oficial. Ahí
-aparece solo un <strong>.tar.gz</strong> pero siempre hay un <strong>rpm</strong> escondido abajo de una
-piedra:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">yum install -y fontconfig libpng libX11 libXext libXrender xorg-x11-fonts-Type1 xorg-x11-fonts-75dpi</span>
-</span><span class='line'><span class="go">rpm -Uvh https://downloads.wkhtmltopdf.org/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos7-amd64.rpm</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finalmente, instalamos odoo.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum install -y odoo</span>
-</span><span class='line'><span class="go"> systemctl enable odoo</span>
-</span><span class='line'><span class="go"> systemctl start odoo</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="/images/direccion.png">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/08/13/yum-estrecho/">yum estrecho</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-08-13T16:36:12-04:00'><span class='date'>13/08/2017</span> <span class='time'>4:36 pm</span></time>
-        
-           | <a href="/blog/2017/08/13/yum-estrecho/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/08/13/yum-estrecho/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Si en algo me destaco, es en mi habilidad por trabajar con espacios estrechos
-(poca RAM, poco espacio en disco, etc&hellip;)</p>
-
-<p>Cuando tenemos un servidor con CentOS, aveces no queremos más de las mil cosas
-que una completa instalación involucra. Por ejemplo, las páginas de man en una
-pila de idiomas, el contenido de /usr/share/doc/, etc&hellip; Si bien actualmente uso
-un script para eliminar todo eso, lo cierto es que sería mucho más fácil si
-nunca se desplegaran esos archivos.</p>
-
-<p>Gracias a <strong>yum-config-manager</strong> no hay que estar cargando con el fichero de
-configuración, simplemente se puede hacer un script que setee dichas
-configuraciones.</p>
-
-<p>Esta es la secuencia de comando que le tiro en un yum virgen:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum-config-manager --save --setopt assumeyes=true</span>
-</span><span class='line'><span class="go"> yum-config-manager --save --setopt tsflags=nodocs</span>
-</span><span class='line'><span class="go"> yum-config-manager --save --setopt override_install_langs=en</span>
-</span><span class='line'><span class="go"> yum-config-manager --save --setopt clean_requirements_on_remove</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Al correr <strong>yum-config-manager</strong> puedes ver todas las opciones que este brinda.
-Lo demás sería buscar la documentación.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="/images/direccion.png">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/07/23/lemp-en-debian/">LEMP en debian</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-07-23T15:19:47-04:00'><span class='date'>23/07/2017</span> <span class='time'>3:19 pm</span></time>
-        
-           | <a href="/blog/2017/07/23/lemp-en-debian/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/07/23/lemp-en-debian/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Resulta que <em>&ldquo;linux, apache, mysql y php&rdquo;</em>, solía llamarse L<strong>A</strong>MP. Ahora,
-cuando cambian apache por ningx le llaman L<strong>E</strong>MP no se por qué (y no quiero
-averiguarlo, la moda me enferma).</p>
-
-<p>En debian 9, la rima de php con nignx cambia un poquito. No hay que ser un genio
-para darse cuento que cosas como <em>php5</em> ahora son <em>php7</em>, pero como para mi este
-blog es un sitio donde escribo el código para luego copiar y pegar, pondré como
-hacerlo en el &ldquo;debian nuevo&rdquo;.</p>
-
-<p>Vamos a empezar de atrás pa alante; el MySQL</p>
-
-<figure class='code'><figcaption><span>&#8220;instalando sql y compañía&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> root@299c0ecdbedc:~# apt install mysql-server</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Uno de los cabezazos más grandes que me dí con debian 9 fue la configuración del
-SQL. Ya no es asistido como antes. Así que vamos a correr un par de comandos.</p>
-
-<figure class='code'><figcaption><span>&#8220;configurando mysql&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> root@299c0ecdbedc:~# mysql_install_db</span>
-</span><span class='line'><span class="go"> root@299c0ecdbedc:~# mysql_secure_installation</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Al correr el segundo te saldrán unas cuantas preguntas. Respóndelas a tu gusto y
-necesidad.</p>
-
-<p>Ahora bien, conectar lo que No sea por el socket, se vuelve una jodienda. Por
-ejemplo root@localhost suele no estar autorizado; si esto se interpreta como
-127.0.0.1</p>
-
-<p>Ejecuta: <strong>mysql -u root</strong> o con <strong>-p</strong> si seleccionaste tener password.</p>
-
-<p>Veamos por ejemplo, que creamos el usuario <strong>admin</strong> para la base de datos
-<strong>misdatos</strong>.</p>
-
-<figure class='code'><figcaption><span>&#8220;creando «admin»&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">misdatos</span><span class="p">;</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="k">USER</span> <span class="s1">&#39;admin&#39;</span><span class="o">@</span><span class="s1">&#39;%&#39;</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">&#39;secretisimo&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">PRIVILEGES</span> <span class="k">ON</span> <span class="n">misdatos</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">&#39;admin&#39;</span><span class="o">@</span><span class="s1">&#39;%&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="n">FLUSH</span> <span class="k">PRIVILEGES</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Si quieres saber los usuarios ejecuta la sentencia:</p>
-
-<figure class='code'><figcaption><span>&#8220;ver los usuarios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'> <span class="k">SELECT</span> <span class="k">User</span><span class="p">,</span><span class="k">Host</span><span class="p">,</span><span class="n">Password</span> <span class="k">FROM</span> <span class="n">mysql</span><span class="p">.</span><span class="k">user</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Bueno ya tenemos el SQL corriendo. Vamos pal resto</p>
-
-<figure class='code'><figcaption><span>&#8220;instalando cosas&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">apt install nginx mysql-client php-fpm php-mysql libfcgi0ldbl</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Una vez que se instale <strong>php-fpm</strong> lo echamos a andar y lo probamos.</p>
-
-<figure class='code'><figcaption><span>&#8220;probando fpm&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">root@299c0ecdbedc:~#</span> /etc/init.d/php7.0-fpm restart
-</span><span class='line'><span class="gp">root@299c0ecdbedc:~#</span> cgi-fcgi -bind -connect /run/php/php7.0-fpm.sock
-</span><span class='line'><span class="go">Content-type: text/html; charset=UTF-8</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Al virtualhost de nginx, le hacemos unos arreglitos; para que nginx tire el php
-por fastcgi. Que ricura debian, tan solo incluyendo un snippet todo se resuelve.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/nginx/sites-available/default&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">server</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="nx">listen</span> <span class="mi">80</span> <span class="nx">default_server</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="nx">root</span> <span class="o">/</span><span class="kd">var</span><span class="err">/www/html;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="nx">index</span> <span class="nx">index</span><span class="p">.</span><span class="nx">php</span> <span class="nx">index</span><span class="p">.</span><span class="nx">html</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="nx">server_name</span> <span class="nx">_</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="nx">location</span> <span class="o">/</span> <span class="p">{</span>
-</span><span class='line'>                <span class="nx">try_files</span> <span class="nx">$uri</span> <span class="nx">$uri</span><span class="o">/</span> <span class="o">=</span><span class="mi">404</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="nx">location</span> <span class="o">~</span> <span class="err">\</span><span class="p">.</span><span class="nx">php$</span> <span class="p">{</span>
-</span><span class='line'>                <span class="nx">include</span> <span class="nx">snippets</span><span class="o">/</span><span class="nx">fastcgi</span><span class="o">-</span><span class="nx">php</span><span class="p">.</span><span class="nx">conf</span><span class="p">;</span>
-</span><span class='line'>                <span class="nx">fastcgi_pass</span> <span class="nx">unix</span><span class="o">:</span><span class="err">/var/run/php/php7.0-fpm.sock;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Reinicia nginx!</p>
-
-<p>Pa probar que todo está pinchando, creamos un script que llame la función
-<strong>phpinfo()</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;phpinfo()&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> root@299c0ecdbedc:~# /etc/init.d/nginx restart</span>
-</span><span class='line'><span class="go"> root@299c0ecdbedc:~# /etc/init.d/php7.0-fpm restart</span>
-</span><span class='line'><span class="go"> root@299c0ecdbedc:~# /etc/init.d/mysql restart</span>
-</span><span class='line'><span class="go"> root@299c0ecdbedc:~# echo &#39;&lt;?php phpinfo(); ?&gt;&#39; &gt; /var/www/html/index.php</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Debes poder ver la típica página que produce <strong>phpinfo()</strong></p>
-
-<p>Para probar la base de datos, creas un script de php que inicialice mysqli:</p>
-
-<figure class='code'><figcaption><span>&#8221;&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="nv">$misql</span> <span class="o">=</span> <span class="nb">mysqli_connect</span><span class="p">(</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="s1">&#39;admin&#39;</span><span class="p">,</span> <span class="s1">&#39;ok&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$misql</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">die</span><span class="p">(</span><span class="s1">&#39;esto no pincha: &#39;</span> <span class="o">.</span> <span class="nx">mysqli_error</span><span class="p">());</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="k">echo</span> <span class="s1">&#39;Conexion satisfactoria&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nx">mysqli_close</span><span class="p">(</span><span class="nv">$misql</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Puedes correr ese script con php o llamarlo con el navegador. El resultado es
-bastante obvio.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="/images/direccion.png">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/06/29/repos-epel-y-demas/">repos EPEL y demás</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-06-29T02:15:03-04:00'><span class='date'>29/06/2017</span> <span class='time'>2:15 am</span></time>
-        
-           | <a href="/blog/2017/06/29/repos-epel-y-demas/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/06/29/repos-epel-y-demas/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>CentOS, es conocido por sus reducidos repositorios. Pero por suerte, los repos
-EPEL (enterprise linux) y el IUS nos permiten bandearnos un poco. Además,
-tenemos el Remi, tan fresco como explosivo, que si bien no es muy recomendable
-usarlo, nunca está de más tenerlo a mano. Si algo tiene lindo <em>yum</em> es la
-gestión de repositorios.</p>
-
-<p>Instala <strong>wget</strong>&hellip; vamos a necesitarlo.</p>
-
-<p>Para los criticones: -sí, ya se que el epel está en el repo oficial, pero para
-este ejemplo lo añadiremos desde la web.</p>
-
-<figure class='code'><figcaption><span>&#8220;añadiendo el EPEL&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</span>
-</span><span class='line'><span class="go"> rpm -Uvh epel-release-latest-7*.rpm</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El IUS es majomenos la misma historia</p>
-
-<figure class='code'><figcaption><span>&#8220;añadiendo el IUS</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> wget https://centos7.iuscommunity.org/ius-release.rpm</span>
-</span><span class='line'><span class="go"> rpm -Uvh ius-release*.rpm</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El repo IUS, suele contener paquetes más recientes de cosas que ya centos trae.
-La mejor manera de instalar esto, es usando un plugin de yum, llamado «replace»,
-así que instala el paquete <strong>yum-plugin-replace</strong>.</p>
-
-<p>Ahora busca el paquete que deseeas en el repo IUS:</p>
-
-<figure class='code'><figcaption><span>&#8220;buscando en el IUS&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum --disablerepo=&quot;*&quot; --enablerepo=&quot;ius&quot; search talcosa</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Luego remplaza el paquete <em>talcosa</em> de CentOS, por el <em>talcosa3u</em> de IUS</p>
-
-<figure class='code'><figcaption><span>&#8220;remplazando paquete&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum replace talcosa --replace-with talcosa3u</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Para más detalles, échale un vistazo a <a href="https://ius.io/Usage/">el user-guide de IUS</a></p>
-
-<p>El repositorio Remi es aún más peligroso, ya que los paquetes tienen el mismo
-nombre que el de los oficiales. Se recomienda no tener el repo remi activado NI
-JUGANDO.</p>
-
-<p>La instalación es la misma rutina</p>
-
-<figure class='code'><figcaption><span>&#8220;instalando Remi&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> wget http://rpms.famillecollet.com/enterprise/remi-release-7.rpm</span>
-</span><span class='line'><span class="go"> rpm -Uvh remi-release-7*.rpm</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Otro repo bueno, es el de alcancelibre, que provee sarg.</p>
-
-<figure class='code'><figcaption><span>&#8220;alcancelibre&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">wget -N http://www.alcancelibre.org/al/server/AL-Server.repo \</span>
-</span><span class='line'><span class="go">-O /etc/yum.repos.d/AL-Server.repo</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<p>Luego usamos el mismo proceder, buscar en repo específico.</p>
-
-<figure class='code'><figcaption><span>&#8220;buscando paquetes&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">yum --enablerepo=remi search fulanito</span>
-</span><span class='line'><span class="go">yum --enablerepo=remi install fulanito</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El comando <em>repolist</em> permite ver los repositorios en juego. Para ver los repos
-que tienes acoplados, usa <strong>yum repolist</strong>. Si quieres ver que repo tienes
-deshabilitados, usa <strong>yum repolist disabled</strong>.</p>
-</div>
-  
-  
 
 
 <p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="/images/direccion.png">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
+  
+
+<span class="byline author vcard">Posted by <span class="fn">låzaro</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-09-01T18:59:56-04:00'><span class='date'>01/09/2017</span> <span class='time'>6:59 pm</span></time>
+      
+
+
+    </p>
     
-      <h1 class="entry-title"><a href="/blog/2017/06/29/knockd-en-centos/">knockd en centos</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-06-29T02:06:34-04:00'><span class='date'>29/06/2017</span> <span class='time'>2:06 am</span></time>
-        
-           | <a href="/blog/2017/06/29/knockd-en-centos/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/06/29/knockd-en-centos/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Desafortunadamente, los repositorios oficiales de centos no traen port-knocking.
-No queda más remiendo que usar un repo de terceros.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/yum.repos.d/nux-misc.repo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> [root@proxy ~]# cat /etc/yum.repos.d/nux-misc.repo</span>
-</span><span class='line'><span class="go"> [nux-misc]</span>
-</span><span class='line'><span class="go"> name=Nux Misc</span>
-</span><span class='line'><span class="go"> baseurl=http://li.nux.ro/download/nux/misc/el7/x86_64/</span>
-</span><span class='line'><span class="go"> enabled=0</span>
-</span><span class='line'><span class="go"> gpgcheck=1</span>
-</span><span class='line'><span class="go"> gpgkey=http://li.nux.ro/download/nux/RPM-GPG-KEY-nux.ro</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Luego para instalar, declaramos dicho repositorio como activo.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum --enablerepo=nux-misc install knock knock-server</span>
-</span><span class='line'><span class="go"> systemctl enable knockd</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En mi caso, el /etc/knockd.conf me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/knockd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="k">[options]</span>
-</span><span class='line'>   <span class="err">UseSyslog</span>
-</span><span class='line'>   <span class="na">Interface</span> <span class="o">=</span> <span class="s">eth1</span>
-</span><span class='line'>
-</span><span class='line'> <span class="k">[abreme]</span>
-</span><span class='line'>   <span class="na">sequence</span> <span class="o">=</span> <span class="s">111,222,333</span>
-</span><span class='line'><span class="s">   tcpflags = syn</span>
-</span><span class='line'><span class="s">   seq_timeout = 15</span>
-</span><span class='line'><span class="s">   cmd_timeout = 8600</span>
-</span><span class='line'><span class="s">   start_command = /sbin/iptables -I INPUT -s %IP% -j ACCEPT</span>
-</span><span class='line'><span class="s">   stop_command =  /sbin/iptables -D INPUT -s %IP% -j ACCEPT</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Nota para imbéciles: Cambia <strong>sequence</strong> por tu secuencia.</p>
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2017/09/01/daloradius-y-sus-amigos/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2017/09/01/daloradius-y-sus-amigos/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
 </div>
-  
-  
 
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/08/14/odoo-en-centos7/" title="Previous Post: odoo en centos7">&laquo; odoo en centos7</a>
+      
+      
+    </p>
+  </footer>
+</article>
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="/images/direccion.png">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
-
-    </article>
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/posts/2">&larr; Older</a>
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
+  </section>
+
+</div>
+
 <aside class="sidebar">
   
     <section>
@@ -1746,6 +1208,7 @@ No queda más remiendo que usar un repo de terceros.</p>
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -1760,7 +1223,10 @@ No queda más remiendo que usar un repo de terceros.</p>
       var disqus_shortname = 'uranio-235';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2017/09/01/daloradius-y-sus-amigos/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2017/09/01/daloradius-y-sus-amigos/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

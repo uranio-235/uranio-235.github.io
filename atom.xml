@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-08-23T12:51:15-04:00</updated>
+  <updated>2017-09-02T12:33:14-04:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,389 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[daloradius y sus amigos]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/09/01/daloradius-y-sus-amigos/"/>
+    <updated>2017-09-01T18:59:56-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/09/01/daloradius-y-sus-amigos</id>
+    <content type="html"><![CDATA[<p>En un tutorial anterior, examinábamos como funcionaba radius. Mencionábamos que
+Radius, podría funcional usando MySQL (y otros sql) como backendcore. Finalmente
+un cliente necesitó una solución de capa completa y he aquí; la prometida
+expansión del mencionado artículo.</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/daloradius.png" title="&#34;Así luce daloradius&#34;" alt="&#34;Así luce daloradius&#34;"></p>
+
+<p>Claramente, no basta con que radius sea la mar de versátil, requerimos además;
+una herramienta lo suficientemente digna de manipular 500 o 1&#8217;000 usuarios y esa
+herramienta es <strong>daloradius</strong>.</p>
+
+<p>Daloradius es una interfaz web, no solo linda, si no, lo suficientemente
+funcionar como para sacarle el jugo a freeradius. Permite además, hacer
+operaciones predefinidas muy buenas para cosas como hotspot, etc&hellip; Lo más
+especial en mi opinión es el sistema de contabilidad. Muy bueno para cuotas.</p>
+
+<p>En fin, instalamos el software necesario.</p>
+
+<figure class='code'><figcaption><span>&#8220;instalar las cosas&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> [root@radius ~]# yum update</span>
+</span><span class='line'><span class="go"> [root@radius ~]# yum install -y epel-release</span>
+</span><span class='line'><span class="go"> [root@radius ~]# yum install -y mariadb-server mariadb freeradius freeradius-mysql freeradius-utils</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Primero y principioso, hay que configurar el servidor de MySQL, o sea,
+inicializarlo.</p>
+
+<figure class='code'><figcaption><span>&#8220;instalar las cosas&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> mysql_secure_installation</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Una vez que tenemos el servidor sql listo, procedemos a crear la base de datos.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">mysql -uroot -p</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>&#8220;creando base de datos&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">radius</span><span class="p">;</span>
+</span><span class='line'><span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">PRIVILEGES</span> <span class="k">ON</span> <span class="n">radius</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="n">radius</span><span class="o">@</span><span class="n">localhost</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="ss">&quot;secreto&quot;</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lamentablemente freeradius no tiene un instalador. Así que hay que llenar la
+base de datos manualmente.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">mysql -u root -p radius &lt; /etc/raddb/mods-config/sql/main/mysql/schema.sql</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Habilitamos el módulo de SQL para freeradius</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">ln -s /etc/raddb/mods-available/sql /etc/raddb/mods-enabled</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora vamos a editar una serie de parámetros de radius. Para ello nos dirigimos
+al directorio <strong>/etc/raddb/</strong> ya que allí hay unos cuantos ficheros que
+modificaremos.</p>
+
+<p>En el fichero <strong>radiusd.conf</strong> vamos a hacer unos cuantos cambios así que
+<strong>atentos</strong>.</p>
+
+<p>Para empezar, localiza la sesión que carga los módulos, debe quedar así.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">modules</span> <span class="p">{</span>
+</span><span class='line'>   <span class="nx">$INCLUDE</span> <span class="nx">mods</span><span class="o">-</span><span class="nx">enabled</span><span class="o">/</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como habrá notado, la estructura de los directorio de configuración de radius,
+se de un aire a la de apache en debian. La configuración como tal, se parece más
+a nginx.</p>
+
+<p>Como vimos, radius es muy modular. Puede usar numerosos backendcores, entre
+ellos sql. En el fichero <strong>sites-available/default</strong> modificaremos ciertos
+parámetros para que TODO funcione contra SQL.</p>
+
+<p>Localizaremos las sesiones, <strong>authorize</strong>, <strong>accounting</strong>, <strong>session</strong>,
+<strong>post-auth</strong>, <strong>Post-Auth-Type REJECT</strong>.</p>
+
+<p>Más o menos el fichero luciría así:</p>
+
+<figure class='code'><figcaption><span>&#8220;scope del default&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">authorize</span> <span class="p">{</span>
+</span><span class='line'>   <span class="p">...</span>
+</span><span class='line'>   <span class="nx">sql</span>
+</span><span class='line'>   <span class="p">...</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">accounting</span> <span class="p">{</span>
+</span><span class='line'>   <span class="p">...</span>
+</span><span class='line'>   <span class="nx">sql</span>
+</span><span class='line'>   <span class="p">...</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">session</span> <span class="p">{</span>
+</span><span class='line'>   <span class="p">...</span>
+</span><span class='line'>   <span class="nx">sql</span>
+</span><span class='line'>   <span class="p">...</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">post</span><span class="o">-</span><span class="nx">auth</span> <span class="p">{</span>
+</span><span class='line'>   <span class="p">...</span>
+</span><span class='line'>   <span class="nx">sql</span>
+</span><span class='line'>   <span class="p">...</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">Post</span><span class="o">-</span><span class="nx">Auth</span><span class="o">-</span><span class="nx">Type</span> <span class="nx">REJECT</span> <span class="p">{</span>
+</span><span class='line'>   <span class="p">...</span>
+</span><span class='line'>   <span class="nx">sql</span>
+</span><span class='line'>   <span class="p">...</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya dijimos que usaremos sql, así que tenemos que configurar la conexión a dicha
+base de datos. El fichero <strong>mods-available/sql</strong> contiene dicha configuración. A
+mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;sql&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">sql</span> <span class="p">{</span>
+</span><span class='line'>  
+</span><span class='line'>   <span class="nx">driver</span> <span class="o">=</span> <span class="s2">&quot;rlm_sql_mysql&quot;</span>
+</span><span class='line'>  <span class="nx">dialect</span> <span class="o">=</span> <span class="s2">&quot;mysql&quot;</span>
+</span><span class='line'>  <span class="nx">server</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+</span><span class='line'>  <span class="nx">port</span> <span class="o">=</span> <span class="mi">3306</span>
+</span><span class='line'>  <span class="nx">login</span> <span class="o">=</span> <span class="s2">&quot;root&quot;</span>
+</span><span class='line'>  <span class="nx">password</span> <span class="o">=</span> <span class="s2">&quot;secreto&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">radius_db</span> <span class="o">=</span> <span class="s2">&quot;radius&quot;</span>
+</span><span class='line'>  <span class="nx">acct_table1</span> <span class="o">=</span> <span class="s2">&quot;radacct&quot;</span>
+</span><span class='line'>  <span class="nx">acct_table2</span> <span class="o">=</span> <span class="s2">&quot;radacct&quot;</span>
+</span><span class='line'>  <span class="nx">postauth_table</span> <span class="o">=</span> <span class="s2">&quot;radpostauth&quot;</span>
+</span><span class='line'>  <span class="nx">authcheck_table</span> <span class="o">=</span> <span class="s2">&quot;radcheck&quot;</span>
+</span><span class='line'>  <span class="nx">groupcheck_table</span> <span class="o">=</span> <span class="s2">&quot;radgroupcheck&quot;</span>
+</span><span class='line'>  <span class="nx">authreply_table</span> <span class="o">=</span> <span class="s2">&quot;radreply&quot;</span>
+</span><span class='line'>  <span class="nx">groupreply_table</span> <span class="o">=</span> <span class="s2">&quot;radgroupreply&quot;</span>
+</span><span class='line'>  <span class="nx">usergroup_table</span> <span class="o">=</span> <span class="s2">&quot;radusergroup&quot;</span>
+</span><span class='line'>  <span class="nx">delete_stale_sessions</span> <span class="o">=</span> <span class="nx">yes</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">pool</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">start</span> <span class="o">=</span> <span class="mi">5</span>
+</span><span class='line'>      <span class="nx">min</span> <span class="o">=</span> <span class="mi">4</span>
+</span><span class='line'>      <span class="nx">max</span> <span class="o">=</span> <span class="nx">$</span><span class="p">{</span><span class="nx">thread</span><span class="p">[</span><span class="nx">pool</span><span class="p">].</span><span class="nx">max_servers</span><span class="p">}</span>
+</span><span class='line'>      <span class="nx">spare</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span class='line'>      <span class="nx">uses</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>      <span class="nx">lifetime</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>      <span class="nx">idle_timeout</span> <span class="o">=</span> <span class="mi">60</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">read_clients</span> <span class="o">=</span> <span class="nx">yes</span>
+</span><span class='line'>  <span class="nx">client_table</span> <span class="o">=</span> <span class="s2">&quot;nas&quot;</span>
+</span><span class='line'>  <span class="nx">$INCLUDE</span> <span class="nx">$</span><span class="p">{</span><span class="nx">modconfdir</span><span class="p">}</span><span class="o">/</span><span class="nx">$</span><span class="p">{.</span><span class="o">:</span><span class="nx">name</span><span class="p">}</span><span class="o">/</span><span class="nx">main</span><span class="o">/</span><span class="nx">$</span><span class="p">{</span><span class="nx">dialect</span><span class="p">}</span><span class="o">/</span><span class="nx">queries</span><span class="p">.</span><span class="nx">conf</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finalmente probamos la configuración de radius.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> radiusd -X</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora la guinda del pastel, el <strong>daloradius</strong>. Primero instalamos una
+dependencias requeridas.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">yum install epel-release</span>
+</span><span class='line'><span class="go">yum install php-mysql php php-pear php-gd php-pear-DB</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Los clásico, descargar e instalar daloradius.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> wget http://sourceforge.net/projects/daloradius/files/latest/download?source=files</span>
+</span><span class='line'><span class="go"> tar zxvf download?source=files</span>
+</span><span class='line'><span class="go"> mv daloradius-0.9-9/* /var/www/html/</span>
+</span><span class='line'><span class="go"> chown -R nginx:nginx /var/www/html/</span>
+</span><span class='line'><span class="go"> chmod -R o+rxw /vat/www/html/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En el presente tutorial, asumimos que ya tienes una LEMP instalada&hellip;</p>
+
+<p>Otro que no tiene configuración es daloradius, así que debes setear los
+parámetros manualmente. El fichero de configuración se llama
+<strong>library/daloradius.conf.php</strong>. De los parámetros, los que más nos interesan
+son.</p>
+
+<figure class='code'><figcaption><span>&#8220;library/daloradius.conf.php&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'> <span class="nv">$configValues</span><span class="p">[</span><span class="s1">&#39;DALORADIUS_VERSION&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.9-9&#39;</span><span class="p">;</span>
+</span><span class='line'> <span class="nv">$configValues</span><span class="p">[</span><span class="s1">&#39;FREERADIUS_VERSION&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;3&#39;</span><span class="p">;</span>
+</span><span class='line'> <span class="nv">$configValues</span><span class="p">[</span><span class="s1">&#39;CONFIG_DB_ENGINE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;mysql&#39;</span><span class="p">;</span>
+</span><span class='line'> <span class="nv">$configValues</span><span class="p">[</span><span class="s1">&#39;CONFIG_DB_HOST&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span><span class="p">;</span>
+</span><span class='line'> <span class="nv">$configValues</span><span class="p">[</span><span class="s1">&#39;CONFIG_DB_USER&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;radius&#39;</span><span class="p">;</span>
+</span><span class='line'> <span class="nv">$configValues</span><span class="p">[</span><span class="s1">&#39;CONFIG_DB_PASS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;secreto&#39;</span><span class="p">;</span>
+</span><span class='line'> <span class="nv">$configValues</span><span class="p">[</span><span class="s1">&#39;CONFIG_DB_NAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;radius&#39;</span><span class="p">;</span>
+</span><span class='line'> <span class="o">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al igual que con freeradius, tenemos que inicializar la base de datos
+manualmente, ya que como mencioné, daloradius no tiene instalador. Ojo, que la
+línea es larga.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">mysql -u root -p radius &lt; /var/www/html/contrib/db/fr2-mysql-daloradius-and-freeradius.sql</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El usuario del loguearte la primera vez es <strong>administrator</strong> y la contraseña
+<strong>radius</strong>.</p>
+
+<p>Bueno, ahora puede empezar a crear usuarios&hellip;</p>
+
+<p>Puedes configurar el squid para que se autentique mediante radius, la linea del
+autenticador queda más o menos así:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> /usr/lib64/squid/basic_radius_auth -h 127.0.0.1 -w testing123</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En este presunto caso, el squid y el radius, están instalados en el mismo
+servidor. Pero si quieres que otro host se conecte, debes declararlo en el
+fichero <strong>/etc/raddb/clients.conf</strong>. De otra forma, todo el que pida
+autenticación; será deliberadamente denegada. Coloca la configuración encima de
+la del localhost.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/raddb/clients.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">client</span> <span class="nx">mi_servidor</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">ipaddr</span> <span class="o">=</span> <span class="mf">192.168</span><span class="p">.</span><span class="mf">1.10</span><span class="o">/</span><span class="mi">24</span>
+</span><span class='line'>  <span class="nx">secret</span> <span class="o">=</span> <span class="nx">misecerto</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">client</span> <span class="nx">localhost</span> <span class="p">{</span>
+</span><span class='line'>   <span class="p">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Sucesivamente, puedes tener declarado cuantos host quieras y cada uno tiene
+parámetros individuales, por ejemplo, al host <strong>mi_servidor</strong>, se le cambió el
+<strong>secret</strong>.</p>
+
+<p>Así sucesivamente puede configurar los AP, le declaramos la autenticación WPA2.
+Para que tenga una idea, esto sería una configuración de hostapd.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/hostapd/hostapd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="na">ssid</span><span class="o">=</span><span class="s">MiAP</span>
+</span><span class='line'><span class="na">interface</span><span class="o">=</span><span class="s">wlp2s0</span>
+</span><span class='line'><span class="na">driver</span><span class="o">=</span><span class="s">nl80211</span>
+</span><span class='line'><span class="na">ieee8021x</span><span class="o">=</span><span class="s">1</span>
+</span><span class='line'><span class="na">hw_mode</span><span class="o">=</span><span class="s">g</span>
+</span><span class='line'><span class="na">channel</span><span class="o">=</span><span class="s">9</span>
+</span><span class='line'><span class="na">wpa</span><span class="o">=</span><span class="s">2</span>
+</span><span class='line'><span class="na">wpa_key_mgmt</span><span class="o">=</span><span class="s">WPA-EAP</span>
+</span><span class='line'><span class="na">rsn_pairwise</span><span class="o">=</span><span class="s">CCMP</span>
+</span><span class='line'><span class="na">auth_algs</span><span class="o">=</span><span class="s">1</span>
+</span><span class='line'><span class="na">auth_server_addr</span><span class="o">=</span><span class="s">127.0.0.1</span>
+</span><span class='line'><span class="na">auth_server_port</span><span class="o">=</span><span class="s">1812</span>
+</span><span class='line'><span class="na">auth_server_shared_secret</span><span class="o">=</span><span class="s">testing123</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por ejemplo, así quedaría un DDWRT, usando autenticación WPA2 contra radius.</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/ddwrt_radius.png" title="&#34;un ddwrt acoplado a un radius&#34;" alt="&#34;un ddwrt acoplado a un radius&#34;"></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[odoo en centos7]]></title>
@@ -2117,198 +2500,6 @@ a N conexión, que el servidor dns es manual y será <em>127.0.0.1</em>. Si usas
 (NetworkManager), te recomiendo usar la utilidad <strong>nm-connection-editor</strong>. Te
 permitirá especificar el dominio de búsqueda, cosa que no he visto como hacer
 con el administrador de conexiones de gnome.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[dns con vistas]]></title>
-    <link href="http://uranio-235.github.io/blog/2017/02/05/dns-con-vistas/"/>
-    <updated>2017-02-05T18:57:26-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2017/02/05/dns-con-vistas</id>
-    <content type="html"><![CDATA[<p>Que lindo corre bind9 en alpine linux. Ahora que mis servidores están todo en el
-pool de xenserver (los reyes magos me trajeron un servidor pro) tengo un nuevo
-problema. Dentro de la red interna de xen, los servidores tienen una ip
-distinta. Por ejemplo, para todo el mundo, el alpine linux que hace de router,
-es 192.168.0.1, pero para los servidores, es 169.254.0.10</p>
-
-<p>Además, el forward para infomed, es un privilegio que solo los servidores
-tienen. Por tanto, lo más seguro, será usar una zona para la LAN y otra para la
-red interna del pool.</p>
-
-<p>Esto me recuerda las DMZ, pero no es lo mismo, porque no estoy creando cuellos
-de botella. La red interna del pool es una vif, que funciona sin emitir
-tráfico real por alguna pif.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/bind/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">// vim:set ts=4 sw=4 et:</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">options</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">v6</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;</span> <span class="mf">192.168.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>   <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c1">// los servidores hacen recursion</span>
-</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">recursion</span> <span class="p">{</span> <span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;};</span>
-</span><span class='line'>   <span class="n">recursion</span> <span class="n">yes</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">view</span> <span class="n">lan</span>  <span class="p">{</span> <span class="c1">// la red LAN</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">192.168.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;.&quot;</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;fakeroot.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">};</span> <span class="c1">// view lan</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="n">view</span> <span class="n">xen</span> <span class="p">{</span> <span class="c1">// la red interna de XenServer</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;xen&quot;</span> <span class="n">IN</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;xen.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;sld.cu&quot;</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">201.220.222.131</span><span class="p">;</span> <span class="mf">201.220.222.132</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">forward</span> <span class="n">only</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">};</span> <span class="c1">// view xen</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como ven, cree el dominio &ldquo;.xen&rdquo; que solo será visible a la red interna del
-pool. La zona &ldquo;hcg.sld.cu&rdquo; también será visible para los servidores ya que estos
-tienen una pata en la LAN; a esto suele llamarse &ldquo;shared zone&rdquo; (zona
-compartida). Finalmente, la zona &ldquo;sld.cu&rdquo; (debajo de hcg) es una zona forward en
-la vista de la interfaz interna.</p>
-
-<p>El host proxy.hcg.sld.cu resolverá una ip de la lan; de esta misma manera, el
-host proxy.xen, resolverá la ip de dicho host, pero dentro de la red interna del
-pool.</p>
-
-<p><strong>¿y por qué?</strong></p>
-
-<p>Por que esta menera, solo los servidores (a través de la red del pool), harán
-forward. Por ejemplo, el servidor de correo, podrá enviar y recibir su correo
-multipop, ya que el alpine que está haciendo como router, permite forward desde
-la red del pool hacia la WAN; o sea, todos los servidores, ven a la WAN. Es
-obligaría al servidor de correo, a usar el dns de infomed para resolver
-direcciones de infomed y el servidor local para resolver las direcciones de la
-LAN, lo cual funciona de asco. Sin embargo, la vista del pool tiene una zona
-forward. Cabe destacar, que una zona forward y un fakeroot, no se por qué; hace
-que ninguna pinche.</p>
-
-<p>Sensillo y seguro.</p>
 ]]></content>
   </entry>
   
