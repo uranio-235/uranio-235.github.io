@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>rails con mongodb - El SysAdmin del 3er Mundo</title>
+  <title>instalando pandorafms - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="rails con mongodb 12/02/2015 9:07 am | Comments Dicen que &ldquo;en el mundo&rdquo;, las bases de datos NoSQL están muy de moda&hellip; Recién &hellip;">
+  <meta name="description" content="instalando pandorafms 04/11/2017 12:09 am | Comments Me gustaba mucho nagios. Me creía el rey del mundo cuando aprendí a hacer
+plugins. Pero cuando &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/02/12/rails-con-mongodb/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2017/11/04/install-pandorafms/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -84,7 +85,7 @@
   
   <header>
     
-      <h1 class="entry-title">rails con mongodb</h1>
+      <h1 class="entry-title">instalando pandorafms</h1>
     
     
       <p class="meta">
@@ -93,7 +94,7 @@
 
 
 
-<time class='entry-date' datetime='2015-02-12T09:07:51-05:00'><span class='date'>12/02/2015</span> <span class='time'>9:07 am</span></time>
+<time class='entry-date' datetime='2017-11-04T00:09:51-04:00'><span class='date'>04/11/2017</span> <span class='time'>12:09 am</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -103,167 +104,140 @@
   </header>
 
 
-<div class="entry-content"><p>Dicen que &ldquo;en el mundo&rdquo;, las <a href="http://es.wikipedia.org/wiki/NoSQL">bases de datos NoSQL</a> están muy de moda&hellip;</p>
+<div class="entry-content"><p>Me gustaba mucho nagios. Me creía el rey del mundo cuando aprendí a hacer
+plugins. Pero cuando vi esta herramienta, cuya su simpleza me llevó a pensar que
+nagios es un juguete comparado con; el software de monitoreo que utiliza google
+para sus servidores. Me refrito a <a href="https://pandorafms.org/">PandoraFMS</a>. Tiene
+además, wiki, blog, comunidad y demás; así que no estamos solos como en nagios
+que su filosofía es &ldquo;paga pa que te configure&rdquo;.</p>
 
-<p>Recién estuve pinchando ArangoDB y la experiencia fue traumática. Hay que
-reconocer que tiene potencial; pero aún no está listo. Finalmente, después de
-mucho rodar (Casandra y Redis) di con MongoDB. La instalación de MongoDB es tan
-sencilla como mandarlo a instalar con tu manejador de paquetes, así que no
-cubriré dichos detalles en este post.</p>
+<p>Ah por cierto, el software es español, así que hay muuuucha documentación en la
+lengua madre.</p>
 
-<p><img class="right" src="http://mongomapper.com/stylesheets/images/logo.png" width="150" height="250"></p>
+<p>Los plugins que tardé meses en escribir, afinar y acoplar a nagios, me hubiera
+tomado días hacerlo en pandora. La interfaz le da 4 galletas a nagios. Sobre
+todo, porque manage y config se hacen desde la interfaz (para los cobardes de
+consola).</p>
 
-<p>El rollo viene con Rails&hellip; Resulta que al probar tal cual dice la documentación
-MongoMapper (la ORM de mongodb) a pesar de guiarte por los ejemplos al pie de la
-letra; NO PINCHA.</p>
+<p>Las soluciones de pacotilla como izinga y zabbix; no juegan en estas grandes
+ligas. Ni siquiera las compararé. Para no hablar de cacti, mrtg, y demás
+porquerías que hasta han pasado de moda.</p>
 
-<p>Al principio pensé que era corte con ActiveRecord, pues al quitarlo; por lo
-general a Rails le da una pataleta. Por suerte, este no es el caso.</p>
+<p>Lo mismo monitorea snmp y via interfaz web se escriben consultas tcp
+personalizadas. Además, está el esquema de plugins que son sencillísimo.
+Escribir un plugin requiere saber shellscript o cualquier mierda que procese
+argumentos. En eso nagios también tiene su punto.</p>
 
-<h3>MongoMapper está BIEN escrito pero MAL documentado</h3>
+<p>Primero: Debe tener claro que pandora se compone por:</p>
 
-<p>Todo parece indicar que a la documentación le faltan algunos detallitos. Bueno
-comenzamos. Creamos un proyecto SIN ActiveRecord (que dolor).</p>
+<p><strong>Pandora Server</strong> Una monstruosidad de aplicaciones que corren de manera
+simultanea como un núcleo. El sistema que monitorea todo.</p>
 
-<h3>rails new fulanito -O -T</h3>
+<p><strong>Web console</strong> La interfaz web que tiene tremenda pinta y además, nos permite
+manipular pandora (server).</p>
 
-<p>El Gemfile me quedó así:</p>
+<p><strong>Agents</strong> Piezas de software que nos permite monitorear. Ya se locales o remotos.</p>
 
-<figure class='code'><figcaption><span>Gemfile</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>Primero la LAMP clásica. Para los radicales de la moda, usaremos apache porque
+pandorafms fue diseñado para apache.</p>
+
+<p>Típico despliegue mysql</p>
+
+<figure class='code'><figcaption><span>&#8220;instalación rápida de mysql&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum -y install mariadb-server</span>
+</span><span class='line'><span class="go"> systemctl start mariadb</span>
+</span><span class='line'><span class="go"> systemctl enable mariadb</span>
+</span><span class='line'><span class="go"> mysql_secure_installation</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Creamos el &ldquo;.repo&rdquo; y configuramos el repo <strong>oficial</strong> de artica.es para centos7.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/yum.repos.d/pandorafms.repo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;file:///media/sdb1/ruby/repo/&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Bundle edge Rails instead: gem &#39;rails&#39;, github: &#39;rails/rails&#39;</span>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;rails&#39;</span><span class="p">,</span> <span class="s1">&#39;4.1.8&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Use jquery as the JavaScript library</span>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;jquery-rails&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;bson_ext&#39;</span>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;mongo_mapper&#39;</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="k">[pandorafms]</span>
+</span><span class='line'> <span class="na">name</span><span class="o">=</span><span class="s">PandoraFMS official repo</span>
+</span><span class='line'><span class="s"> baseurl=http://firefly.artica.es/centos7</span>
+</span><span class='line'><span class="s"> gpgcheck=0</span>
+</span><span class='line'><span class="s"> enabled=1</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Ahora creamos un fichero que garantiza la conexión a la base de datos. Creamos
-un initializer de pacotilla y le declaramos la base de datos. Miren que
-facilito.</p>
+<p>La guinda del pastel.</p>
 
-<h3>config/initializers/database.rb</h3>
-
-<figure class='code'><figcaption><span>config/initializers/database.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">MongoMapper</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="s2">&quot;fulanito-</span><span class="si">#{</span><span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="si">}</span><span class="s2">&quot;</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">  yum -y install pandorafms_console</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Note que &ldquo;fulanito&rdquo; es el nombre de la aplicación, usted póngale a su base de
-datos el nombre que desee.</p>
+<p>Una vez instalado pandora, apache se ha seleccionado como httpd. Hay que
+habilitarlo.</p>
 
-<p>Ahora viene un paso muy curioso. El fichero &ldquo;config/database.yml&rdquo; NO puede dejar
-de existir; pero sus valores deben estar vacíos. Solución, le metemos un yaml
-vacío.</p>
-
-<figure class='code'><figcaption><span>config/database.yml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s2">&quot;---&quot;</span> &gt; config/database.yml
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> systemctl start httpd</span>
+</span><span class='line'><span class="go"> systemctl enable httpd</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Ahora bien, la documentación dice que debes poner</p>
+<p>Si usas firewalld (no te lo recomiendo, pesa un mundo y usa dbus). Abre el
+puerto 80.</p>
 
-<pre><code>  config.gem 'mongo_mapper'
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> firewall-cmd --zone=public --add-port=80/tcp --permanent</span>
+</span><span class='line'><span class="go"> firewall-cmd --reload</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>En el fichero config/environment.rb</p>
 
-<h3>¡LO CUAL NO ES VÁLIDO!</h3>
+<p>Pandora tiene que escribir en ciertos directorios usando el servidor web. Así
+que con el delicado permiso de Selinux.</p>
 
-<p>Eso va en config/application.rb</p>
-
-<figure class='code'><figcaption><span>config/application.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="no">File</span><span class="o">.</span><span class="n">expand_path</span><span class="p">(</span><span class="s1">&#39;../boot&#39;</span><span class="p">,</span> <span class="bp">__FILE__</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Pick the frameworks you want:</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;active_model/railtie&quot;</span>
-</span><span class='line'><span class="c1"># require &quot;active_record/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_controller/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_mailer/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_view/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;sprockets/railtie&quot;</span>
-</span><span class='line'><span class="c1"># require &quot;rails/test_unit/railtie&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># Require the gems listed in Gemfile, including any gems</span>
-</span><span class='line'><span class="c1"># you&#39;ve limited to :test, :development, or :production.</span>
-</span><span class='line'><span class="no">Bundler</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="o">*</span><span class="no">Rails</span><span class="o">.</span><span class="n">groups</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">module</span> <span class="nn">Fulanito</span>
-</span><span class='line'>  <span class="k">class</span> <span class="nc">Application</span> <span class="o">&lt;</span> <span class="no">Rails</span><span class="o">::</span><span class="no">Application</span>
-</span><span class='line'>    <span class="c1"># Settings in config/environments/* take precedence over those specified here.</span>
-</span><span class='line'>    <span class="c1"># Application configuration should go into files in config/initializers</span>
-</span><span class='line'>    <span class="c1"># -- all .rb files in that directory are automatically loaded.</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.</span>
-</span><span class='line'>    <span class="c1"># Run &quot;rake -D time&quot; for a list of tasks for finding time zone names. Default is UTC.</span>
-</span><span class='line'>    <span class="c1"># config.time_zone = &#39;Central Time (US &amp; Canada)&#39;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.</span>
-</span><span class='line'>    <span class="c1"># config.i18n.load_path += Dir[Rails.root.join(&#39;my&#39;, &#39;locales&#39;, &#39;*.{rb,yml}&#39;).to_s]</span>
-</span><span class='line'>    <span class="c1">#config.i18n.default_locale = :es</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># AQUI ES DONDE VA ESO</span>
-</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">gem</span> <span class="s1">&#39;mongo_mapper&#39;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum install -y policycoreutils-python</span>
+</span><span class='line'><span class="go"> semanage fcontext -a -t httpd_sys_rw_content_t &#39;/var/www/html/pandora_console/include&#39;</span>
+</span><span class='line'><span class="go"> semanage fcontext -a -t httpd_sys_rw_content_t &#39;/var/www/html/pandora_console/attachment&#39;</span>
+</span><span class='line'><span class="go"> restorecon &#39;/var/www/html/pandora_console/include&#39;</span>
+</span><span class='line'><span class="go"> restorecon &#39;/var/www/html/pandora_console/attachment&#39;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>A este punto PINCHA, pero hay que escribir los modelos A MANO, ya que el
-scaffold te crea todo menos el modelo. Para que eso pinche, debemos activar el
-generador de códigos declarándole su nueva ORM en el fichero.</p>
+<p>Para los no familiarizados con selinux, pueden ir a <strong>/etc/selinux/config</strong> y
+donde dice <strong>enforcing</strong> ponle <strong>disabled</strong>, luego reinicia.</p>
 
-<h3>config/application.rb</h3>
+<p>Una vez instalado todo, nos dirigimos a la consola web que apache por defecto la
+pone en un alias /pandora_console o sea. <a href="http://ip.de.tu.server/pandora_console">http://ip.de.tu.server/pandora_console</a></p>
 
-<figure class='code'><figcaption><span>config/application.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>Te saldrá un asistente para retrasados mentales.</p>
+
+<p><strong>ATENTO!!!!</strong> Una pantalla que olvidé salvar te dirá que ha creado un usuario
+privilegiado para pandora con un password que genera de manera aleatoria.
+<strong>COPIALO</strong>. Para configurar el <strong>pandora server</strong> lo vas a necesitar.</p>
+
+<p>Bueno llegado a este punto ya tenemos la consola web pero no tenemos el pollo
+del arroz con pollo. Al corazón de pandorafms, suele llamársele también
+<strong>tentacle</strong> (tentáculo). Ahora es cuando de verdad vamos a instalar el sistema
+de monitoreo.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum install pandorafms_server</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Llégate al fichero <strong>/etc/pandora/pandora_server.conf</strong> cerca de la linea 43.
+Ten encontrarás algo como esto:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -285,112 +259,50 @@ generador de códigos declarándole su nueva ORM en el fichero.</p>
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="no">File</span><span class="o">.</span><span class="n">expand_path</span><span class="p">(</span><span class="s1">&#39;../boot&#39;</span><span class="p">,</span> <span class="bp">__FILE__</span><span class="p">)</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="err">dbengine</span> <span class="err">mysql</span>
 </span><span class='line'>
-</span><span class='line'><span class="c1"># Pick the frameworks you want:</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;active_model/railtie&quot;</span>
-</span><span class='line'><span class="c1"># require &quot;active_record/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_controller/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_mailer/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;action_view/railtie&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;sprockets/railtie&quot;</span>
-</span><span class='line'><span class="c1"># require &quot;rails/test_unit/railtie&quot;</span>
+</span><span class='line'> <span class="c1"># Database credentials. A VERY important configuration.</span>
+</span><span class='line'> <span class="c1"># This must be the same credentials used by your Pandora FMS Console</span>
+</span><span class='line'> <span class="c1"># but could be different if your console is not running in the same</span>
+</span><span class='line'> <span class="c1"># host than the server. Check your console setup in /include/config.php</span>
 </span><span class='line'>
-</span><span class='line'><span class="c1"># Require the gems listed in Gemfile, including any gems</span>
-</span><span class='line'><span class="c1"># you&#39;ve limited to :test, :development, or :production.</span>
-</span><span class='line'><span class="no">Bundler</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="o">*</span><span class="no">Rails</span><span class="o">.</span><span class="n">groups</span><span class="p">)</span>
+</span><span class='line'> <span class="c1"># dbname: Database name (pandora by default)</span>
 </span><span class='line'>
-</span><span class='line'><span class="k">module</span> <span class="nn">Fulanito</span>
-</span><span class='line'>  <span class="k">class</span> <span class="nc">Application</span> <span class="o">&lt;</span> <span class="no">Rails</span><span class="o">::</span><span class="no">Application</span>
-</span><span class='line'>    <span class="c1"># Settings in config/environments/* take precedence over those specified here.</span>
-</span><span class='line'>    <span class="c1"># Application configuration should go into files in config/initializers</span>
-</span><span class='line'>    <span class="c1"># -- all .rb files in that directory are automatically loaded.</span>
+</span><span class='line'> <span class="err">dbname</span> <span class="err">pandora</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="c1"># Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.</span>
-</span><span class='line'>    <span class="c1"># Run &quot;rake -D time&quot; for a list of tasks for finding time zone names. Default is UTC.</span>
-</span><span class='line'>    <span class="c1"># config.time_zone = &#39;Central Time (US &amp; Canada)&#39;</span>
+</span><span class='line'> <span class="c1"># dbuser:  Database user name (pandora by default)</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="c1"># The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.</span>
-</span><span class='line'>    <span class="c1"># config.i18n.load_path += Dir[Rails.root.join(&#39;my&#39;, &#39;locales&#39;, &#39;*.{rb,yml}&#39;).to_s]</span>
-</span><span class='line'>    <span class="c1"># config.i18n.default_locale = :de</span>
+</span><span class='line'> <span class="err">dbuser</span> <span class="err">root</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="c1"># AQUI ES DONDE VA ESO</span>
-</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">gem</span> <span class="s1">&#39;mongo_mapper&#39;</span>
+</span><span class='line'> <span class="c1"># dbpass: Database password</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="c1"># AQUI DECLARAMOS LA ORM</span>
-</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">generators</span> <span class="k">do</span> <span class="o">|</span><span class="n">g</span><span class="o">|</span>
-</span><span class='line'>         <span class="n">g</span><span class="o">.</span><span class="n">orm</span> <span class="ss">:mongo_mapper</span>
-</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'> <span class="err">dbpass</span> <span class="err">secretisimo</span>
 </span><span class='line'>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
+</span><span class='line'> <span class="c1"># dbhost: Database hostname or IP address</span>
+</span><span class='line'>
+</span><span class='line'> <span class="err">dbhost</span> <span class="err">127.0.0.1</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Ahora hay otro palo con el update de los scaffold, y eso si, no tiene remiendo.
-Por ejemplo</p>
+<p>No lleva mucha explicación. Las credenciales de la base de datos tal como la
+configuraste al principio.</p>
 
-<figure class='code'><figcaption><span>scaffold</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>Ahora bien. Arrancar los servicios por primera vez es importante, luego ellos
+arrancarán solo. Pero como el paquete es oriundo de centos6, aún conserva la
+retrocompatibilidad de arrancada de servicios.</p>
+
+<figure class='code'><figcaption><span>&#8220;arrancando servicios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># PATCH/PUT /users/1</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">update</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># el update, es borra y crea</span>
-</span><span class='line'>  <span class="vi">@user</span><span class="o">.</span><span class="n">destroy</span>
-</span><span class='line'>  <span class="vi">@user</span><span class="o">=</span><span class="no">User</span><span class="o">.</span><span class="n">create</span> <span class="n">user_params</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">if</span> <span class="vi">@user</span><span class="o">.</span><span class="n">save</span>
-</span><span class='line'>    <span class="n">redirect_to</span> <span class="vi">@user</span><span class="p">,</span> <span class="ss">notice</span><span class="p">:</span> <span class="s1">&#39;User was successfully updated.&#39;</span>
-</span><span class='line'>  <span class="k">else</span>
-</span><span class='line'>    <span class="n">render</span> <span class="ss">:edit</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> /etc/init.d/pandora_server restart</span>
+</span><span class='line'><span class="go"> /etc/init.d/tentacle_serverd restart</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>A cada update le arreglas eso. SI, ya sé, está feo. Yo lo borro y lo vuelvo a
-crear, pero quizás a ti se te ocurra algo mejor.</p>
-
-<p>Bueno ahora si, con eso todo se vuelve NoSQL y nuestro cerebro sigue siendo
-Rails&hellip;</p>
-
-<p>Además, MongoMapper puede usarse fuera de Rails tranquilamente. Las dos simples
-lineas que componen nuestro initializer son más que suficiente para dejar a
-MongoMapper pinchando. Luego creas lo modelo y listo.</p>
-
-<p>Happy coding!</p>
+<p>Esta información es un extracto de <a href="https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Installing">la documentación oficial.</a></p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="https://blockchain.info/address/14iNmkfULf5jggumVh963kUg4UPScEZHgz">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="https://blockchain.info/address/14iNmkfULf5jggumVh963kUg4UPScEZHgz">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
 
   <footer>
     <p class="meta">
@@ -404,21 +316,15 @@ MongoMapper pinchando. Luego creas lo modelo y listo.</p>
 
 
 
-<time class='entry-date' datetime='2015-02-12T09:07:51-05:00'><span class='date'>12/02/2015</span> <span class='time'>9:07 am</span></time>
+<time class='entry-date' datetime='2017-11-04T00:09:51-04:00'><span class='date'>04/11/2017</span> <span class='time'>12:09 am</span></time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/rails/'>rails</a>
-  
-</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/02/12/rails-con-mongodb/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/02/12/rails-con-mongodb/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2017/11/04/install-pandorafms/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2017/11/04/install-pandorafms/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -431,10 +337,8 @@ MongoMapper pinchando. Luego creas lo modelo y listo.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/02/06/zentyal/" title="Previous Post: Zentyal">&laquo; Zentyal</a>
+        <a class="basic-alignment left" href="/blog/2017/09/01/daloradius-y-sus-amigos/" title="Previous Post: daloradius y sus amigos">&laquo; daloradius y sus amigos</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2015/02/19/delay-pools-de-squid/" title="Next Post: delay pools de squid">delay pools de squid &raquo;</a>
       
     </p>
   </footer>
@@ -457,6 +361,12 @@ MongoMapper pinchando. Luego creas lo modelo y listo.</p>
 	<ul id="recent_posts">
 
 		
+
+		<li class="post">
+			<a href="/blog/2017/11/04/install-pandorafms/">instalando pandorafms</a>
+      </li>
+
+      
 
 		<li class="post">
 			<a href="/blog/2017/09/01/daloradius-y-sus-amigos/">daloradius y sus amigos</a>
@@ -999,12 +909,6 @@ MongoMapper pinchando. Luego creas lo modelo y listo.</p>
       
 
 		<li class="post">
-			<a href="/blog/2015/02/12/rails-con-mongodb/">rails con mongodb</a>
-      </li>
-
-      
-
-		<li class="post">
 			<a href="/blog/2015/02/06/zentyal/">Zentyal</a>
       </li>
 
@@ -1140,8 +1044,8 @@ MongoMapper pinchando. Luego creas lo modelo y listo.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2015/02/12/rails-con-mongodb/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2015/02/12/rails-con-mongodb/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2017/11/04/install-pandorafms/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2017/11/04/install-pandorafms/';
         var disqus_script = 'embed.js';
       
     (function () {

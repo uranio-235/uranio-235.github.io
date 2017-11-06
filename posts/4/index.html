@@ -9,8 +9,7 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="QoS con tc o dummynet 01/03/2017 7:57 pm | Comments Acá en el 5to infierno de infomed, algunos usuarios; están acostumbrados a usar
-un &ldquo;MUA& &hellip;">
+  <meta name="description" content="bind en infomed 01/03/2017 11:13 pm | Comments Seguimos con bind&hellip; No hace mucho le comentaba a alguien, a raíz de una duda que tenía el &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +81,132 @@ un &ldquo;MUA& &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/01/bind-en-infomed/">bind en infomed</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-01T23:13:34-05:00'><span class='date'>01/03/2017</span> <span class='time'>11:13 pm</span></time>
+        
+           | <a href="/blog/2017/03/01/bind-en-infomed/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/01/bind-en-infomed/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Seguimos con bind&hellip;</p>
+
+<p>No hace mucho le comentaba a alguien, a raíz de una duda que tenía el colega
+Paradyx; la manera correcta de configurar un servidor bind para una red que
+cuelga de infomed.</p>
+
+<p>Le comentaba que no vale la pena usar un forward por defecto; que hacer del
+dominio &lsquo;.sld.cu&rsquo; una zona forward sería más que suficiente. Digo esto porque
+infomed no resuelve ningún dominio que valla más allá de &ldquo;.sld.cu&rdquo;, por tanto,
+no vale la pena transferirle las sepetecientas peticiones que hacen cuanta
+mierda se conecta a nuestra red (especialmente android).</p>
+
+<figure class='code'><figcaption><span>&#8220;named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">options</span> <span class="p">{</span>
+</span><span class='line'>   <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">10.1.1.1</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">view</span> <span class="n">lan</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">10.1.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;sld.cu&quot;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">201.220.222.131</span><span class="p">;</span> <span class="mf">201.220.222.132</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">forward</span> <span class="n">only</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">};</span> <span class="c1">// view lan</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como mi dominio es hcg.sld.cu (subdominio de .sld.cu) lo declaramos ARRIBA
+del dominio sld.cu. El dominio <strong>hcg.sld.cu</strong> es una zona <strong>master</strong>, sin
+embargo, el dominio <strong>sld.cu</strong> es del tipo <strong>forward</strong> y entonces ahí declaramos
+los forwarders (los dns de infomed).</p>
+
+<p>Así solo le reenviaremos a infomed, aquellas peticiones que sean para infomed.</p>
+
+<p>En mi opinión esto no es necesario. Tanto así, que la zona donde infomed hace
+forward; la tengo para los servidores. En el caso de la zona para LAN,
+simplemente declaro los servidores de correo en un fakeroot y listo.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="https://blockchain.info/address/14iNmkfULf5jggumVh963kUg4UPScEZHgz">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
+
+    </article>
   
   
     <article>
@@ -202,7 +327,7 @@ y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="https://blockchain.info/address/14iNmkfULf5jggumVh963kUg4UPScEZHgz">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="https://blockchain.info/address/14iNmkfULf5jggumVh963kUg4UPScEZHgz">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
 
     </article>
   
@@ -331,7 +456,7 @@ con el administrador de conexiones de gnome.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="https://blockchain.info/address/14iNmkfULf5jggumVh963kUg4UPScEZHgz">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="https://blockchain.info/address/14iNmkfULf5jggumVh963kUg4UPScEZHgz">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
 
     </article>
   
@@ -548,7 +673,7 @@ que ninguna pinche.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="https://blockchain.info/address/14iNmkfULf5jggumVh963kUg4UPScEZHgz">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.06 BTC: <a href="https://blockchain.info/address/14iNmkfULf5jggumVh963kUg4UPScEZHgz">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
 
     </article>
   
@@ -834,7 +959,7 @@ intenta poner siempre los pipe arriba y el cortafuegos abajo</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="https://blockchain.info/address/14iNmkfULf5jggumVh963kUg4UPScEZHgz">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="https://blockchain.info/address/14iNmkfULf5jggumVh963kUg4UPScEZHgz">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
 
     </article>
   
@@ -967,90 +1092,7 @@ modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.03 BTC: <a href="https://blockchain.info/address/14iNmkfULf5jggumVh963kUg4UPScEZHgz">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/21/palito/">animación del palito</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-21T12:47:55-05:00'><span class='date'>21/01/2017</span> <span class='time'>12:47 pm</span></time>
-        
-           | <a href="/blog/2017/01/21/palito/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/21/palito/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Por si se me olvida, porque lo he olvidado varias veces. En ocasiones, queremos
-hacer una simple animación de consola, para representar trabajo de un script sin
-mostrar lo que está procesando. Este script de ejemplo, itera por cada caracter
-de la fecha y muestra la barra cambiando de posición, el clásico palito girando.</p>
-
-<figure class='code'><figcaption><span>&#8220;scope&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#!/usr/bin/env ruby</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># esta es la animación, puedes sustituirla</span>
-</span><span class='line'><span class="c1"># por lo que más te guste, solo pon la secuencia</span>
-</span><span class='line'><span class="n">animacion</span><span class="o">=[</span><span class="s1">&#39;|&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;\ &#39;</span><span class="o">.</span><span class="n">strip</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">for</span> <span class="n">d</span><span class="p">,</span><span class="n">i</span>  <span class="k">in</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">chars</span><span class="o">.</span><span class="n">each_with_index</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c1"># múeve a la siguiente frama de la animación</span>
-</span><span class='line'>   <span class="n">palito</span><span class="o">=</span><span class="p">(</span><span class="n">animacion</span><span class="o">.</span><span class="n">push</span> <span class="n">animacion</span><span class="o">.</span><span class="n">shift</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c1"># muestra el palito y has un retorno de carro</span>
-</span><span class='line'>   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">palito</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="c1"># has una media</span>
-</span><span class='line'>   <span class="nb">sleep</span> <span class="mi">0</span><span class="o">.</span><span class="mi">3</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">d</span><span class="o">=</span><span class="n">d</span> <span class="c1"># nada que hacer con los datos</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En el array, el último caracter tiene un String#strip porque al escribir <strong>\&lsquo;</strong>
-el compilador suele interpretarlo como que estás escapando la comilla simple.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="https://blockchain.info/address/14iNmkfULf5jggumVh963kUg4UPScEZHgz">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="https://blockchain.info/address/14iNmkfULf5jggumVh963kUg4UPScEZHgz">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
 
     </article>
   
@@ -1073,6 +1115,12 @@ el compilador suele interpretarlo como que estás escapando la comilla simple.</
 	<ul id="recent_posts">
 
 		
+
+		<li class="post">
+			<a href="/blog/2017/11/04/install-pandorafms/">instalando pandorafms</a>
+      </li>
+
+      
 
 		<li class="post">
 			<a href="/blog/2017/09/01/daloradius-y-sus-amigos/">daloradius y sus amigos</a>
@@ -1610,12 +1658,6 @@ el compilador suele interpretarlo como que estás escapando la comilla simple.</
 
 		<li class="post">
 			<a href="/blog/2015/02/19/delay-pools-de-squid/">delay pools de squid</a>
-      </li>
-
-      
-
-		<li class="post">
-			<a href="/blog/2015/02/12/rails-con-mongodb/">rails con mongodb</a>
       </li>
 
       

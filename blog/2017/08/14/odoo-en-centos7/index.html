@@ -106,17 +106,15 @@ manejar cualquier &hellip;">
 
 <div class="entry-content"><p>Odoo, el sucesor de openerp; un software muy versátil, con funcionalidades para
 manejar cualquier negocio (ERP). En mi caso; lo uso para manejar facturación y
-la contabilidad de mi negocio. Recién me vi obligado a reinstalarlo pero resulta
-que los <strong>.deb</strong> están mirando pa debian8, por tanto, decidí instalarlo en
-centos7. Además estoy cada día más peleado con debian.</p>
+la contabilidad de mi negocio. Aunque tardé casi 3 meses en divorciarme de
+gnucash.</p>
+
+<p>Recién me vi obligado a reinstalarlo pero resulta que los <strong>.deb</strong> están mirando
+pa debian8, por tanto, decidí instalarlo en centos7.</p>
 
 <p>Como mi laptop no virtualiza, tengo centos7 en un contenedor de LXC. Esto me
 resulta más confiable que docker, ya que he tenido muy malas experiencias
-linkando el container de postgres con el de odoo. Eso sin contar que systemd no
-pincha en un container, al menos no sin levantarlo desde el init y privilegiado;
-tal como funciona LXC. Claro, hacer un script que corra todo en el container sin
-necesidad de systemd es una solución; pero el hecho de tener múltiples distros
-corriendo, me resulta más emocionante que los &ldquo;contenedores&rdquo;.</p>
+linkando el container de postgres con el de odoo.</p>
 
 <p>Vamos a necesitar unas cuantas cosas del repo EPEL y un servidor de postgresql
 operacional.</p>
@@ -151,7 +149,7 @@ operacional.</p>
 <span class='line-number'>6</span>
 </pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="k">[odoo-nightly]</span>
 </span><span class='line'> <span class="na">name</span><span class="o">=</span><span class="s">Odoo Nightly repository</span>
-</span><span class='line'><span class="s"> baseurl=http://nightly.odoo.com/10.0/nightly/rpm/</span>
+</span><span class='line'><span class="s"> baseurl=http://nightly.odoo.com/9.0/nightly/rpm/</span>
 </span><span class='line'><span class="s"> enabled=1</span>
 </span><span class='line'><span class="s"> gpgcheck=1</span>
 </span><span class='line'><span class="s"> gpgkey=https://nightly.odoo.com/odoo.key</span>
@@ -186,7 +184,7 @@ piedra:</p>
 </div>
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="https://blockchain.info/address/14iNmkfULf5jggumVh963kUg4UPScEZHgz">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="https://blockchain.info/address/14iNmkfULf5jggumVh963kUg4UPScEZHgz">14iNmkfULf5jggumVh963kUg4UPScEZHgz</a> </p>
 
   <footer>
     <p class="meta">
@@ -247,6 +245,12 @@ piedra:</p>
 	<ul id="recent_posts">
 
 		
+
+		<li class="post">
+			<a href="/blog/2017/11/04/install-pandorafms/">instalando pandorafms</a>
+      </li>
+
+      
 
 		<li class="post">
 			<a href="/blog/2017/09/01/daloradius-y-sus-amigos/">daloradius y sus amigos</a>
@@ -784,12 +788,6 @@ piedra:</p>
 
 		<li class="post">
 			<a href="/blog/2015/02/19/delay-pools-de-squid/">delay pools de squid</a>
-      </li>
-
-      
-
-		<li class="post">
-			<a href="/blog/2015/02/12/rails-con-mongodb/">rails con mongodb</a>
       </li>
 
       

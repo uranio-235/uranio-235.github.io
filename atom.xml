@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-09-04T12:02:00-04:00</updated>
+  <updated>2017-11-06T11:39:15-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,209 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[instalando pandorafms]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/11/04/install-pandorafms/"/>
+    <updated>2017-11-04T00:09:51-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/11/04/install-pandorafms</id>
+    <content type="html"><![CDATA[<p>Me gustaba mucho nagios. Me creía el rey del mundo cuando aprendí a hacer
+plugins. Pero cuando vi esta herramienta, cuya su simpleza me llevó a pensar que
+nagios es un juguete comparado con; el software de monitoreo que utiliza google
+para sus servidores. Me refrito a <a href="https://pandorafms.org/">PandoraFMS</a>. Tiene
+además, wiki, blog, comunidad y demás; así que no estamos solos como en nagios
+que su filosofía es &ldquo;paga pa que te configure&rdquo;.</p>
+
+<p>Ah por cierto, el software es español, así que hay muuuucha documentación en la
+lengua madre.</p>
+
+<p>Los plugins que tardé meses en escribir, afinar y acoplar a nagios, me hubiera
+tomado días hacerlo en pandora. La interfaz le da 4 galletas a nagios. Sobre
+todo, porque manage y config se hacen desde la interfaz (para los cobardes de
+consola).</p>
+
+<p>Las soluciones de pacotilla como izinga y zabbix; no juegan en estas grandes
+ligas. Ni siquiera las compararé. Para no hablar de cacti, mrtg, y demás
+porquerías que hasta han pasado de moda.</p>
+
+<p>Lo mismo monitorea snmp y via interfaz web se escriben consultas tcp
+personalizadas. Además, está el esquema de plugins que son sencillísimo.
+Escribir un plugin requiere saber shellscript o cualquier mierda que procese
+argumentos. En eso nagios también tiene su punto.</p>
+
+<p>Primero: Debe tener claro que pandora se compone por:</p>
+
+<p><strong>Pandora Server</strong> Una monstruosidad de aplicaciones que corren de manera
+simultanea como un núcleo. El sistema que monitorea todo.</p>
+
+<p><strong>Web console</strong> La interfaz web que tiene tremenda pinta y además, nos permite
+manipular pandora (server).</p>
+
+<p><strong>Agents</strong> Piezas de software que nos permite monitorear. Ya se locales o remotos.</p>
+
+<p>Primero la LAMP clásica. Para los radicales de la moda, usaremos apache porque
+pandorafms fue diseñado para apache.</p>
+
+<p>Típico despliegue mysql</p>
+
+<figure class='code'><figcaption><span>&#8220;instalación rápida de mysql&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum -y install mariadb-server</span>
+</span><span class='line'><span class="go"> systemctl start mariadb</span>
+</span><span class='line'><span class="go"> systemctl enable mariadb</span>
+</span><span class='line'><span class="go"> mysql_secure_installation</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Creamos el &ldquo;.repo&rdquo; y configuramos el repo <strong>oficial</strong> de artica.es para centos7.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/yum.repos.d/pandorafms.repo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="k">[pandorafms]</span>
+</span><span class='line'> <span class="na">name</span><span class="o">=</span><span class="s">PandoraFMS official repo</span>
+</span><span class='line'><span class="s"> baseurl=http://firefly.artica.es/centos7</span>
+</span><span class='line'><span class="s"> gpgcheck=0</span>
+</span><span class='line'><span class="s"> enabled=1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La guinda del pastel.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">  yum -y install pandorafms_console</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Una vez instalado pandora, apache se ha seleccionado como httpd. Hay que
+habilitarlo.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> systemctl start httpd</span>
+</span><span class='line'><span class="go"> systemctl enable httpd</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si usas firewalld (no te lo recomiendo, pesa un mundo y usa dbus). Abre el
+puerto 80.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> firewall-cmd --zone=public --add-port=80/tcp --permanent</span>
+</span><span class='line'><span class="go"> firewall-cmd --reload</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pandora tiene que escribir en ciertos directorios usando el servidor web. Así
+que con el delicado permiso de Selinux.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum install -y policycoreutils-python</span>
+</span><span class='line'><span class="go"> semanage fcontext -a -t httpd_sys_rw_content_t &#39;/var/www/html/pandora_console/include&#39;</span>
+</span><span class='line'><span class="go"> semanage fcontext -a -t httpd_sys_rw_content_t &#39;/var/www/html/pandora_console/attachment&#39;</span>
+</span><span class='line'><span class="go"> restorecon &#39;/var/www/html/pandora_console/include&#39;</span>
+</span><span class='line'><span class="go"> restorecon &#39;/var/www/html/pandora_console/attachment&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Para los no familiarizados con selinux, pueden ir a <strong>/etc/selinux/config</strong> y
+donde dice <strong>enforcing</strong> ponle <strong>disabled</strong>, luego reinicia.</p>
+
+<p>Una vez instalado todo, nos dirigimos a la consola web que apache por defecto la
+pone en un alias /pandora_console o sea. <a href="http://ip.de.tu.server/pandora_console">http://ip.de.tu.server/pandora_console</a></p>
+
+<p>Te saldrá un asistente para retrasados mentales.</p>
+
+<p><strong>ATENTO!!!!</strong> Una pantalla que olvidé salvar te dirá que ha creado un usuario
+privilegiado para pandora con un password que genera de manera aleatoria.
+<strong>COPIALO</strong>. Para configurar el <strong>pandora server</strong> lo vas a necesitar.</p>
+
+<p>Bueno llegado a este punto ya tenemos la consola web pero no tenemos el pollo
+del arroz con pollo. Al corazón de pandorafms, suele llamársele también
+<strong>tentacle</strong> (tentáculo). Ahora es cuando de verdad vamos a instalar el sistema
+de monitoreo.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum install pandorafms_server</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Llégate al fichero <strong>/etc/pandora/pandora_server.conf</strong> cerca de la linea 43.
+Ten encontrarás algo como esto:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="err">dbengine</span> <span class="err">mysql</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># Database credentials. A VERY important configuration.</span>
+</span><span class='line'> <span class="c1"># This must be the same credentials used by your Pandora FMS Console</span>
+</span><span class='line'> <span class="c1"># but could be different if your console is not running in the same</span>
+</span><span class='line'> <span class="c1"># host than the server. Check your console setup in /include/config.php</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># dbname: Database name (pandora by default)</span>
+</span><span class='line'>
+</span><span class='line'> <span class="err">dbname</span> <span class="err">pandora</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># dbuser:  Database user name (pandora by default)</span>
+</span><span class='line'>
+</span><span class='line'> <span class="err">dbuser</span> <span class="err">root</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># dbpass: Database password</span>
+</span><span class='line'>
+</span><span class='line'> <span class="err">dbpass</span> <span class="err">secretisimo</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># dbhost: Database hostname or IP address</span>
+</span><span class='line'>
+</span><span class='line'> <span class="err">dbhost</span> <span class="err">127.0.0.1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No lleva mucha explicación. Las credenciales de la base de datos tal como la
+configuraste al principio.</p>
+
+<p>Ahora bien. Arrancar los servicios por primera vez es importante, luego ellos
+arrancarán solo. Pero como el paquete es oriundo de centos6, aún conserva la
+retrocompatibilidad de arrancada de servicios.</p>
+
+<figure class='code'><figcaption><span>&#8220;arrancando servicios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> /etc/init.d/pandora_server restart</span>
+</span><span class='line'><span class="go"> /etc/init.d/tentacle_serverd restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Esta información es un extracto de <a href="https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Installing">la documentación oficial.</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[daloradius y sus amigos]]></title>
@@ -30,7 +233,7 @@ una herramienta lo suficientemente digna de manipular 500 o 1&#8217;000 usuarios
 herramienta es <strong>daloradius</strong>.</p>
 
 <p>Daloradius es una interfaz web, no solo linda, si no, lo suficientemente
-funcionar como para sacarle el jugo a freeradius. Permite además, hacer
+funcional como para sacarle el jugo a freeradius. Permite además, hacer
 operaciones predefinidas muy buenas para cosas como hotspot, etc&hellip; Lo más
 especial en mi opinión es el sistema de contabilidad. Muy bueno para cuotas.</p>
 
@@ -403,17 +606,15 @@ Para que tenga una idea, esto sería una configuración de hostapd.</p>
     <id>http://uranio-235.github.io/blog/2017/08/14/odoo-en-centos7</id>
     <content type="html"><![CDATA[<p>Odoo, el sucesor de openerp; un software muy versátil, con funcionalidades para
 manejar cualquier negocio (ERP). En mi caso; lo uso para manejar facturación y
-la contabilidad de mi negocio. Recién me vi obligado a reinstalarlo pero resulta
-que los <strong>.deb</strong> están mirando pa debian8, por tanto, decidí instalarlo en
-centos7. Además estoy cada día más peleado con debian.</p>
+la contabilidad de mi negocio. Aunque tardé casi 3 meses en divorciarme de
+gnucash.</p>
+
+<p>Recién me vi obligado a reinstalarlo pero resulta que los <strong>.deb</strong> están mirando
+pa debian8, por tanto, decidí instalarlo en centos7.</p>
 
 <p>Como mi laptop no virtualiza, tengo centos7 en un contenedor de LXC. Esto me
 resulta más confiable que docker, ya que he tenido muy malas experiencias
-linkando el container de postgres con el de odoo. Eso sin contar que systemd no
-pincha en un container, al menos no sin levantarlo desde el init y privilegiado;
-tal como funciona LXC. Claro, hacer un script que corra todo en el container sin
-necesidad de systemd es una solución; pero el hecho de tener múltiples distros
-corriendo, me resulta más emocionante que los &ldquo;contenedores&rdquo;.</p>
+linkando el container de postgres con el de odoo.</p>
 
 <p>Vamos a necesitar unas cuantas cosas del repo EPEL y un servidor de postgresql
 operacional.</p>
@@ -448,7 +649,7 @@ operacional.</p>
 <span class='line-number'>6</span>
 </pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="k">[odoo-nightly]</span>
 </span><span class='line'> <span class="na">name</span><span class="o">=</span><span class="s">Odoo Nightly repository</span>
-</span><span class='line'><span class="s"> baseurl=http://nightly.odoo.com/10.0/nightly/rpm/</span>
+</span><span class='line'><span class="s"> baseurl=http://nightly.odoo.com/9.0/nightly/rpm/</span>
 </span><span class='line'><span class="s"> enabled=1</span>
 </span><span class='line'><span class="s"> gpgcheck=1</span>
 </span><span class='line'><span class="s"> gpgkey=https://nightly.odoo.com/odoo.key</span>
@@ -1402,7 +1603,9 @@ argumentos, se generan certificados para dichos dominios.</p>
     <link href="http://uranio-235.github.io/blog/2017/04/08/xen-y-virt-manager/"/>
     <updated>2017-04-08T00:04:41-04:00</updated>
     <id>http://uranio-235.github.io/blog/2017/04/08/xen-y-virt-manager</id>
-    <content type="html"><![CDATA[<p>La miseria, es lo único que; aun repartida a muchos, toca en abundancia.</p>
+    <content type="html"><![CDATA[<p>La miseria, es lo único que; aun repartida a muchos, toca en abundancia. Esta
+historia se desarrolla en un policlínico remoto y olvidado; donde tuve que
+facturar con un 50% de descuento para que dejaran de decir &ldquo;por favor ayuda&rdquo;.</p>
 
 <p>La superioridad tecnológica de XenServer es indiscutible: seguro (esquema de
 pacheo de XOA), versátil (la XAPI), robusto (CentOS) y sencillo (Xen Orchestra
@@ -1422,15 +1625,15 @@ sistemas; tal como está en mi esquema del calixto. Lo cierto es que 3
 contenedores no inspiran mucha confianza. Tampoco KVM es una buena opción, sobre
 todo cuado no hay un super microprocesador.</p>
 
-<p>Rercordemos que: Xen, mejor con CPU, peor peor IO. Mientras que: KVM, mejor IO,
+<p>Rercordemos que: Xen, mejor con CPU, pero peor IO. Mientras que: KVM, mejor IO,
 pero CPU más penalizado.</p>
 
 <p>El menú:</p>
 
 <p>Dos interfaces de red, un disco de 500G, 2G de ram, y un CPU que <strong>por suerte</strong>
 soporta virtualización. Un switch de 24 puertos a 100 megas, otro a gigabit. Un
-friki que oye reguetton, su mujer, la mía, 5 pesos de café en un vaso plástico
-y YO.</p>
+friki que oye reguetton, una enfermera de post-guardia (la mujer del friki) y 5
+pesos de café en un vaso plástico.</p>
 
 <p>Las VM y su RAM:</p>
 
@@ -2396,110 +2599,6 @@ y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
 </span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.15 to me
 </span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[bind personal]]></title>
-    <link href="http://uranio-235.github.io/blog/2017/02/22/bind-personal/"/>
-    <updated>2017-02-22T21:05:26-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2017/02/22/bind-personal</id>
-    <content type="html"><![CDATA[<p>Una cosa que me jode, es que linux el tema de los múltiples DNS no los maneje
-bien. Por ejemplo, estamos en una LAN con red 192.168.1.0/24 y además,
-tenemos una conexión a internet.</p>
-
-<p>Entonces seteas dos DNS en el resolv.conf y no pincha!</p>
-
-<p>Además, si la situación es itinerante (vas a múltiples LAN) mantener la
-configuración DNS se vuelve un rollo. Aunque el networkmanager te permita
-configurarlo, volvemos a la situación anterior.</p>
-
-<p>Solución, tenemos un bin con sus debidos forwarders para cada red. En mi caso,
-el <strong>/etc/named.conf</strong> me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">// vim:set ts=4 sw=4 et:</span>
-</span><span class='line'><span class="n">options</span> <span class="p">{</span>
-</span><span class='line'>        <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">recursion</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>        <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">recursion</span> <span class="n">yes</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">auth</span><span class="o">-</span><span class="n">nxdomain</span> <span class="n">no</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// la lan por su DNS local</span>
-</span><span class='line'><span class="n">zone</span> <span class="s">&quot;dominio.cu&quot;</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
-</span><span class='line'>  <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">192.168.1.3</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// lo demás por google</span>
-</span><span class='line'><span class="n">zone</span> <span class="s">&quot;.&quot;</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
-</span><span class='line'>  <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">8.8.8.8</span><span class="p">;</span> <span class="mf">8.8.4.4</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>De esta manera, el dominio de la LAN (<strong>dominio.cu</strong>), será resuelto a través
-del servidor DNS 192.168.1.3; que es el de la LAN. Para eso usamos la zona
-&ldquo;dominio.cu&rdquo; del tipo forward y especificamos a 192.168.1.3 como su forward.</p>
-
-<p>El resto, o sea, la zona &ldquo;.&rdquo;, será también del tipo forward y para este ejemplo,
-usamos los dns de google como forward.</p>
-
-<p>Ahora solo te queda actualizar el <strong>/etc/resolv.conf</strong> y setear a 127.0.0.1
-como tu servidor dns</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/resolv.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp"># Generated by resolvconf</span>
-</span><span class='line'><span class="n">nameserver</span> <span class="mf">127.0.0.1</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Recuerda que cada configuración automatizada, actualiza este fichero. Te
-recomiendo que no te fajes con el fichero, si no que en cada conexión que desees
-usar tu servidor, se lo especifiques. Por ejemplo, con networkmanager, le dices
-a N conexión, que el servidor dns es manual y será <em>127.0.0.1</em>. Si usas Gnome
-(NetworkManager), te recomiendo usar la utilidad <strong>nm-connection-editor</strong>. Te
-permitirá especificar el dominio de búsqueda, cosa que no he visto como hacer
-con el administrador de conexiones de gnome.</p>
 ]]></content>
   </entry>
   
