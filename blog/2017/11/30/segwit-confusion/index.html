@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>git clone rápido - El SysAdmin del 3er Mundo</title>
+  <title>segwit y la confusión - El SysAdmin del 3er Mundo</title>
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="git clone rápido 07/09/2015 10:36 pm | Comments En paises con internet lento (adivina a cual me refiero) el mero hecho de clonar
-un repositorio de &hellip;">
+  <meta name="description" content="segwit y la confusión 30/11/2017 2:43 pm | Comments Si bien, segwit era algo que caía por
+gravedad tarde o temprano. Ya que le cadena de bloques no &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ un repositorio de &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://uranio-235.github.io/blog/2015/09/07/git-clone-rapido/">
+  <link rel="canonical" href="http://uranio-235.github.io/blog/2017/11/30/segwit-confusion/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="El SysAdmin del 3er Mundo" type="application/atom+xml">
@@ -85,7 +85,7 @@ un repositorio de &hellip;">
   
   <header>
     
-      <h1 class="entry-title">git clone rápido</h1>
+      <h1 class="entry-title">segwit y la confusión</h1>
     
     
       <p class="meta">
@@ -94,7 +94,7 @@ un repositorio de &hellip;">
 
 
 
-<time class='entry-date' datetime='2015-09-07T22:36:56-04:00'><span class='date'>07/09/2015</span> <span class='time'>10:36 pm</span></time>
+<time class='entry-date' datetime='2017-11-30T14:43:06-05:00'><span class='date'>30/11/2017</span> <span class='time'>2:43 pm</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://uranio-235.github.io">Comments</a>
@@ -104,26 +104,23 @@ un repositorio de &hellip;">
   </header>
 
 
-<div class="entry-content"><p>En paises con internet lento (adivina a cual me refiero) el mero hecho de clonar
-un repositorio de git; puede llegar a ser un verdadero problema.</p>
+<div class="entry-content"><p>Si bien, <a href="https://en.wikipedia.org/wiki/SegWit">segwit</a> era algo que caía por
+gravedad tarde o temprano. Ya que le cadena de bloques no daba más. Entonces el
+hijo de puta de <a href="https://en.wikipedia.org/wiki/Roger_Ver">Roger Ver</a> aprovechó
+la confusión para seguir <a href="https://twitter.com/BlockchainPK/status/935641859795378178">sembrando sizaña</a>
+y sacar del Fork, su propio bitcoin.</p>
 
-<figure class='code'><figcaption><span>&#8220;git&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone --depth<span class="o">=</span><span class="m">1</span> http://repositorio.tld/fulanito/aplicacion.git
-</span></code></pre></td></tr></table></div></figure>
+<p>El muy joputa, no solo impulsó BTCH, si no que además, ahora quiera apropiarse
+del nombre bitcoin. Haciéndonos creer que &ldquo;Bitcoin&rdquo; se llama &ldquo;bitcoin core&rdquo; ya
+que su engendro se llama &ldquo;bitcoin cash&rdquo;.</p>
 
+<p>Los dejo con los links del artículo para que saquen sus propias conclusiones&hellip;</p>
 
-<p>¿Rápido verdad? Es que solo cogió el HEAD, no el historial de commits completo.</p>
-
-<p>Si lo quieres pa siempre, pon en tu gitconfig esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;.gitconfig&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>clone<span class="o">]</span>
-</span><span class='line'>   <span class="nv">depth</span> <span class="o">=</span> 1
-</span></code></pre></td></tr></table></div></figure>
-
-
-
+<p>A todas estas, la implementación de segwit sigue caminando, pero ahora resulta
+que los trezor, usan direcciones 3<em> en vez de bc1</em>, razón por la cual en el
+próximo post, explicaré como configurar electrum para generar una cartera 3* con
+segwit; porque en lo que se ponen de acuerdo las transacciones siguen pie y
+cuando son montos bajos, segwit es muy útil.</p>
 </div>
 
 
@@ -141,7 +138,7 @@ un repositorio de git; puede llegar a ser un verdadero problema.</p>
 
 
 
-<time class='entry-date' datetime='2015-09-07T22:36:56-04:00'><span class='date'>07/09/2015</span> <span class='time'>10:36 pm</span></time>
+<time class='entry-date' datetime='2017-11-30T14:43:06-05:00'><span class='date'>30/11/2017</span> <span class='time'>2:43 pm</span></time>
       
 
 
@@ -149,7 +146,7 @@ un repositorio de git; puede llegar a ser un verdadero problema.</p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2015/09/07/git-clone-rapido/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2015/09/07/git-clone-rapido/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://uranio-235.github.io/blog/2017/11/30/segwit-confusion/" data-via="lazarumoxyde" data-counturl="http://uranio-235.github.io/blog/2017/11/30/segwit-confusion/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -162,10 +159,8 @@ un repositorio de git; puede llegar a ser un verdadero problema.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/09/07/archlinux-dos-kernel/" title="Previous Post: archlinux con dos kernel">&laquo; archlinux con dos kernel</a>
+        <a class="basic-alignment left" href="/blog/2017/11/04/install-pandorafms/" title="Previous Post: instalando pandorafms">&laquo; instalando pandorafms</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2015/09/10/plymouth-boot-screen/" title="Next Post: plymouth boot screen">plymouth boot screen &raquo;</a>
       
     </p>
   </footer>
@@ -877,8 +872,8 @@ un repositorio de git; puede llegar a ser un verdadero problema.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://uranio-235.github.io/blog/2015/09/07/git-clone-rapido/';
-        var disqus_url = 'http://uranio-235.github.io/blog/2015/09/07/git-clone-rapido/';
+        var disqus_identifier = 'http://uranio-235.github.io/blog/2017/11/30/segwit-confusion/';
+        var disqus_url = 'http://uranio-235.github.io/blog/2017/11/30/segwit-confusion/';
         var disqus_script = 'embed.js';
       
     (function () {

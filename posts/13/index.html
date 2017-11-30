@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="repo de fdroid 15/10/2015 2:38 pm | Comments &ldquo;La que se avecina&rdquo;, sería una buena manera para describir la revolución de
-aparatos con &hellip;">
+  <meta name="description" content="systemd-timesyncd 18/10/2015 1:19 pm | Comments Mantener un reloj sincronizado y en hora, siempre ha sido un dilema. Algunas
+personas no reconocen &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,120 @@ aparatos con &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/18/systemd-timesyncd/">systemd-timesyncd</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-10-18T13:19:01-04:00'><span class='date'>18/10/2015</span> <span class='time'>1:19 pm</span></time>
+        
+           | <a href="/blog/2015/10/18/systemd-timesyncd/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/10/18/systemd-timesyncd/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Mantener un reloj sincronizado y en hora, siempre ha sido un dilema. Algunas
+personas no reconocen la necesidad de esto; y además son tan imbéciles, que
+luego se quejan cuando la desfasada fecha de su computadora les impide
+conectarse a un sitio SSL.</p>
+
+<p>En los servidores y en las estaciones de trabajo que se respeten; siempre ha
+sido una opción usar un cliente NTP. Pero los ntp, cuando la fecha no está en el
+día adecuado, no se toman la molestia de sincronizar. En los raspberry-pi eso
+puede llegar a ser un tremendo problema, ya que NO tienen reloj de hardware y ni
+siquiera conservan la fecha.</p>
+
+<p>El tan criticado <a href="https://es.wikipedia.org/wiki/Systemd">Systemd</a>, tiene una
+solución para este problema. Sucia y burda, pero muy eficiente. Normalmente, los
+&ldquo;clientes&rdquo; <a href="https://es.wikipedia.org/wiki/Network_Time_Protocol">NTP</a>, son
+cliente y servidor. En el caso de systemd-timsyncd, no se tomaron la molestia de
+implementar un servidor; solamente un cliente minimalista. Además, guarda las
+sincronizaciones en un fichero, para determinar si tu reloj de hardware se
+adelante o atraza y contrarrestar dicho efecto.</p>
+
+<p>Lo bueno que tiene es que agarra la fecha y hora de cualquier parte; luego, la
+setea sin chistar. La configuración es sencillísima. Localiza el fichero:</p>
+
+<p><strong>/etc/systemd/timesyncd.conf</strong></p>
+
+<p>Declárale un servidor principal y si te da la gana, uno o varios adicionales. A
+mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>/etc/systemd/timesyncd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#  This file is part of systemd.</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#  systemd is free software; you can redistribute it and/or modify it</span>
+</span><span class='line'><span class="c">#  under the terms of the GNU Lesser General Public License as published by</span>
+</span><span class='line'><span class="c">#  the Free Software Foundation; either version 2.1 of the License, or</span>
+</span><span class='line'><span class="c">#  (at your option) any later version.</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># You can override the directives in this file by creating files in</span>
+</span><span class='line'><span class="c"># /etc/systemd/timesyncd.conf.d/*.conf.</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># See timesyncd.conf(5) for details</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Time<span class="o">]</span>
+</span><span class='line'><span class="nv">NTP</span><span class="o">=</span>time.hcg.sld.cu
+</span><span class='line'><span class="nv">FallbackNTP</span><span class="o">=</span>time.sld.cu time.microsoft.com
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Generalmente, mi laptop está en el calixto, por eso puse mi servidor local como
+primario; pero si no lo estuviera, de seguro <strong>time.sld.cu</strong> sería alcanzable. En
+el dificilísimo caso de que estuviera de cara a internet, quizás responda el de
+microsoft, que no está malo. Por cierto, los comentarios del fichero son
+bastante útiles, vale la pena leerlos.</p>
+
+<p>Por último, lo más importante, habilitar y arrancar el servicio:</p>
+
+<p>systemctl <strong>start</strong> systemd-timesyncd.service</p>
+
+<p>systemctl <strong>enable</strong> systemd-timesyncd.service</p>
+
+<p>Para saber el estado del servicio, corre:</p>
+
+<p><strong>timedatectl</strong></p>
+
+<p>Te dirá la hora local y la UTC; te dirá además si está sincronizando por NTP.
+Con ese comando puede hacer un montón de operaciones, por ejemplo, setear la
+hora civilizadamente, ya que este la pone en el <a href="https://es.wikipedia.org/wiki/Reloj_en_tiempo_real">RTC</a> también.</p>
+
+<p>   <blockquote><p>No existe juez más justo, que el pasar del tiempo.</p></blockquote></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+
+    </article>
   
   
     <article>
@@ -239,7 +353,7 @@ como lo estoy haciendo yo ahora.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -436,7 +550,7 @@ crudo. Podrías también tirarlo pa un fichero así:</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -654,7 +768,7 @@ porque servidor bootear.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -868,7 +982,7 @@ por detrás de plymouth, presiona &ldquo;home&rdquo; mientras butea.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.05 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -921,97 +1035,7 @@ un repositorio de git; puede llegar a ser un verdadero problema.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/07/archlinux-dos-kernel/">archlinux con dos kernel</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-09-07T20:32:57-04:00'><span class='date'>07/09/2015</span> <span class='time'>8:32 pm</span></time>
-        
-           | <a href="/blog/2015/09/07/archlinux-dos-kernel/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/09/07/archlinux-dos-kernel/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Tener los dos kernel y elegir cual butear con el grub al principio; no es algo
-sencillo en archlinux.</p>
-
-<p>Por defecto, el grub dice tener dichas entradas en un submenú que nunca se ve.
-Para lograrlo, tenemos que hacer unos pases mágicos en el fichero:</p>
-
-<h4>/etc/default/grub</h4>
-
-<p>Primero instalamos los kernels; el lts y el fresco.</p>
-
-<figure class='code'><figcaption><span>&#8220;los kernels&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S linux linux-lts
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora la configuración con la que logré eso, fue agregándole al final estas
-lineas:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/default/grub&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">GRUB_DISABLE_SUBMENU</span><span class="o">=</span>y
-</span><span class='line'><span class="nv">GRUB_DEFAULT</span><span class="o">=</span>saved
-</span><span class='line'><span class="nv">GRUB_SAVEDEFAULT</span><span class="o">=</span><span class="nb">true</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Con eso, se salva la última entrada ejecutada. Por que, lo más obvio, es que la
-próxima vez que arranques, se cargue el último kernel que usaste. Lo inusual
-sería que cambies de opinión y cargues otro. Desgraciadamente, si como yo, usas
-btrfs como sistema de archivo, grub no podrá escribir el fichero con la última
-entrada seleccionada. Incluso te dará un error, diciendo que no puede escribir
-el fichero no se que.</p>
-
-<p>Seguimos&hellip; Localiza y la linea de recovery y ponla en false:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/default/grub&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Uncomment to disable generation of recovery mode menu entries</span>
-</span><span class='line'><span class="nv">GRUB_DISABLE_RECOVERY</span><span class="o">=</span><span class="nb">false</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>NO SE POR QUE</strong>, pero no se generan las dichosas entradas si eso no está en
-false. Además, tener el menú de recovery es bastante útil, en estas distros
-volátiles, uno nunca sabe cuando le va a hacer falta.</p>
-
-<p>Paso final, generar el grub.cfg</p>
-
-<figure class='code'><figcaption><span>&#8220;grub-mkconfig&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>grub-mkconfig -o /boot/grub/grub.cfg
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Va y si quieres, no es obligado, pero para probar, <strong>REINICIA</strong>.</p>
-
-<p>   <blockquote><p>Prefiero lidiar con las pifias de una comunidad<br/>   que con las mazmorras de una compañía.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -1034,6 +1058,12 @@ volátiles, uno nunca sabe cuando le va a hacer falta.</p>
 	<ul id="recent_posts">
 
 		
+
+		<li class="post">
+			<a href="/blog/2017/11/30/segwit-confusion/">segwit y la confusión</a>
+      </li>
+
+      
 
 		<li class="post">
 			<a href="/blog/2017/11/04/install-pandorafms/">instalando pandorafms</a>

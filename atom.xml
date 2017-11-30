@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-11-29T14:38:24-05:00</updated>
+  <updated>2017-11-30T15:13:48-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,31 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[segwit y la confusión]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/11/30/segwit-confusion/"/>
+    <updated>2017-11-30T14:43:06-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/11/30/segwit-confusion</id>
+    <content type="html"><![CDATA[<p>Si bien, <a href="https://en.wikipedia.org/wiki/SegWit">segwit</a> era algo que caía por
+gravedad tarde o temprano. Ya que le cadena de bloques no daba más. Entonces el
+hijo de puta de <a href="https://en.wikipedia.org/wiki/Roger_Ver">Roger Ver</a> aprovechó
+la confusión para seguir <a href="https://twitter.com/BlockchainPK/status/935641859795378178">sembrando sizaña</a>
+y sacar del Fork, su propio bitcoin.</p>
+
+<p>El muy joputa, no solo impulsó BTCH, si no que además, ahora quiera apropiarse
+del nombre bitcoin. Haciéndonos creer que &ldquo;Bitcoin&rdquo; se llama &ldquo;bitcoin core&rdquo; ya
+que su engendro se llama &ldquo;bitcoin cash&rdquo;.</p>
+
+<p>Los dejo con los links del artículo para que saquen sus propias conclusiones&hellip;</p>
+
+<p>A todas estas, la implementación de segwit sigue caminando, pero ahora resulta
+que los trezor, usan direcciones 3<em> en vez de bc1</em>, razón por la cual en el
+próximo post, explicaré como configurar electrum para generar una cartera 3* con
+segwit; porque en lo que se ponen de acuerdo las transacciones siguen pie y
+cuando son montos bajos, segwit es muy útil.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[instalando pandorafms]]></title>
@@ -2501,104 +2526,6 @@ los forwarders (los dns de infomed).</p>
 <p>En mi opinión esto no es necesario. Tanto así, que la zona donde infomed hace
 forward; la tengo para los servidores. En el caso de la zona para LAN,
 simplemente declaro los servidores de correo en un fakeroot y listo.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[QoS con tc o dummynet]]></title>
-    <link href="http://uranio-235.github.io/blog/2017/03/01/qos-con-tc/"/>
-    <updated>2017-03-01T19:57:14-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2017/03/01/qos-con-tc</id>
-    <content type="html"><![CDATA[<p>Acá en el 5to infierno de infomed, algunos usuarios; están acostumbrados a usar
-un &ldquo;MUA&rdquo; (léase &ldquo;cliente de correo&rdquo;)  para alar el correo de infomed. Con el
-boom de la wifi, los médicos querían tener su correo de infomed en el puñetero
-cliente de correo de android/ios. Tras hacer un forward a los smtp y pop de
-infomed, el ancho de vianda se fue a la mierda. Por tanto, surgió la necesidad
-de chapiar el tráfico que va desde/hacia infomed. Por ejemplo, el tráfico smtp,
-es saliente (subida), sin embargo, el tráfico pop es entrante (bajada).</p>
-
-<p>El servidor que uso como &ldquo;router&rdquo;, es un alpine linux. El trinomio bind, dhcp e
-iptables, sumado al kernel grsec; convierte en mi opinión a alpinelinux en la
-mejor opción para un router.</p>
-
-<p>Entrando en materia. Tenemos un canal de 2 megabit (256 KB/s). Pero en HDSL, la
-subida es más triste que la bajada; y además, hay más gente bajando correo que
-subiendo. Por tanto, usaremos un canal para el smtp, más estrecho que el del
-pop. En este caso, <strong>eth0</strong> será la interfaz donde está el router.</p>
-
-<figure class='code'><figcaption><span>&#8220;tc del firewall&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># reiniciamos las colas que hallan en eth0</span>
-</span><span class='line'><span class="c"># para empezar a trabajar en limpio</span>
-</span><span class='line'>tc qdisc del root dev eth0
-</span><span class='line'>tc qdisc add dev eth0 root handle 1: htb default 30
-</span><span class='line'>
-</span><span class='line'><span class="c"># un canal de 256 KB/s lo partimos en dos</span>
-</span><span class='line'><span class="c"># una fracción de 10 KB/s y otro de 20KB/s</span>
-</span><span class='line'>tc class add dev eth0 parent 1:  classid 1:1  htb rate 256kbps burst 5k
-</span><span class='line'>tc class add dev eth0 parent 1:1 classid 1:10 htb rate  20kbps burst 5k
-</span><span class='line'>tc class add dev eth0 parent 1:1 classid 1:11 htb rate  10kbps burst 5k
-</span><span class='line'>
-</span><span class='line'><span class="c"># lo que valla para el pop e imap, lo dejamos en el :10 con 20kbps</span>
-</span><span class='line'>tc filter add dev eth0 parent 1: protocol ip prio <span class="m">1</span> u32 match ip src 201.220.211.7 match ip sport <span class="m">110</span> 0xffff flowid 1:10
-</span><span class='line'>tc filter add dev eth0 parent 1: protocol ip prio <span class="m">1</span> u32 match ip src 201.220.211.7 match ip sport <span class="m">143</span> 0xffff flowid 1:10
-</span><span class='line'>
-</span><span class='line'><span class="c"># lo que valla por el smtp, en el :11 de 10kbps</span>
-</span><span class='line'>tc filter add dev eth0 parent 1: protocol ip prio <span class="m">1</span> u32 match ip dst 201.220.211.39 match ip dport <span class="m">25</span> 0xffff flowid 1:11
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note como en el caso de lo que venga del &ldquo;.7&rdquo;, (src) de los puertos pop e imap
-(sport) pasarán por la cola <strong>1:10</strong>. Mientras que en el &ldquo;.39&rdquo;, se usan las
-cláusulas dst y dport.</p>
-
-<p><strong>pero aquí NO terminan las aventuras de QoS</strong></p>
-
-<p>Resulta que el tráfico proveniente de las WiFi era apabullante para el servidor
-proxy. Mientras que de una IP de una máquina entran 3 peticiones, de la IP de
-un router wifi entran 30.</p>
-
-<p>En un principio pensaba usar un delay_pool especial para estas ip, pero sería
-complicar más el esquema de delay_pool que funciona bien por usuarios. Por
-tanto, el tema de la bajada ya está cubierto. Ningún usuario puede acaparar todo
-el ancho de banda con una descarga. Sin embargo, 1&#8217;000 peticiones de basura
-(android con proxy configurado) ahogan al proxy. La medida fue, que el tráfico
-entrante de la wifi, no exceda los 200KB.</p>
-
-<p>En mi caso, los AP usan la ip 10 al 15, por tanto, haciendo un pipe de dummynet
-y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
-
-<figure class='code'><figcaption><span>&#8220;ipfw.rules&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ipfw pipe <span class="m">1</span> config bw 200KBytes
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.10 to me
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.11 to me
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.12 to me
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.13 to me
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.14 to me
-</span><span class='line'>ipfw add pipe <span class="m">1</span> ip from 10.1.1.15 to me
-</span></code></pre></td></tr></table></div></figure>
-
 ]]></content>
   </entry>
   

@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="delay pools de squid 19/02/2015 12:03 pm | Comments Los delay pool de squid, son una herramienta que permite determinar cuanto ancho
-de vianda le &hellip;">
+  <meta name="description" content="SASL homeclub only 21/02/2015 2:16 pm | Comments Mientras tanto, muy lejos de infomed y del calixto; con mi triste licencia de
+&ldquo;programador de &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,70 @@ de vianda le &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/21/sasl-homeclub-only/">SASL homeclub only</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-21T14:16:49-05:00'><span class='date'>21/02/2015</span> <span class='time'>2:16 pm</span></time>
+        
+           | <a href="/blog/2015/02/21/sasl-homeclub-only/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/02/21/sasl-homeclub-only/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Mientras tanto, muy lejos de infomed y del calixto; con mi triste licencia de
+&ldquo;programador de computo&rdquo;; sigo en peleando en la ciberguerra. Esta trinchera es
+nada menos que un servidor de correo de cara a internet, en una entidad cubana
+que no mencionaré.</p>
+
+<p>De siempre, me ha molestado que los hacker de hipatia.net, hagan ataquitos para
+autenticarse por fuerza bruta en el SMTP.</p>
+
+<p>Mis paisanos suelen resolver ese problema poniendo una pasarela de correo
+&ldquo;relay-only&rdquo; delante de su servidor principal o simplemente con fail2ban.</p>
+
+<p>fail2ban tiene sus ventajas, pues bloqueas a un atacante que podría hacer eso y
+otras muchas cosas que no imaginamos. Por tanto, no dejo de recomendar que se
+use SIEMPRE fail2ban.</p>
+
+<p>Por suerte, <a href="http://www.postfix.org/postconf.5.html#smtpd_sasl_exceptions_networks">postfix tiene su método para deshacerse del problema&hellip;</a></p>
+
+<p>Como no tengo nada en mynetworks, a mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;scope del main.cf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp"># sasl solo para nuestra red local</span>
+</span><span class='line'><span class="n">smtpd_sasl_exceptions_networks</span> <span class="o">=</span> <span class="o">!</span><span class="mf">192.168.99.0</span><span class="o">/</span><span class="mi">24</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Osea: &ldquo;a lo que NO este en esa red, no se le ofrece autenticación&rdquo;</p>
+
+<h4>Se acabó la autenticación pa afuera</h4>
+
+<p>   <blockquote><p>Te das cuenta que NO todo se resuelve con violencia,<br/>   cuando se te posa un mosquito en los testículos.</p></blockquote></p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+
+    </article>
   
   
     <article>
@@ -257,7 +321,7 @@ del canal y navega con cordura.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -341,7 +405,7 @@ desarollar&hellip;</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -539,7 +603,7 @@ donde descansa el <strong>wpad.dat</strong></p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -616,7 +680,7 @@ para que le mande imágenes a mi máquina.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.09 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -704,110 +768,7 @@ para que le mande imágenes a mi máquina.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/25/el-server-de-correo/">el servidor de correo</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-08-25T20:19:27-04:00'><span class='date'>25/08/2014</span> <span class='time'>8:19 pm</span></time>
-        
-           | <a href="/blog/2014/08/25/el-server-de-correo/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/08/25/el-server-de-correo/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>No deja de llamarme la atención la fauna local; a la cual debo cordialmente
-llamar &ldquo;equipo&rdquo; ya que son mis compañeros de trabajo.</p>
-
-<p>Después de que &ldquo;el chino&rdquo; (técnico de seguridad informática) se diera mil
-cabezasos con la papelística; Yoel (el jefe del departamento) le dijo que quería
-revisar el estado y organización de todos los papeles. De facto &ldquo;apareció&rdquo; la
-contraseña del MultiPOP. También resulto que &ldquo;el que no puede ser nombrado&rdquo; (un
-tal Andy) se la sabía de memoria.</p>
-
-<p>Resulta que el servidor con el DomainPOP (multipop es un disparate) y este buzón
-(que no tiene imap) está en <strong>multipop.sld.cu</strong>.</p>
-
-<p>En fin, <strong>fetchmail</strong> que tu conoces y pa abajo el correo que no hay más ná.</p>
-
-<figure class='code'><figcaption><span>&#8220;/root/.fetchmailrc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">set</span> <span class="n">daemon</span> <span class="mi">60</span>
-</span><span class='line'><span class="n">set</span> <span class="n">postmaster</span> <span class="s">&quot;root&quot;</span>
-</span><span class='line'><span class="n">set</span> <span class="n">no</span> <span class="n">bouncemail</span>
-</span><span class='line'><span class="n">set</span> <span class="n">no</span> <span class="n">spambounce</span>
-</span><span class='line'><span class="n">set</span> <span class="n">logfile</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">fetchmail</span><span class="o">/</span><span class="n">fetchmail</span><span class="p">.</span><span class="n">log</span>
-</span><span class='line'><span class="n">set</span> <span class="n">no</span> <span class="n">syslog</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">defaults</span>
-</span><span class='line'>    <span class="n">timeout</span> <span class="mi">10</span>
-</span><span class='line'>    <span class="n">no</span> <span class="n">keep</span>
-</span><span class='line'>    <span class="n">fetchall</span>
-</span><span class='line'>    <span class="n">expunge</span> <span class="mi">5</span>
-</span><span class='line'>    <span class="n">dropstatus</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">poll</span> <span class="n">multipop</span><span class="p">.</span><span class="n">sld</span><span class="p">.</span><span class="n">cu</span> <span class="n">port</span> <span class="mi">110</span> <span class="n">protocol</span> <span class="n">pop3</span> <span class="n">localdomains</span> <span class="n">hcg</span><span class="p">.</span><span class="n">sld</span><span class="p">.</span><span class="n">cu</span>
-</span><span class='line'>    <span class="n">envelope</span> <span class="mi">1</span> <span class="s">&quot;Delivered-To&quot;</span>
-</span><span class='line'>    <span class="n">no</span> <span class="n">dns</span>
-</span><span class='line'>    <span class="n">username</span> <span class="o">????</span>
-</span><span class='line'>    <span class="n">password</span> <span class="o">?????????</span>
-</span><span class='line'>    <span class="n">to</span> <span class="o">*</span> <span class="n">here</span>
-</span><span class='line'>    <span class="n">limitflush</span>
-</span><span class='line'>    <span class="n">smtphost</span> <span class="n">localhost</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Aún me queda pendiente a verificar que encabezado genera Exim para entregar el
-correo, si no, fetchmail lo manda todo amablemente para el postmaster. Cuando
-arranque probaré si es ese; si no, debe ser &ldquo;X-Delivered-To:&rdquo;</p>
-
-<p>Ahora el problema está en que NO hay un puntero MX para el dominio <em>hcg.sld.cu</em>
-porque el contrato no está renovado (problemas papelísticos). En el nodo de
-infomed me dijeron que fuera al &ldquo;GAU&rdquo; para renovar el contrato.</p>
-
-<p>Solo falta poner en orden la parte burocrática&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -830,6 +791,12 @@ infomed me dijeron que fuera al &ldquo;GAU&rdquo; para renovar el contrato.</p>
 	<ul id="recent_posts">
 
 		
+
+		<li class="post">
+			<a href="/blog/2017/11/30/segwit-confusion/">segwit y la confusión</a>
+      </li>
+
+      
 
 		<li class="post">
 			<a href="/blog/2017/11/04/install-pandorafms/">instalando pandorafms</a>

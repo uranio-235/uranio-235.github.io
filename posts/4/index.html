@@ -9,7 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="bind en infomed 01/03/2017 11:13 pm | Comments Seguimos con bind&hellip; No hace mucho le comentaba a alguien, a raíz de una duda que tenía el &hellip;">
+  <meta name="description" content="portknocking en freebsd 01/03/2017 11:53 pm | Comments La técnica port-knocking o knockd para otros, es en mi opinión, pilar de la
+seguridad en &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +82,138 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/01/portknocking-en-freebsd/">portknocking en freebsd</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-01T23:53:01-05:00'><span class='date'>01/03/2017</span> <span class='time'>11:53 pm</span></time>
+        
+           | <a href="/blog/2017/03/01/portknocking-en-freebsd/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="right" src="/images/alibaba.jpg" width="400" height="500" title="" ></p>
+
+<p>La técnica port-knocking o knockd para otros, es en mi opinión, <strong>pilar de la
+seguridad</strong> en cualquier servidor que use SSH. Aunque es bastante versátil y
+puede ser usado hasta para reiniciar servicios sin loguearte.</p>
+
+<p>Una de las cosas que empece a extrañar en FreeBSD fue knockd, pero gracias a la
+flexbilidad de ipfw, podemos usar este poderoso software. En FreeBSD el fichero
+se encuentra en <strong>/usr/local/etc/knockd.conf.sample</strong> y el paquete se llama
+<strong>knock</strong>.</p>
+
+<p>OJO!! Muy importante especificarle la interfaz por la cual va a escuchar.</p>
+
+<figure class='code'><figcaption><span>&#8220;/usr/local/etc/knockd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="k">[options]</span>
+</span><span class='line'>         <span class="na">logfile</span> <span class="o">=</span> <span class="s">/var/log/knockd.log</span>
+</span><span class='line'><span class="s">         interface = xn0</span>
+</span><span class='line'>
+</span><span class='line'> <span class="k">[openSSH]</span>
+</span><span class='line'>         <span class="na">sequence</span>    <span class="o">=</span> <span class="s">111,222,333</span>
+</span><span class='line'><span class="s">         seq_timeout = 9</span>
+</span><span class='line'><span class="s">         command     = /sbin/ipfw -q add 00001 allow all from %IP% to me</span>
+</span><span class='line'><span class="s">         tcpflags    = syn</span>
+</span><span class='line'>
+</span><span class='line'> <span class="k">[closeSSH]</span>
+</span><span class='line'>         <span class="na">sequence</span>    <span class="o">=</span> <span class="s">222,111,333</span>
+</span><span class='line'><span class="s">         seq_timeout = 9</span>
+</span><span class='line'><span class="s">         command     = /sbin/ipfw -q delete 00001</span>
+</span><span class='line'><span class="s">         tcpflags    = syn</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nada, resumiendo, que el truco está en poner la regla con el número 00001.
+Recuerdas que ipfw te permite (casi te obliga a) especificar un número para cada
+regla. Pues usaremos ese numerito diminuto para ponerla de primera.</p>
+
+<p>Los tipos ortodoxos criticarán que es una regla <em>al tetón</em>. Pienso que no vale
+la pena abrir solo el 22; si voy a pasar tanto trabajo, que se me abra la puerta
+completa.</p>
+
+<p>Por cierto, junto con knock, viene un programita para hacer el knocking. Yo
+solía hacerlo con netcat pero knock es más cómodo.</p>
+
+<figure class='code'><figcaption><span>&#8220;knock&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">   knock 192.168.3.1 111,222,333</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En mi <strong>.bashrc</strong>, tengo esta función declarada.</p>
+
+<figure class='code'><figcaption><span>&#8220;.bashrc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> abrete_cesamo<span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    knock  <span class="nv">$1</span> <span class="m">111</span> <span class="m">222</span> 333
+</span><span class='line'>    ssh root@<span class="nv">$1</span>
+</span><span class='line'>    knock  <span class="nv">$1</span> <span class="m">222</span> <span class="m">111</span> 333
+</span><span class='line'> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No tengo que decirte que la combinación de puertos está de acorde al ejemplo de
+la entrada y que debes cambiarla por la que tu establezcas. Así de esa manera,
+hacerle SSH a un servidor es ejecutar <strong>abrete_cesamo ip.del.servidor</strong> Luego al
+terminar la sesión ssh, se ejecuta la secuencia de cerrado.</p>
+
+<p>Y hablando de implementaciones raras de knockd!</p>
+
+<p>En alpine linux, iptables está en <strong>/sbin</strong>, no en /usr/sbin. Sin
+embargo, el fichero de configuración tiene puesto que está en /usr/sbin/, lo
+cual, repito; no es correcto.</p>
+
+<p>Además, tanto en debian como alpine. No importa que pongas en la configuración
+porque interfaz escuchará. Siempre lo hará por eth0. Para cambiar esta
+situación; debes:</p>
+
+<p>En <strong>alpine</strong> linux, configurar la interfaz en el fichero <strong>/etc/conf.d/knockd</strong></p>
+
+<p>En <strong>debian</strong>, configurar la interfaz (y poner un 1) en <strong>/etc/default/knockd</strong></p>
+
+<p>Recuerda que en linux, el comando de iptables, viene con &ldquo;-A INPUT&rdquo;. Si tienes
+un firewall corriendo, obviamente que no pincha; por tanto, ponlo con &ldquo;-I
+INPUT&rdquo;.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+
+    </article>
   
   
     <article>
@@ -204,7 +337,7 @@ simplemente declaro los servidores de correo en un fakeroot y listo.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -327,7 +460,7 @@ y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -456,7 +589,7 @@ con el administrador de conexiones de gnome.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.08 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -673,7 +806,7 @@ que ninguna pinche.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.04 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -959,140 +1092,7 @@ intenta poner siempre los pipe arriba y el cortafuegos abajo</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/28/freebsd-11/">mis crónicas con freebsd</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-28T23:39:52-05:00'><span class='date'>28/01/2017</span> <span class='time'>11:39 pm</span></time>
-        
-           | <a href="/blog/2017/01/28/freebsd-11/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/28/freebsd-11/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Si vas a leer este artículo, te aviso, que no tiene nada que ver con el blog. Me
-dispongo a expresar mi criterio sobre FreeBSD y un tanto de como ha formado
-parte de mi vida profesional.</p>
-
-<p>   <blockquote><p>FreeBSD, tecnología arcana para algunos y arcaica para otros.</p></blockquote></p>
-
-<p>Se cuentan leyendas sobre FreeBSD, como que es el sistema operativo de los nodos
-y cosas así. Mucha gente lo tiene como un arcano o algo que probarán <em>un día de
-estos</em>. Yo pienso que no tiene nada del otro mundo. De hecho, en mi opinión,
-gentoo es más complicado que freebsd.</p>
-
-<p>Lo que si me queda claro que es un excelente sistema operativo para servidores
-proxy. Además, ipfw, su cortafuegos, es sólido como una piedra. En FreeBSD eso
-de caer de rodillas ante un ataque DoS, es simplemente utópico.</p>
-
-<p>En ambientes libres de proxy, el binomio dummynet-<a href="https://www.freebsd.org/doc/handbook/firewalls-ipfw.html">ipfw</a>
-permite un manejo del ancho de banda con una simpleza que ya quisiera <strong>tc</strong>. Un
-solo pipe puede tener valores diferentes para su ancho de banda, encolamiento y
-delay.</p>
-
-<p>Por otra parte, el sistema de
-<a href="https://www.freebsd.org/doc/handbook/jails.html">jails</a> es un batazo. Sobre
-todo en ambientes donde te ves obligado a meter la pata y no dispones de
-virtualización. Lo único equivalente a esto en linux, sería LXC, pero no es ni
-la chancleta. Los jails combinado con ZFS, permiten hacer cosas alucinantes.</p>
-
-<p>Cada versión nueva que sale la pruebo; y aunque había hecho mis cositas con él,
-siempre acababa dejándolo de lado por el tema del ancho de banda. Cualquier
-operación que hagas con la paquetería requiere conexión y poco ancho de banda
-provoca que la operación falle. La versión 9 en mi opinión fue un desastre.
-Especialmente por el sistema de ports que daba unos palos horribles.</p>
-
-<p>El gestor de paquetes ha mejorado muchísimo. La resolución de dependencias y
-velocidad es espectacular. Además, han logrado una completa integración de
-gestión de paquetes en una sola herramienta. Ya no es el reguero ese de pkg_info
-por un lado y pkg_add por otro. Ahora además, soporta operaciones de limpieza
-como <em>autoremove</em> y <em>clean</em>. La herramienta <strong>portaudit</strong> al parecer fue
-<em>portada</em> a pkg también y ahora es oficial. Otras novedades relevantes son que permite crear
-respositorios y hacer operaciones en jails. Ah! y para que contarte el soporte
-de proxy. Más detalles (y una rosetta) <a href="https://wiki.freebsd.org/PkgPrimer">lo puedes ver aquí</a>.</p>
-
-<p>FreeBSD 10 no lo toqué, estuve más girado para OpenIndiana.</p>
-
-<p>Pero la versión 7 de OI parecía no terminar nunca. Finalmente el avión no
-despegó. El fiasco de nexenta store y la insertidumbre de oracle, golpearon
-fuertemente a la comunidad de OpenIndiana. El mundo se dio cuenta que OI tenía
-el futuro de un submarino descapotable y gran parte de la comunidad de illumos
-se mudó pa BSD. La comunidad de OpenIndiana se desmoronaba con las botas
-puestas. El agitado canal de freenode #openindiana se convirtió en un canal
-muerto. En lo personal, tras fracasar en mi afán por portar Ruby a OI, en parte
-debido a que no tengo ancho de banda para hacer operaciones en el Userland; alcé
-bandera blanca también.</p>
-
-<p>Pero como soy Linuxero! Volví a poner mis servidores en debian y comencé a mirar
-a fedora. De nuevo el ancho de vianda me golpeó; además de otros avatares de la
-vida. Terminé usando un chroot de arch, sobre la viejísima instalación de debian
-en mi laptop Pentium 3 que ya estaba más que obsoleta. Todas mis aplicaciones,
-mi /home, etc&hellip; Eran un chroot de arch dentro de un debian desnudo. Corría i3 y
-levantaba con startx luego de entrar al chroot.</p>
-
-<p>Free BSD andaba por finales de la 9 y la 10 en el horno; si mal no recuerdo&hellip;
-Yo, me dedicaba a leer noticias y continuaba suscrito a la lista de freebsd en
-español; donde hacer top-posting se paga con la pena capital.</p>
-
-<p>Mientras tanto, perdía yo mi trabajo y paradógicamente recién adquiría una nueva
-laptop. Apostar por el recién abierto &ldquo;modelo de trabajo por cuenta propia&rdquo;; me
-costó perder mi empleo y quedarme sentado un buen rato. Instalé ArchLinux en la
-laptop nueva para conservar las configuraciones de la anterior. Para este
-entonces me consideraba usuario de archlinux &ldquo;por casualidad&rdquo;. Me soñaba como un
-feliz usuario de Fedora. Consideraba ya a Debian; única y expresamente una
-herramienta para servidores. Seguía teniendo a FreeBSD en al mira, pero para
-cuando consiguiera un trabajo con un internet &ldquo;decente&rdquo; y tuviera algo de
-tiempo.</p>
-
-<p>El período más jodido de mi vida estaba aconteciendo en ese momento. No voy a
-escribir aquí mis problemas personales; pero a modo de resumen diré que la
-última enfermera que tuve como pareja me calló a tarros y la casa donde nací, la
-vendieron sin decirme nada. Al estilo país capitalista &ldquo;me quede en la calle&rdquo;.
-Con el ánimo y la autoestima en el piso; el único producto que podía ofrecer
-eran servidores con debian. A mediados del 2014, empecé en el calixto, de vuelta
-al trabajo estatal. El ancho de vianda seguía siendo un problema; también el
-tema de la cuota. FreeBSD seguía &ldquo;pospuesto pero no olvidado&rdquo;.</p>
-
-<p>A finales del 2016, me trajeron el servidor de gama media para remplazar el
-totem de servidores. Además, habían ampliado el susodicho ancho de vianda. Fue
-entonces cuando decidí, que el nuevo proxy, no podía quedarse mariado como le
-pasa al squid en linux; muchísimo menos con el micro tan poco potente del
-servidor (gama media).</p>
-
-<p>Para mi sopresa, FreeBSD andaba por la 11 (yo lo hacía por la 10 todavía) por lo
-lento que se desarrolla; el pobre. Ahora estoy muy contento con mi squid sobre
-FreeBSD 11. Que si bien también se marea, lo hace bastante poco y se recupera
-rápido.</p>
-
-<p>Por lo que veo ya no son tan retrógrados como antes; han mejorado mucho en ese
-aspecto, aunque siguen siendo una mirada al futuro desde el pasado. Mantienen la
-onda chea reflejada en su configuración; pero todo bien afinado, fresco y
-modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
-
-<p>Dejaron de ser retrógrados para convertirse en modernos pero anticuados.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.07 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.01 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -1115,6 +1115,12 @@ modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
 	<ul id="recent_posts">
 
 		
+
+		<li class="post">
+			<a href="/blog/2017/11/30/segwit-confusion/">segwit y la confusión</a>
+      </li>
+
+      
 
 		<li class="post">
 			<a href="/blog/2017/11/04/install-pandorafms/">instalando pandorafms</a>
