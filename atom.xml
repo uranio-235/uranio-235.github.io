@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-11-30T15:13:48-05:00</updated>
+  <updated>2017-11-30T15:19:02-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -18,11 +18,11 @@
     <link href="http://uranio-235.github.io/blog/2017/11/30/segwit-confusion/"/>
     <updated>2017-11-30T14:43:06-05:00</updated>
     <id>http://uranio-235.github.io/blog/2017/11/30/segwit-confusion</id>
-    <content type="html"><![CDATA[<p>Si bien, <a href="https://en.wikipedia.org/wiki/SegWit">segwit</a> era algo que caía por
-gravedad tarde o temprano. Ya que le cadena de bloques no daba más. Entonces el
-hijo de puta de <a href="https://en.wikipedia.org/wiki/Roger_Ver">Roger Ver</a> aprovechó
-la confusión para seguir <a href="https://twitter.com/BlockchainPK/status/935641859795378178">sembrando sizaña</a>
-y sacar del Fork, su propio bitcoin.</p>
+    <content type="html"><![CDATA[<p><a href="https://en.wikipedia.org/wiki/SegWit">Segwit</a> era algo que caía por gravedad
+tarde o temprano; ya que le cadena de bloques no daba más. Pero entonces el hijo
+de puta de <a href="https://en.wikipedia.org/wiki/Roger_Ver">Roger Ver</a> aprovechó la
+confusión para seguir <a href="https://twitter.com/BlockchainPK/status/935641859795378178">sembrando sizaña</a>
+y sacar del fork, su propio bitcoin.</p>
 
 <p>El muy joputa, no solo impulsó BTCH, si no que además, ahora quiera apropiarse
 del nombre bitcoin. Haciéndonos creer que &ldquo;Bitcoin&rdquo; se llama &ldquo;bitcoin core&rdquo; ya
