@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="portknocking en freebsd 01/03/2017 11:53 pm | Comments La técnica port-knocking o knockd para otros, es en mi opinión, pilar de la
-seguridad en &hellip;">
+  <meta name="description" content="pkg tras un proxy 03/03/2017 11:00 pm | Comments En el 5to infierno de infomed, con la vida detrás del proxy que ya he mencionado
+incontables veces &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,78 @@ seguridad en &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/03/pkg-tras-un-proxy/">pkg tras un proxy</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-03T23:00:57-05:00'><span class='date'>03/03/2017</span> <span class='time'>11:00 pm</span></time>
+        
+           | <a href="/blog/2017/03/03/pkg-tras-un-proxy/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/03/pkg-tras-un-proxy/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>En el 5to infierno de infomed, con la vida detrás del proxy que ya he mencionado
+incontables veces; todo se vuelve difícil.</p>
+
+<p>Por suerte freebsd ha mejorado en materia de soporte de proxy. Si bien en
+<strong>csh</strong>, basta con usar:</p>
+
+<figure class='code'><figcaption><span>&#8220;setenv&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">setenv http_proxy http://proxy.sld.cu:3128</span>
+</span><span class='line'><span class="go">setenv https_proxy $http_proxy</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Operaciones de rutinas como <strong>pkg audit -F</strong> suelen fallar al ser ejecutadas por
+el cron. Setear el proxy de manera global es una opción; pero nunca ha sido de
+mi agrado. Por suerte, el nuevo gestor de paquetes de freebsd soporta proxy en
+su configuración.</p>
+
+<p>El fichero de configuración está en una ubicación bien extravagante. Nada menos
+que en <strong>/usr/local/etc/pkg.conf</strong>. Los comentarios hablan por si solos, vale la
+pena mirarlos; no necesitarás leer manual ni buscar en google para darte cuenta
+que:</p>
+
+<figure class='code'><figcaption><span>&#8220;/usr/local/etc/pkg.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">PKG_ENV</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>   <span class="nx">http_proxy</span><span class="o">:</span> <span class="s2">&quot;http://proxy.sld.cu:3128&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¡Establece el proxy!</p>
+
+<p>Con eso <strong>pkg audit</strong> corrido desde el cron funcionará perfectamente. Además de
+las demás operaciones que requieran bajar contenido de internet; claro está.</p>
+
+<p>OJO! Nota que al final de la declaración del proxy, lo que hay es una <strong>coma</strong>,
+NO un punto y coma. La configuración parece ser un <strong>json</strong>.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+
+    </article>
   
   
     <article>
@@ -211,7 +283,7 @@ INPUT&rdquo;.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.008.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -337,7 +409,7 @@ simplemente declaro los servidores de correo en un fakeroot y listo.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.005.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -460,7 +532,7 @@ y metiéndolos a todos en ese pipe: -que se fajen por los 200KB!</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.006.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -589,7 +661,7 @@ con el administrador de conexiones de gnome.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.007.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -806,293 +878,7 @@ que ninguna pinche.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.006.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/02/01/ipfw-simple-y-consiso/">ipfw simple y conciso</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-02-01T23:15:47-05:00'><span class='date'>01/02/2017</span> <span class='time'>11:15 pm</span></time>
-        
-           | <a href="/blog/2017/02/01/ipfw-simple-y-consiso/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/02/01/ipfw-simple-y-consiso/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Las instrucciones para hacer un cortafuegos realmente <strong>SIMPLE</strong> y la vez
-funcional (statefull firewall) con ipfw; sensillamente <em>&ldquo;no existen&rdquo;</em>, al menos
-No de manera oficial. El cortafuegos ejemplificado en el handbook es bastante
-ortodoxo y no muestra la flexibilidad de ipfw.</p>
-
-<p>Para empezar, el módulo debe ser cargado en el kernel, así que inicializaremos
-ipfw como si fuera un demonio más del sistema. Esto quiere decir que lo
-añadiremos al <strong>/etc/rc.conf</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/rc.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="nv">firewall_enable</span><span class="o">=</span><span class="s2">&quot;YES&quot;</span>
-</span><span class='line'> <span class="nv">firewall_type</span><span class="o">=</span><span class="s2">&quot;/usr/local/etc/ipfw.rules&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Te recomiendo reiniciar ahora; para que todo se cargue correctamente.</p>
-
-<p>La <a href="https://www.freebsd.org/doc/handbook/firewalls-ipfw.html">documentación oficial</a> aclara que
-los firewall pueden ser (además) del tipo: open, client, simple, closed o
-UNKNOWN. Sin embargo, <strong>en mi opinión</strong> estas configuraciones prefabricadas, no
-son suficiente para un servidor (por ejemplo proxy).</p>
-
-<p>Para mantener la armonía chea y anticuada de freebsd; colocamos el cortafuegos
-en el etc/ que está bajo /usr/local/. Ten en cuenta que casi todas las
-aplicaciones que instales, tendrán su /etc ahí.</p>
-
-<p>Reiniciar ipfw no es tan jamón como un usuario de iptables haría. Hacer un flush
-de las reglas, significa quedarse trancado y perder la conexión por ssh. Para
-reiniciar el cortafuegos, deberás tener un script que haga flush y además,
-reiniciar el servicio. Este scriptsito me lo hice para la faena de toquetear el
-cortafuegos</p>
-
-<figure class='code'><figcaption><span>&#8220;/usr/local/bin/reiniciar_ipfw.sh&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="c">#!/bin/csh</span>
-</span><span class='line'> service ipfw stop
-</span><span class='line'> ipfw -q flush
-</span><span class='line'> service ipfw start
-</span><span class='line'> ipfw show
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<p>La documentación oficial (y otras muchas) indican que cada regla se cree
-enumerada y que bebes mantener esta numeración manualmente. Sin embargo, esto no
-es estrictamente necesario. Cada regla incrementará el número de manera
-implícita.</p>
-
-<p>La mecánica de ipfw es más sencilla que cualquier firewall de linux en mi
-opinión.</p>
-
-<p><strong>ipfw add accion argumento</strong></p>
-
-<p>Si ya conoces <strong>ufw</strong>, te darás cuenta de que es una copia bastante mala de
-ipfw, sobre todo; teniendo cuenta que ipfw es un firewall en sí, mientras que
-ufw, es un stack que genera instrucciones de iptables.</p>
-
-<p>Algo de lo que linux se ha alejado mucho es el teorema de KISS, pero en BSD, que
-es unix ortodoxo, mantiene la simpleza como pilar. De esta manera, una acción
-allow, en su forma más simple, es casi lenguaje natural.</p>
-
-<p><strong>ipfw add allow all from 10.99 to me</strong></p>
-
-<p>O sea, permite todo lo que venga de 10.0.0.1 para mi. Pero podemos hacer algo
-más discriminatorio.</p>
-
-<p><strong>ipfw add allow tcp from 10.0.0.99 to 10.0.0.1 dst-port 22 in via xn0</strong></p>
-
-<p>Permite el tráfico tcp de 10.99 para 10.1 que valla para el puerto 22 en sentido
-entrante (in) por la interfaz (via) xn0</p>
-
-<p>¿Te la llevaste? Jamón de pollo! ¿Verdad?</p>
-
-<p>Veamos pues un <strong>ipfw.rules</strong> bien básico. La interfaz <strong>lo0</strong> (lo con un cero)
-es el localhost. La interfaz xn0 es la WAN y xn1 es la LAN.</p>
-
-<figure class='code'><figcaption><span>&#8220;ipfw.rules&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="c"># lo permitimos todo pa afuera</span>
-</span><span class='line'> ipfw -q add allow all from any to any out keep-state
-</span><span class='line'>
-</span><span class='line'> <span class="c"># permite todo por el localhost</span>
-</span><span class='line'> ipfw -q add allow all from any to any via lo0
-</span><span class='line'>
-</span><span class='line'> <span class="c"># las conexiones que ya estén iniciadas, pásalas</span>
-</span><span class='line'> <span class="c"># compara eso con el de iptables</span>
-</span><span class='line'> ipfw -q add allow tcp from any to any established
-</span><span class='line'>
-</span><span class='line'> <span class="c"># permite que te hagan ping desde la LAN </span>
-</span><span class='line'> <span class="c"># pero no mucho icmp para que no hagan flood</span>
-</span><span class='line'> ipfw pipe <span class="m">1</span> config bw 30KBytes
-</span><span class='line'> ipfw -q add pipe <span class="m">1</span> icmp from 192.168.1.0/24 to me in via xn1
-</span><span class='line'> ipfw -q add allow  icmp from 192.168.1.0/24 to me in via xn1
-</span><span class='line'>
-</span><span class='line'> <span class="c"># permite que accedan al proxy desde la LAN</span>
-</span><span class='line'> ipfw -q add allow tcp from 192.168.1.0/24 to me <span class="m">3128</span> via xn1
-</span><span class='line'>
-</span><span class='line'> <span class="c"># permite el servidor web pero solo deade la WAN</span>
-</span><span class='line'> <span class="c"># en este caso &quot;me&quot; será la ip de la WAN</span>
-</span><span class='line'> ipfw -q add allow tcp from any to me dst-port <span class="m">80</span> via xn0
-</span><span class='line'>
-</span><span class='line'> <span class="c"># descarta el resto de los paquetes ENTRANTES</span>
-</span><span class='line'> <span class="c"># esta regla casi nunca es necesaria, ya que</span>
-</span><span class='line'> <span class="c"># suele ser implícita, o sea, drop por defecto</span>
-</span><span class='line'> ipfw -q add drop all from any to any
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Veamos algunas características de este cortafuegos&hellip;</p>
-
-<p>Como ven, no arranca haciendo flush como los de iptables. De hecho, hacer flush
-como primera linea puede causarte problemas muy serios. Por otro parte,
-reiniciar el cortafuegos sin hacer flush, provoca que se dupliquen las reglas.</p>
-
-<p>La salida, por definición, está bloqueada. La última regla; autoriza la salida
-del tráfico. ¿Por qué la última? ¿Por qué no al principio? Pues por si hacemos
-un pipe de salida. Aveces regular el ancho de banda de salida, es más útil que
-regular el de entrada. Por ejemplo, si queremos moderar la cantidad de tráfico
-que un servidor web exporta. Más adelante veremos dummynet y los pipe.</p>
-
-<p>En iptables, hacemos DROP cuando queremos desechar paquetes. En ipfw usamos
-<strong>deny</strong>, aunque también puedes usar <strong>drop</strong> que es sinónimo de deny. El
-cortafuego lo sustituirá por deny. Lo puedes ver al usar: ipfw show</p>
-
-<p>Note que &ldquo;<strong>from me</strong>&rdquo; para ipfw, significa un paquete que provenga de cualquiera de
-las ip que tiene configurada el servidor. En este caso, la interfaz xn0 debe
-tener alguna de la red 192.168.1.0/24 así que <strong>me</strong> será dicha ip.</p>
-
-<p>Una característica de ipfw <strong>bien peligrosa</strong> es que tiene muchas cosas
-<strong>implícitas</strong>. Como lo de la numeración. Cuando digo implícita me refrito a que
-si no las pones, ipfw las asume. Fíjate bien como se maneja el tema de los
-puertos en la siguientes reglas.</p>
-
-<figure class='code'><figcaption><span>&#8220;ipfw dst-port&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="c"># permite que accedan al proxy desde la LAN</span>
-</span><span class='line'> ipfw -q add allow tcp from 192.168.1.0/24 to me <span class="m">3128</span> via xn1
-</span><span class='line'>
-</span><span class='line'> <span class="c"># permite el servidor web pero solo deade la WAN</span>
-</span><span class='line'> <span class="c"># en este caso &quot;me&quot; será la ip de la WAN</span>
-</span><span class='line'> ipfw -q add allow tcp from any to me dst-port <span class="m">80</span> via xn0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En la primera regla, declaramos &ldquo;<strong>me 3128</strong>&rdquo;, esto significa &ldquo;para mi ip por el
-puerto 3128&rdquo;. Realmente ipfw lo reescribe (puedes verlo con &ldquo;show&rdquo;) y pondrá la
-cláusula <strong>dst-port</strong> al igual que la siguiente linea, detrás de <strong>me</strong> viene la
-cláusula <strong>dst-port</strong> seguida por el puerto. Pero si no la pones, se asume como
-implícita. En poca palabras:</p>
-
-<p>&ldquo;to me 3128&rdquo; y &ldquo;to me dst-port 3128&rdquo; es exactamente lo mismo.</p>
-
-<p>Otro tema que le retraquetea el mango; es la gestión del ancho de vianda. Porque
-tc de iproute (en linux) es un asco. Pero si conocemos ipfw, sabremos que maneja
-el ancho de vianda de una menera muy peculiar; usando un módulo llamado
-dummynet. No esperes ver la palabra &ldquo;dummynet&rdquo; escrita en el cortafuegos. En
-fin; analiza este ejemplo:</p>
-
-<figure class='code'><figcaption><span>&#8220;ipfw y dummynet&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> ipfw add pipe <span class="m">1</span> ip from me to 192.168.1.0/24 out via xn0
-</span><span class='line'> ipfw pipe <span class="m">1</span> config bw 128KBytes
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Se crea el pipe número 1, con un ancho de banda de 128 KyloBytes. En la regla de
-arriba, se dijo que todo el tráfico de la interfaz xn0, proveniente de el
-servidor hacia la red 192.168.1.0/24 y en sentido saliente; será a 128K. O sea,
-modificamos el ancho de banda <strong>que sale</strong> del servidor, lo cual es bastante
-útil para un servidor web o ftp.</p>
-
-<p>En el caso de un servidor proxy, no vale la pena modificar el ancho de banda de
-<strong>salida</strong>, ya que las páginas son enviadas al cliente una vez bajadas y si ya
-nos hicimos el arakiri de bajarla: ¿Pa que demorarlas más? Para un servidor
-proxy usamos una regla bidireccional. O sea, creamos el pipe 1 y el pipe 2 con
-igual o diferente ancho de banda y aplicamos una regla pa afuera y otra pa
-adentro.</p>
-
-<p>Tenga en cuenta que el las conexiones HDSL tiene más ancho de vianda pa abajo
-que pa arriba. Osea, que salida a la WAN (el router) debe ser más estrecha que
-salida a la LAN.</p>
-
-<p>En un servidor de correo sí sería útil regular la entrada, ya que hay gente que
-manda elefantes por el puerto 25. Sobre todo en redes conmutadas o muy lentas.
-También sería útil moderar la entrada en un servidor que involucre subida de
-ficheros, por ejemplo, una nube, un servidor de carpetas compartidas.</p>
-
-<p>Ah! por cierto:</p>
-
-<p>Si crearas un pipe y le dijeras que 3 ip, lo usan, el ancho de vianda sería
-compartido para esas 3 ip. O sea</p>
-
-<figure class='code'><figcaption><span>&#8220;ipfw y dummynet&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> ipfw add pipe <span class="m">1</span> ip from me to 192.168.1.10/24 out via xn0
-</span><span class='line'> ipfw add pipe <span class="m">1</span> ip from me to 192.168.1.11/24 out via xn0
-</span><span class='line'> ipfw add pipe <span class="m">1</span> ip from me to 192.168.1.12/24 out via xn0
-</span><span class='line'> ipfw pipe <span class="m">1</span> config bw 128KBytes
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En este caso, 10, 11 y 12, tienen un total de 128KB/s, si 10 acapara todo el
-ancho de banda (los 128) entonces 11 y 12 tendrán unos bellos timeout como
-respuesta. Piensa en todo lo que puedes hacer con eso.</p>
-
-<p><strong>OJO CON EL ÓRDEN!!!</strong></p>
-
-<p>Esa regla machea <strong>la salida</strong>. Si la colocaras <strong>debajo</strong> de la regla que
-permite todo hacia afuera, simplemente, <strong>no pinchará</strong> porque <strong>no machea</strong>.
-Coge por la regla de salida y nunca va al pipe. Como diría los yumas &ldquo;rule of
-thumbs&rdquo;</p>
-
-<p><strong>Las reglas que envían el tráfico al pipe, debes ponerlas arriba de la regla
-&ldquo;destino final&rdquo; del paquete.</strong></p>
-
-<p>De esta manera el paquete va al pipe y luego regresa al cortafuegos. O sea,
-intenta poner siempre los pipe arriba y el cortafuegos abajo</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.007.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -1115,6 +901,12 @@ intenta poner siempre los pipe arriba y el cortafuegos abajo</p>
 	<ul id="recent_posts">
 
 		
+
+		<li class="post">
+			<a href="/blog/2017/11/30/segwit-con-3-star-en-electrum/">segwit con p2sh en electrum</a>
+      </li>
+
+      
 
 		<li class="post">
 			<a href="/blog/2017/11/30/segwit-confusion/">segwit y la confusión</a>

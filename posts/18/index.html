@@ -9,7 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="postfix entrando en el baile 09/06/2014 3:19 pm | Comments En el episodio anterior, vimos como dovecot se sumaba al esquema mysql. Faltaría &hellip;">
+  <meta name="description" content="autenticador SQL en el proxy 10/06/2014 3:26 pm | Comments De siempre, me ha parecido que los autenticadores de squid son unas
+canchanfletas. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +82,148 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/10/autenticador-sql-en-el-proxy/">autenticador SQL en el proxy</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-06-10T15:26:38-04:00'><span class='date'>10/06/2014</span> <span class='time'>3:26 pm</span></time>
+        
+           | <a href="/blog/2014/06/10/autenticador-sql-en-el-proxy/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/06/10/autenticador-sql-en-el-proxy/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>De siempre, me ha parecido que los autenticadores de squid son unas
+canchanfletas. Realmente antes me parecían otra cosa, porque la palabra
+&ldquo;canchanfleta&rdquo; no existía, pero nunca me simpatizaron mucho los autenticadores.</p>
+
+<p>El hecho de que para administrar los usuarios se necesite una aplicación aparte
+y por lo general bien estrafalaria; es por si solo una verdadera jodienda.</p>
+
+<p>El despliegue aquí en el Calixto fue prácticamente una locura. Todo a la
+carrera. A pesar de eso, escribí un autenticador de lo mas chulo. Al enviarle
+como argumento un usuario, generaba una contraseña firme y creaba un fichero
+bajo el directorio &ldquo;/etc/squid/digest/&rdquo;. El nombre de dicho fichero era el
+nombre de usuario y el contenido: un digest irreversible (el password).</p>
+
+<h3>Problema 1:</h3>
+
+<p>La necesidad de crear usuarios y cambiar contraseñas, pujaba la necesidad de
+una mecanismo más óptimo. El problema era correr ruby on rails en el server
+para manejar los usuarios; matar moscas a cañonazos. El rails podía crear los
+ficheros en mi máquina y luego cotejarlo con el servidor manualmente con &ldquo;scp&rdquo;,
+lo cual seguía siendo un fastidio. Además NO SE POR QUE, después de crear un
+usuario, había que reiniciar el servidor, muy a pesar de que el directorio se
+releía cada vez que se pedía un usaurio.</p>
+
+<p>Sumado a eso, la evidente aparición de un presunto servidor de correo y la
+inspiración que resulta el esquema de infomed; me dejaron caer una vieja escupía
+en la frente; yo que era tan renuente a SQL.</p>
+
+<p>Bueno, todos los usuarios pa una base de datos y problema resuelto.</p>
+
+<p>Además, tengo planificado más de un servicio, así que alé por el típico esquema
+de una cuenta para todos los servicios.</p>
+
+<figure class='code'><figcaption><span>&#8220;consulta SQL para ver el password&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="n">password</span> <span class="k">FROM</span> <span class="n">users</span> <span class="k">WHERE</span> <span class="n">username</span><span class="o">=</span><span class="ss">&quot;fulanito&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La cantidad de código del autenticador se redujo considerablemente y con ello
+el margen de error. La cuestión quedó sencilla: Una consulta SQL que determina
+si el usuario está en la base de datos y si tiene permisos de navegación. En
+futuro si se requiere un sistema de quotas, saldrá por ahí también.</p>
+
+<h3>Problema 2:</h3>
+
+<p>Pero entonces surgió un nuevo problema. Cuba, tierra de salvajes apagones y
+feroces mosquitos. La luz falla y la máquina del informático se cae. Cuando el
+autenticador comete algún error, squid dice que el autenticador está fallando y
+lo deja de pinchar. Aún si arrancase la base de datos, squid no vuelve a echar a
+andar el autenticador.</p>
+
+<p>Entonces volvemos a lo mismo: -lazarito! no hay internet??! Junto a un nagios
+histérico que manda correos a diestra y siniestra. PÁFATA! De vuelta al
+subdesarrollo, ssh pal servidor y &ldquo;squid -k reconfigure&rdquo;</p>
+
+<h3>Solución:</h3>
+
+<p>El autenticador debe seguir en pie, aún cuando la base de datos no sea
+accesible.</p>
+
+<p>La única forma de lograr esto de forma transparente hacia squid; es verificar si
+la conexión a la base de datos está operacional y denegar todas las
+autenticaciones si esta no lo estuviere.</p>
+
+<h3>Implementación:</h3>
+
+<p>Pero un autenticador de squid, es un ciclo infinito que lee stdin y habla por
+stdout; cargar una subrutina de rescate en cada vuelta, sería caerle a puñaladas
+a la memoria RAM.</p>
+
+<p>Solución: En cada vuelta, se compruebe si la base de datos está en linea. En
+caso de no estarlo, se llama una función que establece la conexión. Este es un
+iterador que intentará establecer la conexión hasta que lo logre. Mientras tanto
+toda la autenticación en el proxy será &ldquo;usuario no válido&rdquo;.</p>
+
+<figure class='code'><figcaption><span>&#8220;scope del iterador principal, bifurcador de reconexión&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">if</span> <span class="n">my</span>
+</span><span class='line'>   <span class="vi">@auth</span><span class="o">=</span><span class="kp">false</span>
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'>   <span class="k">begin</span>
+</span><span class='line'>      <span class="n">my</span> <span class="o">=</span> <span class="no">Mysql</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;10.1.1.14&#39;</span><span class="p">,</span> <span class="s1">&#39;usuario&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="s1">&#39;basededatos&#39;</span><span class="p">)</span> <span class="k">rescue</span> <span class="kp">false</span>
+</span><span class='line'>   <span class="k">rescue</span>
+</span><span class='line'>      <span class="no">STDERR</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;ERR Fallo la conexión al servidor SQL </span><span class="si">#{</span><span class="vg">$!</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="no">STDERR</span><span class="o">.</span><span class="n">flush</span>
+</span><span class='line'>      <span class="k">next</span>
+</span><span class='line'>   <span class="k">end</span>
+</span><span class='line'><span class="k">end</span> <span class="c1"># if sql</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El iterador principal sigue viendo la variable que hace como semáforo (&ldquo;my&rdquo; en
+este caso) en false y no se toma la molestia de encuestar una base de datos que
+ya sabe; está off-line. La variable &ldquo;my&rdquo; será false mientras no se redeclare con
+la conexión de Mysql.new. No confundir con @auth que en este caso es el valor
+por definicion de la autenticacion. Osea, no se autenticó.</p>
+
+<p>La variable <em>my</em> será true cuando la función logre establecer la conexión con
+la base de datos.</p>
+
+<p>De está forma, falla de manera silente, segura y controlada.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+
+    </article>
   
   
     <article>
@@ -177,7 +320,7 @@ cantaría.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.009.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -336,7 +479,7 @@ agarro y es que las Bases de datos, NO son sistemas de archivos.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.008.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -621,7 +764,7 @@ servidor para ver que pasa.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.007.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -848,7 +991,7 @@ de debian.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.008.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -941,72 +1084,13 @@ caso, con uno solo basta. Veamos de cerca la configuración.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.005.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/04/04/en-la-cumbre-del-vedado/">el &#8220;calisto&#8221; garcía</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-04-04T21:42:40-04:00'><span class='date'>04/04/2014</span> <span class='time'>9:42 pm</span></time>
-        
-           | <a href="/blog/2014/04/04/en-la-cumbre-del-vedado/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/04/04/en-la-cumbre-del-vedado/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>En la punta de loma más temida y respetada por cualquiera que estudie medicina;
-y en lo más alto de la educación Cubana, se encuentra:</p>
-
-<h3>El Hospital Universitario Calixto García</h3>
-
-<p>Se yergue sobre el resto de las instituciones de salud, por su altura sobre el
-nivel del mar; en comparación con el resto de otros hospital.</p>
-
-<p>Hace poco respondí con mucho estupor a la pregunta &ldquo;¿donde estás trabajando?&rdquo; y
-no fue hasta que escuche mi propia voz diciendo &ldquo;en el calisto&rdquo;; cuando hice
-consciencia del asunto. Al otro día me paré al fondo de la oficina y pensé:
-&ldquo;¿que hago yo aquí?&rdquo;. Salud para mi siempre había sido una asíntota. Estaba
-seguro que por cosas del destino, debía mantenerme al margen del MINSAP &ldquo;donde
-se come no se caga&rdquo;. Además, siempre dije que salud era el último lugar en el
-que trabajaría, quizás porque tantas personas me lo recomendaban.</p>
-
-<p>Tanto tiempo proveyéndole ayuda a los usuarios de infomed, sin imaginarme lo que
-me reservaba el destino. Nunca me imaginé que me sentiría TAN BIEN en algún
-lugar, me gusta como pasa el tiempo aquí.</p>
-
-<p>Creo que el Calixto será un antes y un después en mi vida profesional.</p>
-
-<p>Detrás del proxy de infomed, la vida es dura. Enferntaré las miserias
-tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
-
-<p>Esta primera entrada, marca el último día de mi antiguo blog: <a href="http://otherlinuxblog.blogspot.com">puheroska</a></p>
-
-<p>   <blockquote><p>Los ricos que viven de su patrimonio<br/>   no pueden hablar de &ldquo;su trabajo&rdquo;.</p><footer><strong>Lázaro Armando</strong></footer></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.006.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
   <div class="pagination">
+    
+      <a class="prev" href="/posts/19">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
@@ -1023,6 +1107,12 @@ tecnológicas de infomed usando mi más afilado sable: ArchLinux</p>
 	<ul id="recent_posts">
 
 		
+
+		<li class="post">
+			<a href="/blog/2017/11/30/segwit-con-3-star-en-electrum/">segwit con p2sh en electrum</a>
+      </li>
+
+      
 
 		<li class="post">
 			<a href="/blog/2017/11/30/segwit-confusion/">segwit y la confusión</a>

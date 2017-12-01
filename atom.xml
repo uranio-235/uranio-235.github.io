@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-11-30T15:19:02-05:00</updated>
+  <updated>2017-12-01T10:55:54-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -14,27 +14,131 @@
 
   
   <entry>
+    <title type="html"><![CDATA[segwit con p2sh en electrum]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/11/30/segwit-con-3-star-en-electrum/"/>
+    <updated>2017-11-30T15:24:16-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/11/30/segwit-con-3-star-en-electrum</id>
+    <content type="html"><![CDATA[<p>Resulta que los trezor, a pesar de tener segwit, no mandan bitcoins a
+direcciones que empiezan con &ldquo;bc1&rdquo;, solo a las <a href="https://en.bitcoin.it/wiki/Pay_to_script_hash">p2sh</a> clásicas (las que empiezan por 3).</p>
+
+<p>Pero mientras la democrática cadena de bloques se pone de acuerdo (y los tarados
+actualizan sus trezors) hay una pila de satochis por pasar. Para aquellos que
+trabajan con sumas pequeñas de BTC, segwit es realmente de gran ayuda. Pero
+resulta que electrum; desde ya, en su implementación de segwit, usa direcciones
+bc1 (desde la version 3).</p>
+
+<p>Si tienes que recibir una transacción segwit proveniente de un trezor o un
+ledger, tienes tres opciones. Usar una cartera web, o, usar un cliente de
+bitcoin y descargarte toda la cadena de bloques (naaaaa, hoy en día no puedes
+hacer eso en cuba), o simplemente, meterle una cañona a electrum.</p>
+
+<p>Mycelium es una buena variante, pero es propietario y de código cerrado.
+Electrum (la mejor cartera en mi opinión) es libre como las papas y si bien no
+es la mejor solución, al menos resuelve; bastará hacerle una brujería.</p>
+
+<p>La idea es:</p>
+
+<ul>
+<li> 1) crear una cartera con segwit (de las que usan bc1)</li>
+<li> 2) eliminarla</li>
+<li> 3) restaurar esa misma cartera</li>
+<li> 4) usar una semilla bip39</li>
+<li> 5) cambiar la derivation de 44 a 49</li>
+</ul>
+
+
+<p>Las instrucciones para crear una cartera son las clásicas: Nueva cartera
+standard, luego segwit.</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/electrum/new_standar.png"></p>
+
+<p>Luego, pedimos una cartera del tipo standard, con segwit (no standard-standard).</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/electrum/new_standard_segwit.png"></p>
+
+<p>Una vez que la cartera halla arrancado. Elimínala!: Archivo/Eliminar!</p>
+
+<p>Luego procedemos a <strong>Restaurarla</strong>.</p>
+
+<p>Corremos nuevamente el asistente, esta vez con &ldquo;I already have a seed&rdquo; (no está
+traducido al español).</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/electrum/restaurar_cartera.png"></p>
+
+<p>Luego metes las palabras claves y presiona el botón <strong>Opciones</strong>.</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/electrum/restaurar_cartera2.png"></p>
+
+<p><em>-eh miren! El que escribó el artículo ha puesto su semilla, seguro tiene un
+montón de btc ahí!!</em></p>
+
+<p>Nunca falta el anormal que restaura dicha cartera y se topa con que está vacía
+como su cabeza.</p>
+
+<p>Mientras, tú y yo seguimos en lo que estábamos. En las opciones, activas la
+casilla <strong>bip39</strong>.</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/electrum/semillabip39.png"></p>
+
+<p>A continuación, nos preguntará que derivation quieres usar, poniendo la que
+genera el <strong>bc1</strong>. Ahí sustituiremos el <strong>44</strong> por un <strong>49</strong>.</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/electrum/semillabip39.png"></p>
+
+<p><strong>REPITO</strong>, cambiamos el <strong>44</strong> por un <strong>49</strong></p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/electrum/derivation.png"></p>
+
+<p>Y listo! Ahí tienes una cartera que los trezor y los ledgers la entienden bien.</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/electrum/final.png"></p>
+
+<p><strong>NOTA IMPORTANTE!</strong> Lo que acabas de ver, no está recomendado que se haga. Si
+vas a transferir un dineral, hazlo con una cartera normal y paga una comisión
+decente.</p>
+
+<p>Veremos si con segwit seguimos teniendo <em>Veritas in Numeris.</em></p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[segwit y la confusión]]></title>
     <link href="http://uranio-235.github.io/blog/2017/11/30/segwit-confusion/"/>
     <updated>2017-11-30T14:43:06-05:00</updated>
     <id>http://uranio-235.github.io/blog/2017/11/30/segwit-confusion</id>
-    <content type="html"><![CDATA[<p><a href="https://en.wikipedia.org/wiki/SegWit">Segwit</a> era algo que caía por gravedad
-tarde o temprano; ya que le cadena de bloques no daba más. Pero entonces el hijo
-de puta de <a href="https://en.wikipedia.org/wiki/Roger_Ver">Roger Ver</a> aprovechó la
-confusión para seguir <a href="https://twitter.com/BlockchainPK/status/935641859795378178">sembrando sizaña</a>
-y sacar del fork, su propio bitcoin.</p>
+    <content type="html"><![CDATA[<p>No voy a explicar que es <a href="https://en.wikipedia.org/wiki/SegWit">Segwit</a> y como funciona, para eso está la wikipedia.</p>
 
-<p>El muy joputa, no solo impulsó BTCH, si no que además, ahora quiera apropiarse
-del nombre bitcoin. Haciéndonos creer que &ldquo;Bitcoin&rdquo; se llama &ldquo;bitcoin core&rdquo; ya
-que su engendro se llama &ldquo;bitcoin cash&rdquo;.</p>
+<p>Tampoco voy a entrar en el filosófico debate de si bitcoin es una burbuja. Halla
+el que siga confiando más en billetes de papel y fiat que en computadoras y
+criptografía.</p>
 
-<p>Los dejo con los links del artículo para que saquen sus propias conclusiones&hellip;</p>
+<p>La implementación final de segwit, le ha dado a mucho un portazo en la cara y
+andan cagados del miedo contando bloques con/sin segwit.</p>
 
-<p>A todas estas, la implementación de segwit sigue caminando, pero ahora resulta
-que los trezor, usan direcciones 3<em> en vez de bc1</em>, razón por la cual en el
-próximo post, explicaré como configurar electrum para generar una cartera 3* con
-segwit; porque en lo que se ponen de acuerdo las transacciones siguen pie y
-cuando son montos bajos, segwit es muy útil.</p>
+<p>Pero era algo que caía por gravedad tarde o temprano; ya que le cadena de
+bloques no daba más. Puedes hacer un simple experimento, transfiere una suma
+pequeña con una comisión baja y ponte cómodo que va pa largo.</p>
+
+<p>Los criticones de segwit consideran que pagar un café con bitcoin es matar
+moscas a cañonazos. Que sigan usando papeles locales para comprar café, eso no
+cambiará en muuuuucho tiempo.</p>
+
+<p>Los cubanos ya estamos acostumbrados a tener dos monedas; así que yo en lo
+personal me lo estoy tomando de maravilla. La cartera clásica para las
+transacciones &ldquo;grandes&rdquo; y la segwit pa ir moviendo quilos. Qué cubano no tiene
+CUC y CUP en su billetera? Pues esto es igual. Yo pienso que durante al menos un
+par de años más, los temerarios seguirán contando bloques con/sin segwit.</p>
+
+<p>A todas estas, el hijo de puta de <a href="https://en.wikipedia.org/wiki/Roger_Ver">Roger Ver</a>
+aprovechó la confusión para seguir <a href="https://twitter.com/BlockchainPK/status/935641859795378178">sembrando cizaña</a>
+y hacer del fork, su propio bitcoin.</p>
+
+<p>Mientras tanto, la implementación de segwit sigue caminando, pero ahora resulta
+que algunos trezor (más de uno ya me he topado), usan direcciones 3<em> en vez de
+bc1</em>. O sea que no reconocen las bc1 como dirección. En el próximo post,
+explicaré como configurar electrum para generar una cartera 3* con segwit;
+porque en lo que se ponen de acuerdo; las transacciones siguen pie y cuando son
+montos bajos, segwit es muy útil.</p>
 ]]></content>
   </entry>
   
@@ -2425,107 +2529,6 @@ situación; debes:</p>
 <p>Recuerda que en linux, el comando de iptables, viene con &ldquo;-A INPUT&rdquo;. Si tienes
 un firewall corriendo, obviamente que no pincha; por tanto, ponlo con &ldquo;-I
 INPUT&rdquo;.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[bind en infomed]]></title>
-    <link href="http://uranio-235.github.io/blog/2017/03/01/bind-en-infomed/"/>
-    <updated>2017-03-01T23:13:34-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2017/03/01/bind-en-infomed</id>
-    <content type="html"><![CDATA[<p>Seguimos con bind&hellip;</p>
-
-<p>No hace mucho le comentaba a alguien, a raíz de una duda que tenía el colega
-Paradyx; la manera correcta de configurar un servidor bind para una red que
-cuelga de infomed.</p>
-
-<p>Le comentaba que no vale la pena usar un forward por defecto; que hacer del
-dominio &lsquo;.sld.cu&rsquo; una zona forward sería más que suficiente. Digo esto porque
-infomed no resuelve ningún dominio que valla más allá de &ldquo;.sld.cu&rdquo;, por tanto,
-no vale la pena transferirle las sepetecientas peticiones que hacen cuanta
-mierda se conecta a nuestra red (especialmente android).</p>
-
-<figure class='code'><figcaption><span>&#8220;named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">options</span> <span class="p">{</span>
-</span><span class='line'>   <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">10.1.1.1</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>   <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="n">view</span> <span class="n">lan</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">10.1.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;sld.cu&quot;</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">201.220.222.131</span><span class="p">;</span> <span class="mf">201.220.222.132</span><span class="p">;</span> <span class="p">};</span>
-</span><span class='line'>      <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">forward</span> <span class="n">only</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">};</span> <span class="c1">// view lan</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Como mi dominio es hcg.sld.cu (subdominio de .sld.cu) lo declaramos ARRIBA
-del dominio sld.cu. El dominio <strong>hcg.sld.cu</strong> es una zona <strong>master</strong>, sin
-embargo, el dominio <strong>sld.cu</strong> es del tipo <strong>forward</strong> y entonces ahí declaramos
-los forwarders (los dns de infomed).</p>
-
-<p>Así solo le reenviaremos a infomed, aquellas peticiones que sean para infomed.</p>
-
-<p>En mi opinión esto no es necesario. Tanto así, que la zona donde infomed hace
-forward; la tengo para los servidores. En el caso de la zona para LAN,
-simplemente declaro los servidores de correo en un fakeroot y listo.</p>
 ]]></content>
   </entry>
   

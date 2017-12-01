@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="bootstrap en rails 4 30/06/2015 12:19 pm | Comments Pensaba escribir una entrada sobre como hacer que se vean los glyphicons luego
-de instalar la &hellip;">
+  <meta name="description" content="añadir verbo a un scaffold 05/07/2015 9:35 pm | Comments Cualquiera que sepa como usar debidamente los scaffolds, o sea, cualquiera que
+sepa como &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,111 @@ de instalar la &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/">añadir verbo a un scaffold</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-07-05T21:35:54-04:00'><span class='date'>05/07/2015</span> <span class='time'>9:35 pm</span></time>
+        
+           | <a href="/blog/2015/07/05/anadir-verbo-a-un-scaffold/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/07/05/anadir-verbo-a-un-scaffold/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Cualquiera que sepa como usar debidamente los scaffolds, o sea, cualquiera que
+sepa como hacerle la paja a ruby on rails para que haga lo que queremos; seguro
+habrá intentado en algún momento, añadir un nuevo método a un scaffold. Además,
+de seguro quisiste luego poder llamarlo con los métodos &ldquo;metodo_user_path&rdquo; y que
+la ruta se cree de manera automática.</p>
+
+<p>Por ejemplo, en este caso, tengo el scaffold <strong>user</strong> y le agregué el método
+<strong>cambiar</strong> aparte de los clásicos PUT y DELETE.</p>
+
+<figure class='code'><figcaption><span>&#8220;scope de users_controller.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="c1"># cambia el estado de habilitación del usuarios</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">cambiar</span>
+</span><span class='line'>     <span class="vi">@user</span><span class="o">.</span><span class="n">enabled</span><span class="o">=!</span><span class="vi">@user</span><span class="o">.</span><span class="n">enabled</span>
+</span><span class='line'>     <span class="vi">@user</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>     <span class="n">redirect_to</span> <span class="ss">:back</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># GET /users</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
+</span><span class='line'>    <span class="vi">@users</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">all</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero el método cambiar no aparece en rails hasta que no hagas lo siguiente en el
+fichero de las rutas.</p>
+
+<figure class='code'><figcaption><span>&#8220;config/routes.rb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>   <span class="c1"># el scaffold de los usuarios</span>
+</span><span class='line'>   <span class="n">resources</span> <span class="ss">:users</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># agregamos el verbo cambiar usado para</span>
+</span><span class='line'>      <span class="c1"># @user.enabled=!@user.enabled</span>
+</span><span class='line'>      <span class="c1"># para que exista: cambiar_user_path</span>
+</span><span class='line'>      <span class="n">member</span> <span class="k">do</span>
+</span><span class='line'>         <span class="n">get</span> <span class="s1">&#39;cambiar&#39;</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora existirá el método <strong>cambiar_user_path</strong> que toma como argumento el
+usuario.</p>
+
+<p>   cambiar_user_path(user)</p>
+
+<p>De esta manera, se le manda el objeto usuario y genera una URL como</p>
+
+<p>   /users/345/cambiar</p>
+
+<p>Dicha ruta macheará el método User#cambiar</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+
+    </article>
   
   
     <article>
@@ -266,7 +371,7 @@ declarando los componentes en los controladores.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.008.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -346,7 +451,7 @@ dios para poder comprenderlo.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.008.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -664,7 +769,7 @@ ahora ya sabes una parte, te dejo que investigues el resto.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.006.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -721,7 +826,7 @@ todas salen de un supuesto firefox.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.008.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -828,392 +933,7 @@ pa la casa.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.008.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/05/23/ltsp-en-debian8-y-salud/">ltsp en debian8 y salud</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-05-23T01:46:08-04:00'><span class='date'>23/05/2015</span> <span class='time'>1:46 am</span></time>
-        
-           | <a href="/blog/2015/05/23/ltsp-en-debian8-y-salud/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/05/23/ltsp-en-debian8-y-salud/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Problema</h3>
-
-<p>21 de Mayo: La situación de los clientes ligeros en el Calixto no da más. El
-servidor DHCP del ardence dejó pinchar sin previo aviso. El encargado de los
-clientes ligeros, reinstaló todo y siguió sin pinchar. Luego determinó que era
-culpa de un virus. El incha-cojones de Windows vuelve a hacer de la suya.
-Mientras tanto, el caos se ríe de todos y se frota las manos.</p>
-
-<p>A la novena llamada preguntando &ldquo;cuando se arreglan los clientes ligeros&rdquo;
-determiné que la situación llevaba medidas drásticas, siendo hora de pasar el
-servidor al lado oscuro de la fuerza.</p>
-
-<p>Plan de migración: El miembro sobre la mesa.</p>
-
-<p>Tiempo estimado: Menos del que te imaginas.</p>
-
-<p>Por un lado, 6 clientes ligeros con un windows XP que se arrastra en los 128
-megas de RAM y un servidor dongan de manufactura vietnamita. Por el otro, más de
-6 usuarios quejándose porque su sistema funciona lento, cuando le da la gana y
-además deben reiniciar más de 10 veces al día. Eso sin contar que deben tener la
-información en memorias flash, porque no se guardan los cambios en las imágenes.</p>
-
-<h3>Solución</h3>
-
-<p>Linux Terminal Server Project, más conocido como &ldquo;LTSP&rdquo;.</p>
-
-<p>Instalar ltsp es un proceso relativamente fácil, sobre todo cuando tienes un
-tubo de internet a full.</p>
-
-<p>Pero detrás del proxy satánico de infomed; la cosa se vuelve un tanto compleja.</p>
-
-<p>Por suerte, el repo de debian en infomed está bien afinadito y ahora con el tubo
-de 2 megas, la cosa mejora considerablemente.</p>
-
-<p>Hay dos maneras de hacer esto, la fácil y novel; o la difícil y tediosa. En caso
-de la fácil, bastará con instalar el paquete &ldquo;ltsp-server-standalone&rdquo;; el cual
-instalará y configurará todo la orquesta de software requerido para pinchar lo
-que se conoce como ltsp. Entre ellos, el servidor dhcp de ics, el servidor
-tftp-hpa, la maritrónica que sirve la SWAP por nfs y todo el rebortillo de cosas
-que requiere NFS.</p>
-
-<p>Corre esto y ponte cómodo, que va pa largo&hellip;</p>
-
-<figure class='code'><figcaption><span>&#8220;ltsp-build-client&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> ltsp-build-client --http-proxy http://127.0.0.1:3128 \</span>
-</span><span class='line'><span class="go"> --mirror http://ftp.sld.cu/debian \</span>
-</span><span class='line'><span class="go"> --security-mirror http://ftp.sld.cu/debian-security \</span>
-</span><span class='line'><span class="go"> --copy-sourceslist --copy-package-cache --accept-unsigned-packages</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El comando que corriste, generó un fichero de configuración para el servidor
-dhcp de isc. Te sugiero que lo uses como DHCP.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">cp /etc/ltsp/dhcpd.conf /etc/dhcp/dhcpd.conf</span>
-</span><span class='line'><span class="go">systemctl restart isc-dhcp-server</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Muy importante NFS. En el fichero <strong>/etc/exports</strong> ponemos esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/exports&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ltsp</span> <span class="o">*</span><span class="p">(</span><span class="n">ro</span><span class="p">,</span><span class="n">no_root_squash</span><span class="p">,</span><span class="n">async</span><span class="p">,</span><span class="n">no_subtree_check</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>y reiniciamos el servicio de NFS</p>
-
-<figure class='code'><figcaption><span>&#8220;reiniciando nfs&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl restart nfs-kernel-server
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Cuando butees una máquina, el login no te pinchará. Deberás correr esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;crear el squash&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ltsp-update-sshkeys
-</span><span class='line'>ltsp-update-image --config-nbd
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>La imagen que se instaló en /opt no es más que la matriz para crear un squashfs
-que se le sirve a los clientes. Con ese comando, reflejamos los cambios
-volviendo a crear la imagen &ldquo;squashada&rdquo;.</p>
-
-<p>Con eso te digo que si haces un cambio en la imagen, deberás correr ese comando.</p>
-
-<p>Ahora bien. Para que no queden lagunas mentales:</p>
-
-<h3>Todo lo que tendrán los usuarios, ESTÁ EN EL SERVIDOR</h3>
-
-<p>Por tanto, hay que instalar una interfaz visual EN EL SERVIDOR. Será lo que los
-clientes pinchen. Por supuesto, no necesariamente el servidor tiene que correr
-dicha interfaz. En mi caso yo instalé solo sistema base y luego corrí esto:</p>
-
-<figure class='code'><figcaption><span>&#8220;instalar lxde completo&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install task-lxde-desktop
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora el servidor está equipado con una interfaz visual, pero no la pincha, ya
-que no le instalamos ningún &ldquo;display manager&rdquo;; por tanto, las X no arrancan. El
-display manager lo tiene la imagen que levantan los clientes; nada menos que
-LDM.</p>
-
-<p>Los clientes levantan un LDM e inician sesión remota en el servidor.</p>
-
-<h2>¿se entendió?</h2>
-
-<p>Toas las instrucciones que cargará esta interfaz gráfica minimalista (el LDM de
-los clientes ligeros), se declaran en el fichero /opt/ltsp/i386/etc/lts.conf a
-mi me quedó así la primera versión de este fichero.</p>
-
-<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">[default]</span>
-</span><span class='line'>    <span class="na">LTSP_CONFIG</span><span class="o">=</span><span class="s">True</span>
-</span><span class='line'><span class="s">    SOUND=True</span>
-</span><span class='line'><span class="s">    LOCALDEV=True</span>
-</span><span class='line'><span class="s">    CONFIGURE_X=True</span>
-</span><span class='line'><span class="s">    LDM_SESSION=/usr/bin/startlxde</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Dice que está configurado, que tiene sonido, que use dispositivos locales, que
-configure las X dinámicamente y que arranque lxde como sesión por defecto.</p>
-
-<p>Y ahí empezaron mis problemas. En mi caso, las canchanfletas que usé como
-clientes ligeros, tenían una tarjeta de video unichrome más extraña que un
-calsoncillo con tirantes. La pantalla se veía con una capa verde delante. Nunca
-había visto cosa igual.</p>
-
-<p>Solución. Levanta un cliente ligero, entra en la consola (con
-Ctrl+Alt+F1) y ejecuta:</p>
-
-<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">X</span> <span class="err">-configure</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Eso te creará el fichero xorg.conf.new EN EL CLIENTE. A ese punto, se habrá
-generado una configuración de X decente. Pero ese fichero hay que ponerlo EN EL
-SERVIDOR:</p>
-
-<figure class='code'><figcaption><span>&#8220;monta que te queda&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>scp xorg.conf root@servidor:/opt/ltsp/i386/etc/X11/xorg.conf
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora además, al servidor hay que especificarle que las X NO se auto-configuren
-y que en cambio, usen el fichero dado. Todo eso lo haremos en /opt/ltsp/i386/etc/lts.conf</p>
-
-<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="k">[default]</span>
-</span><span class='line'>    <span class="na">LTSP_CONFIG</span><span class="o">=</span><span class="s">True</span>
-</span><span class='line'><span class="s">    SOUND=True</span>
-</span><span class='line'><span class="s">    LOCALDEV=True</span>
-</span><span class='line'><span class="s">    LDM_SESSION=/usr/bin/startlxde</span>
-</span><span class='line'><span class="s">    CONFIGURE_X=False</span>
-</span><span class='line'><span class="s">    X_CONF=/etc/X11/xorg.conf</span>
-</span><span class='line'><span class="s">    X_MODE_0=1024x768</span>
-</span><span class='line'><span class="s">    MODULE_01 = &quot;usb-storage&quot;</span>
-</span><span class='line'><span class="s">    MODULE_02 = &quot;sd_mod&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Dice ahora que: Está configurado, tiene sonido, dispositivos locales (pa que
-pinchen las memorias flash), que levante lxde, que NO configure las X, que use
-el fichero dado, que la resolución de su pantalla 0 (la única) es de 1024x768 y
-además que meta ese par de módulos, pa que pinchen los puertos USB.</p>
-
-<p>Por supuesto, en el chroot que levanta el cliente, la ruta absoluta
-/etc/X11/xorg.conf es completamente válida.</p>
-
-<p>¡¡Ah, y no olvides volver a crear la imagen!!</p>
-
-<h3>pero de vuelta al servidor</h3>
-
-<p>Entre los palos más comunes, vemos uno que al iniciar la sesión dice que el
-usuario &ldquo;fulano&rdquo; no pertenece a netdev y que por tanto, el puñetero data-bus no
-arranca.</p>
-
-<figure class='code'><figcaption><span>&#8220;agregando a netdev&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>adduser fulano netdev
-</span><span class='line'>systemctl restart dbus
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En el fichero <strong>/etc/adduser.conf</strong> puedes especificar los parámetros de los
-nuevos usuarios creados, ahí puedes declarar que se creen con sus pertinentes
-grupos.</p>
-
-<figure class='code'><figcaption><span>&#8220;adduser.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Set this if you want the --add_extra_groups option to adduser to add</span>
-</span><span class='line'><span class="c"># new users to other groups.</span>
-</span><span class='line'><span class="c"># This is the list of groups that new non-system users will be added to</span>
-</span><span class='line'><span class="c"># Default:</span>
-</span><span class='line'><span class="nv">EXTRA_GROUPS</span><span class="o">=</span><span class="s2">&quot;dialout cdrom audio video plugdev users netdev netdev messagebus pulse lpadmin&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>El directorio <strong>/etc/skel/</strong> contiene la plantilla para crear el nuevo usuario.
-Crea un usuario, has la configuración que desees y cópialo pa /etc/skel.</p>
-
-<p>Otro palo común es que las memorias NTFS se montan como solo lectura. Solución,
-instala ntfs-3g EN EL CHROOT que está en /opt y vuelve a crear la imagen.</p>
-
-<h3>Nota para los mentequieta:</h3>
-
-<p>Los usuarios se crean EN EL SERVIDOR no en la imagen.</p>
-
-<h3>Sugerencias</h3>
-
-<p>Cada cosa que los clientes ejecuten, lo harán en el servidor, y puedes ponerte a
-mirar con htop que proceso se está metiendo la RAM o el CPU, detener dicho
-proceso y requerir al usuario. Porque verás los procesos y el usuario que lo
-ejecuta. Déjame recordarte que Linux, es un sistema multitarea y multiusuarios
-de verdad.</p>
-
-<p>En mi caso, el servidor (los &ldquo;dongan&rdquo; vietnamitas) tiene dos discos duros. Monté
-uno para el sistema y la swap, el otro lo dejé para el /home.</p>
-
-<p>Mi servidor tiene 512 de RAM y aún con 4 clientes ligeros no ha llenado la mitad
-de la memoria. ¿Dime tu con 1 Giga de RAM?</p>
-
-<p>Por defecto, los homes de los usuarios se crean con permisos que los hace
-visibles entre si. Ejecuta: &ldquo;chmod 770 /home/fulano&rdquo; cada vez que crees un
-usuario. Si no, el home de este usuario será visible por los demás usuarios.</p>
-
-<p>¿Has pensando que ahora es más fácil hacerle salvas a las cosas? Todo está en el
-/home.</p>
-
-<p>No olvides decirle al usuario que ahora pueden hacer y guardar cambios en su
-&ldquo;perfil&rdquo; (como ellos le llaman) pues algunos están acostumbrados a que el
-cliente ligero No guarda cambios.</p>
-
-<p>Puedes decirle a tus usuarios que su perfil puede ser abierto desde cualquier
-cliente ligero de la flota. Lo cual les da cierta &ldquo;movilidad&rdquo;.</p>
-
-<p>Puedes decirle que si su cliente ligero se rompe no se preocupe, que su
-información está a salvo. Incluso, le recuerdas además que puede abrir su perfil
-desde otro cliente ligero que esté en la misma flota.</p>
-
-<p>Puedes hacer configuraciones individuales de cada máquina en el fichero
-<strong>/opt/ltsp/i386/etc/lts.conf</strong></p>
-
-<p>En donde dice <strong>[default]</strong> puedes poner la MAC del
-cliente.</p>
-
-<figure class='code'><figcaption><span>&#8220;/opt/ltsp/i386/etc/lts.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="c1"># configuración genérica</span>
-</span><span class='line'><span class="k">[default]</span>
-</span><span class='line'>    <span class="na">LTSP_CONFIG</span><span class="o">=</span><span class="s">True</span>
-</span><span class='line'><span class="s">    SOUND=True</span>
-</span><span class='line'><span class="s">    LOCALDEV=True</span>
-</span><span class='line'><span class="s">    LDM_SESSION=/usr/bin/startlxde</span>
-</span><span class='line'><span class="s">    CONFIGURE_X=False</span>
-</span><span class='line'><span class="s">    X_CONF=/etc/X11/xorg.conf</span>
-</span><span class='line'><span class="s">    X_MODE_0=1024x768</span>
-</span><span class='line'><span class="s">    MODULE_01 = &quot;usb-storage&quot;</span>
-</span><span class='line'><span class="s">    MODULE_02 = &quot;sd_mod&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># configuración de un cliente individual el</span>
-</span><span class='line'><span class="c1"># jefe no quiere que oiga música ni use</span>
-</span><span class='line'><span class="c1"># memorias flash</span>
-</span><span class='line'><span class="k">[00:90:4b:a2:55:05]</span>
-</span><span class='line'>    <span class="na">LTSP_CONFIG</span><span class="o">=</span><span class="s">True</span>
-</span><span class='line'><span class="s">    SOUND=False</span>
-</span><span class='line'><span class="s">    LOCALDEV=False</span>
-</span><span class='line'><span class="s">    LDM_SESSION=/usr/bin/startlxde</span>
-</span><span class='line'><span class="s">    CONFIGURE_X=True</span>
-</span><span class='line'><span class="s">    X_MODE_0=1024x768</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># EOF</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Una buena idea, es usar un dhcp con las MAC e ip fijas para cada usuario, sería
-una mejor manera de cortar el bacalao. Así el servidor solo le respondería a sus
-clientes. Además, en caso de tener múltiples servidores de clientes ligeros, no
-tendrás otra opción, pues si no, cada cliente ligero buteará por donde mejor la
-parezca y seguro no querrás eso.</p>
-
-<p>En el servidor DHCP central, rechaza las MAC de los clientes si se dirigen al
-puerto 67, para que no reciban dicho servicio, así lo obligas a bootear por el
-servidor de clientes ligeros.</p>
-
-<figure class='code'><figcaption><span>&#8220;iptables&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>iptables -A INPUT -p tcp --dport <span class="m">67</span> -m mac --mac-source 00:90:4b:a2:55:05 -j DROP
-</span><span class='line'>iptables -A INPUT -p udp --dport <span class="m">67</span> -m mac --mac-source 00:90:4b:a2:55:05 -j DROP
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lo ideal sería que el DHCP central tuviera las direcciones MAC de los clientes y
-le diera los parámetros de buteo a cada cual, pero eso aún no lo he logrado.
-Hay algo que tiene que ver con el parámetro &ldquo;next server&rdquo;. He logrado que estos
-den con el tftp adecuado, pero luego tratan de contactar al propio servidor DHCP
-como servidor NFS.</p>
-
-<p>También podrías tener un firewall en el servidor de clientes ligeros. Que
-permite el DHCP solo a las MAC de los clientes. Así no le das DHCP a cualquiera.
-Además, podrías decirle también a ese servidor, que solo permite el tráfico de
-las MAC de los clientes ligeros. No me parece que un servidor como ese tenga que
-ser alcanzado por otra máquina.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.006.0 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
 
     </article>
   
@@ -1236,6 +956,12 @@ ser alcanzado por otra máquina.</p>
 	<ul id="recent_posts">
 
 		
+
+		<li class="post">
+			<a href="/blog/2017/11/30/segwit-con-3-star-en-electrum/">segwit con p2sh en electrum</a>
+      </li>
+
+      
 
 		<li class="post">
 			<a href="/blog/2017/11/30/segwit-confusion/">segwit y la confusión</a>
