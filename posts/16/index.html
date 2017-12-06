@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="cambiar user agent con squid 28/05/2015 6:46 pm | Comments En esta sofocante tarde de verano cubano y en un lugar que no diré, me encontré
-detrás de &hellip;">
+  <meta name="description" content="NIC bonding 26/05/2015 4:32 pm | Comments Recién terminé el servidor de LTSP; pero aún estoy como niño con juguete nuevo,
+viendo que otra gangarrea &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,63 +82,6 @@ detrás de &hellip;">
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/05/28/cambiar-user-agent-en-squid/">cambiar user agent con squid</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-05-28T18:46:04-04:00'><span class='date'>28/05/2015</span> <span class='time'>6:46 pm</span></time>
-        
-           | <a href="/blog/2015/05/28/cambiar-user-agent-en-squid/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/05/28/cambiar-user-agent-en-squid/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>En esta sofocante tarde de verano cubano y en un lugar que no diré, me encontré
-detrás de un proxy administrador por la
-<a href="http://es.wikipedia.org/wiki/Schutzstaffel">Schutzstaffel</a>. Lo que no se
-parezca a un navegador, NO PASA. Por tanto, Ruby, Wget y demás, NO pinchan.</p>
-
-<p>Por suerte, tengo la costumbre de usar un squid local, para no tener que estar
-configurando el navegador. En ese squid declaro como padre el squid del momento
-(ya sea salud u otro) y ahí pongo el nombre de usuario con la contraseña una
-sola vez. Si estás en cuba y tienes una laptop con linux, te aconsejo que acates
-esa costumbre.</p>
-
-<p>Solución:</p>
-
-<p>Reescribir el encabezado User-Agent de las peticiones en el squid local. Así
-todas salen de un supuesto firefox.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/squid/squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='squidconf'><span class='line'>request_header_access<span class="w"> </span><span class="k">User</span>-Agent<span class="w"> </span><span class="no">deny</span><span class="w"> </span><span class="no">all</span><span class="w"></span>
-</span><span class='line'>request_header_replace<span class="w"> </span><span class="k">User</span>-Agent<span class="w"> </span>Mozilla/5.0<span class="w"> </span>(X11;<span class="w"> </span>U;<span class="w"> </span>Linux<span class="w"> </span>i686;<span class="w"> </span>en-US;<span class="w"> </span>rv:1.8.1.4)<span class="w"> </span>Gecko/20070515<span class="w"> </span>Firefox/2.0.0.4<span class="w"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>   <blockquote><p>Al carajo albañiles que se acabó la mezcla.</p></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
-
-    </article>
   
   
     <article>
@@ -958,6 +901,204 @@ desarollar&hellip;</p>
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-28T22:37:20-04:00'><span class='date'>28/10/2014</span> <span class='time'>10:37 pm</span></time>
+        
+           | <a href="/blog/2014/10/28/proxy-automatico/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/10/28/proxy-automatico/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Todo el que halla configurado un navegador con proxy; o sea, todo cubano que
+halla configurado un navegador, quizás halla visto que una de las tantas
+opciones dice &ldquo;configuración automática&rdquo;. Seguro se preguntarán que carajo es
+eso.</p>
+
+<p>Pues es un javascript que le dice al navegador como debe ser la configuración
+del proxy; obviamente.</p>
+
+<p>Resulta que hay dos maneras de hacerlo, vía DHCP o vía DNS. Algunos navegadores
+lo cogen por DHCP mientras que otros lo hacen por DNS.</p>
+
+<h3>Para evitar problemas, configuramos las dos&hellip;</h3>
+
+<p>Primero y principioso. Creamos el fichero wpad.dat, el nombre debe respetarse.
+Dicho fichero los servimos, así que por definición los podremos en /var/www.
+Este fichero contendrá las instrucciones que un navegador necesita para pinchar.</p>
+
+<figure class='code'><figcaption><span>&#8220;/var/www/wpad.dat&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">FindProxyForURL</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">host</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// los host locales NO pasan a través del proxy</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">shExpMatch</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span><span class="s2">&quot;*.hcg.sld.cu:*&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;DIRECT&quot;</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">shExpMatch</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span><span class="s2">&quot;*.hcg.sld.cu:*/*&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;DIRECT&quot;</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// la red local, tampoco</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">isInNet</span><span class="p">(</span><span class="nx">host</span><span class="p">,</span> <span class="s2">&quot;10.1.1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;255.255.255.0&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;DIRECT&quot;</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// lo demás sale por el proxy</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s2">&quot;PROXY 10.1.1.1:3128&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ve, es javascript puro, osea que las opciones se podrían hacer más
+creativas. Por ejemplo, si la ip de la máquina es tal, configuralo así o asao.</p>
+
+<p>Los criticones de código diran que se pudo usar un swith en vez de 4 &ldquo;if&rdquo;. Pero
+eso correrá en un momento y entorno casi imposible de debugar. Lo intenté con
+swith y no me pinchó.</p>
+
+<p>Ahora el problema es que hay que declarar un nuevo contenido mime para este
+dato. En mi caso uso nginx y en el fichero de configuración de mime, le
+aclaramos el nuevo; a mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>mime.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='lighttpd'><span class='line'><span class="k">types</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">application</span><span class="n">/x-ns-proxy-autoconfig</span>     <span class="k">dat</span><span class="err">;</span>
+</span><span class='line'>    <span class="k">text</span><span class="n">/html</span>                             <span class="k">html</span> <span class="k">htm</span> <span class="k">shtml</span><span class="err">;</span>
+</span><span class='line'>    <span class="k">text</span><span class="n">/css</span>                              <span class="k">css</span><span class="err">;</span>
+</span><span class='line'>    <span class="p">(</span><span class="k">muchas</span> <span class="k">lineas</span> <span class="k">m</span><span class="err">á</span><span class="k">s</span> <span class="k">aqui</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Bueno ahora, vamos pal DHCP. Por supuesto, nada menos que el mismísimo dnsmasq:</p>
+
+<p>Primero el método DHCP, declaramos una option cuyo código sea 252</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/dnsmasq.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">option</span><span class="o">=</span><span class="mi">252</span><span class="p">,</span><span class="nl">http</span><span class="p">:</span><span class="c1">//10.1.1.1/wpad.dat</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>También declaramos un puntero DNS, que apunte a wpad.hcg.sld.cu y que sea el
+servidor donde está el wpad. Le recuerdo que &ldquo;hcg.sld.cu&rdquo; es el nombre del
+dominio.</p>
+
+<p>Al reiniciar nginx y dnsmasq, todo debe estar listo&hellip;</p>
+
+<p>En caso de que <strong>no</strong> uses dnsmasq, asumiré que usas bind e ICS dhcpd&hellip;</p>
+
+<p>Para ICS dhcpd, la cosa es un tin más compleja, ya que hay que declarar
+globalmente el tipo de opción, pero darle el valor en cada subnet o en le única
+que uses. A mi me pinchó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;dhcpd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='squidconf'><span class='line'><span class="c"># vim:filetype=config</span><span class="w"></span>
+</span><span class='line'>authoritative;<span class="w"></span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># declaramos lo del proxy automático</span><span class="w"></span>
+</span><span class='line'>option<span class="w"> </span>local-proxy-config<span class="w"> </span>code<span class="w"> </span><span class="m">252</span><span class="w"> </span>=<span class="w"> </span>text;<span class="w"></span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># la red</span><span class="w"></span>
+</span><span class='line'>subnet<span class="w"> </span><span class="mf">10.1.1.0</span><span class="w"> </span>netmask<span class="w"> </span><span class="mf">255.255.255.0</span><span class="w"> </span>{<span class="w"></span>
+</span><span class='line'>
+</span><span class='line'><span class="w">    </span><span class="c"># los parámetros del rango</span><span class="w"></span>
+</span><span class='line'><span class="w">    </span>range<span class="w"> </span><span class="mf">10.1.1.100</span><span class="w"> </span><span class="mf">10.1.1.254</span>;<span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>domain-name<span class="w"> </span>&quot;hcg.sld.cu&quot;;<span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>domain-name-servers<span class="w"> </span><span class="mf">10.1.1.1</span>;<span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>broadcast-address<span class="w"> </span><span class="mf">10.1.1.255</span>;<span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>subnet-mask<span class="w"> </span><span class="mf">255.255.255.0</span>;<span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>routers<span class="w"> </span><span class="mf">10.1.1.1</span>;<span class="w"></span>
+</span><span class='line'>
+</span><span class='line'><span class="w">    </span><span class="c"># envía el proxy automático</span><span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>local-proxy-config<span class="w"> </span>&quot;http://10.1.1.1/wpad.dat&quot;;<span class="w"></span>
+</span><span class='line'>
+</span><span class='line'>}<span class="w"> </span><span class="c"># subnet</span><span class="w"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En el caso de bind9, declaras un CNAME con el nombre wpad que apunte al servidor
+donde descansa el <strong>wpad.dat</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/bind/ejemplo/dominio.cu.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">servidor1</span>    <span class="n">IN</span> <span class="n">A</span>     <span class="mf">10.1.1.1</span>
+</span><span class='line'><span class="n">servidor2</span>    <span class="n">IN</span> <span class="n">A</span>     <span class="mf">10.1.1.2</span>
+</span><span class='line'><span class="n">mail</span>         <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor2</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="n">pop</span>          <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor2</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="n">pop3</span>         <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor2</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="n">smtp</span>         <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor2</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="n">proxy</span>        <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor1</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="n">gateway</span>      <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor1</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="p">;</span> <span class="n">env</span><span class="err">í</span><span class="n">a</span> <span class="n">el</span> <span class="n">proxy</span> <span class="n">autom</span><span class="err">á</span><span class="n">tico</span>
+</span><span class='line'><span class="n">wpad</span>         <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor1</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Firefox pincha al palo, los demás no se&hellip;</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/posts/17">&larr; Older</a>
@@ -977,12 +1118,6 @@ desarollar&hellip;</p>
 	<ul id="recent_posts">
 
 		
-
-		<li class="post">
-			<a href="/blog/2017/12/05/la-lightning-network/">la lightning network</a>
-      </li>
-
-      
 
 		<li class="post">
 			<a href="/blog/2017/11/30/segwit-con-3-star-en-electrum/">segwit con p2sh en electrum</a>

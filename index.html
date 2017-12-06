@@ -9,7 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="la lightning network 05/12/2017 6:08 pm | Comments Seré directo: La lightning network NO introduce un concepto nuevo. Es exactamente igual que &hellip;">
+  <meta name="description" content="segwit con p2sh en electrum 30/11/2017 3:24 pm | Comments Resulta que los trezor, a pesar de tener segwit, no mandan bitcoins a
+direcciones que &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,158 +82,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/12/05/la-lightning-network/">la lightning network</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-12-05T18:08:08-05:00'><span class='date'>05/12/2017</span> <span class='time'>6:08 pm</span></time>
-        
-           | <a href="/blog/2017/12/05/la-lightning-network/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/12/05/la-lightning-network/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Seré directo: La lightning network <strong>NO</strong> introduce un concepto nuevo.</p>
-
-<p><strong>Es exactamente igual que cuando desechamos el patrón Oro.</strong></p>
-
-<p>¿Qué hace a una moneda poderosa? No es su emisor, ni su respaldo, si no, la
-confianza que le tienen sus usuarios. Kosovo usa el Euro de manera informal.</p>
-
-<p>Antes del <a href="https://es.wikipedia.org/wiki/Nixon_Shock">Nixon Shock</a>, el Dolar era
-la referencia de confianza de todo el mundo, porque a su vez, el dolar estaba
-respaldado por oro. Sin embargo, llegó un momento que el patrón oro, como modelo
-institucionalizado, era completamente insostenible; incluso luego de haberlo
-centralizado confianzudamente en el dolar.</p>
-
-<p>Para economías en rápida expansión, el patrón oro era un lastre. Para el
-incipiente mercado de divisas, era una pared de concreto.</p>
-
-<p>Pues así le sucede a la blockchain hoy en día. Que su tan fiable patrón, lastra
-las pequeñas y veloces transacciones.</p>
-
-<p><strong>Cuando se creo el dinero fiat, ya habían testigos segregados.</strong></p>
-
-<p>Las grandes divisas como el dollar, carentes de patrón oro, siguieron siendo
-monedas ponderadas; y arrastraron hasta hoy su fama. El mundo se dio cuenta que
-había cosas más importantes para valorar una moneda, como el PIB de un país,
-etc&hellip; Países con economías potentes pero sin oro, comenzaron a exportar su moneda.
-Esto es lo que hoy conocemos como <a href="https://es.wikipedia.org/wiki/Mercado_de_divisas">mercado de divisas</a>.</p>
-
-<p>En ese momento el dollar (y otros) se volvió un &ldquo;<strong>testigo segregado</strong>&rdquo; como lo
-es segwit.</p>
-
-<p>Muchas economías en rápido desarrollo respaldaron su moneda por el dolar. De
-hecho, tenemos países completamente dolarizados. Ya sea por que su moneda se
-respalda por dólares o porque simplemente fijaron su valor al dolar.</p>
-
-<p>Estos países usan entre sí el dolar como moneda de comercio. NO tienen en cuenta
-que si la moneda que hace como &ldquo;testigo segregado&rdquo; baja de valor, su economía
-también lo hará. Creen ciegamente en el papel de una divisa que ellos no emiten.</p>
-
-<p>Dólares provenientes de Panamá, entran en Ecuador, y punto.</p>
-
-<p><strong>¡¿Ya vez cuanto se parece eso a la lightning network?!</strong></p>
-
-<p>Ahora que hemos entendido el concepto, vamos a la parte técnica. ¿Cómo funciona
-la lightning network?</p>
-
-<p>Primero debemos entender que son los &ldquo;payment channel&rdquo; (canales de pago).
-Partimos del hecho que. Digamos que un conjunto de canales de pago, es un enlace
-entre un bloque y otro. Cada operación que sea realiza y se firma en dicho
-canal, debe reflejarse en ambos bloques, o sea, en el bloque que fue creado y en
-el nuevo. Además, todos los canales, enlazados entre si, deben reflejar las
-transacciones de extremo a extremo (receptor y emisor).</p>
-
-<p>La imagen oficial para explicarlo, es esta:</p>
-
-<p><img class="center" src="/images/lightning-bitcoin.png"></p>
-
-<p>Tanto el receptor como el emisor, deben usar sus claves privadas para firmar la
-transacción. De esta manera, «A» dice que le pagó a «B» en el bloque 8 y B dice
-que recibió el pago de A en el bloque 9.</p>
-
-<p>Una vez creado el nuevo bloque (el 9) estas operaciones se &ldquo;aterrizan&rdquo; y lo que
-esté en 9 que no se halla hecho en 8, queda fuera.</p>
-
-<p>De esta manera, podemos entender que la lightning network, es una especie de
-confirmación diferida. O sea, a lo que llamamos &ldquo;lightning network&rdquo; propiamente
-dicho, es el conjunto de canales linkados.</p>
-
-<p>Ahora bien, en cada canal de pago, solo sus miembros pueden hacer transacciones.
-La jodedera comienza cuando A, quiere mandarle una transacción a D.</p>
-
-<p>Pero por suerte, A y B tiene un canal de pago. Así mismo, B y C, tienen un canal
-de pago. «C», no está vinculado con «A», sin embargo, «B» si lo está). Además,
-«C» y «D» tienen otro canal de pago, así que mediante «C» y «B», «A» le manda un
-pago a «D». A través de «B» y «C», que actúan como mediadores (y como mineros).</p>
-
-<p>Esta transacción solo será valida cuando halla llegado al otro extremo (D). Si
-alguien por el camino tuviera una computadora cuántica, quizás podría romper el
-cifrado y modificar la transacción, pero de momento, esa transacción solo será
-válida cuando llegue a «D». Por tanto, si el canal entre B y C se rompiese, el
-dinero de «A» regresa a su poder porque el destino no fue alcanzable; cosa poco
-probable.</p>
-
-<p>Cada transacción tiene un período de validez. Si antes de que dicho período venza,
-no ha sido completada, se consideran inválidas. Lo mismo sucede si se completa
-luego de haber vencido dicho período. ¿Se entiende? No es lo mismo. Seguimos&hellip;</p>
-
-<p>Si el software de «A», no cumpliera con su parte de la transacción (por que está
-trucado), o sea, no se descuenta a si mismo el monto; sucederá que luego, cuando
-las operaciones se descarguen a la cadena de bloquees, «A» caerá en una especie
-de lista negra (diseminada por toda la blockchain) de forma que «A» no podrá
-hacer más transacciones (se quedó fuera del juego por hacer trampa). Si «A»
-quiere seguir usando bitcoins, deberá desechar esa cartera (con todas las
-direcciones que esta pueda emitir) y hacerse con una nueva (<strong>vacía</strong>). Además,
-el software usado por «A», no podrá usarse más, porque también estaría en la
-lista negra.</p>
-
-<p>Cuando tienes una cartera con $5.0, no querrás perderlo todo por dejar de pagar
-$0.10</p>
-
-<p>Por otra parte, si la cartera de «A», solamente tuviera $0.10, entonces puede
-decirse que «A», tenía muchas ganas de estafar a «B», tanto que decidió perder
-toda su cartera. Además, programó su propio software de bitcoin y se sacrificó
-perdiendo $0.10 para que nunca más le lleguen a «B». Desde entonces, el software
-de «A», cayó en la lista y jamás podrá usarse (toda la cadena de bloques se
-enteró).</p>
-
-<p>Fuera del ciberespacio han pasado cosas peores. Personas que imprimen billetes
-falsos, lo suficientemente creíbles como para pasar por verdaderos. <strong>No por esto
-ha sido el fin del papel moneda.</strong></p>
-
-<p>Yo pienso que tiene futuro. Te lo digo desde mi experiencia personal. He
-cambiado la dirección de pasar el cepillo en el blog varias veces recientemente.
-Antes los clientes para hacer un pago me decía &ldquo;genérame una dirección&rdquo;.
-Últimamente me dicen &ldquo;te la mandé pa la dirección del blog&rdquo;. O sea, que
-mentalmente, ya nos vamos acostumbrando que bitcoin se ha vuelto más expreso.
-Personas que para hacer transacciones equivalente a $10, tomaban todas las
-medidas como si fuera una de $1&#8217;000, ahora simplemente me dicen &ldquo;te lo he
-mandado a la dirección del blog&rdquo; y transfieren a una dirección que es hasta
-pública.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
-
-    </article>
   
   
     <article>
@@ -1175,6 +1024,67 @@ piedra:</p>
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/08/13/yum-estrecho/">yum estrecho</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-08-13T16:36:12-04:00'><span class='date'>13/08/2017</span> <span class='time'>4:36 pm</span></time>
+        
+           | <a href="/blog/2017/08/13/yum-estrecho/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/08/13/yum-estrecho/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Si en algo me destaco, es en mi habilidad por trabajar con espacios estrechos
+(poca RAM, poco espacio en disco, etc&hellip;)</p>
+
+<p>Cuando tenemos un servidor con CentOS, aveces no queremos más de las mil cosas
+que una completa instalación involucra. Por ejemplo, las páginas de man en una
+pila de idiomas, el contenido de /usr/share/doc/, etc&hellip; Si bien actualmente uso
+un script para eliminar todo eso, lo cierto es que sería mucho más fácil si
+nunca se desplegaran esos archivos.</p>
+
+<p>Gracias a <strong>yum-config-manager</strong> no hay que estar cargando con el fichero de
+configuración, simplemente se puede hacer un script que setee dichas
+configuraciones.</p>
+
+<p>Esta es la secuencia de comando que le tiro en un yum virgen:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum-config-manager --save --setopt assumeyes=true</span>
+</span><span class='line'><span class="go"> yum-config-manager --save --setopt tsflags=nodocs</span>
+</span><span class='line'><span class="go"> yum-config-manager --save --setopt override_install_langs=en</span>
+</span><span class='line'><span class="go"> yum-config-manager --save --setopt clean_requirements_on_remove</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al correr <strong>yum-config-manager</strong> puedes ver todas las opciones que este brinda.
+Lo demás sería buscar la documentación.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1192,12 +1102,6 @@ piedra:</p>
 	<ul id="recent_posts">
 
 		
-
-		<li class="post">
-			<a href="/blog/2017/12/05/la-lightning-network/">la lightning network</a>
-      </li>
-
-      
 
 		<li class="post">
 			<a href="/blog/2017/11/30/segwit-con-3-star-en-electrum/">segwit con p2sh en electrum</a>

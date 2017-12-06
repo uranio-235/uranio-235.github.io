@@ -9,8 +9,7 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="select en bootstrap 08/07/2014 3:40 pm | Comments A rails le sobra magia, eso no es secreto para nadie. No obstante, si hay un
-hechizo complicado de &hellip;">
+  <meta name="description" content="empíricos 05/07/2014 9:18 am | Comments ¿Sabes tú qué es un &ldquo;empírico&rdquo;? Una persona que desarrolla habilidades de manera autodidacta en &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,57 +81,6 @@ hechizo complicado de &hellip;">
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/08/select-en-bootstrap/">select en bootstrap</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-07-08T15:40:54-04:00'><span class='date'>08/07/2014</span> <span class='time'>3:40 pm</span></time>
-        
-           | <a href="/blog/2014/07/08/select-en-bootstrap/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/07/08/select-en-bootstrap/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>A rails le sobra magia, eso no es secreto para nadie. No obstante, si hay un
-hechizo complicado de conjurar, es el dichoso <a href="http://guides.rubyonrails.org/form_helpers.html#binding-a-form-to-an-object">form_for</a></p>
-
-<p>Es una verdadera jodienda poner un select decente en un form_for de rails,
-sobre todo para que coja el estilo de boostrap. He aquí el secreto:</p>
-
-<figure class='code'><figcaption><span>&#8220;un_scaffold.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'> <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;form-control&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="err">&lt;</span>%= f.select(:ampm, options_for_select([[&#39;AM&#39;, 1], [&#39;PM&#39;, 2]])) %&gt;
-</span><span class='line'> <span class="nt">&lt;/div&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ni en mi mejor día leyendo código fuente de RoR me hubiera imaginado que <a href="file:///home/lazaro/Documentacion/Rails/guides.rubyonrails.org/form_helpers.html#the-select-and-option-tags">options_for_select</a>
-existía. Evito a toda costa usar select, pero aveces no queda más remedio; un
-&ldquo;radio&rdquo; con 7 elementos se ve horrible.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
-
-    </article>
   
   
     <article>
@@ -899,6 +847,233 @@ servidor para ver que pasa.</p>
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/18/lxc-en-salud/">lxc en salud</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-04-18T20:14:10-05:00'><span class='date'>18/04/2014</span> <span class='time'>8:14 pm</span></time>
+        
+           | <a href="/blog/2014/04/18/lxc-en-salud/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/04/18/lxc-en-salud/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>¡Me han asignado mi segundo servidor en el calixto! Un cliente ligero con 2
+gigas de RAM, un buen micro y un disco duro de un tera. La fuente funciona de
+milagro y está sujeta al chásis mediante bridas.</p>
+
+<p>Le he instalado archlinux (para variar) a partir del que tengo en la laptop.
+Aquí pienso instalar el servidor de correo, un servidor web para una serie de
+aplicaciones y un pequeño servidor ftp para disponer instaladores y
+actualización de antivirus. No soporta virtualización (¿y con que se sienta la
+cucaracha si lo soportara?). Por tanto, usaremos archlinux como hypervisor de
+lxc.</p>
+
+<p>Por suerte, en infomed; hay un excelente repo de debian</p>
+
+<p>Para crear contenedores de debian en arch, necesitaremos <strong>debootstrap</strong>, que
+por suerte, viene en el repo de arch.</p>
+
+<p>Este archlinux está instalado sobre BTRfs con el COW activado. Me imagino que
+crear snapshots de los contenedores sea mucho más óptimo.</p>
+
+<p>Creamos entonces el contenedor, usando el repo de infomed como mirror</p>
+
+<figure class='code'><figcaption><span>&#8220;lxc-create&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">lxc-create -n debian -t \</span>
+</span><span class='line'><span class="go">/usr/share/lxc/templates/lxc-debian -- -r jessie \</span>
+</span><span class='line'><span class="go">--mirror=http://ftp.sld.cu/debian \</span>
+</span><span class='line'><span class="go">--security-mirror=http://ftp.sld.cu/debian</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>O sea, crea un contenedor, llamado (-n) debian, del release (-r) jessie y usa
+como repo (&ndash;mirror y &ndash;security) al de infomed.</p>
+
+<p>Pasé toda la noche resando para que no se fuera a caer la conexión, ya que la
+operación create de LXC falla de nada. Por suerte todo salió de acorde al plan.</p>
+
+<figure class='code'><figcaption><span>&#8220;listo debian&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[root@leviatan ~]# du -hs /var/lib/lxc/</span>
+</span><span class='line'><span class="go">248M /var/lib/lxc/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La idea es, crear un snapshot del básico y restaurarlo con un nuevo nombre.</p>
+
+<p>Pero este está demasiado básico. DESNÚ más bien. Partiremos de ese contenedor
+como base para crear nuevos contenedores mediante snapshots. Así que a este le
+instalaremos una selección básica de software.
+Arrancamos el contenedor:</p>
+
+<figure class='code'><figcaption><span>&#8220;lxc-start&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[root@leviatan ~]# lxc-start -n debian</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>y enclavamos (attach) la consola, o sea, básicamente, entramos al container</p>
+
+<figure class='code'><figcaption><span>&#8220;enclavando la consola&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[root@leviatan ~]# lxc-console -n debian</span>
+</span><span class='line'>
+</span><span class='line'><span class="go">Connected to tty 1</span>
+</span><span class='line'><span class="go">       Type &lt;Ctrl+a q&gt; to exit the console, &lt;Ctrl+a Ctrl+a&gt; to enter Ctrl+a itself</span>
+</span><span class='line'>
+</span><span class='line'><span class="go">Debian GNU/Linux 8 debian tty1</span>
+</span><span class='line'>
+</span><span class='line'><span class="go">debian login: </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Según la plantilla de archlinux, el password por defecto del container es
+&ldquo;root&rdquo;. Entramos al mismo y le cambiamos el password. Apto seguido, instalar el
+software.</p>
+
+<p>En mi opinión un container básico, requiere al menos:</p>
+
+<pre><code>mc, tmux, vim, aptitude, iputils-ping
+</code></pre>
+
+<p>Pero además, <em>puede que quizás te guste</em> añadirle:</p>
+
+<pre><code>manpages, resolvconf, telnet, iptables
+</code></pre>
+
+<p>Terminada la faena, damos logout y luego presionamos la combinación &ldquo;Ctrl+a q&rdquo;.
+O sea, &ldquo;control A&rdquo; primero, luego suelta ambas y presiona &ldquo;q&rdquo;. Con eso
+desenclavas (detach) la consola del container (que sigue corriendo).</p>
+
+<p>Bello verdad?! Linux es un sistema multitareas y multiusuario.</p>
+
+<p>Empezar a aprovisionarnos es tan simple como copiar el contenedor. O sea el
+contenedor <strong>debian</strong> lo usaremos como plantilla para crear los contenedores
+mail, web y ftp.</p>
+
+<figure class='code'><figcaption><span>&#8220;lxc-snapshot&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">[root@leviatan ~]# lxc-copy -n debian -N mail</span>
+</span><span class='line'><span class="go">[root@leviatan ~]# lxc-copy -n debian -N web</span>
+</span><span class='line'><span class="go">[root@leviatan ~]# lxc-copy -n debian -N ftp</span>
+</span><span class='line'><span class="go">[root@leviatan ~]# lxc-ls -f</span>
+</span><span class='line'><span class="go">NAME   STATE   AUTOSTART GROUPS IPV4 IPV6</span>
+</span><span class='line'><span class="go">debian STOPPED 0         -      -    -</span>
+</span><span class='line'><span class="go">mail   STOPPED 0         -      -    -</span>
+</span><span class='line'><span class="go">ftp    STOPPED 0         -      -    -</span>
+</span><span class='line'><span class="go">web    STOPPED 0         -      -    -</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ya tenemos las tres máquinas. Ahora es tu desición si conservas o no el
+contenedor primario. A ese primer contenedor, que en este caso se llama &ldquo;debian&rdquo;
+yo lo llamo <em>matriz</em>. La matriz la mantengo actualizada y afinada. En algún
+momento podría necesitar hacer máquinas nuevas. Además, si te decides a hacer
+algún servidor desde cero; conservando las configuraciones, simplemente haces
+una nueva copia de la matriz (actualizada).</p>
+
+<p>No vale pena tener ssh corriendo en los contenedores. Simplemente le haces ssh
+al servidor y attach al contenedor. Esto lo hace incluso hasta más seguro.</p>
+
+<p>La mecánica de trabajo en este esquema, es prácticamente la misma que vimos
+ahora. Arrancar el container y enclavar la consola.</p>
+
+<p>¿Notaste que puse a iptables como paquete opcional? Pues el iptables del
+hypervisor, o sea, del arch de afuera, controla todo el tráfico.</p>
+
+<p>Otra cosa buena que puedes hacer es lincar todas las cache de apt de los debian.
+Por ejemplo, el directorio de la matriz sería:</p>
+
+<p>/var/lib/lxc/debian/rootfs/var/cache/apt/archives</p>
+
+<p>Mientras que el de &ldquo;mail&rdquo; sería</p>
+
+<p>/var/lib/lxc/mail/rootfs/var/cache/apt/archives</p>
+
+<p>Simplemente montas con bind el archive de debian en el de mail. El fstab
+quedaría así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/fstab&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> /el/debian/archives  /el/mail/archives  none  <span class="nb">bind</span>,nofail <span class="m">0</span>  0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nota para imbéciles: La ruta es muy larga, por eso usé ese aforismo. En el fstab
+debes poner ambas rutas como se ven arriba &ldquo;/var/lib/lxc/rootfs/fulanito&rdquo;</p>
+
+<p>Como no usamos red en bridge, todos los container tiran por la misma ip. En el
+servido web, se usa el puerto 80 y 443, en el de correo el 25 y 110; <strong>pero
+todos en la misma ip</strong>. Por esta razón, no corro ssh en los contenedores;
+diría que el puerto 22 ya se encuentra en eso.</p>
+
+<p>Aquí les dejo entonces la configuración de este container, con red del tipo
+&ldquo;none&rdquo;</p>
+
+<figure class='code'><figcaption><span>&#8220;config de&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> [root@leviatan ~]# cat /var/lib/lxc/debian/config |grep -v &#39;#&#39;</span>
+</span><span class='line'><span class="go"> lxc.include = /usr/share/lxc/config/debian.common.conf</span>
+</span><span class='line'><span class="go"> lxc.tty = 4</span>
+</span><span class='line'><span class="go"> lxc.arch = amd64</span>
+</span><span class='line'><span class="go"> lxc.network.type = none</span>
+</span><span class='line'><span class="go"> lxc.rootfs = /var/lib/lxc/debian/rootfs</span>
+</span><span class='line'><span class="go"> lxc.rootfs.backend = dir</span>
+</span><span class='line'><span class="go"> lxc.utsname = debian</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por otra parte, cosas como el mysql, que el servidor de correo necesita
+encuestarlo, simplemente, podrías ponerlo a escuchar por la 127.0.0.1 y así el
+container del servidor sql, escucha por la 127 y los demás container (incluso el
+hypervisor) se conectan al localhost donde está el mysql. O sea, la 127.0.0.1
+sería como la red interna de todos los container. ¿Es seguro verdad?</p>
+
+<p>Podemos confiarle ahora, a la frescura y robusteza de archlinux, la estabilidad
+de debian.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/posts/19">&larr; Older</a>
@@ -918,12 +1093,6 @@ servidor para ver que pasa.</p>
 	<ul id="recent_posts">
 
 		
-
-		<li class="post">
-			<a href="/blog/2017/12/05/la-lightning-network/">la lightning network</a>
-      </li>
-
-      
 
 		<li class="post">
 			<a href="/blog/2017/11/30/segwit-con-3-star-en-electrum/">segwit con p2sh en electrum</a>

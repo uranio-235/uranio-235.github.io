@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="yum estrecho 13/08/2017 4:36 pm | Comments Si en algo me destaco, es en mi habilidad por trabajar con espacios estrechos
-(poca RAM, poco espacio en &hellip;">
+  <meta name="description" content="LEMP en Centos 7 24/07/2017 12:33 am | Comments En la entrada anterior, vimos como instalar un LEMP (nginx, mysql y php) en
+debian. Debian que en mi &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,67 +82,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/08/13/yum-estrecho/">yum estrecho</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-08-13T16:36:12-04:00'><span class='date'>13/08/2017</span> <span class='time'>4:36 pm</span></time>
-        
-           | <a href="/blog/2017/08/13/yum-estrecho/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/08/13/yum-estrecho/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Si en algo me destaco, es en mi habilidad por trabajar con espacios estrechos
-(poca RAM, poco espacio en disco, etc&hellip;)</p>
-
-<p>Cuando tenemos un servidor con CentOS, aveces no queremos más de las mil cosas
-que una completa instalación involucra. Por ejemplo, las páginas de man en una
-pila de idiomas, el contenido de /usr/share/doc/, etc&hellip; Si bien actualmente uso
-un script para eliminar todo eso, lo cierto es que sería mucho más fácil si
-nunca se desplegaran esos archivos.</p>
-
-<p>Gracias a <strong>yum-config-manager</strong> no hay que estar cargando con el fichero de
-configuración, simplemente se puede hacer un script que setee dichas
-configuraciones.</p>
-
-<p>Esta es la secuencia de comando que le tiro en un yum virgen:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum-config-manager --save --setopt assumeyes=true</span>
-</span><span class='line'><span class="go"> yum-config-manager --save --setopt tsflags=nodocs</span>
-</span><span class='line'><span class="go"> yum-config-manager --save --setopt override_install_langs=en</span>
-</span><span class='line'><span class="go"> yum-config-manager --save --setopt clean_requirements_on_remove</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Al correr <strong>yum-config-manager</strong> puedes ver todas las opciones que este brinda.
-Lo demás sería buscar la documentación.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
-
-    </article>
   
   
     <article>
@@ -876,6 +815,146 @@ batazo y los adhanes de com.honey.prayerassistant son más variados.</p>
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/06/22/curiosa-acl-de-squid/">squid y navegar a .cu</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-06-22T00:17:11-04:00'><span class='date'>22/06/2017</span> <span class='time'>12:17 am</span></time>
+        
+           | <a href="/blog/2017/06/22/curiosa-acl-de-squid/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/06/22/curiosa-acl-de-squid/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Aveces las necesidades de nuestros clientes, son tan raras que nos dejan
+anonadados. Pero ante necesidades extravagantes; soluciones extravagantes.  Este
+post me lo dejo a modo de reflexión, para recordar; que muchas veces, el ingenio
+combinado con la simpleza, puede desembocar en soluciones tan hermosas como
+raras.</p>
+
+<p>Es común, que en algunos lugares, la navegación a sitios &ldquo;.cu&rdquo; no requiera
+autenticación. Aveces poner una ACL como esta</p>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="err">acl</span> <span class="err">cuba</span> <span class="err">url_regex</span> <span class="err">\.cu</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">cuba</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Aparentemente <em>matamos la jugada</em>, pero luego, metemos una ACL relacionada con
+usuarios autenticados y se jodió bicicleta.</p>
+
+<p>El cartel de &ldquo;por favor autentique&rdquo; cae a cuanto &ldquo;.cu&rdquo; se navegue.</p>
+
+<p>Pero tocando el <em>squid.conf</em>, vi esta cosa hermosa</p>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="c1">#   acl aclname localport 3128  # TCP port the client connected to [fast]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Decidí que los que vallan a navegar con autenticación, usarán el puerto 8080 y
+los vuelos nacionales saldrán por el 3128.</p>
+
+<p>De esta manera, se hace una ACL que niegue las peticiones NO cubanas <strong>sin mostrar
+el puto login</strong>.</p>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="c1"># aquellos que se conectan por el puerto 3128</span>
+</span><span class='line'> <span class="err">acl</span> <span class="err">mortales</span> <span class="err">localport</span> <span class="err">3128</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># aquellos que se conectan por el 8080</span>
+</span><span class='line'> <span class="err">acl</span> <span class="err">olimpo</span> <span class="err">localport</span> <span class="err">8080</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># los sitios a los que se entran sin contraseña</span>
+</span><span class='line'> <span class="err">acl</span> <span class="err">cuba</span> <span class="err">url_regex</span> <span class="err">-i</span> <span class="err">&quot;/etc/squid3/cuba.lst&quot;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># CUBANOS</span>
+</span><span class='line'> <span class="c1"># lo que valla a cuba,</span>
+</span><span class='line'> <span class="c1"># sale sin autenticación</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">mortales</span> <span class="err">cuba</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">CONNECT</span> <span class="err">mortales</span> <span class="err">cuba</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># deniega a los mortales, lo que no sea cuba</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">deny</span> <span class="err">mortales</span> <span class="err">!cuba</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">deny</span> <span class="err">CONNECT</span> <span class="err">mortales</span> <span class="err">!cuba</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># PRIVILEGIADOS</span>
+</span><span class='line'> <span class="c1"># lo que NO valla para cuba debe autenticarse</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">CONNECT</span> <span class="err">olimpo</span> <span class="err">autenticados</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">olimpo</span> <span class="err">autenticados</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># y más nada pasa</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">deny</span> <span class="err">CONNECT</span> <span class="err">all</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">deny</span> <span class="err">all</span>
+</span><span class='line'> <span class="err">icp_access</span> <span class="err">deny</span> <span class="err">all</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¿Se entendió? Pasa que squid, al hacerle cualquier petición, que involucre
+internet, le mostrará al pobre <em>puntoseunauta</em> el cuadro de diálogo, ya que
+para acceder a internet real requiere autenticación; y squid te da la
+posibilidad probar que eres <em>usuario de internet</em>. Para evitar esta conducta,
+ponemos una cláusula permitiendo que los &ldquo;.cu&rdquo; usando el 3128, pasan. Luego
+ponemos otra ACL negando el acceso a lo que <strong>NO</strong> sea .cu por el mismo puerto.
+De esta manera, los que tengan solo acceso &ldquo;.cu&rdquo;, usarán el 3128 y la ACL que
+involucra autenticación nunca es probada.</p>
+
+<p>Para los autenticados, pusimos una ACL que machea el puerto 8080. O sea, los
+usuarios de internet, al hacer su peticiones por el puerto 8080, enseguida las
+pedirá autenticación.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -895,12 +974,6 @@ batazo y los adhanes de com.honey.prayerassistant son más variados.</p>
 	<ul id="recent_posts">
 
 		
-
-		<li class="post">
-			<a href="/blog/2017/12/05/la-lightning-network/">la lightning network</a>
-      </li>
-
-      
 
 		<li class="post">
 			<a href="/blog/2017/11/30/segwit-con-3-star-en-electrum/">segwit con p2sh en electrum</a>
