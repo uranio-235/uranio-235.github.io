@@ -4,7 +4,7 @@
   <title><![CDATA[El SysAdmin del 3er Mundo]]></title>
   <link href="http://uranio-235.github.io/atom.xml" rel="self"/>
   <link href="http://uranio-235.github.io/"/>
-  <updated>2017-12-01T10:55:54-05:00</updated>
+  <updated>2017-12-06T10:01:55-05:00</updated>
   <id>http://uranio-235.github.io/</id>
   <author>
     <name><![CDATA[låzaro]]></name>
@@ -12,6 +12,133 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[la lightning network]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/12/05/la-lightning-network/"/>
+    <updated>2017-12-05T18:08:08-05:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/12/05/la-lightning-network</id>
+    <content type="html"><![CDATA[<p>Seré directo: La lightning network <strong>NO</strong> introduce un concepto nuevo.</p>
+
+<p><strong>Es exactamente igual que cuando desechamos el patrón Oro.</strong></p>
+
+<p>¿Qué hace a una moneda poderosa? No es su emisor, ni su respaldo, si no, la
+confianza que le tienen sus usuarios. Kosovo usa el Euro de manera informal.</p>
+
+<p>Antes del <a href="https://es.wikipedia.org/wiki/Nixon_Shock">Nixon Shock</a>, el Dolar era
+la referencia de confianza de todo el mundo, porque a su vez, el dolar estaba
+respaldado por oro. Sin embargo, llegó un momento que el patrón oro, como modelo
+institucionalizado, era completamente insostenible; incluso luego de haberlo
+centralizado confianzudamente en el dolar.</p>
+
+<p>Para economías en rápida expansión, el patrón oro era un lastre. Para el
+incipiente mercado de divisas, era una pared de concreto.</p>
+
+<p>Pues así le sucede a la blockchain hoy en día. Que su tan fiable patrón, lastra
+las pequeñas y veloces transacciones.</p>
+
+<p><strong>Cuando se creo el dinero fiat, ya habían testigos segregados.</strong></p>
+
+<p>Las grandes divisas como el dollar, carentes de patrón oro, siguieron siendo
+monedas ponderadas; y arrastraron hasta hoy su fama. El mundo se dio cuenta que
+había cosas más importantes para valorar una moneda, como el PIB de un país,
+etc&hellip; Países con economías potentes pero sin oro, comenzaron a exportar su moneda.
+Esto es lo que hoy conocemos como <a href="https://es.wikipedia.org/wiki/Mercado_de_divisas">mercado de divisas</a>.</p>
+
+<p>En ese momento el dollar (y otros) se volvió un &ldquo;<strong>testigo segregado</strong>&rdquo; como lo
+es segwit.</p>
+
+<p>Muchas economías en rápido desarrollo respaldaron su moneda por el dolar. De
+hecho, tenemos países completamente dolarizados. Ya sea por que su moneda se
+respalda por dólares o porque simplemente fijaron su valor al dolar.</p>
+
+<p>Estos países usan entre sí el dolar como moneda de comercio. NO tienen en cuenta
+que si la moneda que hace como &ldquo;testigo segregado&rdquo; baja de valor, su economía
+también lo hará. Creen ciegamente en el papel de una divisa que ellos no emiten.</p>
+
+<p>Dólares provenientes de Panamá, entran en Ecuador, y punto.</p>
+
+<p><strong>¡¿Ya vez cuanto se parece eso a la lightning network?!</strong></p>
+
+<p>Ahora que hemos entendido el concepto, vamos a la parte técnica. ¿Cómo funciona
+la lightning network?</p>
+
+<p>Primero debemos entender que son los &ldquo;payment channel&rdquo; (canales de pago).
+Partimos del hecho que. Digamos que un conjunto de canales de pago, es un enlace
+entre un bloque y otro. Cada operación que sea realiza y se firma en dicho
+canal, debe reflejarse en ambos bloques, o sea, en el bloque que fue creado y en
+el nuevo. Además, todos los canales, enlazados entre si, deben reflejar las
+transacciones de extremo a extremo (receptor y emisor).</p>
+
+<p>La imagen oficial para explicarlo, es esta:</p>
+
+<p><img class="center" src="http://uranio-235.github.io/images/lightning-bitcoin.png"></p>
+
+<p>Tanto el receptor como el emisor, deben usar sus claves privadas para firmar la
+transacción. De esta manera, «A» dice que le pagó a «B» en el bloque 8 y B dice
+que recibió el pago de A en el bloque 9.</p>
+
+<p>Una vez creado el nuevo bloque (el 9) estas operaciones se &ldquo;aterrizan&rdquo; y lo que
+esté en 9 que no se halla hecho en 8, queda fuera.</p>
+
+<p>De esta manera, podemos entender que la lightning network, es una especie de
+confirmación diferida. O sea, a lo que llamamos &ldquo;lightning network&rdquo; propiamente
+dicho, es el conjunto de canales linkados.</p>
+
+<p>Ahora bien, en cada canal de pago, solo sus miembros pueden hacer transacciones.
+La jodedera comienza cuando A, quiere mandarle una transacción a D.</p>
+
+<p>Pero por suerte, A y B tiene un canal de pago. Así mismo, B y C, tienen un canal
+de pago. «C», no está vinculado con «A», sin embargo, «B» si lo está). Además,
+«C» y «D» tienen otro canal de pago, así que mediante «C» y «B», «A» le manda un
+pago a «D». A través de «B» y «C», que actúan como mediadores (y como mineros).</p>
+
+<p>Esta transacción solo será valida cuando halla llegado al otro extremo (D). Si
+alguien por el camino tuviera una computadora cuántica, quizás podría romper el
+cifrado y modificar la transacción, pero de momento, esa transacción solo será
+válida cuando llegue a «D». Por tanto, si el canal entre B y C se rompiese, el
+dinero de «A» regresa a su poder porque el destino no fue alcanzable; cosa poco
+probable.</p>
+
+<p>Cada transacción tiene un período de validez. Si antes de que dicho período venza,
+no ha sido completada, se consideran inválidas. Lo mismo sucede si se completa
+luego de haber vencido dicho período. ¿Se entiende? No es lo mismo. Seguimos&hellip;</p>
+
+<p>Si el software de «A», no cumpliera con su parte de la transacción (por que está
+trucado), o sea, no se descuenta a si mismo el monto; sucederá que luego, cuando
+las operaciones se descarguen a la cadena de bloquees, «A» caerá en una especie
+de lista negra (diseminada por toda la blockchain) de forma que «A» no podrá
+hacer más transacciones (se quedó fuera del juego por hacer trampa). Si «A»
+quiere seguir usando bitcoins, deberá desechar esa cartera (con todas las
+direcciones que esta pueda emitir) y hacerse con una nueva (<strong>vacía</strong>). Además,
+el software usado por «A», no podrá usarse más, porque también estaría en la
+lista negra.</p>
+
+<p>Cuando tienes una cartera con $5.0, no querrás perderlo todo por dejar de pagar
+$0.10</p>
+
+<p>Por otra parte, si la cartera de «A», solamente tuviera $0.10, entonces puede
+decirse que «A», tenía muchas ganas de estafar a «B», tanto que decidió perder
+toda su cartera. Además, programó su propio software de bitcoin y se sacrificó
+perdiendo $0.10 para que nunca más le lleguen a «B». Desde entonces, el software
+de «A», cayó en la lista y jamás podrá usarse (toda la cadena de bloques se
+enteró).</p>
+
+<p>Fuera del ciberespacio han pasado cosas peores. Personas que imprimen billetes
+falsos, lo suficientemente creíbles como para pasar por verdaderos. <strong>No por esto
+ha sido el fin del papel moneda.</strong></p>
+
+<p>Yo pienso que tiene futuro. Te lo digo desde mi experiencia personal. He
+cambiado la dirección de pasar el cepillo en el blog varias veces recientemente.
+Antes los clientes para hacer un pago me decía &ldquo;genérame una dirección&rdquo;.
+Últimamente me dicen &ldquo;te la mandé pa la dirección del blog&rdquo;. O sea, que
+mentalmente, ya nos vamos acostumbrando que bitcoin se ha vuelto más expreso.
+Personas que para hacer transacciones equivalente a $10, tomaban todas las
+medidas como si fuera una de $1&#8217;000, ahora simplemente me dicen &ldquo;te lo he
+mandado a la dirección del blog&rdquo; y transfieren a una dirección que es hasta
+pública.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[segwit con p2sh en electrum]]></title>
@@ -83,11 +210,9 @@ casilla <strong>bip39</strong>.</p>
 <p>A continuación, nos preguntará que derivation quieres usar, poniendo la que
 genera el <strong>bc1</strong>. Ahí sustituiremos el <strong>44</strong> por un <strong>49</strong>.</p>
 
-<p><img class="center" src="http://uranio-235.github.io/images/electrum/semillabip39.png"></p>
+<p><img class="center" src="http://uranio-235.github.io/images/electrum/derivation.png"></p>
 
 <p><strong>REPITO</strong>, cambiamos el <strong>44</strong> por un <strong>49</strong></p>
-
-<p><img class="center" src="http://uranio-235.github.io/images/electrum/derivation.png"></p>
 
 <p>Y listo! Ahí tienes una cartera que los trezor y los ledgers la entienden bien.</p>
 
@@ -97,7 +222,19 @@ genera el <strong>bc1</strong>. Ahí sustituiremos el <strong>44</strong> por un
 vas a transferir un dineral, hazlo con una cartera normal y paga una comisión
 decente.</p>
 
-<p>Veremos si con segwit seguimos teniendo <em>Veritas in Numeris.</em></p>
+<p>Muy pronto, veremos si con segwit seguimos teniendo <strong>Veritas in Numeris</strong>. Yo
+pienso que cuanto más rápido la gente comprenda que segwit <strong>no</strong> es una cadena
+aparte, solo una manera diferida de hacer las transacciones y si el sistema de
+penalizaciones funciona, todo estará bien.</p>
+
+<p>Claro, no estamos exceptos de las nuevas amenazas que están por descubrirse.
+Además, no exponemos a que muchos nodos se dediquen a organizarse en una
+especie de &ldquo;mafia de la blockchain&rdquo; y empiecen a hacer cosas feas; pero eso, es
+una amenaza potencial, puede suceder con o sin segwit.</p>
+
+<p>Espero tomarme un café en el <em>Studient</em> (una buena cafetería que está junto al
+calixto garcía) y pagarlo con el teléfono, usando bitcoin conectado a la wifi/4G
+de Nauta.</p>
 ]]></content>
   </entry>
   
@@ -108,11 +245,11 @@ decente.</p>
     <id>http://uranio-235.github.io/blog/2017/11/30/segwit-confusion</id>
     <content type="html"><![CDATA[<p>No voy a explicar que es <a href="https://en.wikipedia.org/wiki/SegWit">Segwit</a> y como funciona, para eso está la wikipedia.</p>
 
-<p>Tampoco voy a entrar en el filosófico debate de si bitcoin es una burbuja. Halla
+<p>Tampoco voy a entrar en el filosófico debate de si bitcoin es una burbuja. Allá
 el que siga confiando más en billetes de papel y fiat que en computadoras y
 criptografía.</p>
 
-<p>La implementación final de segwit, le ha dado a mucho un portazo en la cara y
+<p>La implementación final de segwit, le ha dado a muchos un portazo en la cara y
 andan cagados del miedo contando bloques con/sin segwit.</p>
 
 <p>Pero era algo que caía por gravedad tarde o temprano; ya que le cadena de
@@ -131,7 +268,8 @@ par de años más, los temerarios seguirán contando bloques con/sin segwit.</p>
 
 <p>A todas estas, el hijo de puta de <a href="https://en.wikipedia.org/wiki/Roger_Ver">Roger Ver</a>
 aprovechó la confusión para seguir <a href="https://twitter.com/BlockchainPK/status/935641859795378178">sembrando cizaña</a>
-y hacer del fork, su propio bitcoin.</p>
+y hacer del fork, su propio bitcoin. Le ha hecho creer a medio mundo con segwit
+es una cadena aparte de la blockchain principal, como btch.</p>
 
 <p>Mientras tanto, la implementación de segwit sigue caminando, pero ahora resulta
 que algunos trezor (más de uno ya me he topado), usan direcciones 3<em> en vez de
@@ -139,6 +277,11 @@ bc1</em>. O sea que no reconocen las bc1 como dirección. En el próximo post,
 explicaré como configurar electrum para generar una cartera 3* con segwit;
 porque en lo que se ponen de acuerdo; las transacciones siguen pie y cuando son
 montos bajos, segwit es muy útil.</p>
+
+<p>También he tenido un ojo sobre una app de android llamada Samourai, similar a
+Mycelium. Emite direcciones 3<em> y 1</em> con solo tocar un botón. Pero de momento
+está en su versión Alpha. Eso sí, parece venir muy buena, por que las 4 mierdas
+que tienen le funcionan muy bien.</p>
 ]]></content>
   </entry>
   
@@ -362,7 +505,7 @@ una herramienta lo suficientemente digna de manipular 500 o 1&#8217;000 usuarios
 herramienta es <strong>daloradius</strong>.</p>
 
 <p>Daloradius es una interfaz web, no solo linda, si no, lo suficientemente
-funcional como para sacarle el jugo a freeradius. Permite además, hacer
+funcionar como para sacarle el jugo a freeradius. Permite además, hacer
 operaciones predefinidas muy buenas para cosas como hotspot, etc&hellip; Lo más
 especial en mi opinión es el sistema de contabilidad. Muy bueno para cuotas.</p>
 
@@ -850,7 +993,235 @@ Lo demás sería buscar la documentación.</p>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[LEMP en debian]]></title>
+    <title type="html"><![CDATA[LEMP en Centos 7]]></title>
+    <link href="http://uranio-235.github.io/blog/2017/07/24/lemp-en-centos/"/>
+    <updated>2017-07-24T00:33:51-04:00</updated>
+    <id>http://uranio-235.github.io/blog/2017/07/24/lemp-en-centos</id>
+    <content type="html"><![CDATA[<p>En la entrada anterior, vimos como instalar un LEMP (nginx, mysql y php) en
+debian. Debian que en mi opinión ya pasó su carnaval y RHEL sigue campeando.</p>
+
+<p>En centos necesitaremos el repo EPEL</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando epel&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum install epel-release</span>
+</span><span class='line'><span class="go"> yum makecache fast</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Una vez que tenemos acoplado el EPEL, alamos nginx y le decimos a systemd que
+arranque nginx junto con el sistema.</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando nginx&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum install nginx</span>
+</span><span class='line'><span class="go"> systemctl enable nginx</span>
+</span><span class='line'><span class="go"> systemctl start nginx</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Matao el gallo con nginx. Vamos para mariadb (alias mysql).</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando mysql&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum install mariadb-server mariadb</span>
+</span><span class='line'><span class="go"> systemctl start mariadb</span>
+</span><span class='line'><span class="go"> systemctl enable mariadb</span>
+</span><span class='line'><span class="go"> mysql_secure_installation</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No tengo que explicar como funciona el comando <strong>mysql_secure_installation</strong>;
+asumo que el lector <strong>no</strong> es retrasado mental. Configure el MySQL como más
+cómodo le sea.</p>
+
+<p>Finalmente, la guinda del pastel: <strong>PHP</strong>. Hay mil y una vertiente de como
+instalar php en centos. Que si el repo remis, que si el ius, que si la versión
+tal o la mascual, etc&hellip; En este caso asumiremos que se está instalando el php
+genérico y no discutiremos nimiedades.</p>
+
+<figure class='code'><figcaption><span>&#8220;php genérico&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum install php php-mysql php-fpm</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Antes de echarlo a andar, vamos a hacer unos cambios. En el fichero
+<strong>/etc/php.ini</strong> buscamos una linea que dice <strong>cgi.fix_pathinfo</strong> y le ponemos
+como valor 0.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/php.ini&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="na">cgi.fix_pathinfo</span><span class="o">=</span><span class="s">0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A php-fpm también le vamos a dar unos toques finos. Localiza el fichero
+<strong>/etc/php-fpm.d/www.conf</strong> y el parámetro <strong>listen</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/php-fpm.d/www.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="na">listen</span> <span class="o">=</span> <span class="s">/var/run/php-fpm/php-fpm.sock</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Además, localiza también ahí, las lineas <strong>listen.</strong>. Asegúrate de que corran
+como el usuario <strong>nobody</strong>.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/php-fpm.d/www.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="na">listen.owner</span> <span class="o">=</span> <span class="s">nobody</span>
+</span><span class='line'><span class="s"> listen.group = nobody</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero eso era el suid de fpm, ahora vamos a setear el usuario del socket, que en
+este caso será <strong>nginx</strong>.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/php-fpm.d/www.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="na">user</span>  <span class="o">=</span> <span class="s">nginx</span>
+</span><span class='line'><span class="s"> group = nginx</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Arranca y habilita fpm.</p>
+
+<figure class='code'><figcaption><span>&#8220;arranca fpm&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> systemctl enable php-fpm</span>
+</span><span class='line'><span class="go"> systemctl start  php-fpm</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Siempre falta un puto &ldquo;.conf&rdquo; de nginx que pinche con php, así que aquí te pongo
+uno bien genérico.</p>
+
+<figure class='code'><figcaption><span>&#8220;nginx.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'>   <span class="c1"># redirector estático</span>
+</span><span class='line'>   <span class="err">server</span> <span class="err">{</span>
+</span><span class='line'>
+</span><span class='line'>         <span class="err">listen</span>       <span class="err">80</span><span class="c1">;</span>
+</span><span class='line'>         <span class="err">server_name</span>  <span class="err">fqdn_del_virtualhost</span><span class="c1">;</span>
+</span><span class='line'>
+</span><span class='line'>         <span class="err">location</span> <span class="err">/</span> <span class="err">{</span>
+</span><span class='line'>            <span class="err">return</span> <span class="err">301</span> <span class="err">https://$server_name$request_uri</span><span class="c1">;</span>
+</span><span class='line'>         <span class="err">}</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="err">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>   <span class="err">server</span> <span class="err">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># el directorio /etc/nginx/ssl/ contine los certificados</span>
+</span><span class='line'>      <span class="err">ssl_certificate</span>      <span class="err">ssl/certificado.crt</span><span class="c1">;</span>
+</span><span class='line'>      <span class="err">ssl_certificate_key</span>  <span class="err">ssl/certificado.key</span><span class="c1">;</span>
+</span><span class='line'>      <span class="err">ssl_session_cache</span>    <span class="err">shared:SSL:1m</span><span class="c1">;</span>
+</span><span class='line'>      <span class="err">ssl_session_timeout</span>  <span class="err">5m</span><span class="c1">;</span>
+</span><span class='line'>      <span class="err">ssl_ciphers</span>  <span class="err">HIGH:!aNULL:!MD5</span><span class="c1">;</span>
+</span><span class='line'>      <span class="err">ssl_prefer_server_ciphers</span>  <span class="err">on</span><span class="c1">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># como me llamo y por donde escucho</span>
+</span><span class='line'>      <span class="err">listen</span>       <span class="err">443</span> <span class="err">ssl</span><span class="c1">;</span>
+</span><span class='line'>      <span class="err">server_name</span>  <span class="err">fqdn_del_virtualhost</span><span class="c1">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># aquí pones el directorio donde está tu app</span>
+</span><span class='line'>      <span class="err">root</span>   <span class="err">/var/www/html</span><span class="c1">;</span>
+</span><span class='line'>      <span class="err">index</span> <span class="err">index.php</span> <span class="err">index.html</span> <span class="err">index.htm</span><span class="c1">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># el root del servidor</span>
+</span><span class='line'>      <span class="err">location</span> <span class="err">/</span> <span class="err">{</span>
+</span><span class='line'>          <span class="na">try_files $uri $uri/</span> <span class="o">=</span><span class="s">404;</span>
+</span><span class='line'><span class="s">      }</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># los errores 404</span>
+</span><span class='line'>      <span class="err">error_page</span> <span class="err">404</span> <span class="err">/404.html</span><span class="c1">;</span>
+</span><span class='line'>      <span class="err">error_page</span> <span class="err">500</span> <span class="err">502</span> <span class="err">503</span> <span class="err">504</span> <span class="err">/50x.html</span><span class="c1">;</span>
+</span><span class='line'>      <span class="na">location</span> <span class="o">=</span> <span class="s">/50x.html {</span>
+</span><span class='line'><span class="s">          root /usr/share/nginx/html;</span>
+</span><span class='line'><span class="s">      }</span>
+</span><span class='line'><span class="s">      </span>
+</span><span class='line'><span class="s">      # el fpm de php, la expresión regular suele dar perreta por el $</span>
+</span><span class='line'><span class="s">      location ~ \.php$ {</span>
+</span><span class='line'><span class="s">           try_files $uri =404;</span>
+</span><span class='line'><span class="s">           fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock;</span>
+</span><span class='line'><span class="s">           fastcgi_index index.php;</span>
+</span><span class='line'><span class="s">           fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;</span>
+</span><span class='line'><span class="s">           include fastcgi_params;</span>
+</span><span class='line'><span class="s">      }</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="err">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si quieres probarlo crea el fichero <strong>/var/www/html/index.php</strong> con algo clásico.</p>
+
+<figure class='code'><figcaption><span>&#8220;/var/www/html/index.php&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'> <span class="o">&lt;?</span><span class="nx">php</span> <span class="nb">phpinfo</span><span class="p">();</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si te da un error que dice &ldquo;not input file especified&rdquo; puede ser rollo con
+selinux o algo mal configurado en php fpm.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[LEMP en debian 9]]></title>
     <link href="http://uranio-235.github.io/blog/2017/07/23/lemp-en-debian/"/>
     <updated>2017-07-23T15:19:47-04:00</updated>
     <id>http://uranio-235.github.io/blog/2017/07/23/lemp-en-debian</id>
@@ -2375,160 +2746,6 @@ escucha por el puerto 8888.</p>
 
 
 <p>Note como los encabezados Upgrade son seteados. Ese es el truco&hellip;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[pkg tras un proxy]]></title>
-    <link href="http://uranio-235.github.io/blog/2017/03/03/pkg-tras-un-proxy/"/>
-    <updated>2017-03-03T23:00:57-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2017/03/03/pkg-tras-un-proxy</id>
-    <content type="html"><![CDATA[<p>En el 5to infierno de infomed, con la vida detrás del proxy que ya he mencionado
-incontables veces; todo se vuelve difícil.</p>
-
-<p>Por suerte freebsd ha mejorado en materia de soporte de proxy. Si bien en
-<strong>csh</strong>, basta con usar:</p>
-
-<figure class='code'><figcaption><span>&#8220;setenv&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">setenv http_proxy http://proxy.sld.cu:3128</span>
-</span><span class='line'><span class="go">setenv https_proxy $http_proxy</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Operaciones de rutinas como <strong>pkg audit -F</strong> suelen fallar al ser ejecutadas por
-el cron. Setear el proxy de manera global es una opción; pero nunca ha sido de
-mi agrado. Por suerte, el nuevo gestor de paquetes de freebsd soporta proxy en
-su configuración.</p>
-
-<p>El fichero de configuración está en una ubicación bien extravagante. Nada menos
-que en <strong>/usr/local/etc/pkg.conf</strong>. Los comentarios hablan por si solos, vale la
-pena mirarlos; no necesitarás leer manual ni buscar en google para darte cuenta
-que:</p>
-
-<figure class='code'><figcaption><span>&#8220;/usr/local/etc/pkg.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">PKG_ENV</span> <span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>   <span class="nx">http_proxy</span><span class="o">:</span> <span class="s2">&quot;http://proxy.sld.cu:3128&quot;</span><span class="p">,</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>¡Establece el proxy!</p>
-
-<p>Con eso <strong>pkg audit</strong> corrido desde el cron funcionará perfectamente. Además de
-las demás operaciones que requieran bajar contenido de internet; claro está.</p>
-
-<p>OJO! Nota que al final de la declaración del proxy, lo que hay es una <strong>coma</strong>,
-NO un punto y coma. La configuración parece ser un <strong>json</strong>.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[portknocking en freebsd]]></title>
-    <link href="http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd/"/>
-    <updated>2017-03-01T23:53:01-05:00</updated>
-    <id>http://uranio-235.github.io/blog/2017/03/01/portknocking-en-freebsd</id>
-    <content type="html"><![CDATA[<p><img class="right" src="http://uranio-235.github.io/images/alibaba.jpg" width="400" height="500" title="" ></p>
-
-<p>La técnica port-knocking o knockd para otros, es en mi opinión, <strong>pilar de la
-seguridad</strong> en cualquier servidor que use SSH. Aunque es bastante versátil y
-puede ser usado hasta para reiniciar servicios sin loguearte.</p>
-
-<p>Una de las cosas que empece a extrañar en FreeBSD fue knockd, pero gracias a la
-flexbilidad de ipfw, podemos usar este poderoso software. En FreeBSD el fichero
-se encuentra en <strong>/usr/local/etc/knockd.conf.sample</strong> y el paquete se llama
-<strong>knock</strong>.</p>
-
-<p>OJO!! Muy importante especificarle la interfaz por la cual va a escuchar.</p>
-
-<figure class='code'><figcaption><span>&#8220;/usr/local/etc/knockd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="k">[options]</span>
-</span><span class='line'>         <span class="na">logfile</span> <span class="o">=</span> <span class="s">/var/log/knockd.log</span>
-</span><span class='line'><span class="s">         interface = xn0</span>
-</span><span class='line'>
-</span><span class='line'> <span class="k">[openSSH]</span>
-</span><span class='line'>         <span class="na">sequence</span>    <span class="o">=</span> <span class="s">111,222,333</span>
-</span><span class='line'><span class="s">         seq_timeout = 9</span>
-</span><span class='line'><span class="s">         command     = /sbin/ipfw -q add 00001 allow all from %IP% to me</span>
-</span><span class='line'><span class="s">         tcpflags    = syn</span>
-</span><span class='line'>
-</span><span class='line'> <span class="k">[closeSSH]</span>
-</span><span class='line'>         <span class="na">sequence</span>    <span class="o">=</span> <span class="s">222,111,333</span>
-</span><span class='line'><span class="s">         seq_timeout = 9</span>
-</span><span class='line'><span class="s">         command     = /sbin/ipfw -q delete 00001</span>
-</span><span class='line'><span class="s">         tcpflags    = syn</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Nada, resumiendo, que el truco está en poner la regla con el número 00001.
-Recuerdas que ipfw te permite (casi te obliga a) especificar un número para cada
-regla. Pues usaremos ese numerito diminuto para ponerla de primera.</p>
-
-<p>Los tipos ortodoxos criticarán que es una regla <em>al tetón</em>. Pienso que no vale
-la pena abrir solo el 22; si voy a pasar tanto trabajo, que se me abra la puerta
-completa.</p>
-
-<p>Por cierto, junto con knock, viene un programita para hacer el knocking. Yo
-solía hacerlo con netcat pero knock es más cómodo.</p>
-
-<figure class='code'><figcaption><span>&#8220;knock&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">   knock 192.168.3.1 111,222,333</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>En mi <strong>.bashrc</strong>, tengo esta función declarada.</p>
-
-<figure class='code'><figcaption><span>&#8220;.bashrc&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> abrete_cesamo<span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    knock  <span class="nv">$1</span> <span class="m">111</span> <span class="m">222</span> 333
-</span><span class='line'>    ssh root@<span class="nv">$1</span>
-</span><span class='line'>    knock  <span class="nv">$1</span> <span class="m">222</span> <span class="m">111</span> 333
-</span><span class='line'> <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>No tengo que decirte que la combinación de puertos está de acorde al ejemplo de
-la entrada y que debes cambiarla por la que tu establezcas. Así de esa manera,
-hacerle SSH a un servidor es ejecutar <strong>abrete_cesamo ip.del.servidor</strong> Luego al
-terminar la sesión ssh, se ejecuta la secuencia de cerrado.</p>
-
-<p>Y hablando de implementaciones raras de knockd!</p>
-
-<p>En alpine linux, iptables está en <strong>/sbin</strong>, no en /usr/sbin. Sin
-embargo, el fichero de configuración tiene puesto que está en /usr/sbin/, lo
-cual, repito; no es correcto.</p>
-
-<p>Además, tanto en debian como alpine. No importa que pongas en la configuración
-porque interfaz escuchará. Siempre lo hará por eth0. Para cambiar esta
-situación; debes:</p>
-
-<p>En <strong>alpine</strong> linux, configurar la interfaz en el fichero <strong>/etc/conf.d/knockd</strong></p>
-
-<p>En <strong>debian</strong>, configurar la interfaz (y poner un 1) en <strong>/etc/default/knockd</strong></p>
-
-<p>Recuerda que en linux, el comando de iptables, viene con &ldquo;-A INPUT&rdquo;. Si tienes
-un firewall corriendo, obviamente que no pincha; por tanto, ponlo con &ldquo;-I
-INPUT&rdquo;.</p>
 ]]></content>
   </entry>
   

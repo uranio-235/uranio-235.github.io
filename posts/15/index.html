@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="añadir verbo a un scaffold 05/07/2015 9:35 pm | Comments Cualquiera que sepa como usar debidamente los scaffolds, o sea, cualquiera que
-sepa como &hellip;">
+  <meta name="description" content="date_select en español 12/07/2015 3:14 pm | Comments Algunos componentes de Ruby on Rails, se pueden usar
+de manera independiente, como es el caso &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,342 @@ sepa como &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/12/date-select-en-espanol/">date_select en español</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-07-12T15:14:12-04:00'><span class='date'>12/07/2015</span> <span class='time'>3:14 pm</span></time>
+        
+           | <a href="/blog/2015/07/12/date-select-en-espanol/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/07/12/date-select-en-espanol/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Algunos componentes de <a href="http://rubyonrails.org/">Ruby on Rails</a>, se pueden usar
+de manera independiente, como es el caso de
+<a href="https://github.com/rails/rails/tree/master/activerecord">active_record</a> (sin
+dudas es el más potente). Pero otro que no se queda atrás, es active_support.
+Lleno de sorpresas y de joyas poco documentadas.</p>
+
+<p>Para el que no lo conozca, en ruby on rails, hay un método muy cómodo que genera
+un <a href="https://www.w3.org/wiki/HTML/Elements/select"><strong>select</strong></a> cuyas <em>option</em> son nada menos que la fecha. Los usuarios
+mononeuronales, encuentran más cómodo introducir una fecha así, que con un
+datepicker.</p>
+
+<p>El método <a href="http://apidock.com/rails/ActionView/Helpers/DateHelper/select_date"><strong>select_date</strong></a> genera una cosa similar a esta:</p>
+
+<p><select id="caudocidad_day" name="caudocidad[day]">
+<option value="12" selected="selected">12</option>
+</select>
+<select id="caudocidad_month" name="caudocidad[month]">
+<option value="8" selected="selected">Agosto</option>
+</select>
+<select id="caudocidad_year" name="caudocidad[year]">
+<option value="2015" selected="selected">2015</option>
+</select></p>
+
+<p>Pero con todos los meses y sus días claro. Ahí soló te puse un pedazito. Para
+generar esto, se supone que solo necesites poner algo como:</p>
+
+<figure class='code'><figcaption><span>&#8220;select_date&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="cp">&lt;%=</span> <span class="n">select_date</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="p">,</span> <span class="ss">prefix</span><span class="p">:</span> <span class="ss">:caudocidad</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Luego en el controlador, generas la fecha, procesando el dato. Hay mil y una
+forma de hacerlo. Más mágica y menos mágica, yo lo hago de una manera bien
+rudimentaria:</p>
+
+<figure class='code'><figcaption><span>&#8220;Time.mktime en el controller&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@cuando</span><span class="o">=</span><span class="no">Time</span><span class="o">.</span><span class="n">mktime</span> <span class="n">params</span><span class="o">[</span><span class="ss">:caudocidad</span><span class="o">][</span><span class="ss">:year</span><span class="o">]</span><span class="p">,</span><span class="n">params</span><span class="o">[</span><span class="ss">:caudocidad</span><span class="o">][</span><span class="ss">:month</span><span class="o">]</span><span class="p">,</span><span class="n">params</span><span class="o">[</span><span class="ss">:caudocidad</span><span class="o">][</span><span class="ss">:day</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como vez, a <strong>prefix:</strong> se le mandó un símbolo, que pasó a ser el valor del HTML
+generado, <strong>name=&ldquo;caudocidad&rdquo;</strong>. En mi caso, se llama &ldquo;cadocidad&rdquo; usted le pone
+como le de la gana. Sería :prefix=>&lsquo;nombre_que_quieras&rsquo; o prefix: &lsquo;nombre&rsquo; en su
+versión corta.</p>
+
+<p>En el controlador, <strong>params[:caudocidad]</strong>, contiene un Hash, donde las claves
+<strong>:year</strong>, <strong>:month</strong> y <strong>:day</strong> tendrán los valores numéricos listos para ser
+procesados.</p>
+
+<figure class='code'><figcaption><span>params[:caudocidad]</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">{</span><span class="ss">:year</span><span class="o">=&gt;</span><span class="mi">2015</span><span class="p">,</span> <span class="ss">:month</span><span class="o">=&gt;</span><span class="mi">8</span><span class="p">,</span> <span class="ss">:day</span><span class="o">=&gt;</span><span class="mi">12</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Todo eso está muy bonito, pero lo jodido del caso, es que los meses vienen en
+inglés.</p>
+
+<p>Llevarlo a español, requiere estar un poco familiarizado con el
+<a href="http://guides.rubyonrails.org/i18n.html">i18n</a> de Ruby on rails.</p>
+
+<p>Para el que no lo conozca, el i18n, es un sistema que nos permite crear
+aplicaciones en múltiples idiomas. De forma tal que nuestra aplicación le hable
+al navegador en el idioma que este soporta. Lo malo del caso es que no lo hace
+solo. Serás tu quien deba indicarle cuando usar que idioma. Una buena manera de
+hacer eso, es parseando el encabezado &ldquo;content-&rdquo; para ver que idioma soporta el
+navegador. Métodos hay miles, pero no se porque rails no lo hace solo.</p>
+
+<p>Si nuestra aplicación fuera canadiense, le diría que cree un fichero para cada
+idioma. Pero como nuestra aplicación es Cubana, con ponerlo todo en el
+<strong>en.yml</strong> resolvemos el problema.</p>
+
+<p>Al principio me fajaba con el <strong>en.yml</strong> y trataba de ponerle cosas, pero luego
+descubrí que hay una especie de esqueleto en la gema de active_support.</p>
+
+<p>En vez de escribir un en.yml desde cero, podemos usar el que está en
+active_support. Ejecuta este comando:</p>
+
+<figure class='code'><figcaption><span>&#8220;buscando el en.yml&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> gem  cont activesupport<span class="p">|</span>grep en.yml
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Copia dicho fichero a tu <strong>config/locales/en.yml</strong> y comencemos a editarlo.</p>
+
+<p>En la linea 30 y pico. Hay una cláusula llamada <strong>month_names</strong>, ahí le pones
+los meses. A mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;month_names, cerca de la linea 30&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>    <span class="c1"># Don&#39;t forget the nil at the beginning; there&#39;s no such thing as a 0th month</span>
+</span><span class='line'>    <span class="ss">month_names</span><span class="p">:</span> <span class="o">[~</span><span class="p">,</span> <span class="no">Enero</span><span class="p">,</span> <span class="no">Febrero</span><span class="p">,</span> <span class="no">Marzo</span><span class="p">,</span> <span class="no">Abril</span><span class="p">,</span> <span class="no">Mayo</span><span class="p">,</span> <span class="no">Junio</span><span class="p">,</span> <span class="no">Julio</span><span class="p">,</span> <span class="no">Agosto</span><span class="p">,</span> <span class="no">Septiembre</span><span class="p">,</span> <span class="no">Octubre</span><span class="p">,</span> <span class="no">Novimebre</span><span class="p">,</span> <span class="no">Diciembre</span><span class="o">]</span>
+</span><span class='line'>    <span class="ss">abbr_month_names</span><span class="p">:</span> <span class="o">[~</span><span class="p">,</span> <span class="no">Ene</span><span class="p">,</span> <span class="no">Feb</span><span class="p">,</span> <span class="no">Mar</span><span class="p">,</span> <span class="no">Abr</span><span class="p">,</span> <span class="no">May</span><span class="p">,</span> <span class="no">Jun</span><span class="p">,</span> <span class="no">Jul</span><span class="p">,</span> <span class="no">Aug</span><span class="p">,</span> <span class="no">Sep</span><span class="p">,</span> <span class="no">Oct</span><span class="p">,</span> <span class="no">Nov</span><span class="p">,</span> <span class="no">Dec</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Además, más abajo, por la linea 40, tienes el orden en el que se muestra la
+fecha.</p>
+
+<figure class='code'><figcaption><span>&#8220;order: bajo la linea 40&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Used in date_select and datetime_select.</span>
+</span><span class='line'><span class="ss">order</span><span class="p">:</span>
+</span><span class='line'>  <span class="o">-</span> <span class="n">day</span>
+</span><span class='line'>  <span class="o">-</span> <span class="n">month</span>
+</span><span class='line'>  <span class="o">-</span> <span class="n">year</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A mi me quedó así, porque los yumas ponen el mes delante y el día detrás.</p>
+
+<p>Si miras más abajo, verás que tiene incluso la moneda (currency) y los
+separadores, por ejemplo, usar coma en vez de punto para separar los decimales.
+También están los numerales (millones, millares, centenas, etc&hellip;)</p>
+
+<p>Hay un método muy curioso que yo uso mucho. Convierte un array en una oración
+delimitada por coma; pero pone una conjunción &ldquo;y&rdquo; en el último elemento.</p>
+
+<figure class='code'><figcaption><span>&#8216;to_sentence&#8217;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="ss">:&gt;</span> <span class="sx">%w[perros gatos]</span><span class="o">.</span><span class="n">to_sentence</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;perros y gatos&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="ss">:&gt;</span> <span class="sx">%w[papas malangas calabazas]</span><span class="o">.</span><span class="n">to_sentence</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;papas, malangas y calabazas&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El separador se configura ahí también. Por defecto dice &ldquo;<strong>and</strong>&rdquo; en vez de &ldquo;<strong>y</strong>&rdquo;</p>
+
+<p>Conclusión:</p>
+
+<p>La instrumentación de active_support (ese nombre tan suigeneris se lo pusieron
+ellos) es bastante rica. Deberían verla bien de cerca. La guia es bastante
+escueta; te recomiendo que mires un poco el código fuente de active_support o la
+documentación de la API (que es casi lo mismo).</p>
+
+<p>Si buscas en la misma ruta, pero con <em>model</em> donde dice <em>support</em> verás el YAML
+que utiliza ActiveRecord para generar los errores de validación. Ahí puedes
+ponerlos a tu manera. Osea, el contenido de ese YAML se lo adicionas al tuyo.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/11/openvas-en-archlinux/">OpenVAS en Archlinux</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-07-11T19:19:59-04:00'><span class='date'>11/07/2015</span> <span class='time'>7:19 pm</span></time>
+        
+           | <a href="/blog/2015/07/11/openvas-en-archlinux/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2015/07/11/openvas-en-archlinux/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="left" src="/images/greenbone.png" title="Login del Greenbone" alt="Login del Greenbone"></p>
+
+<p>Recientemente, un &ldquo;Webmaster&rdquo; usó en uno de los servidores que patrocino; un
+escaner de vulnerabilidades. El administrador de red del lugar, le dio acceso al
+servidor; claro está. El informe reveló un cartapaso de vulnerabilidades. Por
+ejemplo, la ausencia de una partición swap; podría dar lugar a un kernel-panic
+por falta de memoria RAM; en un servidor de correo con 4 Gigas de RAM. Además,
+advertía que la versión de bash (con sus parches puestos) era muy vieja y
+recomendaba usar una reciente. Como si instalar software reciente en debian
+fuese jamón.</p>
+
+<p>No vi nada con respecto a postfix o dovecot pero de inmediato me llamaron para
+que explicara como era posible que mi servidor tuviera semejantes
+vulnerabilidades. Claro, con acceso a root cualquiera busca vulnerabilidades.</p>
+
+<p>Soy de los que pasa HORAS, intentando penetrar mi propia seguridad; pero el caso
+llevaba un contra ataque más elaborado.</p>
+
+<p>El sosftware por excelencia para probar la seguridad: <a href="http://es.wikipedia.org/wiki/OpenVAS">OpenVAS</a></p>
+
+<h3>No solo identifica el problema, también te dice como arreglarlo.</h3>
+
+<p>Funciona de manera similar a un antivirus. Una base de datos se actualiza y ala
+las vulnerabilidades conocidas. Luego, una interfaz web, de lo más cómoda;
+permite llevar a cabo un análisis tanto ligero como exhaustivo del sistema
+seleccionado como objetivo. Además, se pueden programar análisis de manera
+automatizada.</p>
+
+<p>Su interfaz web, el llamado &ldquo;Greenbone Security Assistant&rdquo;, nos hará la vida muy
+fácil una vez instalado.</p>
+
+<p>En archlinux todo es un rollo, así que empezemos:</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando openvas&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pacman -S openvas
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>La interfaz web de openvas (el greenbone) debe ser contactada por SSL (obligao).
+Como siempre, crear los certificados es todo una ceremonia.</p>
+
+<figure class='code'><figcaption><span>&#8220;creando certificados&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvas-mkcert
+</span><span class='line'>openvas-mkcert-client -n -i
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ahora lo más importante. Descargarnos la base de datos con las amenazas, o sea,
+con las vulnerabilidades.</p>
+
+<figure class='code'><figcaption><span>&#8220;actualizando las bases&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvas-nvt-sync
+</span><span class='line'>openvas-scapdata-sync
+</span><span class='line'>openvas-certdata-sync
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>El escaner, es un servicio, que en producción, está supuestamente corriendo y
+realizando escaneos bajo demanda. Lo echamos a andar:</p>
+
+<figure class='code'><figcaption><span>&#8220;el servicio&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>systemctl start openvas-scanner
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Una vez que tenemos las bases de datos descargadas, las instalamos en openvas</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando las bases&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvasmd --rebuild --progress
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Y hasta aquí es donde la wiki de arch está bien. Pues para crear el usuario de
+openvas y echar a andar el greenbone, se forma la moña.</p>
+
+<p>Primero debemos crear el usuario de openvas. En este caso de ejemplo, el
+usuario será <strong>admin</strong> con password <strong>admin</strong>.</p>
+
+<figure class='code'><figcaption><span>&#8220;creando usuarios&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvasmd --create-user<span class="o">=</span>admin --role<span class="o">=</span>Admin
+</span><span class='line'>openvasmd --user<span class="o">=</span>admin --new-password<span class="o">=</span>admin
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Por último, echamos a andar la interfaz web:</p>
+
+<figure class='code'><figcaption><span>&#8220;iniciando gsad&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>gsad --http-only --listen<span class="o">=</span>127.0.0.1 -p 9392
+</span><span class='line'>openvasmd -p <span class="m">9390</span> -a 127.0.0.1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Abre un navegador y apunta para <a href="http://127.0.0.1:9392">http://127.0.0.1:9392</a></p>
+
+<p>Una vez dentro, verás la página donde se almacenan los escaneos. Ahí localiza un
+botón morado con una barita mágica. Vea la imagen de abajo</p>
+
+<p><img class="center" src="/images/openvas_wiz.png" title="Botón del Wizard" alt="Botón del Wizard"></p>
+
+<p>En la pantalla que le sigue, especificamos el host al que queremos escanear.</p>
+
+<p><img class="center" src="/images/openvas_scan.png" title="Seleccionar Objetivo" alt="Seleccionar objetivo"></p>
+
+<p>Apto seguido, comenzará el escaneo. Es posible que el servidor deje de prestar
+servicios; pues openvas le da con todo.</p>
+
+<p>Finalmente, cuando el escaneo esté terminado, en vez de un tanto por ciento,
+verás; como en la primera imagen, un letrero que dice &ldquo;<strong>done</strong>&rdquo; sobre la barra
+azul.</p>
+
+<p><img class="center" src="/images/openvas_result.png" title="resultado del escaneo" alt="resultado de escaneo"></p>
+
+<p>La imagen muestra, el resultado del webmaster que le tiró piedras al tejado del
+vecino con el suyo de vidrio. Al hacer click en la vulnerabilidad, nos muestra
+la solución, como es el ejemplo de esta:</p>
+
+<p><img class="center" src="/images/openvas_sol.png" title="solución" alt="solución"></p>
+
+<p>Hermosa pareja; el problema y la solución junticos&hellip;</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
+
+    </article>
   
   
     <article>
@@ -184,7 +520,7 @@ usuario.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -371,7 +707,7 @@ declarando los componentes en los controladores.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -451,7 +787,7 @@ dios para poder comprenderlo.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -769,171 +1105,7 @@ ahora ya sabes una parte, te dejo que investigues el resto.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/05/28/cambiar-user-agent-en-squid/">cambiar user agent con squid</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-05-28T18:46:04-04:00'><span class='date'>28/05/2015</span> <span class='time'>6:46 pm</span></time>
-        
-           | <a href="/blog/2015/05/28/cambiar-user-agent-en-squid/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/05/28/cambiar-user-agent-en-squid/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>En esta sofocante tarde de verano cubano y en un lugar que no diré, me encontré
-detrás de un proxy administrador por la
-<a href="http://es.wikipedia.org/wiki/Schutzstaffel">Schutzstaffel</a>. Lo que no se
-parezca a un navegador, NO PASA. Por tanto, Ruby, Wget y demás, NO pinchan.</p>
-
-<p>Por suerte, tengo la costumbre de usar un squid local, para no tener que estar
-configurando el navegador. En ese squid declaro como padre el squid del momento
-(ya sea salud u otro) y ahí pongo el nombre de usuario con la contraseña una
-sola vez. Si estás en cuba y tienes una laptop con linux, te aconsejo que acates
-esa costumbre.</p>
-
-<p>Solución:</p>
-
-<p>Reescribir el encabezado User-Agent de las peticiones en el squid local. Así
-todas salen de un supuesto firefox.</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/squid/squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='squidconf'><span class='line'>request_header_access<span class="w"> </span><span class="k">User</span>-Agent<span class="w"> </span><span class="no">deny</span><span class="w"> </span><span class="no">all</span><span class="w"></span>
-</span><span class='line'>request_header_replace<span class="w"> </span><span class="k">User</span>-Agent<span class="w"> </span>Mozilla/5.0<span class="w"> </span>(X11;<span class="w"> </span>U;<span class="w"> </span>Linux<span class="w"> </span>i686;<span class="w"> </span>en-US;<span class="w"> </span>rv:1.8.1.4)<span class="w"> </span>Gecko/20070515<span class="w"> </span>Firefox/2.0.0.4<span class="w"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>   <blockquote><p>Al carajo albañiles que se acabó la mezcla.</p></blockquote></p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/05/26/nic-bonding/">NIC bonding</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-05-26T16:32:02-04:00'><span class='date'>26/05/2015</span> <span class='time'>4:32 pm</span></time>
-        
-           | <a href="/blog/2015/05/26/nic-bonding/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2015/05/26/nic-bonding/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Recién terminé el servidor de LTSP; pero aún estoy como niño con juguete nuevo,
-viendo que otra gangarrea le puedo poner. En la <a href="http://gutl.jovenclub.cu/">lista de GUTL</a> un colega
-me comentó que sería bueno darle explotación a ambas tarjetas de red. Enseguida
-dijo lo primero en que piensan mis coterráneos, un proxy. Yo le comenté que le
-había hecho un bonding, operación a la cual yo denomíno &ldquo;albóndiga&rdquo; y consiste
-en levantar una interfaz de red especial que usa dos tarjetas de red como si
-fueran una.</p>
-
-<p>Esto; para un servidor de tanto tráfico como es el caso de ltsp, es un verdadero
-batazo. Otros colegas parecieron sorprendidos al ver tal cosa y me pidieron que
-escribiera un tutorial de como hacerlo; sobre todo para que llegase a aquellos
-que no tienen internet.</p>
-
-<p>Instala un paquete llamado  <strong>ifenslave</strong></p>
-
-<figure class='code'><figcaption><span>&#8220;instalando ifenslave&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>aptitude install ifenslave
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Luego declaras en &ldquo;/etc/network/interfaces&rdquo; una interfaz llamada bond0 en la
-cual declaras que interface quieres unir.</p>
-
-<p>A mi me quedó así:</p>
-
-<figure class='code'><figcaption><span>&#8220;/etc/network/interfaces&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="gp">root@ganker:~#</span> cat /etc/network/interfaces
-</span><span class='line'><span class="gp">#</span> This file describes the network interfaces available on your system
-</span><span class='line'><span class="gp">#</span> and how to activate them. For more information, see interfaces<span class="o">(</span>5<span class="o">)</span>.
-</span><span class='line'>
-</span><span class='line'><span class="go">source /etc/network/interfaces.d/*</span>
-</span><span class='line'>
-</span><span class='line'><span class="gp">#</span> The loopback network interface
-</span><span class='line'><span class="go">auto lo</span>
-</span><span class='line'><span class="go">iface lo inet loopback</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="go">auto bond0</span>
-</span><span class='line'><span class="go">iface bond0 inet static</span>
-</span><span class='line'><span class="go">    address 10.1.1.3</span>
-</span><span class='line'><span class="go">    netmask 255.255.255.0</span>
-</span><span class='line'><span class="go">    network 10.1.1.0</span>
-</span><span class='line'><span class="go">    gateway 10.1.1.1</span>
-</span><span class='line'><span class="go">    dns-nameservers 10.1.1.1</span>
-</span><span class='line'><span class="go">    dns-search hcg.sld.cu</span>
-</span><span class='line'><span class="go">    slaves eth0 eth1</span>
-</span><span class='line'><span class="go">    bond_mode 2</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Donde eth0 y eth1 son las interfaces que se unirán. Eso es todo&hellip;</p>
-
-<p>OJO! Si tienes un cortafuegos que involucre reglas de interfaces, ya tienestarea
-pa la casa.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -956,6 +1128,12 @@ pa la casa.</p>
 	<ul id="recent_posts">
 
 		
+
+		<li class="post">
+			<a href="/blog/2017/12/05/la-lightning-network/">la lightning network</a>
+      </li>
+
+      
 
 		<li class="post">
 			<a href="/blog/2017/11/30/segwit-con-3-star-en-electrum/">segwit con p2sh en electrum</a>
@@ -994,7 +1172,13 @@ pa la casa.</p>
       
 
 		<li class="post">
-			<a href="/blog/2017/07/23/lemp-en-debian/">LEMP en debian</a>
+			<a href="/blog/2017/07/24/lemp-en-centos/">LEMP en Centos 7</a>
+      </li>
+
+      
+
+		<li class="post">
+			<a href="/blog/2017/07/23/lemp-en-debian/">LEMP en debian 9</a>
       </li>
 
       

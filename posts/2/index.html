@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="LEMP en debian 23/07/2017 3:19 pm | Comments Resulta que &ldquo;linux, apache, mysql y php&rdquo;, solía llamarse LAMP. Ahora,
-cuando cambian apache &hellip;">
+  <meta name="description" content="yum estrecho 13/08/2017 4:36 pm | Comments Si en algo me destaco, es en mi habilidad por trabajar con espacios estrechos
+(poca RAM, poco espacio en &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,7 +88,321 @@ cuando cambian apache &hellip;">
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2017/07/23/lemp-en-debian/">LEMP en debian</a></h1>
+      <h1 class="entry-title"><a href="/blog/2017/08/13/yum-estrecho/">yum estrecho</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-08-13T16:36:12-04:00'><span class='date'>13/08/2017</span> <span class='time'>4:36 pm</span></time>
+        
+           | <a href="/blog/2017/08/13/yum-estrecho/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/08/13/yum-estrecho/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Si en algo me destaco, es en mi habilidad por trabajar con espacios estrechos
+(poca RAM, poco espacio en disco, etc&hellip;)</p>
+
+<p>Cuando tenemos un servidor con CentOS, aveces no queremos más de las mil cosas
+que una completa instalación involucra. Por ejemplo, las páginas de man en una
+pila de idiomas, el contenido de /usr/share/doc/, etc&hellip; Si bien actualmente uso
+un script para eliminar todo eso, lo cierto es que sería mucho más fácil si
+nunca se desplegaran esos archivos.</p>
+
+<p>Gracias a <strong>yum-config-manager</strong> no hay que estar cargando con el fichero de
+configuración, simplemente se puede hacer un script que setee dichas
+configuraciones.</p>
+
+<p>Esta es la secuencia de comando que le tiro en un yum virgen:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum-config-manager --save --setopt assumeyes=true</span>
+</span><span class='line'><span class="go"> yum-config-manager --save --setopt tsflags=nodocs</span>
+</span><span class='line'><span class="go"> yum-config-manager --save --setopt override_install_langs=en</span>
+</span><span class='line'><span class="go"> yum-config-manager --save --setopt clean_requirements_on_remove</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Al correr <strong>yum-config-manager</strong> puedes ver todas las opciones que este brinda.
+Lo demás sería buscar la documentación.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/07/24/lemp-en-centos/">LEMP en Centos 7</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-07-24T00:33:51-04:00'><span class='date'>24/07/2017</span> <span class='time'>12:33 am</span></time>
+        
+           | <a href="/blog/2017/07/24/lemp-en-centos/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/07/24/lemp-en-centos/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>En la entrada anterior, vimos como instalar un LEMP (nginx, mysql y php) en
+debian. Debian que en mi opinión ya pasó su carnaval y RHEL sigue campeando.</p>
+
+<p>En centos necesitaremos el repo EPEL</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando epel&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum install epel-release</span>
+</span><span class='line'><span class="go"> yum makecache fast</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Una vez que tenemos acoplado el EPEL, alamos nginx y le decimos a systemd que
+arranque nginx junto con el sistema.</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando nginx&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum install nginx</span>
+</span><span class='line'><span class="go"> systemctl enable nginx</span>
+</span><span class='line'><span class="go"> systemctl start nginx</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Matao el gallo con nginx. Vamos para mariadb (alias mysql).</p>
+
+<figure class='code'><figcaption><span>&#8220;instalando mysql&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum install mariadb-server mariadb</span>
+</span><span class='line'><span class="go"> systemctl start mariadb</span>
+</span><span class='line'><span class="go"> systemctl enable mariadb</span>
+</span><span class='line'><span class="go"> mysql_secure_installation</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No tengo que explicar como funciona el comando <strong>mysql_secure_installation</strong>;
+asumo que el lector <strong>no</strong> es retrasado mental. Configure el MySQL como más
+cómodo le sea.</p>
+
+<p>Finalmente, la guinda del pastel: <strong>PHP</strong>. Hay mil y una vertiente de como
+instalar php en centos. Que si el repo remis, que si el ius, que si la versión
+tal o la mascual, etc&hellip; En este caso asumiremos que se está instalando el php
+genérico y no discutiremos nimiedades.</p>
+
+<figure class='code'><figcaption><span>&#8220;php genérico&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> yum install php php-mysql php-fpm</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Antes de echarlo a andar, vamos a hacer unos cambios. En el fichero
+<strong>/etc/php.ini</strong> buscamos una linea que dice <strong>cgi.fix_pathinfo</strong> y le ponemos
+como valor 0.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/php.ini&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="na">cgi.fix_pathinfo</span><span class="o">=</span><span class="s">0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A php-fpm también le vamos a dar unos toques finos. Localiza el fichero
+<strong>/etc/php-fpm.d/www.conf</strong> y el parámetro <strong>listen</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/php-fpm.d/www.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="na">listen</span> <span class="o">=</span> <span class="s">/var/run/php-fpm/php-fpm.sock</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Además, localiza también ahí, las lineas <strong>listen.</strong>. Asegúrate de que corran
+como el usuario <strong>nobody</strong>.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/php-fpm.d/www.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="na">listen.owner</span> <span class="o">=</span> <span class="s">nobody</span>
+</span><span class='line'><span class="s"> listen.group = nobody</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pero eso era el suid de fpm, ahora vamos a setear el usuario del socket, que en
+este caso será <strong>nginx</strong>.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/php-fpm.d/www.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="na">user</span>  <span class="o">=</span> <span class="s">nginx</span>
+</span><span class='line'><span class="s"> group = nginx</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Arranca y habilita fpm.</p>
+
+<figure class='code'><figcaption><span>&#8220;arranca fpm&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> systemctl enable php-fpm</span>
+</span><span class='line'><span class="go"> systemctl start  php-fpm</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Siempre falta un puto &ldquo;.conf&rdquo; de nginx que pinche con php, así que aquí te pongo
+uno bien genérico.</p>
+
+<figure class='code'><figcaption><span>&#8220;nginx.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'>   <span class="c1"># redirector estático</span>
+</span><span class='line'>   <span class="err">server</span> <span class="err">{</span>
+</span><span class='line'>
+</span><span class='line'>         <span class="err">listen</span>       <span class="err">80</span><span class="c1">;</span>
+</span><span class='line'>         <span class="err">server_name</span>  <span class="err">fqdn_del_virtualhost</span><span class="c1">;</span>
+</span><span class='line'>
+</span><span class='line'>         <span class="err">location</span> <span class="err">/</span> <span class="err">{</span>
+</span><span class='line'>            <span class="err">return</span> <span class="err">301</span> <span class="err">https://$server_name$request_uri</span><span class="c1">;</span>
+</span><span class='line'>         <span class="err">}</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="err">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>   <span class="err">server</span> <span class="err">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># el directorio /etc/nginx/ssl/ contine los certificados</span>
+</span><span class='line'>      <span class="err">ssl_certificate</span>      <span class="err">ssl/certificado.crt</span><span class="c1">;</span>
+</span><span class='line'>      <span class="err">ssl_certificate_key</span>  <span class="err">ssl/certificado.key</span><span class="c1">;</span>
+</span><span class='line'>      <span class="err">ssl_session_cache</span>    <span class="err">shared:SSL:1m</span><span class="c1">;</span>
+</span><span class='line'>      <span class="err">ssl_session_timeout</span>  <span class="err">5m</span><span class="c1">;</span>
+</span><span class='line'>      <span class="err">ssl_ciphers</span>  <span class="err">HIGH:!aNULL:!MD5</span><span class="c1">;</span>
+</span><span class='line'>      <span class="err">ssl_prefer_server_ciphers</span>  <span class="err">on</span><span class="c1">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># como me llamo y por donde escucho</span>
+</span><span class='line'>      <span class="err">listen</span>       <span class="err">443</span> <span class="err">ssl</span><span class="c1">;</span>
+</span><span class='line'>      <span class="err">server_name</span>  <span class="err">fqdn_del_virtualhost</span><span class="c1">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># aquí pones el directorio donde está tu app</span>
+</span><span class='line'>      <span class="err">root</span>   <span class="err">/var/www/html</span><span class="c1">;</span>
+</span><span class='line'>      <span class="err">index</span> <span class="err">index.php</span> <span class="err">index.html</span> <span class="err">index.htm</span><span class="c1">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># el root del servidor</span>
+</span><span class='line'>      <span class="err">location</span> <span class="err">/</span> <span class="err">{</span>
+</span><span class='line'>          <span class="na">try_files $uri $uri/</span> <span class="o">=</span><span class="s">404;</span>
+</span><span class='line'><span class="s">      }</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># los errores 404</span>
+</span><span class='line'>      <span class="err">error_page</span> <span class="err">404</span> <span class="err">/404.html</span><span class="c1">;</span>
+</span><span class='line'>      <span class="err">error_page</span> <span class="err">500</span> <span class="err">502</span> <span class="err">503</span> <span class="err">504</span> <span class="err">/50x.html</span><span class="c1">;</span>
+</span><span class='line'>      <span class="na">location</span> <span class="o">=</span> <span class="s">/50x.html {</span>
+</span><span class='line'><span class="s">          root /usr/share/nginx/html;</span>
+</span><span class='line'><span class="s">      }</span>
+</span><span class='line'><span class="s">      </span>
+</span><span class='line'><span class="s">      # el fpm de php, la expresión regular suele dar perreta por el $</span>
+</span><span class='line'><span class="s">      location ~ \.php$ {</span>
+</span><span class='line'><span class="s">           try_files $uri =404;</span>
+</span><span class='line'><span class="s">           fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock;</span>
+</span><span class='line'><span class="s">           fastcgi_index index.php;</span>
+</span><span class='line'><span class="s">           fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;</span>
+</span><span class='line'><span class="s">           include fastcgi_params;</span>
+</span><span class='line'><span class="s">      }</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="err">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si quieres probarlo crea el fichero <strong>/var/www/html/index.php</strong> con algo clásico.</p>
+
+<figure class='code'><figcaption><span>&#8220;/var/www/html/index.php&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'> <span class="o">&lt;?</span><span class="nx">php</span> <span class="nb">phpinfo</span><span class="p">();</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Si te da un error que dice &ldquo;not input file especified&rdquo; puede ser rollo con
+selinux o algo mal configurado en php fpm.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/07/23/lemp-en-debian/">LEMP en debian 9</a></h1>
     
     
       <p class="meta">
@@ -271,7 +585,7 @@ bastante obvio.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -387,7 +701,7 @@ deshabilitados, usa <strong>yum repolist disabled</strong>.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -477,7 +791,7 @@ No queda más remiendo que usar un repo de terceros.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -558,208 +872,7 @@ batazo y los adhanes de com.honey.prayerassistant son más variados.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/06/22/curiosa-acl-de-squid/">squid y navegar a .cu</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-06-22T00:17:11-04:00'><span class='date'>22/06/2017</span> <span class='time'>12:17 am</span></time>
-        
-           | <a href="/blog/2017/06/22/curiosa-acl-de-squid/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/06/22/curiosa-acl-de-squid/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Aveces las necesidades de nuestros clientes, son tan raras que nos dejan
-anonadados. Pero ante necesidades extravagantes; soluciones extravagantes.  Este
-post me lo dejo a modo de reflexión, para recordar; que muchas veces, el ingenio
-combinado con la simpleza, puede desembocar en soluciones tan hermosas como
-raras.</p>
-
-<p>Es común, que en algunos lugares, la navegación a sitios &ldquo;.cu&rdquo; no requiera
-autenticación. Aveces poner una ACL como esta</p>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="err">acl</span> <span class="err">cuba</span> <span class="err">url_regex</span> <span class="err">\.cu</span>
-</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">cuba</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Aparentemente <em>matamos la jugada</em>, pero luego, metemos una ACL relacionada con
-usuarios autenticados y se jodió bicicleta.</p>
-
-<p>El cartel de &ldquo;por favor autentique&rdquo; cae a cuanto &ldquo;.cu&rdquo; se navegue.</p>
-
-<p>Pero tocando el <em>squid.conf</em>, vi esta cosa hermosa</p>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="c1">#   acl aclname localport 3128  # TCP port the client connected to [fast]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Decidí que los que vallan a navegar con autenticación, usarán el puerto 8080 y
-los vuelos nacionales saldrán por el 3128.</p>
-
-<p>De esta manera, se hace una ACL que niegue las peticiones NO cubanas <strong>sin mostrar
-el puto login</strong>.</p>
-
-<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="c1"># aquellos que se conectan por el puerto 3128</span>
-</span><span class='line'> <span class="err">acl</span> <span class="err">mortales</span> <span class="err">localport</span> <span class="err">3128</span>
-</span><span class='line'>
-</span><span class='line'> <span class="c1"># aquellos que se conectan por el 8080</span>
-</span><span class='line'> <span class="err">acl</span> <span class="err">olimpo</span> <span class="err">localport</span> <span class="err">8080</span>
-</span><span class='line'>
-</span><span class='line'> <span class="c1"># los sitios a los que se entran sin contraseña</span>
-</span><span class='line'> <span class="err">acl</span> <span class="err">cuba</span> <span class="err">url_regex</span> <span class="err">-i</span> <span class="err">&quot;/etc/squid3/cuba.lst&quot;</span>
-</span><span class='line'>
-</span><span class='line'> <span class="c1"># CUBANOS</span>
-</span><span class='line'> <span class="c1"># lo que valla a cuba,</span>
-</span><span class='line'> <span class="c1"># sale sin autenticación</span>
-</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">mortales</span> <span class="err">cuba</span>
-</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">CONNECT</span> <span class="err">mortales</span> <span class="err">cuba</span>
-</span><span class='line'>
-</span><span class='line'> <span class="c1"># deniega a los mortales, lo que no sea cuba</span>
-</span><span class='line'> <span class="err">http_access</span> <span class="err">deny</span> <span class="err">mortales</span> <span class="err">!cuba</span>
-</span><span class='line'> <span class="err">http_access</span> <span class="err">deny</span> <span class="err">CONNECT</span> <span class="err">mortales</span> <span class="err">!cuba</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'> <span class="c1"># PRIVILEGIADOS</span>
-</span><span class='line'> <span class="c1"># lo que NO valla para cuba debe autenticarse</span>
-</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">CONNECT</span> <span class="err">olimpo</span> <span class="err">autenticados</span>
-</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">olimpo</span> <span class="err">autenticados</span>
-</span><span class='line'>
-</span><span class='line'> <span class="c1"># y más nada pasa</span>
-</span><span class='line'> <span class="err">http_access</span> <span class="err">deny</span> <span class="err">CONNECT</span> <span class="err">all</span>
-</span><span class='line'> <span class="err">http_access</span> <span class="err">deny</span> <span class="err">all</span>
-</span><span class='line'> <span class="err">icp_access</span> <span class="err">deny</span> <span class="err">all</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>¿Se entendió? Pasa que squid, al hacerle cualquier petición, que involucre
-internet, le mostrará al pobre <em>puntoseunauta</em> el cuadro de diálogo, ya que
-para acceder a internet real requiere autenticación; y squid te da la
-posibilidad probar que eres <em>usuario de internet</em>. Para evitar esta conducta,
-ponemos una cláusula permitiendo que los &ldquo;.cu&rdquo; usando el 3128, pasan. Luego
-ponemos otra ACL negando el acceso a lo que <strong>NO</strong> sea .cu por el mismo puerto.
-De esta manera, los que tengan solo acceso &ldquo;.cu&rdquo;, usarán el 3128 y la ACL que
-involucra autenticación nunca es probada.</p>
-
-<p>Para los autenticados, pusimos una ACL que machea el puerto 8080. O sea, los
-usuarios de internet, al hacer su peticiones por el puerto 8080, enseguida las
-pedirá autenticación.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/05/13/instalar-node-rapido/">instalar node rápido</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-05-13T17:13:53-04:00'><span class='date'>13/05/2017</span> <span class='time'>5:13 pm</span></time>
-        
-           | <a href="/blog/2017/05/13/instalar-node-rapido/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/05/13/instalar-node-rapido/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Desde que surgió node, estaba deseando que hubiera una herramienta como RVM para
-instalar nodejs. Resulta que la hay!!! Al igual que RVM, requiere cURL. Por
-cierto, se llama <strong>n</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> curl -o /usr/local/bin/n https://raw.githubusercontent.com/visionmedia/n/master/bin/n</span>
-</span><span class='line'><span class="go"> chmod +x /usr/local/bin/n</span>
-</span><span class='line'><span class="go"> n lts</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Instala hasta npm!</p>
-
-<p><strong>En debian</strong>, otra manera de hacer esto, es usando el repo oficial que provee node:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> curl -sL https://deb.nodesource.com/setup | bash -</span>
-</span><span class='line'><span class="go"> aptitude update</span>
-</span><span class='line'><span class="go"> aptitude install nodejs</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Acuérdate que algunos paquetes (por no decir que los más usados) requieren
-compilar librerías. Así que no olvides instalar <strong>build-essential</strong>.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -782,6 +895,12 @@ compilar librerías. Así que no olvides instalar <strong>build-essential</stron
 	<ul id="recent_posts">
 
 		
+
+		<li class="post">
+			<a href="/blog/2017/12/05/la-lightning-network/">la lightning network</a>
+      </li>
+
+      
 
 		<li class="post">
 			<a href="/blog/2017/11/30/segwit-con-3-star-en-electrum/">segwit con p2sh en electrum</a>
@@ -820,7 +939,13 @@ compilar librerías. Así que no olvides instalar <strong>build-essential</stron
       
 
 		<li class="post">
-			<a href="/blog/2017/07/23/lemp-en-debian/">LEMP en debian</a>
+			<a href="/blog/2017/07/24/lemp-en-centos/">LEMP en Centos 7</a>
+      </li>
+
+      
+
+		<li class="post">
+			<a href="/blog/2017/07/23/lemp-en-debian/">LEMP en debian 9</a>
       </li>
 
       

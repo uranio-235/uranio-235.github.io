@@ -9,7 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="palos de wordpress 05/09/2014 12:03 pm | Comments Hay dos palos típicos de wordpress: El primero: Al hacer click en un post, devuelve 404 Solución: &hellip;">
+  <meta name="description" content="proxy automático 28/10/2014 10:37 pm | Comments Todo el que halla configurado un navegador con proxy; o sea, todo cubano que
+halla configurado un &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +82,281 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/28/proxy-automatico/">proxy automático</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-28T22:37:20-04:00'><span class='date'>28/10/2014</span> <span class='time'>10:37 pm</span></time>
+        
+           | <a href="/blog/2014/10/28/proxy-automatico/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/10/28/proxy-automatico/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Todo el que halla configurado un navegador con proxy; o sea, todo cubano que
+halla configurado un navegador, quizás halla visto que una de las tantas
+opciones dice &ldquo;configuración automática&rdquo;. Seguro se preguntarán que carajo es
+eso.</p>
+
+<p>Pues es un javascript que le dice al navegador como debe ser la configuración
+del proxy; obviamente.</p>
+
+<p>Resulta que hay dos maneras de hacerlo, vía DHCP o vía DNS. Algunos navegadores
+lo cogen por DHCP mientras que otros lo hacen por DNS.</p>
+
+<h3>Para evitar problemas, configuramos las dos&hellip;</h3>
+
+<p>Primero y principioso. Creamos el fichero wpad.dat, el nombre debe respetarse.
+Dicho fichero los servimos, así que por definición los podremos en /var/www.
+Este fichero contendrá las instrucciones que un navegador necesita para pinchar.</p>
+
+<figure class='code'><figcaption><span>&#8220;/var/www/wpad.dat&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">FindProxyForURL</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">host</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// los host locales NO pasan a través del proxy</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">shExpMatch</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span><span class="s2">&quot;*.hcg.sld.cu:*&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;DIRECT&quot;</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">shExpMatch</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span><span class="s2">&quot;*.hcg.sld.cu:*/*&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;DIRECT&quot;</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// la red local, tampoco</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">isInNet</span><span class="p">(</span><span class="nx">host</span><span class="p">,</span> <span class="s2">&quot;10.1.1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;255.255.255.0&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;DIRECT&quot;</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// lo demás sale por el proxy</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s2">&quot;PROXY 10.1.1.1:3128&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ve, es javascript puro, osea que las opciones se podrían hacer más
+creativas. Por ejemplo, si la ip de la máquina es tal, configuralo así o asao.</p>
+
+<p>Los criticones de código diran que se pudo usar un swith en vez de 4 &ldquo;if&rdquo;. Pero
+eso correrá en un momento y entorno casi imposible de debugar. Lo intenté con
+swith y no me pinchó.</p>
+
+<p>Ahora el problema es que hay que declarar un nuevo contenido mime para este
+dato. En mi caso uso nginx y en el fichero de configuración de mime, le
+aclaramos el nuevo; a mi me quedó así:</p>
+
+<figure class='code'><figcaption><span>mime.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='lighttpd'><span class='line'><span class="k">types</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">application</span><span class="n">/x-ns-proxy-autoconfig</span>     <span class="k">dat</span><span class="err">;</span>
+</span><span class='line'>    <span class="k">text</span><span class="n">/html</span>                             <span class="k">html</span> <span class="k">htm</span> <span class="k">shtml</span><span class="err">;</span>
+</span><span class='line'>    <span class="k">text</span><span class="n">/css</span>                              <span class="k">css</span><span class="err">;</span>
+</span><span class='line'>    <span class="p">(</span><span class="k">muchas</span> <span class="k">lineas</span> <span class="k">m</span><span class="err">á</span><span class="k">s</span> <span class="k">aqui</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Bueno ahora, vamos pal DHCP. Por supuesto, nada menos que el mismísimo dnsmasq:</p>
+
+<p>Primero el método DHCP, declaramos una option cuyo código sea 252</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/dnsmasq.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">option</span><span class="o">=</span><span class="mi">252</span><span class="p">,</span><span class="nl">http</span><span class="p">:</span><span class="c1">//10.1.1.1/wpad.dat</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>También declaramos un puntero DNS, que apunte a wpad.hcg.sld.cu y que sea el
+servidor donde está el wpad. Le recuerdo que &ldquo;hcg.sld.cu&rdquo; es el nombre del
+dominio.</p>
+
+<p>Al reiniciar nginx y dnsmasq, todo debe estar listo&hellip;</p>
+
+<p>En caso de que <strong>no</strong> uses dnsmasq, asumiré que usas bind e ICS dhcpd&hellip;</p>
+
+<p>Para ICS dhcpd, la cosa es un tin más compleja, ya que hay que declarar
+globalmente el tipo de opción, pero darle el valor en cada subnet o en le única
+que uses. A mi me pinchó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;dhcpd.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='squidconf'><span class='line'><span class="c"># vim:filetype=config</span><span class="w"></span>
+</span><span class='line'>authoritative;<span class="w"></span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># declaramos lo del proxy automático</span><span class="w"></span>
+</span><span class='line'>option<span class="w"> </span>local-proxy-config<span class="w"> </span>code<span class="w"> </span><span class="m">252</span><span class="w"> </span>=<span class="w"> </span>text;<span class="w"></span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># la red</span><span class="w"></span>
+</span><span class='line'>subnet<span class="w"> </span><span class="mf">10.1.1.0</span><span class="w"> </span>netmask<span class="w"> </span><span class="mf">255.255.255.0</span><span class="w"> </span>{<span class="w"></span>
+</span><span class='line'>
+</span><span class='line'><span class="w">    </span><span class="c"># los parámetros del rango</span><span class="w"></span>
+</span><span class='line'><span class="w">    </span>range<span class="w"> </span><span class="mf">10.1.1.100</span><span class="w"> </span><span class="mf">10.1.1.254</span>;<span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>domain-name<span class="w"> </span>&quot;hcg.sld.cu&quot;;<span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>domain-name-servers<span class="w"> </span><span class="mf">10.1.1.1</span>;<span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>broadcast-address<span class="w"> </span><span class="mf">10.1.1.255</span>;<span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>subnet-mask<span class="w"> </span><span class="mf">255.255.255.0</span>;<span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>routers<span class="w"> </span><span class="mf">10.1.1.1</span>;<span class="w"></span>
+</span><span class='line'>
+</span><span class='line'><span class="w">    </span><span class="c"># envía el proxy automático</span><span class="w"></span>
+</span><span class='line'><span class="w">    </span>option<span class="w"> </span>local-proxy-config<span class="w"> </span>&quot;http://10.1.1.1/wpad.dat&quot;;<span class="w"></span>
+</span><span class='line'>
+</span><span class='line'>}<span class="w"> </span><span class="c"># subnet</span><span class="w"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>En el caso de bind9, declaras un CNAME con el nombre wpad que apunte al servidor
+donde descansa el <strong>wpad.dat</strong></p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/bind/ejemplo/dominio.cu.zone&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">servidor1</span>    <span class="n">IN</span> <span class="n">A</span>     <span class="mf">10.1.1.1</span>
+</span><span class='line'><span class="n">servidor2</span>    <span class="n">IN</span> <span class="n">A</span>     <span class="mf">10.1.1.2</span>
+</span><span class='line'><span class="n">mail</span>         <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor2</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="n">pop</span>          <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor2</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="n">pop3</span>         <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor2</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="n">smtp</span>         <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor2</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="n">proxy</span>        <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor1</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="n">gateway</span>      <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor1</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span><span class='line'><span class="p">;</span> <span class="n">env</span><span class="err">í</span><span class="n">a</span> <span class="n">el</span> <span class="n">proxy</span> <span class="n">autom</span><span class="err">á</span><span class="n">tico</span>
+</span><span class='line'><span class="n">wpad</span>         <span class="n">IN</span> <span class="n">CNAME</span> <span class="n">servidor1</span><span class="p">.</span><span class="n">dominio</span><span class="p">.</span><span class="n">cu</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Firefox pincha al palo, los demás no se&hellip;</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/24/verdial-y-el-imagis/">la pena de verdial</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-09-24T08:15:19-04:00'><span class='date'>24/09/2014</span> <span class='time'>8:15 am</span></time>
+        
+           | <a href="/blog/2014/09/24/verdial-y-el-imagis/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2014/09/24/verdial-y-el-imagis/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Verdial, el omnisapiente neurocirujano que dice haber recorrido el mundo; de
+siempre se ha quejado por no tener un software para ver las imágenes del somatón
+en Winwdows 7. Últimamente me tiene los cojones hinchados con eso.</p>
+
+<p>Ayer, mientras este conversaba con Karman (un técnico llamado &ldquo;Jose Luis&rdquo;); le
+contaba su pena mientras yo escuchaba del otro lado del pladur (mi oficina). Me
+paré para que me explicara por milésima ves su problema pero esta vez; pensó con
+la cabeza.</p>
+
+<p>Me dijo que los ficheros DICOM, eran el producto del somatón y de los Rayos X.
+Una rápida búsqueda con apt-cache, reveló que hay mas de 20 programas macheando
+la palabra &ldquo;dicom&rdquo;.</p>
+
+<p>Tras consultar <a href="http://www.google.com.cu">el oráculo</a>, resulta que los ficheros
+del tipo DICOM, son una especia de imagen que contiene metadatos, muuuuchos
+metadatos; para cosas como por ejemplo: nombre del paciente, parte del cuerpo,
+fecha del estudio, objetivo del estudio, etc&hellip; Todo parece indicar que las
+operaciones con el somatón son llamadas &ldquo;estudios&rdquo;.</p>
+
+<p>Verdial me soltó una pila de imágenes en una memoria, los ficheros contienen la
+extensión &ldquo;.dcm&rdquo;</p>
+
+<p>En el respositorio de debian, hay un software llamado &ldquo;amide&rdquo; resulta que amide
+es capaz de renderizar las imagenes prodcuto del somatón, incluso, en colores
+con vista térmica, etc&hellip; A según verdial, el software es capaz de crear
+imagines que el somatón no crea. Conjugando la vista horizontal y vertical te
+permite tener una vista exacta en ambos planos de un punto específico.</p>
+
+<p><img src="/images/amide.png"></p>
+
+<p>El único problema que tiene esto, es recibir las imágenes provenientes del
+somatón; sin tener que traer archivos y carpetas.</p>
+
+<p>Pero adivinen que lenguaje tiene una librería para trabajar con ficheros DICOM?</p>
+
+<p>Pues el mio, Ruby, <a href="http://github.com/dicom/ruby-dicom">http://github.com/dicom/ruby-dicom</a></p>
+
+<p>Manoseando ruby-dicom, entendí que imagis y efilm, aún siendo cliente y
+servidor, funcionan al revés. Pues el cliente escucha por un puerto ye el
+servidor está configurado para empujarle las imágenes a los cliente; tipo
+torrent.</p>
+
+<p>Veamos que pasa tras el primer experimento, pues Fumero configurará el server
+para que le mande imágenes a mi máquina.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
+
+    </article>
   
   
     <article>
@@ -166,7 +442,7 @@
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -269,7 +545,7 @@ infomed me dijeron que fuera al &ldquo;GAU&rdquo; para renovar el contrato.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -349,7 +625,7 @@ componentes ya fabricados por los rubios.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -421,138 +697,7 @@ el servidor de OCS.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/08/select-en-bootstrap/">select en bootstrap</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-07-08T15:40:54-04:00'><span class='date'>08/07/2014</span> <span class='time'>3:40 pm</span></time>
-        
-           | <a href="/blog/2014/07/08/select-en-bootstrap/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/07/08/select-en-bootstrap/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>A rails le sobra magia, eso no es secreto para nadie. No obstante, si hay un
-hechizo complicado de conjurar, es el dichoso <a href="http://guides.rubyonrails.org/form_helpers.html#binding-a-form-to-an-object">form_for</a></p>
-
-<p>Es una verdadera jodienda poner un select decente en un form_for de rails,
-sobre todo para que coja el estilo de boostrap. He aquí el secreto:</p>
-
-<figure class='code'><figcaption><span>&#8220;un_scaffold.html.erb&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'> <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;form-control&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="err">&lt;</span>%= f.select(:ampm, options_for_select([[&#39;AM&#39;, 1], [&#39;PM&#39;, 2]])) %&gt;
-</span><span class='line'> <span class="nt">&lt;/div&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ni en mi mejor día leyendo código fuente de RoR me hubiera imaginado que <a href="file:///home/lazaro/Documentacion/Rails/guides.rubyonrails.org/form_helpers.html#the-select-and-option-tags">options_for_select</a>
-existía. Evito a toda costa usar select, pero aveces no queda más remedio; un
-&ldquo;radio&rdquo; con 7 elementos se ve horrible.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/05/empirico/">empíricos</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-07-05T09:18:42-04:00'><span class='date'>05/07/2014</span> <span class='time'>9:18 am</span></time>
-        
-           | <a href="/blog/2014/07/05/empirico/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2014/07/05/empirico/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>¿Sabes tú qué es un &ldquo;empírico&rdquo;?</p>
-
-<p>Una persona que desarrolla habilidades de manera autodidacta en un oficio o
-campo de la ciencia y que llega a ser tanto o más bueno que un catedrático.</p>
-
-<p>Generalmente estamos graduados de algo que no ejercemos.</p>
-
-<p>Guardamos con devoción en nuestra casa, el libro que nos darían si llegáramos al
-tercer año de la carrera universitaria que deberíamos estudiar.</p>
-
-<p>No leemos los libros que nos obligan. Leemos los que nos interesan.</p>
-
-<p>No podemos ir a la universidad porque suspendemos las pruebas en las que nos
-preguntan cosas que hace 6 años leímos o cosas que No nos interesan.</p>
-
-<p>Cuando llegamos a preescolar sabíamos las vocales, los colores y contar del uno
-al diez. Odiábamos a la profesora por obligarnos a atender su aburrida clase.</p>
-
-<p>Somos gente que pensamos diferentes y no encajamos en el montón. Algunos nos
-llaman &ldquo;rosca izquierda&rdquo; otros nos llaman &ldquo;originales&rdquo;.</p>
-
-<p>Sabemos que colar un café es una reacción exotérmica porque dimos química en
-noveno grado.</p>
-
-<p>Sabemos que de día sopla la brisa y de noche el terral, porque dimos &ldquo;mundo en
-que vivimos&rdquo; en 5to grado.</p>
-
-<p>VAMOS A LA ESCUELA A APRENDER, no a sacar buenas notas.</p>
-
-<p>No nos expliques nada, solo déjanos ver como lo haces.</p>
-
-<p>Sabemos hacer muy pocas cosas pero no tenemos rivales en las pocas que hacemos.</p>
-
-<p>Si hay un camino a la derecha y otro a la izquierda, hacemos uno nuevo por el
-medio; con la esperanza de hacerlo mejor.</p>
-
-<p>No somos mejores ni peores que nadie porque no nos comparamos.</p>
-
-<p>Tenemos una ortografía terrible porque escribimos en cualquier idioma menos en
-el nuestro.</p>
-
-<p>Sabemos un montón de cosas y no nos acordamos cuando o porque lo aprendimos.</p>
-
-<p>Los que nos aprecian o admiran nos llaman &ldquo;geniales&rdquo; o &ldquo;inteligentes&rdquo;. Los que
-nos repudian o envidian nos llaman &ldquo;autosuficientes&rdquo; o &ldquo;excéntricos&rdquo;.</p>
-
-<p>Solo somos &ldquo;empíricos&rdquo;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -575,6 +720,12 @@ nos repudian o envidian nos llaman &ldquo;autosuficientes&rdquo; o &ldquo;excén
 	<ul id="recent_posts">
 
 		
+
+		<li class="post">
+			<a href="/blog/2017/12/05/la-lightning-network/">la lightning network</a>
+      </li>
+
+      
 
 		<li class="post">
 			<a href="/blog/2017/11/30/segwit-con-3-star-en-electrum/">segwit con p2sh en electrum</a>
@@ -613,7 +764,13 @@ nos repudian o envidian nos llaman &ldquo;autosuficientes&rdquo; o &ldquo;excén
       
 
 		<li class="post">
-			<a href="/blog/2017/07/23/lemp-en-debian/">LEMP en debian</a>
+			<a href="/blog/2017/07/24/lemp-en-centos/">LEMP en Centos 7</a>
+      </li>
+
+      
+
+		<li class="post">
+			<a href="/blog/2017/07/23/lemp-en-debian/">LEMP en debian 9</a>
       </li>
 
       

@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="autoridad certificadora 10/05/2017 7:39 pm | Comments Es un gran mojón tener que generar un certificado para cada servicio. Y aquí, en
-el 5to &hellip;">
+  <meta name="description" content="squid y navegar a .cu 22/06/2017 12:17 am | Comments Aveces las necesidades de nuestros clientes, son tan raras que nos dejan
+anonadados. Pero ante &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,207 @@ el 5to &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/06/22/curiosa-acl-de-squid/">squid y navegar a .cu</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-06-22T00:17:11-04:00'><span class='date'>22/06/2017</span> <span class='time'>12:17 am</span></time>
+        
+           | <a href="/blog/2017/06/22/curiosa-acl-de-squid/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/06/22/curiosa-acl-de-squid/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Aveces las necesidades de nuestros clientes, son tan raras que nos dejan
+anonadados. Pero ante necesidades extravagantes; soluciones extravagantes.  Este
+post me lo dejo a modo de reflexión, para recordar; que muchas veces, el ingenio
+combinado con la simpleza, puede desembocar en soluciones tan hermosas como
+raras.</p>
+
+<p>Es común, que en algunos lugares, la navegación a sitios &ldquo;.cu&rdquo; no requiera
+autenticación. Aveces poner una ACL como esta</p>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="err">acl</span> <span class="err">cuba</span> <span class="err">url_regex</span> <span class="err">\.cu</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">cuba</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Aparentemente <em>matamos la jugada</em>, pero luego, metemos una ACL relacionada con
+usuarios autenticados y se jodió bicicleta.</p>
+
+<p>El cartel de &ldquo;por favor autentique&rdquo; cae a cuanto &ldquo;.cu&rdquo; se navegue.</p>
+
+<p>Pero tocando el <em>squid.conf</em>, vi esta cosa hermosa</p>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="c1">#   acl aclname localport 3128  # TCP port the client connected to [fast]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Decidí que los que vallan a navegar con autenticación, usarán el puerto 8080 y
+los vuelos nacionales saldrán por el 3128.</p>
+
+<p>De esta manera, se hace una ACL que niegue las peticiones NO cubanas <strong>sin mostrar
+el puto login</strong>.</p>
+
+<figure class='code'><figcaption><span>&#8220;squid.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'> <span class="c1"># aquellos que se conectan por el puerto 3128</span>
+</span><span class='line'> <span class="err">acl</span> <span class="err">mortales</span> <span class="err">localport</span> <span class="err">3128</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># aquellos que se conectan por el 8080</span>
+</span><span class='line'> <span class="err">acl</span> <span class="err">olimpo</span> <span class="err">localport</span> <span class="err">8080</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># los sitios a los que se entran sin contraseña</span>
+</span><span class='line'> <span class="err">acl</span> <span class="err">cuba</span> <span class="err">url_regex</span> <span class="err">-i</span> <span class="err">&quot;/etc/squid3/cuba.lst&quot;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># CUBANOS</span>
+</span><span class='line'> <span class="c1"># lo que valla a cuba,</span>
+</span><span class='line'> <span class="c1"># sale sin autenticación</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">mortales</span> <span class="err">cuba</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">CONNECT</span> <span class="err">mortales</span> <span class="err">cuba</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># deniega a los mortales, lo que no sea cuba</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">deny</span> <span class="err">mortales</span> <span class="err">!cuba</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">deny</span> <span class="err">CONNECT</span> <span class="err">mortales</span> <span class="err">!cuba</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># PRIVILEGIADOS</span>
+</span><span class='line'> <span class="c1"># lo que NO valla para cuba debe autenticarse</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">CONNECT</span> <span class="err">olimpo</span> <span class="err">autenticados</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">allow</span> <span class="err">olimpo</span> <span class="err">autenticados</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># y más nada pasa</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">deny</span> <span class="err">CONNECT</span> <span class="err">all</span>
+</span><span class='line'> <span class="err">http_access</span> <span class="err">deny</span> <span class="err">all</span>
+</span><span class='line'> <span class="err">icp_access</span> <span class="err">deny</span> <span class="err">all</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>¿Se entendió? Pasa que squid, al hacerle cualquier petición, que involucre
+internet, le mostrará al pobre <em>puntoseunauta</em> el cuadro de diálogo, ya que
+para acceder a internet real requiere autenticación; y squid te da la
+posibilidad probar que eres <em>usuario de internet</em>. Para evitar esta conducta,
+ponemos una cláusula permitiendo que los &ldquo;.cu&rdquo; usando el 3128, pasan. Luego
+ponemos otra ACL negando el acceso a lo que <strong>NO</strong> sea .cu por el mismo puerto.
+De esta manera, los que tengan solo acceso &ldquo;.cu&rdquo;, usarán el 3128 y la ACL que
+involucra autenticación nunca es probada.</p>
+
+<p>Para los autenticados, pusimos una ACL que machea el puerto 8080. O sea, los
+usuarios de internet, al hacer su peticiones por el puerto 8080, enseguida las
+pedirá autenticación.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/05/13/instalar-node-rapido/">instalar node rápido</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-05-13T17:13:53-04:00'><span class='date'>13/05/2017</span> <span class='time'>5:13 pm</span></time>
+        
+           | <a href="/blog/2017/05/13/instalar-node-rapido/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/05/13/instalar-node-rapido/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Desde que surgió node, estaba deseando que hubiera una herramienta como RVM para
+instalar nodejs. Resulta que la hay!!! Al igual que RVM, requiere cURL. Por
+cierto, se llama <strong>n</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> curl -o /usr/local/bin/n https://raw.githubusercontent.com/visionmedia/n/master/bin/n</span>
+</span><span class='line'><span class="go"> chmod +x /usr/local/bin/n</span>
+</span><span class='line'><span class="go"> n lts</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Instala hasta npm!</p>
+
+<p><strong>En debian</strong>, otra manera de hacer esto, es usando el repo oficial que provee node:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> curl -sL https://deb.nodesource.com/setup | bash -</span>
+</span><span class='line'><span class="go"> aptitude update</span>
+</span><span class='line'><span class="go"> aptitude install nodejs</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Acuérdate que algunos paquetes (por no decir que los más usados) requieren
+compilar librerías. Así que no olvides instalar <strong>build-essential</strong>.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
+
+    </article>
   
   
     <article>
@@ -452,7 +653,7 @@ argumentos, se generan certificados para dichos dominios.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -785,7 +986,7 @@ virt-manager).</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -917,7 +1118,7 @@ que termine una ronda, se cambiará el mapa.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -971,264 +1172,7 @@ pasa a ser HVM.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/03/04/rainloop-en-debian/">rainloop en debian</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-03-04T13:45:55-05:00'><span class='date'>04/03/2017</span> <span class='time'>1:45 pm</span></time>
-        
-           | <a href="/blog/2017/03/04/rainloop-en-debian/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/04/rainloop-en-debian/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Aún recuerdo que algunos clientes me preguntaban con mucho asombro: &ldquo;-y porque
-no roundcube&rdquo;; cuando hablábamos de webmail. Pero finalmente rainloop se ha
-puesto de moda en cuba.</p>
-
-<p>Un método bastante perezoso de instalar una LAMP <strong>en Debian</strong>, es instalar el
-paquete <strong>phpmyadmin</strong>. Esto instala y configura el servidor SQL; además de
-hacer jugar a apache2 con php y mysql, todo de un solo teclazo. Pero aveces, por
-ejemplo, al instalar RainLoop, no queremos que phpmyadmin quede instalado. Una
-buena variante es desinstalarlo después; pero nos quedan algunos paquetes
-innecesarios instalados.</p>
-
-<p>Para lograr la armonía que buscamos, instalaremos la LAMP por partes. Primero
-apache SOLO.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> aptitude install apache2</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora instalamos mysql, a través de los metapaquetes, para que se instale el
-adecuado de manera automática.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> aptitude install mysql-server mysql-client</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Llegado a este punto, debian y su magia te ayudarán a configurar el mysql,
-pidiéndote la contraseña del root. Ahora instalamos la piedra angular. El
-soporte de php+mysql de apache.</p>
-
-<figure class='code'><figcaption><span>&#8220;soporte de mysql&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> aptitude install php5 libmysqlclient-dev php5-mysql</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Instalamos el resto de la paquetería necesaria para rainloop.</p>
-
-<figure class='code'><figcaption><span>&#8220;paquetería de rainloop&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> aptitude install curl libcurl3 libcurl3-dev php5-curl php5-json</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ahora <strong>reinicia</strong> tanto apache como mysql.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go"> systemctl restart mysql</span>
-</span><span class='line'><span class="go"> systemctl restart apache2</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Crearemos un par de bases de datos necesarias para rainloop. Puedes o no crear
-un usuario para rainloop, pero si vamos a tener un servidor sql con dos bases de
-datos para una aplicación; la cual además, será la única cosa sql en el
-servidor; no vale la pena crear otro usuario. Lo dejo a tu elección.</p>
-
-<figure class='code'><figcaption><span>&#8220;creando las bases&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">create</span> <span class="k">database</span> <span class="n">rainloop</span><span class="p">;</span>
-</span><span class='line'><span class="k">create</span> <span class="k">database</span> <span class="n">contactos</span><span class="p">;</span>
-</span><span class='line'><span class="k">commit</span><span class="p">;</span>
-</span><span class='line'><span class="n">exit</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Si de todas maneras quieres crear el usuario.</p>
-
-<figure class='code'><figcaption><span>&#8220;un usuario pa rainloop&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">create</span> <span class="k">user</span> <span class="n">rainloop</span><span class="o">@</span><span class="n">localhost</span> <span class="n">identified</span> <span class="k">by</span> <span class="ss">&quot;rainloop&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="k">grant</span> <span class="k">all</span> <span class="k">privileges</span> <span class="k">on</span> <span class="n">rainloop</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="n">rainloop</span><span class="o">@</span><span class="n">localhost</span><span class="p">;</span>
-</span><span class='line'><span class="n">flush</span> <span class="k">privileges</span><span class="p">;</span>
-</span><span class='line'><span class="n">exit</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Y vamos a instalar rainloop! La manera clásica de hacerlo es usando el paquete
-&ldquo;.zip&rdquo; del sitio. Si quieres llégate allá y bájatelo. Descomprimes en un
-directorio y sigue las instrucciones; sin embargo hay otra manera.</p>
-
-<figure class='code'><figcaption><span>&#8220;alando rainloop del repositorio&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='console'><span class='line'><span class="go">mkdir -p /var/www/rainloop</span>
-</span><span class='line'><span class="go">cd /var/www/rainloop</span>
-</span><span class='line'><span class="go">curl -s http://repository.rainloop.net/installer.php | php</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Si tienes acceso a internet de verdad. Pinchará. Si estás detrás de un proxy, te
-jodiste, hazlo a la manera ortodoxa.</p>
-
-<p>Rainloop es fulísima con los permisos. Si no los tienes claros, dará unos palos
-horribles que no tienen nada que ver con permisos aparentemente. Por ejemplo, si
-el fichero que dice la versión, no pertenece al usuario que corre el servidor
-web, te dirá que no puede encontrar el directorio &ldquo;data&rdquo;. Espectacular! Para
-evitar eso, solo los directorios tendrán el ejecutable. Además, todo pertenecerá
-al usuario <strong>www-data</strong>; que en debian es el usuario que usa el apache para
-correr.</p>
-
-<figure class='code'><figcaption><span>&#8220;estableciendo permisos&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>chown -R www-data:www-data .
-</span><span class='line'>find . -type d -exec chmod <span class="m">755</span> <span class="o">{}</span> <span class="se">\;</span>
-</span><span class='line'>find . -type f -exec chmod <span class="m">644</span> <span class="o">{}</span> <span class="se">\;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>No te pondré como hacer el virtualhost porque eso no tengo que explicártelo (no
-te hace falta verdad?). Te recomiendo que uses SSL.</p>
-
-<p>No olvides entrar al admin panel (o al fichero de configuración) de rainloop y
-pasarle la mano. Para abrir el admin panel, usa la url <strong>/?admin</strong>. Ahí
-configura las bases de datos. Muy importante habilitar el soporte de contactos y
-especificarle la base de datos, que creo, no debe ser la misma que rainloop;
-aunque una gente me dijo que tiene ambas cosas en la misma base de datos; yo no
-le he probado.</p>
-
-<p>El usuario por defecto es <strong>admin</strong> y la contraseña es <strong>12345</strong>. De más está
-que te diga: <strong>CÁMBIALO!</strong></p>
-
-<p>Si estás de cara a internet, recuerda que rainloop viene con yahoo y gmail
-configurado como servidores por defecto. No sé si está habilitados pero
-chequéalo. Juraría que hay versiones en que venía habilitado. De todas formas,
-te interesará que tus usuarios tengan gmail/yahoo más cerca, especialmente si un
-usuario tiene múltiples identidades. Recuérdales que deben habilitar el acceso
-pop en su cuenta de gmail.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/03/03/nginx-y-websocket/">nginx y websocket</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-03-03T23:49:47-05:00'><span class='date'>03/03/2017</span> <span class='time'>11:49 pm</span></time>
-        
-           | <a href="/blog/2017/03/03/nginx-y-websocket/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/03/03/nginx-y-websocket/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Resulta que los websocket no pasan tan fácilmente por el proxy inverso. Llevan
-su burumba.</p>
-
-<p>Aquí por ejemplo, haremos un proxy inverso con SSL para una aplicación que
-escucha por el puerto 8888.</p>
-
-<figure class='code'><figcaption><span>&#8220;nginx&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">server</span> <span class="p">{</span>
-</span><span class='line'>   <span class="n">listen</span> <span class="mi">80</span> <span class="n">default_server</span><span class="p">;</span>
-</span><span class='line'>   <span class="k">return</span> <span class="mi">301</span> <span class="nl">https</span><span class="p">:</span><span class="c1">//$host$request_uri;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="n">server</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">listen</span> <span class="mi">443</span> <span class="n">ssl</span> <span class="n">default_server</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">ssl_certificate</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">nginx</span><span class="p">.</span><span class="n">crt</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">ssl_certificate_key</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">nginx</span><span class="p">.</span><span class="n">key</span><span class="p">;</span>
-</span><span class='line'>   <span class="n">location</span> <span class="o">/</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">proxy_set_header</span>        <span class="n">Host</span> <span class="err">$</span><span class="n">host</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">proxy_set_header</span>        <span class="n">X</span><span class="o">-</span><span class="n">Real</span><span class="o">-</span><span class="n">IP</span> <span class="err">$</span><span class="n">remote_addr</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">proxy_set_header</span>        <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">For</span> <span class="err">$</span><span class="n">proxy_add_x_forwarded_for</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">proxy_set_header</span>        <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">Proto</span> <span class="err">$</span><span class="n">scheme</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">proxy_pass</span> <span class="nl">http</span><span class="p">:</span><span class="c1">//127.0.0.1:8888/;</span>
-</span><span class='line'>      <span class="n">proxy_http_version</span> <span class="mf">1.1</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">proxy_set_header</span> <span class="n">Connection</span> <span class="s">&quot;upgrade&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">proxy_set_header</span> <span class="n">Upgrade</span> <span class="err">$</span><span class="n">http_upgrade</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">proxy_redirect</span> <span class="k">default</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">proxy_read_timeout</span> <span class="mi">1800</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">client_max_body_size</span> <span class="mi">128</span><span class="n">G</span><span class="p">;</span>
-</span><span class='line'>   <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note como los encabezados Upgrade son seteados. Ese es el truco&hellip;</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -1251,6 +1195,12 @@ escucha por el puerto 8888.</p>
 	<ul id="recent_posts">
 
 		
+
+		<li class="post">
+			<a href="/blog/2017/12/05/la-lightning-network/">la lightning network</a>
+      </li>
+
+      
 
 		<li class="post">
 			<a href="/blog/2017/11/30/segwit-con-3-star-en-electrum/">segwit con p2sh en electrum</a>
@@ -1289,7 +1239,13 @@ escucha por el puerto 8888.</p>
       
 
 		<li class="post">
-			<a href="/blog/2017/07/23/lemp-en-debian/">LEMP en debian</a>
+			<a href="/blog/2017/07/24/lemp-en-centos/">LEMP en Centos 7</a>
+      </li>
+
+      
+
+		<li class="post">
+			<a href="/blog/2017/07/23/lemp-en-debian/">LEMP en debian 9</a>
       </li>
 
       

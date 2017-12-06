@@ -9,8 +9,8 @@
   <meta name="author" content="låzaro">
 
   
-  <meta name="description" content="ipfw simple y conciso 01/02/2017 11:15 pm | Comments Las instrucciones para hacer un cortafuegos realmente SIMPLE y la vez
-funcional (statefull &hellip;">
+  <meta name="description" content="bind personal 22/02/2017 9:05 pm | Comments Una cosa que me jode, es que linux el tema de los múltiples DNS no los maneje
+bien. Por ejemplo, estamos &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,352 @@ funcional (statefull &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/02/22/bind-personal/">bind personal</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-02-22T21:05:26-05:00'><span class='date'>22/02/2017</span> <span class='time'>9:05 pm</span></time>
+        
+           | <a href="/blog/2017/02/22/bind-personal/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/02/22/bind-personal/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Una cosa que me jode, es que linux el tema de los múltiples DNS no los maneje
+bien. Por ejemplo, estamos en una LAN con red 192.168.1.0/24 y además,
+tenemos una conexión a internet.</p>
+
+<p>Entonces seteas dos DNS en el resolv.conf y no pincha!</p>
+
+<p>Además, si la situación es itinerante (vas a múltiples LAN) mantener la
+configuración DNS se vuelve un rollo. Aunque el networkmanager te permita
+configurarlo, volvemos a la situación anterior.</p>
+
+<p>Solución, tenemos un bin con sus debidos forwarders para cada red. En mi caso,
+el <strong>/etc/named.conf</strong> me quedó así:</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">// vim:set ts=4 sw=4 et:</span>
+</span><span class='line'><span class="n">options</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">recursion</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>        <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>        <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">recursion</span> <span class="n">yes</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">auth</span><span class="o">-</span><span class="n">nxdomain</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">127.0.0.1</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// la lan por su DNS local</span>
+</span><span class='line'><span class="n">zone</span> <span class="s">&quot;dominio.cu&quot;</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">192.168.1.3</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// lo demás por google</span>
+</span><span class='line'><span class="n">zone</span> <span class="s">&quot;.&quot;</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">8.8.8.8</span><span class="p">;</span> <span class="mf">8.8.4.4</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>De esta manera, el dominio de la LAN (<strong>dominio.cu</strong>), será resuelto a través
+del servidor DNS 192.168.1.3; que es el de la LAN. Para eso usamos la zona
+&ldquo;dominio.cu&rdquo; del tipo forward y especificamos a 192.168.1.3 como su forward.</p>
+
+<p>El resto, o sea, la zona &ldquo;.&rdquo;, será también del tipo forward y para este ejemplo,
+usamos los dns de google como forward.</p>
+
+<p>Ahora solo te queda actualizar el <strong>/etc/resolv.conf</strong> y setear a 127.0.0.1
+como tu servidor dns</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/resolv.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp"># Generated by resolvconf</span>
+</span><span class='line'><span class="n">nameserver</span> <span class="mf">127.0.0.1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Recuerda que cada configuración automatizada, actualiza este fichero. Te
+recomiendo que no te fajes con el fichero, si no que en cada conexión que desees
+usar tu servidor, se lo especifiques. Por ejemplo, con networkmanager, le dices
+a N conexión, que el servidor dns es manual y será <em>127.0.0.1</em>. Si usas Gnome
+(NetworkManager), te recomiendo usar la utilidad <strong>nm-connection-editor</strong>. Te
+permitirá especificar el dominio de búsqueda, cosa que no he visto como hacer
+con el administrador de conexiones de gnome.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/02/05/dns-con-vistas/">dns con vistas</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-02-05T18:57:26-05:00'><span class='date'>05/02/2017</span> <span class='time'>6:57 pm</span></time>
+        
+           | <a href="/blog/2017/02/05/dns-con-vistas/#disqus_thread"
+             data-disqus-identifier="http://uranio-235.github.io/blog/2017/02/05/dns-con-vistas/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Que lindo corre bind9 en alpine linux. Ahora que mis servidores están todo en el
+pool de xenserver (los reyes magos me trajeron un servidor pro) tengo un nuevo
+problema. Dentro de la red interna de xen, los servidores tienen una ip
+distinta. Por ejemplo, para todo el mundo, el alpine linux que hace de router,
+es 192.168.0.1, pero para los servidores, es 169.254.0.10</p>
+
+<p>Además, el forward para infomed, es un privilegio que solo los servidores
+tienen. Por tanto, lo más seguro, será usar una zona para la LAN y otra para la
+red interna del pool.</p>
+
+<p>Esto me recuerda las DMZ, pero no es lo mismo, porque no estoy creando cuellos
+de botella. La red interna del pool es una vif, que funciona sin emitir
+tráfico real por alguna pif.</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/bind/named.conf&#8221;</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">// vim:set ts=4 sw=4 et:</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">options</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">directory</span> <span class="s">&quot;/etc/bind/&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">pid</span><span class="o">-</span><span class="n">file</span> <span class="s">&quot;/run/named/named.pid&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">v6</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">listen</span><span class="o">-</span><span class="n">on</span> <span class="p">{</span> <span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;</span> <span class="mf">192.168.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">transfer</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">update</span> <span class="p">{</span> <span class="n">none</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>   <span class="n">version</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">hostname</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">server</span><span class="o">-</span><span class="n">id</span> <span class="n">none</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c1">// los servidores hacen recursion</span>
+</span><span class='line'>   <span class="n">allow</span><span class="o">-</span><span class="n">recursion</span> <span class="p">{</span> <span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;};</span>
+</span><span class='line'>   <span class="n">recursion</span> <span class="n">yes</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">view</span> <span class="n">lan</span>  <span class="p">{</span> <span class="c1">// la red LAN</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">192.168.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">;};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;.&quot;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;fakeroot.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">};</span> <span class="c1">// view lan</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">view</span> <span class="n">xen</span> <span class="p">{</span> <span class="c1">// la red interna de XenServer</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">match</span><span class="o">-</span><span class="n">clients</span> <span class="p">{</span><span class="mf">169.254.0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span> <span class="n">localhost</span><span class="p">;};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;localhost&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;localhost.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;xen&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;xen.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;hcg.sld.cu&quot;</span> <span class="n">IN</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="s">&quot;hcg.zone&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">notify</span> <span class="n">no</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">zone</span> <span class="s">&quot;sld.cu&quot;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">forwarders</span> <span class="p">{</span> <span class="mf">201.220.222.131</span><span class="p">;</span> <span class="mf">201.220.222.132</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>      <span class="n">type</span> <span class="n">forward</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">forward</span> <span class="n">only</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">};</span> <span class="c1">// view xen</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Como ven, cree el dominio &ldquo;.xen&rdquo; que solo será visible a la red interna del
+pool. La zona &ldquo;hcg.sld.cu&rdquo; también será visible para los servidores ya que estos
+tienen una pata en la LAN; a esto suele llamarse &ldquo;shared zone&rdquo; (zona
+compartida). Finalmente, la zona &ldquo;sld.cu&rdquo; (debajo de hcg) es una zona forward en
+la vista de la interfaz interna.</p>
+
+<p>El host proxy.hcg.sld.cu resolverá una ip de la lan; de esta misma manera, el
+host proxy.xen, resolverá la ip de dicho host, pero dentro de la red interna del
+pool.</p>
+
+<p><strong>¿y por qué?</strong></p>
+
+<p>Por que esta menera, solo los servidores (a través de la red del pool), harán
+forward. Por ejemplo, el servidor de correo, podrá enviar y recibir su correo
+multipop, ya que el alpine que está haciendo como router, permite forward desde
+la red del pool hacia la WAN; o sea, todos los servidores, ven a la WAN. Es
+obligaría al servidor de correo, a usar el dns de infomed para resolver
+direcciones de infomed y el servidor local para resolver las direcciones de la
+LAN, lo cual funciona de asco. Sin embargo, la vista del pool tiene una zona
+forward. Cabe destacar, que una zona forward y un fakeroot, no se por qué; hace
+que ninguna pinche.</p>
+
+<p>Sensillo y seguro.</p>
+</div>
+  
+  
+
+
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
+
+    </article>
   
   
     <article>
@@ -365,7 +711,7 @@ intenta poner siempre los pipe arriba y el cortafuegos abajo</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -498,7 +844,7 @@ modernizado. Además, la simpleza en un pilar de base en freebsd.</p>
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -581,7 +927,7 @@ el compilador suele interpretarlo como que estás escapando la comilla simple.</
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -693,253 +1039,7 @@ buen desarrollador de rails, sabe que lo correcto sería usar la in API de i18n.
   
 
 
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/09/tendencias-tecnologicas/">tendencias tecnológicas</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-09T21:04:02-05:00'><span class='date'>09/01/2017</span> <span class='time'>9:04 pm</span></time>
-        
-           | <a href="/blog/2017/01/09/tendencias-tecnologicas/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/09/tendencias-tecnologicas/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="right" src="/images/bandwagon.jpg" width="400" height="500" title="" ></p>
-
-<p>Por suerte, la era de Zentyal está a punto de terminar.</p>
-
-<p>Ahora tenemos tocadores de pfSense, que se creen usuarios de FreeBSD.</p>
-
-<p>Siempre me ha maravillado el criterio de selección tecnológica de la mayoría (NO
-todos) los cubanos</p>
-
-<h4>puro efecto bandwagon</h4>
-
-<p>Funciona como especie de moda, donde el software más popular triunfa,
-simplemente por su popularidad, no por su adecuación, o idoneidad.</p>
-
-<p>Por ejemplo, nginx se puso de moda, porque el jovenclub lo usa. El jovenclub es
-famoso por sus disparates tecnológicos, pero no importa. ¡Usemos nginx! Antes yo
-usaba nginx, como proxy inverso, balanceo de carga y servidor web de contenido
-estático. Entonces yo era &ldquo;un extravagante&rdquo;. Ahora todo el mundo usa nginx para
-TODO. Tipos que AYER tocaron la puntica de nginx, te dicen: &ldquo;¿aún usas apache?&rdquo;
-y te miran como si tú fueras un bicho raro. Curiosamente, la misma mirada que
-ponían cuando les decías que usabas nginx (además de apache).</p>
-
-<p>Muchos dicen que &ldquo;systemd es una mierda&rdquo;, pero al preguntar &ldquo;por qué&rdquo;, son pocos
-los que dan argumentos técnicos que vallan más allá de simple resistencia al
-cambio. Parece no haber un término medio. Todo es blanco y negro. Nadie dice por
-ejemplo que systemd es bueno para máquinas de escritorios pero no tan bueno para
-servidores. NOOoo&hellip;</p>
-
-<p>Otro que bien baila es Proxmox. La herramienta de virtualización que ha caído en
-manos de los mas perezosos como dedo en el anillo. Al parecer soy el único
-cubano que usa Xen. Actualmente me dicen: &ldquo;ah! ¿no usas proxmox?&rdquo;. Pero cuando
-pregunto: ¿qué tiene proxmox superior a xen? Estoo, es queeee, veráaas,
-bueeenooo&hellip;. Nada, que está moda. La ecuación es simple:</p>
-
-<h4>Virtualización = Proxmox</h4>
-
-<p>click-click-click-click-click ¡<strong>ZAS</strong>! Todo está listo!!</p>
-
-<p>Dejaron de usar windows Server (click, click listo!)</p>
-
-<p>Para usar:</p>
-
-<p>Proxmox+Zimbra+pfSense (click, click ¡LISTO! ¡¡¡y además FUNCIONA!!)</p>
-
-<p>¿Cambio de paradigma? ¿Filosofía UNIX? ¿Estilo de trabajo? ¿Teorema de KISS?
-¿Software Libre? <em>-pfff, que chiste. Ese tipo está loco, anda con la pila de
-consolas que parecen salida de la matrix. Nerd!</em></p>
-
-<p>No saben que demonios es un cortafuegos, no son capaces de elaborar una solución
-a la medida de su problema y ni siquiera entienden el software que usan pero
-eso son nimiedades.</p>
-
-<p>Cuando las necesidades tan pecularies de cubita la bella dicen &ldquo;aquí estoy&rdquo;,
-entonces no saben como van a modificar el comportamiento del software para
-adecuarse a nuestras extravagantes necesidades. Por que hay cientos de menus con
-cientos de click y checkmarks, pero ninguna hace lo que le exigen al sysadmin
-cubano.</p>
-
-<p>El servidor de correos, es su mayor dolor de cabeza, pero hay Zimbra. A veces
-necesitan un servidor SIMPLE o un servidor COMPLEJO, nada que ver con Zimbra y
-bueno, prueba a ver si iRedMail te lo resuelve.</p>
-
-<p>Ven herramientas como nagios o smokeping, se quedan con la boca abierta, pero
-¡joder! es muy complicado, me paso. Al menos,  hasta que alguien me de una
-configuración que funcione y yo cambiarle los valores para que se adecue a mi
-entorno.</p>
-
-<p>Reza porque todo funcione. Ya que es tanta la ignorancia, que si hay un
-problema, ni siquiera saben como van a pedir ayuda, porque ni siquiera entienden
-con que están tratando.</p>
-
-<p>Siempre puedes decirle al jefe &ldquo;no se puede&rdquo;. Después de todo, eres un
-<strong>tolerable asalariado</strong> y no te pasará nada por incumplir. Le puedes echar la
-culpa <em>al país que es una mierda por el atraso tecnológico</em> y bla bla bla; todas
-esas excusas que usan los mediocres de gama alta.</p>
-
-<h4>pero tienen más horas de facebook que de consola</h4>
-
-<p>Los más triste del caso, es que luego quieren venir a discutir de tecnología y
-uno no sabe como va a llevar la conversación para no humillarlos.</p>
-
-<h4>punto y aparte</h4>
-
-<p>Además, están los tipos que <strong>Sí SABEN</strong>, pero que usan todo eso porque &ldquo;no
-tienen tiempo&rdquo;. Trabajan sentados, el día entero apretando teclas en aire
-acondicionado y &ldquo;no tienen tiempo&rdquo;.</p>
-
-<p>Pierden su tiempo en jugar con toda esta parafernalia modista, para luego darse
-cuenta que esos sistemas, están incompletos. Les falta algo que ellos ya han
-hecho mejor y es cuando se dan cuenta, que están andando con juguetes.</p>
-
-<h4>para los extremistas</h4>
-
-<p>No digo que Zimbra/pfSense/Proxmox sean malos, digo que el método perezoso, es
-malo.</p>
-
-<p>No puedes comparar la picoloro con la llave inglesa.</p>
-
-<p>Tampoco puedes pensar que solo necesitas una de las dos para hacerlo todo. Ambas
-son útiles, en su adecuado ambiente y para la tarea que fueron diseñadas.</p>
-
-<p>Antes de emitir un criterio tecnológico, pruebo el software, lo instalo, lo
-manoceo, trato de romperlo, de ver como funciona, que tiene por detrás;
-finalmente, que haría yo si quisiera/pudiera mejorarlo. Entonces me hago un
-criterio.</p>
-
-<p>La gente que me conoces, sabe que aveces digo: &ldquo;eso es una mierda&rdquo;. Otros, que
-me conocen mejor y que hace lo mismo que yo; suelen oírme cuando digo: -eso es
-una mierda y te contaré como llegué a esa conclusión, ya que seguro que a ti te
-ha pasado parecido.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/09/flasheando-modem-al-s4/">flasheando modem al S4</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-09T19:00:58-05:00'><span class='date'>09/01/2017</span> <span class='time'>7:00 pm</span></time>
-        
-           | <a href="/blog/2017/01/09/flasheando-modem-al-s4/#disqus_thread"
-             data-disqus-identifier="http://uranio-235.github.io/blog/2017/01/09/flasheando-modem-al-s4/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Es un mojón de los Samsung, tener el módem (banda base) como una partición y
-(por ende un firmware) aparte del sistema. Por este motivo, cuando flasheas
-cyanogen (léase &ldquo;cualquier ROM&rdquo;) una y otra vez; o cuando el teléfono se apaga
-abruptamente&hellip; Diiiicen que se corrompe el módem.</p>
-
-<p>Entonces, de buenas a primeras, el teléfono te dice &ldquo;tarjeta SIM expulsada,
-Reinicie&rdquo;. Aveces al reiniciar no se soluciona el problema. Yo he estado hasta 3
-días sin teléfono. Quitarle la batería un rato y volverla a poner, suele ser una
-solución, pero aveces, hasta 7 veces al día; he tenido que lidiar con el
-errorsito de los cojones.</p>
-
-<p><img class="right" src="/images/acercade_baseband.png" width="200" height="300" title="" ></p>
-
-<p>La única solución paliativa que he visto, es, de vez en vez, al menos una cada
-dos mes; flahsear el módem.</p>
-
-<p>El cómo dar con el módem te lo dejo de tarea. Lo siento, no soy la base de datos
-de bandas bases de samsung. La mía la <strong>busqué en google</strong> escribiendo el texto:</p>
-
-<p>&ldquo;modem SGH-M919&rdquo;</p>
-
-<p>Oséase, pidiendo el módem para mi modelo del teléfono, que al parecer, la
-<strong>M919UVUFNH7</strong>, es la última disponible para mi canchanfleta.</p>
-
-<p>El proceso de flasheo, la primera vez, requiere que nos hagamos con el
-fichero PIT del teléfono.</p>
-
-<p>Reinicia el teléfono en modo descarga. Si no sabes cómo hacerlo, googlea, cada
-samsung tiene su forma. El mío (S4 T-Mobile) es Power+VolDown+Home. Luego, en el
-modo descarga; una vez que (presiones VolUp) para inicializar la conexión,
-pasamos a Heimdall.</p>
-
-<p>Nota para los imbéciles: Conecte el teléfono a la computadora mediante un cable
-USB <strong>en buen estado</strong>.</p>
-
-<p><img class="right" src="/images/pitfile.png" width="600" height="700" title="" ></p>
-
-<p>En Heimdall, vamos a la pestaña <strong>Utilities</strong>. Presiona botón
-<em>Detect</em><sup>1</sup>, cuando te coja el teléfono, presiona <em>Save As</em><sup>2</sup>
-y te dará un nombre de fichero para salvar, por ejemplo, <strong>fulanito.pit</strong>.
-Finalmente presiona <em>Download</em><sup>3</sup> y te creará el fichero.</p>
-
-<p>Decirte quiero que este ficherito es muy famoso, ya que es algo así como tu
-tabla de particiones.</p>
-
-<p>Una vez que tienes el fichero en tu poder, Heimdall, será capaz de saber <em>a
-ciegas</em> donde están las particiones de tu teléfono sin tener que preguntárselo
-una y otra vez, así que guardalo en un directorio donde pongas todas las
-gangarreas de tu teléfono. Por cierto, terminamos con el teléfono; aunque diga
-&ldquo;do not turn off&rdquo; cágate en la noticia y reinicia (quita la batería).</p>
-
-<p>Ahora viene tiempo de google, muuuuucho google, para dar con tu módem.</p>
-
-<p>Digamos que finalmente diste con el módem de tu samsung. Seguro tiene un nombre
-muy genérico, casi siempre se llaman <strong>modem.bin</strong>. Procede con el mismo
-preludio del ritual (modo descarga y abre heimdall)</p>
-
-<p><img class="left" src="/images/flasheo_modem.png" width="600" height="700" title="" ></p>
-
-<p>Ahí ve para la pestaña que dice <strong>Flash</strong>. Click en <em>Browse</em><sup>1</sup> y
-localiza tu pitfile. Click en <em>Add</em><sup>2</sup> y luego en el <em>select</em> del campo
-<em>partition name</em><sup>3</sup> selecciona la partición <strong>MDM</strong>. Finalmente, le
-buscamos el fichero modem.bin haciendo click en Browse<sup>4</sup>.</p>
-
-<p>¿No tengo que decirte que pulses <strong>Start</strong>, verdad?</p>
-
-<p>Si todo salió bien, se reiniciará y tendrás tu módem recién flasheado. Pero no
-cantes victoria. Si tu modem se deterioró, fue que ALGO lo deterioró y ese algo,
-lo joderá de nuevo, así que, mantén las herramientas a manos; las necesitarás
-pronto.</p>
-</div>
-  
-  
-
-
-<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2">1LJw4ETYV3E2AYMtyfWaPwb7UPjRwV14S2</a> </p>
+<p>Si este art&iacute;culo te result&oacute; interesante, considere donar 0.003 BTC: <a href="https://blockchain.info/address/1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ">1LgL9cfT2StNk9gdedMJZseMnKJCEgQJdQ</a> </p>
 
     </article>
   
@@ -962,6 +1062,12 @@ pronto.</p>
 	<ul id="recent_posts">
 
 		
+
+		<li class="post">
+			<a href="/blog/2017/12/05/la-lightning-network/">la lightning network</a>
+      </li>
+
+      
 
 		<li class="post">
 			<a href="/blog/2017/11/30/segwit-con-3-star-en-electrum/">segwit con p2sh en electrum</a>
@@ -1000,7 +1106,13 @@ pronto.</p>
       
 
 		<li class="post">
-			<a href="/blog/2017/07/23/lemp-en-debian/">LEMP en debian</a>
+			<a href="/blog/2017/07/24/lemp-en-centos/">LEMP en Centos 7</a>
+      </li>
+
+      
+
+		<li class="post">
+			<a href="/blog/2017/07/23/lemp-en-debian/">LEMP en debian 9</a>
       </li>
 
       
